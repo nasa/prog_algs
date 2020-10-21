@@ -4,3 +4,5 @@ prog_algs/observers/__pycache__/
 prog_algs/__pycache__/
 
 prog_algs/predictors/__pycache__/
+
+prog_algs/samplers/__pycache__/

@@ -25,10 +25,11 @@ print(ukf.x, 'log-likelihood', ukf.filter.log_likelihood)
 print('event_state', batt.event_state(ukf.t, ukf.x))
 
 from prog_algs.predictors import monte_carlo
+from prog_algs import samplers
+import numpy as np
 mc = monte_carlo.MonteCarlo(batt)
-def state_sampler(num_samples):
-    return [ukf.x]
-results = mc.predict(state_sampler, future_loading)
+state_sampler = samplers.generate_mean_cov_random_sampler(batt, ukf.x_array, ukf.Q)
+results = mc.predict(state_sampler, future_loading, {'dt': 0.05, 'num_samples':10})
 
-for i in range(len(results[0]['t'])):
-    print(results[0]['t'][i], results[0]['event_state'][i])
+for result in results:
+    print(result['EOL'])

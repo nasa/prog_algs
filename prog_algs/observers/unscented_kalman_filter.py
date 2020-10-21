@@ -26,10 +26,10 @@ class UnscentedKalmanFilter(observer.Observer):
         self.parameters.update(options)
 
         if 'Q' not in self.parameters:
-            self.parameters['Q'] = np.diag([1e-2 for i in self.parameters['x0']])
+            self.parameters['Q'] = np.diag([1.0e-1 for i in model.states])
 
         if 'R' not in self.parameters:
-            self.parameters['R'] = np.diag([1e-2 for i in model.outputs])
+            self.parameters['R'] = np.diag([1.0e-1 for i in model.outputs])
 
         self.t = self.parameters['t0']
 

@@ -4,8 +4,8 @@ class MonteCarlo(predictor.Predictor):
     """
     """
     parameters = { # Default Parameters
-        'dt': 0.1,
-        'horizon': 3000,
+        'dt': 0.5,
+        'horizon': 4000,
         'num_samples': 100,
         'save_freq': 10
     }
@@ -23,6 +23,10 @@ class MonteCarlo(predictor.Predictor):
             first_output = self._model.output(0, x)
             params['x'] = x
             result = self._model.simulate_to_threshold(future_loading_eqn, first_output, params)
+            if (self._model.threshold_met(result['t'][-1], result['x'][-1])):
+                result['EOL'] = result['t'][-1]
+            else:
+                result['EOL'] = None
             results.append(result)
             # TODO(CT): Add noise
         return results

@@ -62,7 +62,9 @@ class UnscentedKalmanFilter(observer.Observer):
         return {key: value for (key, value) in zip(self._model.states, self.filter.x)}
 
     @property
-    def event_state(self):
-        return self._model.event_state(self.t, self.x)
-        
+    def x_array(self):
+        return self.filter.x
 
+    @property
+    def Q(self):
+        return self.filter.Q

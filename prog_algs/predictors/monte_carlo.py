@@ -21,6 +21,7 @@ class MonteCarlo(predictor.Predictor):
         results = []
         for x in state_samples:
             first_output = self._model.output(0, x)
+            params['x'] = x
             result = self._model.simulate_to_threshold(future_loading_eqn, first_output, params)
             results.append(result)
             # TODO(CT): Add noise

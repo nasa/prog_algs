@@ -28,8 +28,8 @@ from prog_algs.predictors import monte_carlo
 from prog_algs import samplers
 import numpy as np
 mc = monte_carlo.MonteCarlo(batt)
-state_sampler = samplers.generate_mean_cov_random_sampler(batt, ukf.x_array, ukf.Q)
-results = mc.predict(state_sampler, future_loading, {'dt': 0.05, 'num_samples':10})
+state_sampler = samplers.generate_mean_cov_random_sampler(batt, ukf.x, ukf.Q)
+results = mc.predict(state_sampler, future_loading, {'dt': 0.025, 'num_samples':5})
 
 for result in results:
     print(result['EOL'])

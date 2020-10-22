@@ -1,8 +1,8 @@
-from . import observer
+from . import state_estimator
 from filterpy import kalman
 import numpy as np
 
-class UnscentedKalmanFilter(observer.Observer):
+class UnscentedKalmanFilter(state_estimator.StateEstimator):
     """
     """
     t = 0       # Last timestep
@@ -51,16 +51,30 @@ class UnscentedKalmanFilter(observer.Observer):
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
 
-    def step(self, t, z):
+    def estimate(self, t, z):
         dt = t - self.t
         self.t = t
         self.filter.predict(dt=dt)
-        self.filter.update(np.array(list(z.values()))) #todo(ct): Add noise
+        self.filter.update(np.array(list(z.values())))
     
     @property
     def x(self):
+        """
+        Getter for property 'x', the current estimated state. 
+
+        Example
+        -------
+        state = observer.x
+        """
         return {key: value for (key, value) in zip(self._model.states, self.filter.x)}
 
     @property
     def Q(self):
+        """
+        Getter for property 'Q', the covariance of current estimated state (in order of model.states)
+
+        Example
+        -------
+        covar = observer.Q
+        """
         return self.filter.Q

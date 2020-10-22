@@ -30,5 +30,6 @@ class MonteCarlo(predictor.Predictor):
             results.append(result)
             # TODO(CT): Add noise
         return results
+        # TODO(CT): Consider other return types (e.g., table)
             
         

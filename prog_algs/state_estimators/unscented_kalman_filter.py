@@ -4,25 +4,40 @@ import numpy as np
 
 class UnscentedKalmanFilter(state_estimator.StateEstimator):
     """
+    An Unscented Kalman Filter (UKF) for state estimation
+
+    This class defines logic for performing an unscented kalman filter with a Prognostics Model (see Prognostics Model Package). This filter uses measurement data with noise to generate a state estimate and covariance matrix. 
     """
-    t = 0       # Last timestep
-    parameters = {
-        'alpha': 1, # UKF scaling param
-        'beta': 0,  # UKF scaling param
-        'kappa': -1, 
-        't0': 0, # First timestep
-        'dt': 1 # Time step
-    } # Configuration parameters for ukf
+    t = 0 # Last timestep
+    parameters = { # Default Parameters, used as config for UKF
+        'alpha': 1,     # UKF scaling param
+        'beta': 0,      # UKF scaling param
+        'kappa': -1,    # UKF scaling param
+        't0': 0,        # First timestep
+        'dt': 1         # Time step
+    } 
 
-    def __init__(self, model, options: dict):
-        if 'input_eqn' not in options:
-            raise Exception("Options must include 'input_eqn'")
+    def __init__(self, model, input_eqn, x0, options: dict = {}):
+        """
+        Construct Unscented Kalman Filter
 
-        if 'x0' not in options:
-            raise Exception("Options must include 'x0' (first state)")
+        Parameters
+        ----------
+        model : prog_models.prognostics_model.PrognosticsModel
+            See: Prognostics Model Package
+            A prognostics model to be used in state estimation
+        input_eqn : function (t) -> z
+            Function to generate an estimate of loading at future time t
+        x0 : dict
+            Initial (starting) state, with keys defined by model.states
+            e.g., x = {'abc': 332.1, 'def': 221.003} given states = ['abc', 'def']
+        options : dict, optional
+            Dictionary of any additional configuration values. See default parameters, above. Additionally, the following configuration parameters are supported:
+            Q : Process Noise Matrix
+            R : Measurement Noise Matrix
+        """
 
         self._model = model
-
         self.parameters.update(options)
 
         if 'Q' not in self.parameters:
@@ -42,16 +57,31 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(model.states, x)}
-            x = model.state(self.t, x, self.parameters['input_eqn'](self.t), dt)
+            x = model.state(self.t, x, input_eqn(self.t), dt)
             return np.array(list(x.values()))
 
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measurement, state_transition, points)
-        self.filter.x = np.array(list(self.parameters['x0'].values()))
+        self.filter.x = np.array(list(x0.values()))
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
 
     def estimate(self, t, z):
+        """
+        Perform one state estimation step (i.e., update the state estimate)
+
+        Parameters
+        ----------
+        t : double
+            Current timestamp in seconds (≥ 0.0)
+            e.g., t = 3.4
+        u : dict
+            Measured inputs, with keys defined by model.inputs.
+            e.g., u = {'i':3.2} given inputs = ['i']
+        z : dict
+            Measured outputs, with keys defined by model.outputs.
+            e.g., z = {'t':12.4, 'v':3.3} given inputs = ['t', 'v']
+        """
         dt = t - self.t
         self.t = t
         self.filter.predict(dt=dt)

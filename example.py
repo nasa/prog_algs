@@ -1,9 +1,9 @@
-from prog_algs.state_estimators import unscented_kalman_filter
 import sys
 sys.path.insert(1, "/Users/cteubert/Desktop/python-prognostics-models-package/")
 from prog_models.models import battery_circuit
-batt = battery_circuit.BatteryCircuit()
+from prog_algs.state_estimators import unscented_kalman_filter
 
+## Setup
 def future_loading(t):
     # Variable (piece-wise) future loading scheme 
     if (t < 600):
@@ -18,19 +18,24 @@ def future_loading(t):
         i = 3
     return {'i': i}
 
-## State Estimation
-ukf = unscented_kalman_filter.UnscentedKalmanFilter(batt, {'input_eqn': future_loading, 'x0':batt.parameters['x0']})
-print(ukf.filter.x)
-ukf.estimate(0.1, {'t': 32.2, 'v': 3.915})
-print(ukf.x, 'log-likelihood', ukf.filter.log_likelihood)
-print('event_state', batt.event_state(ukf.t, ukf.x))
+batt = battery_circuit.BatteryCircuit()
 
-## Prediction
+## State Estimation - perform a single ukf state estimate step
+ukf = unscented_kalman_filter.UnscentedKalmanFilter(batt, future_loading, batt.parameters['x0'])
+print("Prior State:", ukf.x, '\n\tlog-likelihood', ukf.filter.log_likelihood)
+print('\tSOC: ', batt.event_state(ukf.t, ukf.x)['EOD'])
+ukf.estimate(0.1, {'t': 32.2, 'v': 3.915})
+print("Posterior State:", ukf.x, '\n\tlog-likelihood', ukf.filter.log_likelihood)
+print('\tSOC: ', batt.event_state(ukf.t, ukf.x)['EOD'])
+
+## Prediction - Predict EOD given current state
 from prog_algs.predictors import monte_carlo
 from prog_algs import samplers
 mc = monte_carlo.MonteCarlo(batt)
 state_sampler = samplers.generate_mean_cov_random_sampler(batt, ukf.x, ukf.Q)
-results = mc.predict(state_sampler, future_loading, {'dt': 0.025, 'num_samples':5})
+prediction_config = {'dt': 0.025, 'num_samples':5}
+results = mc.predict(state_sampler, future_loading, prediction_config)
 
-for result in results:
-    print(result['EOL'])
+# Print Prediction Results
+print("\nEOD Predictions (s):")
+print('\t', [result['EOL'] for result in results])

@@ -4,7 +4,7 @@ class StateEstimator(ABC):
     """
     Interface class for state estimators
 
-    Abstract base class for creating state estimators that perform state estimation subclasses must implement this interface
+    Abstract base class for creating state estimators that perform state estimation. Subclasses must implement this interface. Equivilant to "Observers" in NASA's Matlab Prognostics Algorithm Library
     """
 
     @abstractmethod

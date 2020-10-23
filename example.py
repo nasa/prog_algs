@@ -1,5 +1,3 @@
-import sys
-sys.path.insert(1, "/Users/cteubert/Desktop/python-prognostics-models-package/")
 from prog_models.models import battery_circuit
 from prog_algs.state_estimators import unscented_kalman_filter
 

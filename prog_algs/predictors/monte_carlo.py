@@ -47,18 +47,27 @@ class MonteCarlo(predictor.Predictor):
         params.update(options)
 
         state_samples = state_sampler(params['num_samples'])
-        results = []
+        times_all = []
+        inputs_all = []
+        states_all = []
+        outputs_all = []
+        event_states_all = []
+        eol = []
         for x in state_samples:
             first_output = self._model.output(0, x)
             params['x'] = x
-            result = self._model.simulate_to_threshold(future_loading_eqn, first_output, params)
-            if (self._model.threshold_met(result['t'][-1], result['x'][-1])):
-                result['EOL'] = result['t'][-1]
+            (times, inputs, states, outputs, event_states) = self._model.simulate_to_threshold(future_loading_eqn, first_output, params)
+            if (self._model.threshold_met(times[-1], states[-1])):
+                eol.append(times[-1])
             else:
-                result['EOL'] = None
-            results.append(result)
+                eol.append(None)
+            times_all.append(times)
+            inputs_all.append(inputs)
+            states_all.append(states)
+            outputs_all.append(outputs)
+            event_states_all.append(event_states)
             # TODO(CT): Add noise
-        return results
+        return (times_all, inputs_all, states_all, outputs_all, event_states_all, eol)
         # TODO(CT): Consider other return types (e.g., table)
             
         

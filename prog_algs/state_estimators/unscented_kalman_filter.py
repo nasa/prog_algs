@@ -57,7 +57,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(model.states, x)}
-            x = model.state(self.t, x, input_eqn(self.t), dt)
+            x = model.next_state(self.t, x, input_eqn(self.t), dt)
             return np.array(list(x.values()))
 
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])

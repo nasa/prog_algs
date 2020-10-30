@@ -30,10 +30,10 @@ print('\tSOC: ', batt.event_state(ukf.t, ukf.x)['EOD'])
 from prog_algs.predictors import monte_carlo
 from prog_algs import samplers
 mc = monte_carlo.MonteCarlo(batt)
-state_sampler = samplers.generate_mean_cov_random_sampler(batt, ukf.x, ukf.Q)
+state_sampler = samplers.generate_mean_cov_random_sampler(batt.states, list(ukf.x.values()), ukf.Q)
 prediction_config = {'dt': 0.025, 'num_samples':5}
-results = mc.predict(state_sampler, future_loading, prediction_config)
+(times, inputs, states, outputs, event_states, eol) = mc.predict(state_sampler, future_loading, prediction_config)
 
 # Print Prediction Results
 print("\nEOD Predictions (s):")
-print('\t', [result['EOL'] for result in results])
+print('\t', eol)

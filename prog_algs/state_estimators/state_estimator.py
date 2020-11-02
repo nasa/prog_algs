@@ -8,7 +8,7 @@ class StateEstimator(ABC):
     """
 
     @abstractmethod
-    def estimate(self, t, u: dict, z: dict):
+    def estimate(self, t, u, z):
         """
         Perform one state estimation step (i.e., update the state estimate)
 

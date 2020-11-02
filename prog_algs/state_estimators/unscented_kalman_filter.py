@@ -17,7 +17,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         'dt': 1         # Time step
     } 
 
-    def __init__(self, model, input_eqn, x0, options: dict = {}):
+    def __init__(self, model, input_eqn, x0, options = {}):
         """
         Construct Unscented Kalman Filter
 

@@ -7,8 +7,22 @@ class Predictor(ABC):
     Abstract base class for creating predictors that perform prediction. Predictor subclasses must implement this interface. Equivilant to "Observers" in NASA's Matlab Prognostics Algorithm Library
     """
     @abstractmethod
-    def predict(self):
+    def predict(self, state_sampler, future_loading_eqn, options):
         """
         Perform a single prediction
+
+        Parameters
+        ----------
+        state_sampler : function (n) -> [x1, x2, ... xn]
+            Function to generate n samples of the state. 
+            e.g., def f(n): return [x1, x2, x3, ... xn]
+        future_loading_eqn : function (t) -> z
+            Function to generate an estimate of loading at future time t
+        options : dict, optional
+            Dictionary of any additional configuration values. See default parameters, above
+
+        Return
+        ______
+        result : recorded values for all samples
         """
         pass

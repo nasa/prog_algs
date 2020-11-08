@@ -81,8 +81,6 @@ class MonteCarlo(predictor.Predictor):
             states_all.append(states)
             outputs_all.append(outputs)
             event_states_all.append(event_states)
-            # TODO(CT): Add noise
         return (times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event)
-        # TODO(CT): Consider other return types (e.g., table)
             
         

@@ -1,4 +1,6 @@
-from . import state_estimator
+# Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+
+from prog_algs import state_estimator
 
 class TemplateStateEstimator(state_estimator.StateEstimator):
     """

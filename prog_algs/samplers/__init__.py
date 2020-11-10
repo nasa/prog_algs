@@ -1,3 +1,5 @@
+# Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+
 import numpy as np
 
 def generate_mean_cov_random_sampler(labels, means, Q):

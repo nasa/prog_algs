@@ -14,4 +14,6 @@ def eol_stats(rul):
         'median absolute deviation': sum([abs(x - median) for x in rul])/len(rul),
         'mean absolute deviation':   sum([abs(x - mean)   for x in rul])/len(rul)
     }
-    
+
+def portion_in_bounds(rul, bounds):
+    return sum([x < bounds[1] and x > bounds[0] for x in rul])/ len(rul)

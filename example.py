@@ -50,4 +50,5 @@ else:
 print("\nEOD Predictions (s):")
 from prog_algs import metrics
 print('\t', metrics.eol_stats(eol))
-print('\tPercentage between 3005.2 and 3005.6: ', metrics.portion_in_bounds(eol, [3005.2, 3005.6])*100.0, '%')
+print('\tPercentage between 3005.2 and 3005.6: ', metrics.percentage_in_bounds(eol, [3005.2, 3005.6])*100.0, '%')
+print('\tAssuming ground truth 3002.25: ', metrics.eol_stats(eol, 3005.25))

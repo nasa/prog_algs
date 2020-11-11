@@ -48,4 +48,5 @@ else:
 
 # Print Prediction Results
 print("\nEOD Predictions (s):")
-print('\t', eol)
+from prog_algs import metrics
+print('\t', metrics.eol_stats(eol))

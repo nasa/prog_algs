@@ -46,7 +46,8 @@ else:
     prediction_config = {'dt': 0.025, 'num_samples':len(filt.particles)}
 (times, inputs, states, outputs, event_states, eol) = mc.predict(state_sampler, future_loading, prediction_config)
 
-# Print Prediction Results
+# Print Metrics
 print("\nEOD Predictions (s):")
 from prog_algs import metrics
 print('\t', metrics.eol_stats(eol))
+print('\tPercentage between 3005.2 and 3005.6: ', metrics.portion_in_bounds(eol, [3005.2, 3005.6])*100.0, '%')

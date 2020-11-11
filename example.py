@@ -43,12 +43,12 @@ if isinstance(filt, unscented_kalman_filter.UnscentedKalmanFilter):
 else:
     def state_sampler(num_samples):
         return filt.particles
-    prediction_config = {'dt': 0.025, 'num_samples':len(filt.particles)}
+    prediction_config = {'dt': 0.05, 'num_samples':len(filt.particles)}
 (times, inputs, states, outputs, event_states, eol) = mc.predict(state_sampler, future_loading, prediction_config)
 
 # Print Metrics
 print("\nEOD Predictions (s):")
 from prog_algs.metrics import samples as metrics 
-print('\t', metrics.eol_stats(eol))
+print('\t', metrics.eol_metrics(eol))
 print('\tPercentage between 3005.2 and 3005.6: ', metrics.percentage_in_bounds(eol, [3005.2, 3005.6])*100.0, '%')
-print('\tAssuming ground truth 3002.25: ', metrics.eol_stats(eol, 3005.25))
+print('\tAssuming ground truth 3002.25: ', metrics.eol_metrics(eol, 3005.25))

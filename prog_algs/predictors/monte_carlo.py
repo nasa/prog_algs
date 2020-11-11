@@ -1,6 +1,7 @@
 # Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from . import predictor
+import numpy as np
 
 class MonteCarlo(predictor.Predictor):
     """
@@ -64,25 +65,25 @@ class MonteCarlo(predictor.Predictor):
         params.update(options)
 
         state_samples = state_sampler(params['num_samples'])
-        times_all = []
-        inputs_all = []
-        states_all = []
-        outputs_all = []
-        event_states_all = []
-        time_of_event = []
-        for x in state_samples:
+        times_all = np.empty(len(state_samples), dtype=object)
+        inputs_all = np.empty(len(state_samples), dtype=object)
+        states_all = np.empty(len(state_samples), dtype=object)
+        outputs_all = np.empty(len(state_samples), dtype=object)
+        event_states_all = np.empty(len(state_samples), dtype=object)
+        time_of_event = np.empty(len(state_samples))
+        for (i, x) in zip(range(len(state_samples)), state_samples):
             first_output = self._model.output(0, x)
             params['x'] = x
             (times, inputs, states, outputs, event_states) = self._model.simulate_to_threshold(future_loading_eqn, first_output, params)
             if (self._model.threshold_met(times[-1], states[-1])):
-                time_of_event.append(times[-1])
+                time_of_event[i] = times[-1]
             else:
-                time_of_event.append(None)
-            times_all.append(times)
-            inputs_all.append(inputs)
-            states_all.append(states)
-            outputs_all.append(outputs)
-            event_states_all.append(event_states)
+                time_of_event[i] = None
+            times_all[i] = times
+            inputs_all[i] = inputs
+            states_all[i] = states
+            outputs_all[i] = outputs
+            event_states_all[i] = event_states
         return (times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event)
             
         

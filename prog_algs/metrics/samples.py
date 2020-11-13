@@ -45,8 +45,7 @@ def alpha_lambda(times, eols, ground_truth, lambda_value, alpha, beta):
         if (t >= lambda_value):
             upper_bound = ground_truth + alpha*(ground_truth-t)
             lower_bound = ground_truth - alpha*(ground_truth-t)
-            count_within_bounds = sum([all([x <= upper_bound, x >= lower_bound]) for x in eol])
-            return count_within_bounds >= beta * len(eol)
+            return percentage_in_bounds(eol, [lower_bound, upper_bound]) >= beta 
 
 
 def mean_square_error(values, ground_truth):
@@ -58,5 +57,5 @@ def eol_profile_metrics(eol, ground_truth):
         'mean square error': mean_square_error(eol, ground_truth)
     }
 
-def percentage_in_bounds(rul, bounds):
-    return sum([x < bounds[1] and x > bounds[0] for x in rul])/ len(rul)
+def percentage_in_bounds(eol, bounds):
+    return sum([x < bounds[1] and x > bounds[0] for x in eol])/ len(eol)

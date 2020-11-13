@@ -8,11 +8,12 @@ The Prognostic Algorithm Package is a python framework for model-based prognosti
 
 ## Directory Structure 
 
-`prog_algs/` - The prognostics algorithm python package <br>
- |-`predictors/` - Algorithms for performing the prediction step of model-based prognostics <br>
- |-`samplers/` - Standard tools for performing state sampling <br>
- |-`state_estimators/` - Algorithms for performing the state estimation step of model-based prognostics <br>
-`example.py` - An example python script using prog_algs <br>
+`prog_algs/` - The prognostics algorithm python package
+&nbsp;&nbsp;&nbsp;&nbsp;  |- `predictors/` - Algorithms for performing the prediction step of model-based prognostics
+&nbsp;&nbsp;&nbsp;&nbsp;  |- `samplers/` - Standard tools for performing state sampling
+&nbsp;&nbsp;&nbsp;&nbsp;  |- `state_estimators/` - Algorithms for performing the state estimation step of model-based prognostics
+`benchmarking_example` - An example using metrics for benchmarking
+`example.py` - An example python script using prog_algs 
 `README.md` - The readme (this file)
 `requirements.txt` - python library dependiencies required to be met to use this package. Install using `pip install -r requirements.txt`
 

@@ -51,9 +51,3 @@ print('\t', metrics.eol_metrics(eol))
 print('\tPercentage between 3005.2 and 3005.6: ', metrics.percentage_in_bounds(eol, [3005.2, 3005.6])*100.0, '%')
 print('\tAssuming ground truth 3002.25: ', metrics.eol_metrics(eol, 3005.25))
 print('\tP(Success) if mission ends at 3002.25: ', metrics.prob_success(eol, 3005.25))
-
-# Playback Example
-(t, u, x, z, es, eol) = run_prog_playback(filt, mc, state_sampler, future_loading, [(0.1, {'t': 32.2, 'v': 3.915}), (0.1, {'t': 32.3, 'v': 3.91})], {'predict_config': prediction_config})
-print(metrics.mean_square_error(eol, 3005.4))
-prediction_times = [0.1, 0.2]
-print(metrics.alpha_lambda(prediction_times, eol, 3005.4, 0.2, 1e-4, 0.65))

@@ -44,7 +44,7 @@ else: # Particle Filter
     prediction_config = {'dt': 0.1, 'num_samples':len(filt.particles)}
 (times, inputs, states, outputs, event_states, eol) = mc.predict(state_sampler, future_loading, prediction_config)
 
-# # Print Metrics
+## Print Metrics
 print("\nEOD Predictions (s):")
 from prog_algs.metrics import samples as metrics 
 print('\t', metrics.eol_metrics(eol))

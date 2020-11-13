@@ -1,7 +1,7 @@
 # Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from . import predictor
-import numpy as np
+from numpy import empty
 
 class MonteCarlo(predictor.Predictor):
     """
@@ -65,12 +65,12 @@ class MonteCarlo(predictor.Predictor):
         params.update(options)
 
         state_samples = state_sampler(params['num_samples'])
-        times_all = np.empty(len(state_samples), dtype=object)
-        inputs_all = np.empty(len(state_samples), dtype=object)
-        states_all = np.empty(len(state_samples), dtype=object)
-        outputs_all = np.empty(len(state_samples), dtype=object)
-        event_states_all = np.empty(len(state_samples), dtype=object)
-        time_of_event = np.empty(len(state_samples))
+        times_all = empty(len(state_samples), dtype=object)
+        inputs_all = empty(len(state_samples), dtype=object)
+        states_all = empty(len(state_samples), dtype=object)
+        outputs_all = empty(len(state_samples), dtype=object)
+        event_states_all = empty(len(state_samples), dtype=object)
+        time_of_event = empty(len(state_samples))
         for (i, x) in zip(range(len(state_samples)), state_samples):
             first_output = self._model.output(0, x)
             params['x'] = x

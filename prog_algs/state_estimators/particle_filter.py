@@ -1,8 +1,7 @@
 # Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from . import state_estimator
-import math
-import numpy as np
+from numpy import array, empty, random
 import filterpy.monte_carlo
 from numbers import Number
 from scipy.stats import norm
@@ -35,21 +34,21 @@ class ParticleFilter(state_estimator.StateEstimator):
 
         if isinstance(self.parameters['x0_uncertainty'], Number):
             # Build array inplace
-            x = np.array(list(x0.values()))
-            sd = np.array([self.parameters['x0_uncertainty']] * len(x0))
-            samples = np.array([np.random.normal(x, sd) for i in range(self.parameters['num_particles'])])
-            self.particles = np.array([{key: value for (key, value) in zip(model.states, x)} for x in samples])
+            x = array(list(x0.values()))
+            sd = array([self.parameters['x0_uncertainty']] * len(x0))
+            samples = array([random.normal(x, sd) for i in range(self.parameters['num_particles'])])
+            self.particles = array([{key: value for (key, value) in zip(model.states, x)} for x in samples])
         else:
             raise Exception
             #TODO(CT): Custom exception
-        self.weights = np.array([1.0/len(self.particles)] * len(self.particles))
+        self.weights = array([1.0/len(self.particles)] * len(self.particles))
         # todo(ct): Maybe we should use numpy here
     
     def estimate(self, t, z):
         # todo(CT): assert t > self.t?
         # todo(CT): Should we change input_eqn to be an input rather than eqn
         dt = t - self.t
-        weights = np.empty(len(self.particles))
+        weights = empty(len(self.particles))
         
         # Propogate and calculate weights
         for i in range(len(self.particles)):
@@ -59,11 +58,11 @@ class ParticleFilter(state_estimator.StateEstimator):
         
         # Normalize
         total_weight = sum(self.weights)
-        weights = np.array([weight/total_weight for weight in weights])
+        weights = array([weight/total_weight for weight in weights])
 
         # Resample
         indexes = self.parameters['resample_fcn'](self.weights)
-        self.particles = np.array([self.particles[i] for i in indexes])
+        self.particles = array([self.particles[i] for i in indexes])
 
     @property
     def x(self):

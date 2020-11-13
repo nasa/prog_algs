@@ -1,12 +1,11 @@
 # Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-import numpy as np
-import math
+from numpy import mean, std
 from scipy import stats
 
 def eol_metrics(rul, ground_truth = None):
     rul.sort()
-    mean = np.mean(rul)
+    m = mean(rul)
     median = rul[int(len(rul)/2)]
     metrics = {
         'min': rul[0],
@@ -20,11 +19,11 @@ def eol_metrics(rul, ground_truth = None):
             '75': rul[int(3*len(rul)/4)] if len(rul) >= 4 else None,
         },
         'median': median,
-        'mean': mean,
-        'std': np.std(rul),
+        'mean': m,
+        'std': std(rul),
         'max': rul[-1],
         'median absolute deviation': sum([abs(x - median) for x in rul])/len(rul),
-        'mean absolute deviation':   sum([abs(x - mean)   for x in rul])/len(rul),
+        'mean absolute deviation':   sum([abs(x - m)   for x in rul])/len(rul),
         'number of samples': len(rul)
     }
 

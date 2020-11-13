@@ -3,7 +3,7 @@
 import sys
 sys.path.insert(1, "/Users/cteubert/Desktop/python-prognostics-models-package/")
 from prog_models.models import battery_circuit
-from prog_algs.state_estimators import unscented_kalman_filter, particle_filter
+from prog_algs import *
 
 ## Setup
 def future_loading(t):
@@ -24,8 +24,8 @@ batt = battery_circuit.BatteryCircuit()
 
 ## State Estimation - perform a single ukf state estimate step
 
-# filt = unscented_kalman_filter.UnscentedKalmanFilter(batt, future_loading, batt.parameters['x0'])
-filt = particle_filter.ParticleFilter(batt, future_loading, batt.parameters['x0'])
+# filt = state_estimators.unscented_kalman_filter.UnscentedKalmanFilter(batt, future_loading, batt.parameters['x0'])
+filt = state_estimators.particle_filter.ParticleFilter(batt, future_loading, batt.parameters['x0'])
 
 print("Prior State:", filt.x)
 print('\tSOC: ', batt.event_state(filt.t, filt.x)['EOD'])
@@ -34,21 +34,26 @@ print("Posterior State:", filt.x)
 print('\tSOC: ', batt.event_state(filt.t, filt.x)['EOD'])
 
 ## Prediction - Predict EOD given current state
-from prog_algs.predictors import monte_carlo
-from prog_algs import samplers
-mc = monte_carlo.MonteCarlo(batt)
-if isinstance(filt, unscented_kalman_filter.UnscentedKalmanFilter):
+mc = predictors.monte_carlo.MonteCarlo(batt)
+if isinstance(filt, state_estimators.unscented_kalman_filter.UnscentedKalmanFilter):
     state_sampler = samplers.generate_mean_cov_random_sampler(batt.states, list(filt.x.values()), filt.Q)
     prediction_config = {'dt': 0.025, 'num_samples':5}
-else:
+else: # Particle Filter
     def state_sampler(num_samples):
         return filt.particles
-    prediction_config = {'dt': 0.05, 'num_samples':len(filt.particles)}
+    prediction_config = {'dt': 0.1, 'num_samples':len(filt.particles)}
 (times, inputs, states, outputs, event_states, eol) = mc.predict(state_sampler, future_loading, prediction_config)
 
-# Print Metrics
+# # Print Metrics
 print("\nEOD Predictions (s):")
 from prog_algs.metrics import samples as metrics 
 print('\t', metrics.eol_metrics(eol))
 print('\tPercentage between 3005.2 and 3005.6: ', metrics.percentage_in_bounds(eol, [3005.2, 3005.6])*100.0, '%')
 print('\tAssuming ground truth 3002.25: ', metrics.eol_metrics(eol, 3005.25))
+print('\tP(Success) if mission ends at 3002.25: ', metrics.prob_success(eol, 3005.25))
+
+# Playback Example
+(t, u, x, z, es, eol) = run_prog_playback(filt, mc, state_sampler, future_loading, [(0.1, {'t': 32.2, 'v': 3.915}), (0.1, {'t': 32.3, 'v': 3.91})], {'predict_config': prediction_config})
+print(metrics.mean_square_error(eol, 3005.4))
+prediction_times = [0.1, 0.2]
+print(metrics.alpha_lambda(prediction_times, eol, 3005.4, 0.2, 1e-4, 0.65))

@@ -42,6 +42,7 @@ else: # Particle Filter
     def state_sampler(num_samples):
         return filt.particles
     prediction_config = {'dt': 0.1, 'num_samples':len(filt.particles)}
+    
 (times, inputs, states, outputs, event_states, eol) = mc.predict(state_sampler, future_loading, prediction_config)
 
 ## Print Metrics

@@ -71,11 +71,18 @@ class MonteCarlo(predictor.Predictor):
         outputs_all = empty(len(state_samples), dtype=object)
         event_states_all = empty(len(state_samples), dtype=object)
         time_of_event = empty(len(state_samples))
+
+        # Optimization to reduce lookup
+        output = self._model.output
+        simulate_to_threshold = self._model.simulate_to_threshold
+        threshold_met = self._model.threshold_met
+
+        # Perform prediction
         for (i, x) in zip(range(len(state_samples)), state_samples):
-            first_output = self._model.output(0, x)
+            first_output = output(0, x)
             params['x'] = x
-            (times, inputs, states, outputs, event_states) = self._model.simulate_to_threshold(future_loading_eqn, first_output, params)
-            if (self._model.threshold_met(times[-1], states[-1])):
+            (times, inputs, states, outputs, event_states) = simulate_to_threshold(future_loading_eqn, first_output, params)
+            if (threshold_met(times[-1], states[-1])):
                 time_of_event[i] = times[-1]
             else:
                 time_of_event[i] = None

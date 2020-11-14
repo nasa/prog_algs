@@ -50,11 +50,18 @@ class ParticleFilter(state_estimator.StateEstimator):
         dt = t - self.t
         weights = empty(len(self.particles))
         
+        # Optimization
+        particles = self.particles
+        next_state = self._model.next_state
+        input_eqn = self.input_eqn
+        output = self._model.output
+        noise_params = self.parameters['n']
+
         # Propogate and calculate weights
-        for i in range(len(self.particles)):
-            self.particles[i] = self._model.next_state(t, self.particles[i], self.input_eqn(t), dt) 
-            zPredicted = self._model.output(t, self.particles[i])
-            weights[i] = self.__likelihood(z, zPredicted)
+        for i in range(len(particles)):
+            self.particles[i] = next_state(t, particles[i], input_eqn(t), dt) 
+            zPredicted = output(t, particles[i])
+            weights[i] = sum([norm(zPredicted[key], noise_params[key]).pdf(z[key]) for key in zPredicted.keys()])
         
         # Normalize
         total_weight = sum(self.weights)
@@ -75,6 +82,3 @@ class ParticleFilter(state_estimator.StateEstimator):
         """
         return self.particles[0]
         # TODO(CT): Do something smarter
-
-    def __likelihood(self, zActual, zPredicted):
-        return sum([norm(zPredicted[key], self.parameters['n'][key]).pdf(zActual[key]) for key in zPredicted.keys()])

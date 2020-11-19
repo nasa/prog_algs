@@ -1,5 +1,8 @@
 # Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
+from sys import path
+path.insert(1, "/Users/cteubert/Desktop/python-prognostics-models-package/")
+
 import unittest
 from prog_algs import *
 from prog_models import *
@@ -11,7 +14,7 @@ class MockProgModel(prognostics_model.PrognosticsModel):
     outputs = ['o1']
     parameters = {
         'p1': 1.2,
-        'x0': {'a': 1, 'b': [3, 2], 'c': -3.2}
+        'x0': {'a': 1, 'b': 2, 'c': -3.2}
     }
 
     def __init__(self, options = {}):
@@ -41,6 +44,11 @@ class TestModels(unittest.TestCase):
         m = MockProgModel({'process_noise': 0.0})
         se = state_estimator_template.TemplateStateEstimator(m)
         p = predictor_template.TemplatePredictor(m)
+
+    def test_ukf(self):
+        from prog_algs.state_estimators import unscented_kalman_filter
+        m = MockProgModel({'process_noise': 0.0})
+        unscented_kalman_filter.UnscentedKalmanFilter(m, 1.0, m.parameters['x0'])
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,6 +1,8 @@
+# Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+
 from . import state_estimator
 from filterpy import kalman
-import numpy as np
+from numpy import diag, array
 
 class UnscentedKalmanFilter(state_estimator.StateEstimator):
     """
@@ -41,10 +43,10 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         self.parameters.update(options)
 
         if 'Q' not in self.parameters:
-            self.parameters['Q'] = np.diag([1.0e-1 for i in model.states])
+            self.parameters['Q'] = diag([1.0e-1 for i in model.states])
 
         if 'R' not in self.parameters:
-            self.parameters['R'] = np.diag([1.0e-1 for i in model.outputs])
+            self.parameters['R'] = diag([1.0e-1 for i in model.outputs])
 
         self.t = self.parameters['t0']
 
@@ -53,16 +55,16 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         def measurement(x):
             x = {key: value for (key, value) in zip(model.states, x)}
             z = model.output(0, x)
-            return np.array(list(z.values()))
+            return array(list(z.values()))
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(model.states, x)}
             x = model.next_state(self.t, x, input_eqn(self.t), dt)
-            return np.array(list(x.values()))
+            return array(list(x.values()))
 
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measurement, state_transition, points)
-        self.filter.x = np.array(list(x0.values()))
+        self.filter.x = array(list(x0.values()))
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
 
@@ -85,7 +87,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         dt = t - self.t
         self.t = t
         self.filter.predict(dt=dt)
-        self.filter.update(np.array(list(z.values())))
+        self.filter.update(array(list(z.values())))
     
     @property
     def x(self):

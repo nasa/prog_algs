@@ -1,4 +1,6 @@
-import numpy as np
+# Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+
+from numpy.random import multivariate_normal
 
 def generate_mean_cov_random_sampler(labels, means, Q):
     """
@@ -23,7 +25,7 @@ def generate_mean_cov_random_sampler(labels, means, Q):
         raise Exception("labels must be provided for each value")
  
     def sampler(num_samples):
-        samples = np.random.multivariate_normal(means, Q, num_samples)
+        samples = multivariate_normal(means, Q, num_samples)
         samples = [{key: value for (key, value) in zip(labels, x)} for x in samples]
         return samples
     return sampler

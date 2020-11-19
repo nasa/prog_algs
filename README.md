@@ -8,11 +8,12 @@ The Prognostic Algorithm Package is a python framework for model-based prognosti
 
 ## Directory Structure 
 
-`prog_algs/` - The prognostics algorithm python package <br>
- |-`predictors/` - Algorithms for performing the prediction step of model-based prognostics <br>
- |-`samplers/` - Standard tools for performing state sampling <br>
- |-`state_estimators/` - Algorithms for performing the state estimation step of model-based prognostics <br>
-`example.py` - An example python script using prog_algs <br>
+`prog_algs/` - The prognostics algorithm python package
+&nbsp;&nbsp;&nbsp;&nbsp;  |- `predictors/` - Algorithms for performing the prediction step of model-based prognostics
+&nbsp;&nbsp;&nbsp;&nbsp;  |- `samplers/` - Standard tools for performing state sampling
+&nbsp;&nbsp;&nbsp;&nbsp;  |- `state_estimators/` - Algorithms for performing the state estimation step of model-based prognostics
+`benchmarking_example` - An example using metrics for benchmarking
+`example.py` - An example python script using prog_algs 
 `README.md` - The readme (this file)
 `requirements.txt` - python library dependiencies required to be met to use this package. Install using `pip install -r requirements.txt`
 
@@ -33,3 +34,13 @@ Use the following to cite this repository:
 The corresponding reference should look like this:
 
 C. Teubert, and C. Kulkarni, Prognostics Algorithm Python Package, v0.0.1, Oct. 2020. URL TBD.
+
+## Notices
+
+Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+
+## Disclaimers
+
+No Warranty: THE SUBJECT SOFTWARE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY OF ANY KIND, EITHER EXPRESSED, IMPLIED, OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, ANY WARRANTY THAT THE SUBJECT SOFTWARE WILL CONFORM TO SPECIFICATIONS, ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR FREEDOM FROM INFRINGEMENT, ANY WARRANTY THAT THE SUBJECT SOFTWARE WILL BE ERROR FREE, OR ANY WARRANTY THAT DOCUMENTATION, IF PROVIDED, WILL CONFORM TO THE SUBJECT SOFTWARE. THIS AGREEMENT DOES NOT, IN ANY MANNER, CONSTITUTE AN ENDORSEMENT BY GOVERNMENT AGENCY OR ANY PRIOR RECIPIENT OF ANY RESULTS, RESULTING DESIGNS, HARDWARE, SOFTWARE PRODUCTS OR ANY OTHER APPLICATIONS RESULTING FROM USE OF THE SUBJECT SOFTWARE.  FURTHER, GOVERNMENT AGENCY DISCLAIMS ALL WARRANTIES AND LIABILITIES REGARDING THIRD-PARTY SOFTWARE, IF PRESENT IN THE ORIGINAL SOFTWARE, AND DISTRIBUTES IT "AS IS."
+
+Waiver and Indemnity:  RECIPIENT AGREES TO WAIVE ANY AND ALL CLAIMS AGAINST THE UNITED STATES GOVERNMENT, ITS CONTRACTORS AND SUBCONTRACTORS, AS WELL AS ANY PRIOR RECIPIENT.  IF RECIPIENT'S USE OF THE SUBJECT SOFTWARE RESULTS IN ANY LIABILITIES, DEMANDS, DAMAGES, EXPENSES OR LOSSES ARISING FROM SUCH USE, INCLUDING ANY DAMAGES FROM PRODUCTS BASED ON, OR RESULTING FROM, RECIPIENT'S USE OF THE SUBJECT SOFTWARE, RECIPIENT SHALL INDEMNIFY AND HOLD HARMLESS THE UNITED STATES GOVERNMENT, ITS CONTRACTORS AND SUBCONTRACTORS, AS WELL AS ANY PRIOR RECIPIENT, TO THE EXTENT PERMITTED BY LAW.  RECIPIENT'S SOLE REMEDY FOR ANY SUCH MATTER SHALL BE THE IMMEDIATE, UNILATERAL TERMINATION OF THIS AGREEMENT.

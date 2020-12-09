@@ -19,7 +19,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         'dt': 1         # Time step
     } 
 
-    def __init__(self, model, input_eqn, x0, options = {}):
+    def __init__(self, model, x0, options = {}):
         """
         Construct Unscented Kalman Filter
 
@@ -40,6 +40,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         """
 
         self._model = model
+        self._input = None
         self.parameters.update(options)
 
         if 'Q' not in self.parameters:
@@ -59,7 +60,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(model.states, x)}
-            x = model.next_state(self.t, x, input_eqn(self.t), dt)
+            x = model.next_state(self.t, x, self._input, dt)
             return array(list(x.values()))
 
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
@@ -68,7 +69,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
 
-    def estimate(self, t, z):
+    def estimate(self, t, u, z):
         """
         Perform one state estimation step (i.e., update the state estimate)
 
@@ -85,6 +86,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
             e.g., z = {'t':12.4, 'v':3.3} given inputs = ['t', 'v']
         """
         dt = t - self.t
+        self._input = u
         self.t = t
         self.filter.predict(dt=dt)
         self.filter.update(array(list(z.values())))

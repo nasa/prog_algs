@@ -1,1 +1,1 @@
-__all__ = ['test_templates']
+__all__ = ['test_state_estimators', 'test_predictors']

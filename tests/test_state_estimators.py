@@ -28,6 +28,10 @@ class MockProgModel():
         return {'e1': self.event_state(t, x)['e1'] < 1e-6}
 
 class TestStateEstimators(unittest.TestCase):
+    def test_state_est_template(self):
+        from state_estimator_template import TemplateStateEstimator
+        se = TemplateStateEstimator(None)
+
     def test_UKF(self):
         from prog_algs.state_estimators import unscented_kalman_filter
         m = MockProgModel()
@@ -57,11 +61,7 @@ class TestStateEstimators(unittest.TestCase):
         print(x)
         self.assertFalse( x0 == x )
         self.assertFalse( {'a': 1.1, 'b': 2, 'c': -5.2} == x )
-
-        filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -3.8}) # note- if input is correct, o1 should be -2.1
-        filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -5.6}) # note- if input is correct, o1 should be -2.1
-
         # Between the model and sense outputs
-        self.assertGreater(m.output(0.1, x)['o1'], -5.9)
-        self.assertLess(m.output(0.1, x)['o1'], -5.6) 
+        self.assertGreater(m.output(0.1, x)['o1'], -2.1)
+        self.assertLess(m.output(0.1, x)['o1'], -2.0) 
         

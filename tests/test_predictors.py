@@ -50,4 +50,6 @@ class TestPredictors(unittest.TestCase):
                 return {'i1': 2, 'i2': 1}
             else:
                 return {'i1': -4, 'i2': 2.5}
+
+        
         

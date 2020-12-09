@@ -37,15 +37,13 @@ print('\tSOC: ', batt.event_state(filt.t, filt.x)['EOD'])
 
 ## Prediction - Predict EOD given current state
 mc = predictors.monte_carlo.MonteCarlo(batt)
+prediction_config = {'dt': 0.1}
 if isinstance(filt, state_estimators.unscented_kalman_filter.UnscentedKalmanFilter):
-    state_sampler = samplers.generate_mean_cov_random_sampler(batt.states, list(filt.x.values()), filt.Q)
-    prediction_config = {'dt': 0.025, 'num_samples':5}
+    samples = sample_mean_covar(batt.states, list(filt.x.values()), filt.Q)
 else: # Particle Filter
-    def state_sampler(num_samples):
-        return filt.particles
-    prediction_config = {'dt': 0.1, 'num_samples':len(filt.particles)}
+    samples = filt.particles
     
-(times, inputs, states, outputs, event_states, eol) = mc.predict(state_sampler, future_loading, prediction_config)
+(times, inputs, states, outputs, event_states, eol) = mc.predict(samples, future_loading, prediction_config)
 
 ## Print Metrics
 print("\nEOD Predictions (s):")

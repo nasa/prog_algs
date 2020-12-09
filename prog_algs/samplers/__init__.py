@@ -2,7 +2,7 @@
 
 from numpy.random import multivariate_normal
 
-def generate_mean_cov_random_sampler(labels, means, Q):
+def sample_mean_covar(labels, means, Q):
     """
     Generate a multiviarate sampler using mean and covariance matrix
 
@@ -18,14 +18,12 @@ def generate_mean_cov_random_sampler(labels, means, Q):
 
     Return
     ------
-    sampler : function 
-        Function that maps between num_samples -> samples (array of dicts)
+    samples : array of dicts
+        Array of dictionaries where each element is a single sample date 
     """
     if len(means) != len(labels):
         raise Exception("labels must be provided for each value")
- 
-    def sampler(num_samples):
-        samples = multivariate_normal(means, Q, num_samples)
-        samples = [{key: value for (key, value) in zip(labels, x)} for x in samples]
-        return samples
-    return sampler
+    
+    samples = multivariate_normal(means, Q, num_samples)
+    samples = [{key: value for (key, value) in zip(labels, x)} for x in samples]
+    return samples

@@ -24,12 +24,14 @@ batt = battery_circuit.BatteryCircuit()
 
 ## State Estimation - perform a single ukf state estimate step
 
-# filt = state_estimators.unscented_kalman_filter.UnscentedKalmanFilter(batt, future_loading, batt.parameters['x0'])
-filt = state_estimators.particle_filter.ParticleFilter(batt, future_loading, batt.parameters['x0'])
+# filt = state_estimators.unscented_kalman_filter.UnscentedKalmanFilter(batt, batt.parameters['x0'])
+filt = state_estimators.particle_filter.ParticleFilter(batt, batt.parameters['x0'])
 
 print("Prior State:", filt.x)
 print('\tSOC: ', batt.event_state(filt.t, filt.x)['EOD'])
-filt.estimate(0.1, {'t': 32.2, 'v': 3.915})
+t = 0.1
+load = future_loading(t)
+filt.estimate(t, load, {'t': 32.2, 'v': 3.915})
 print("Posterior State:", filt.x)
 print('\tSOC: ', batt.event_state(filt.t, filt.x)['EOD'])
 

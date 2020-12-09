@@ -18,7 +18,7 @@ class TemplatePredictor(predictor.Predictor):
         """
         self.model = model
 
-        parameters.update(options)# Merge configuration options into default
+        self.parameters.update(options)# Merge configuration options into default
         # ADD PARAMETER CHECKS HERE
 
     def predict(self, state_sampler, future_loading_eqn, options = {}):

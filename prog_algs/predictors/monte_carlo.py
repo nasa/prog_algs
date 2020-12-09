@@ -12,7 +12,6 @@ class MonteCarlo(predictor.Predictor):
     parameters = { # Default Parameters
         'dt': 0.5,          # Timestep, seconds
         'horizon': 4000,    # Prediction horizon, seconds
-        'num_samples': 100, # Number of samples used
         'save_freq': 10     # Frequency at which results are saved
     }
 
@@ -28,13 +27,13 @@ class MonteCarlo(predictor.Predictor):
         """
         self._model = model
 
-    def predict(self, state_sampler, future_loading_eqn, options = {}):
+    def predict(self, state_samples, future_loading_eqn, options = {}):
         """
         Perform a single prediction
 
         Parameters
         ----------
-        state_sampler : function (n) -> [x1, x2, ... xn]
+        state_samples : collection of samples for the MonteCarlo
             Function to generate n samples of the state. 
             e.g., def f(n): return [x1, x2, x3, ... xn]
         future_loading_eqn : function (t) -> z
@@ -64,18 +63,24 @@ class MonteCarlo(predictor.Predictor):
         params = self.parameters # copy default parameters
         params.update(options)
 
-        state_samples = state_sampler(params['num_samples'])
         times_all = empty(len(state_samples), dtype=object)
         inputs_all = empty(len(state_samples), dtype=object)
         states_all = empty(len(state_samples), dtype=object)
         outputs_all = empty(len(state_samples), dtype=object)
         event_states_all = empty(len(state_samples), dtype=object)
         time_of_event = empty(len(state_samples))
+
+        # Optimization to reduce lookup
+        output = self._model.output
+        simulate_to_threshold = self._model.simulate_to_threshold
+        threshold_met = self._model.threshold_met
+
+        # Perform prediction
         for (i, x) in zip(range(len(state_samples)), state_samples):
-            first_output = self._model.output(0, x)
+            first_output = output(0, x)
             params['x'] = x
-            (times, inputs, states, outputs, event_states) = self._model.simulate_to_threshold(future_loading_eqn, first_output, params)
-            if (self._model.threshold_met(times[-1], states[-1])):
+            (times, inputs, states, outputs, event_states) = simulate_to_threshold(future_loading_eqn, first_output, params)
+            if (threshold_met(times[-1], states[-1])):
                 time_of_event[i] = times[-1]
             else:
                 time_of_event[i] = None

@@ -23,9 +23,8 @@ class ParticleFilter(state_estimator.StateEstimator):
     }
 
 
-    def __init__(self, model, input_eqn, x0, options = {}):
+    def __init__(self, model, x0, options = {}):
         self._model = model
-        self.input_eqn = input_eqn
 
         self.parameters.update(options)
         if isinstance(self.parameters['n'], Number):
@@ -44,17 +43,22 @@ class ParticleFilter(state_estimator.StateEstimator):
         self.weights = array([1.0/len(self.particles)] * len(self.particles))
         # todo(ct): Maybe we should use numpy here
     
-    def estimate(self, t, z):
+    def estimate(self, t, u, z):
         # todo(CT): assert t > self.t?
-        # todo(CT): Should we change input_eqn to be an input rather than eqn
         dt = t - self.t
         weights = empty(len(self.particles))
         
+        # Optimization
+        particles = self.particles
+        next_state = self._model.next_state
+        output = self._model.output
+        noise_params = self.parameters['n']
+
         # Propogate and calculate weights
-        for i in range(len(self.particles)):
-            self.particles[i] = self._model.next_state(t, self.particles[i], self.input_eqn(t), dt) 
-            zPredicted = self._model.output(t, self.particles[i])
-            weights[i] = self.__likelihood(z, zPredicted)
+        for i in range(len(particles)):
+            self.particles[i] = next_state(t, particles[i], u, dt) 
+            zPredicted = output(t, particles[i])
+            weights[i] = sum([norm(zPredicted[key], noise_params[key]).pdf(z[key]) for key in zPredicted.keys()])
         
         # Normalize
         total_weight = sum(self.weights)
@@ -75,6 +79,3 @@ class ParticleFilter(state_estimator.StateEstimator):
         """
         return self.particles[0]
         # TODO(CT): Do something smarter
-
-    def __likelihood(self, zActual, zPredicted):
-        return sum([norm(zPredicted[key], self.parameters['n'][key]).pdf(zActual[key]) for key in zPredicted.keys()])

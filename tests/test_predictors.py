@@ -37,4 +37,18 @@ class TestPredictors(unittest.TestCase):
         from prog_algs.predictors import monte_carlo
         m = MockProgModel()
         mc = monte_carlo.MonteCarlo(m)
+        samples = [
+            {'a': 1, 'b': 2, 'c': -3.2},
+            {'a': 2, 'b': 2, 'c': -3.2},
+            {'a': 0, 'b': 2, 'c': -3.2},
+            {'a': 1, 'b': 1, 'c': -3.2},
+            {'a': 1, 'b': 3, 'c': -3.2},
+            {'a': 1, 'b': 2, 'c': -2.2},
+            {'a': 1, 'b': 2, 'c': -4.2}
+        ]
+        def future_loading(t):
+            if (t < 5):
+                return {'i1': 2, 'i2': 1}
+            else:
+                return {'i1': -4, 'i2': 2.5}
         

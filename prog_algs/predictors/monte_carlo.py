@@ -2,6 +2,7 @@
 
 from . import predictor
 from numpy import empty
+from ..exceptions import ProgAlgTypeError
 
 class MonteCarlo(predictor.Predictor):
     """

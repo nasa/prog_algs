@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod, abstractproperty
 from numpy.random import choice, multivariate_normal
 from numpy import array, append, delete
 
-
 class UncertainData(ABC):
     """
     Data with uncertainty
@@ -33,6 +32,19 @@ class UncertainData(ABC):
         pass
 
     # TODO(CT): Consider median
+
+class ScalarData(UncertainData):
+    def __init__(self, state): 
+        self.__state = state
+
+    @property
+    def mean(self):
+        return self.__state
+
+    def sample(self, num_samples = 1):
+        # Completely random resample
+        return array([self.__state] * num_samples)
+
 
 class UnweightedSamples(UncertainData):
     """

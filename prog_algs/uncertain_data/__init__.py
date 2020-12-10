@@ -34,7 +34,15 @@ class UncertainData(ABC):
     # TODO(CT): Consider median
 
 class ScalarData(UncertainData):
+    """
+    Data without uncertainty- single value
+    """
     def __init__(self, state): 
+        """Initialize Scalar Data
+
+        Args:
+            state (dict): Single state
+        """
         self.__state = state
 
     @property
@@ -42,7 +50,6 @@ class ScalarData(UncertainData):
         return self.__state
 
     def sample(self, num_samples = 1):
-        # Completely random resample
         return array([self.__state] * num_samples)
 
 

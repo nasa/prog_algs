@@ -37,10 +37,10 @@ class TestStateEstimators(unittest.TestCase):
         m = MockProgModel()
         x0 = m.initialize()
         filt = unscented_kalman_filter.UnscentedKalmanFilter(m, x0)
-        self.assertTrue(all(x in filt.x for x in m.states))
-        self.assertDictEqual(x0, filt.x)
+        self.assertTrue(all(key in filt.x.mean for key in m.states))
+        self.assertDictEqual(x0, filt.x.mean)
         filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0}) # note- if input is correct, o1 should be -2.1
-        x = filt.x
+        x = filt.x.mean
         self.assertFalse( x0 == x )
         self.assertFalse( {'a': 1.1, 'b': 2, 'c': -5.2} == x )
 
@@ -53,7 +53,7 @@ class TestStateEstimators(unittest.TestCase):
         m = MockProgModel()
         x0 = m.initialize()
         filt = particle_filter.ParticleFilter(m, x0)
-        self.assertTrue(all(x in filt.x for x in m.states))
+        self.assertTrue(all(key in filt.x[0] for key in m.states))
         # self.assertDictEqual(x0, filt.x) // Not true - sample production means they may not be equal
         print(filt.x)
         filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0}) # note- if input is correct, o1 should be -2.1

@@ -1,9 +1,9 @@
 # Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-__all__ = ['predictors', 'samplers', 'state_estimators', 'run_prog_playback']
+__all__ = ['predictors', 'uncertain_data', 'state_estimators', 'run_prog_playback']
 from .predictors import *
 from .state_estimators import *
-from .samplers import *
+from .uncertain_data import *
 
 import numpy as np
 

@@ -23,31 +23,28 @@ def future_loading(t):
 batt = battery_circuit.BatteryCircuit()
 
 ##  Setup State Estimation 
-filt = state_estimators.unscented_kalman_filter.UnscentedKalmanFilter(batt, future_loading, batt.parameters['x0'])
+filt = state_estimators.unscented_kalman_filter.UnscentedKalmanFilter(batt, batt.parameters['x0'])
 
 ## Setup Prediction
 mc = predictors.monte_carlo.MonteCarlo(batt)
-state_sampler = samplers.generate_mean_cov_random_sampler(batt.states, list(filt.x.values()), filt.Q)
-prediction_config1 = {'dt': 0.05, 'num_samples':2}
-prediction_config2 = {'dt': 0.05, 'num_samples':5}
-prediction_config3 = {'dt': 0.05, 'num_samples':10}
+prediction_config = {'dt': 0.05}
 
 # Playback 
 from prog_algs.metrics import samples as metrics 
-print('Run 1 ({} samples)'.format(prediction_config1['num_samples']))
-(t, u, x, z, es, eol) = run_prog_playback(filt, mc, state_sampler, future_loading, [(0.1, {'t': 32.2, 'v': 3.915}), (0.1, {'t': 32.3, 'v': 3.91})], {'predict_config': prediction_config1})
+print('Run 1 (2 samples)')
+(t, u, x, z, es, eol) = run_prog_playback(filt, mc, future_loading, [(0.1, {'t': 32.2, 'v': 3.915}), (0.1, {'t': 32.3, 'v': 3.91})], {'predict_config': prediction_config, 'num_samples': 2})
 print('MSE: ', metrics.mean_square_error(eol, 3005.4))
 prediction_times = [0.1, 0.2]
 print('Alpha-lambda met: ', metrics.alpha_lambda(prediction_times, eol, 3005.4, 0.2, 1e-4, 0.65))
 
-print('Run 2 ({} samples)'.format(prediction_config2['num_samples']))
-(t, u, x, z, es, eol) = run_prog_playback(filt, mc, state_sampler, future_loading, [(0.1, {'t': 32.2, 'v': 3.915}), (0.1, {'t': 32.3, 'v': 3.91})], {'predict_config': prediction_config2})
+print('Run 2 (5 samples)')
+(t, u, x, z, es, eol) = run_prog_playback(filt, mc, future_loading, [(0.1, {'t': 32.2, 'v': 3.915}), (0.1, {'t': 32.3, 'v': 3.91})], {'predict_config': prediction_config, 'num_samples': 5})
 print('MSE: ', metrics.mean_square_error(eol, 3005.4))
 prediction_times = [0.1, 0.2]
 print('Alpha-lambda met: ', metrics.alpha_lambda(prediction_times, eol, 3005.4, 0.2, 1e-4, 0.65))
 
-print('Run 3 ({} samples)'.format(prediction_config3['num_samples']))
-(t, u, x, z, es, eol) = run_prog_playback(filt, mc, state_sampler, future_loading, [(0.1, {'t': 32.2, 'v': 3.915}), (0.1, {'t': 32.3, 'v': 3.91})], {'predict_config': prediction_config3})
+print('Run 3 (10 samples)')
+(t, u, x, z, es, eol) = run_prog_playback(filt, mc, future_loading, [(0.1, {'t': 32.2, 'v': 3.915}), (0.1, {'t': 32.3, 'v': 3.91})], {'predict_config': prediction_config, 'num_samples': 10})
 print('MSE: ', metrics.mean_square_error(eol, 3005.4))
 prediction_times = [0.1, 0.2]
 print('Alpha-lambda met: ', metrics.alpha_lambda(prediction_times, eol, 3005.4, 0.2, 1e-4, 0.65))

@@ -63,12 +63,12 @@ class MonteCarlo(predictor.Predictor):
         params = self.parameters # copy default parameters
         params.update(options)
 
-        times_all = empty(len(state_samples), dtype=object)
-        inputs_all = empty(len(state_samples), dtype=object)
-        states_all = empty(len(state_samples), dtype=object)
-        outputs_all = empty(len(state_samples), dtype=object)
-        event_states_all = empty(len(state_samples), dtype=object)
-        time_of_event = empty(len(state_samples))
+        times_all = empty(state_samples.size, dtype=object)
+        inputs_all = empty(state_samples.size, dtype=object)
+        states_all = empty(state_samples.size, dtype=object)
+        outputs_all = empty(state_samples.size, dtype=object)
+        event_states_all = empty(state_samples.size, dtype=object)
+        time_of_event = empty(state_samples.size)
 
         # Optimization to reduce lookup
         output = self._model.output

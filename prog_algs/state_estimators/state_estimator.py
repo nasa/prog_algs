@@ -1,6 +1,7 @@
 # Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from abc import ABC, abstractmethod, abstractproperty
+from ..uncertain_data import UncertainData
 
 class StateEstimator(ABC):
     """
@@ -29,7 +30,7 @@ class StateEstimator(ABC):
         pass
 
     @abstractproperty
-    def x(self):
+    def x(self) -> UncertainData:
         """
         Getter for property 'x', the current estimated state. 
 

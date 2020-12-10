@@ -5,6 +5,7 @@ from numpy import array, empty, random
 import filterpy.monte_carlo
 from numbers import Number
 from scipy.stats import norm
+from ..uncertain_data import UnweightedSamples
 
 class ParticleFilter(state_estimator.StateEstimator):
     """
@@ -57,7 +58,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         # Propogate and calculate weights
         for i in range(len(particles)):
             self.particles[i] = next_state(t, particles[i], u, dt) 
-            zPredicted = output(t, particles[i])
+            zPredicted = output(t, self.particles[i])
             weights[i] = sum([norm(zPredicted[key], noise_params[key]).pdf(z[key]) for key in zPredicted.keys()])
         
         # Normalize
@@ -77,5 +78,4 @@ class ParticleFilter(state_estimator.StateEstimator):
         -------
         state = observer.x
         """
-        return self.particles[0]
-        # TODO(CT): Do something smarter
+        return UnweightedSamples(self.particles)

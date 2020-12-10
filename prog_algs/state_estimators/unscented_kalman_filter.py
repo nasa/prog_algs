@@ -3,6 +3,7 @@
 from . import state_estimator
 from filterpy import kalman
 from numpy import diag, array
+from ..uncertain_data import MultivariateNormalDist
 
 class UnscentedKalmanFilter(state_estimator.StateEstimator):
     """
@@ -100,15 +101,4 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         -------
         state = observer.x
         """
-        return {key: value for (key, value) in zip(self._model.states, self.filter.x)}
-
-    @property
-    def Q(self):
-        """
-        Getter for property 'Q', the covariance of current estimated state (in order of model.states)
-
-        Example
-        -------
-        covar = observer.Q
-        """
-        return self.filter.Q
+        return MultivariateNormalDist(self._model.states, self.filter.x, self.filter.Q)

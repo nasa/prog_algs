@@ -27,21 +27,21 @@ batt = battery_circuit.BatteryCircuit()
 # filt = state_estimators.unscented_kalman_filter.UnscentedKalmanFilter(batt, batt.parameters['x0'])
 filt = state_estimators.particle_filter.ParticleFilter(batt, batt.parameters['x0'])
 
-print("Prior State:", filt.x)
-print('\tSOC: ', batt.event_state(filt.t, filt.x)['EOD'])
+print("Prior State:", filt.x.mean)
+print('\tSOC: ', batt.event_state(filt.t, filt.x.mean)['EOD'])
 t = 0.1
 load = future_loading(t)
 filt.estimate(t, load, {'t': 32.2, 'v': 3.915})
-print("Posterior State:", filt.x)
-print('\tSOC: ', batt.event_state(filt.t, filt.x)['EOD'])
+print("Posterior State:", filt.x.mean)
+print('\tSOC: ', batt.event_state(filt.t, filt.x.mean)['EOD'])
 
 ## Prediction - Predict EOD given current state
 mc = predictors.monte_carlo.MonteCarlo(batt)
 prediction_config = {'dt': 0.1}
 if isinstance(filt, state_estimators.unscented_kalman_filter.UnscentedKalmanFilter):
-    samples = sample_mean_covar(batt.states, list(filt.x.values()), filt.Q)
+    samples = filt.x.samples(20)
 else: # Particle Filter
-    samples = filt.particles
+    samples = filt.x.raw_samples()
     
 (times, inputs, states, outputs, event_states, eol) = mc.predict(samples, future_loading, prediction_config)
 

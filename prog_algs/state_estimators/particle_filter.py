@@ -6,6 +6,7 @@ import filterpy.monte_carlo
 from numbers import Number
 from scipy.stats import norm
 from ..uncertain_data import UnweightedSamples
+from ..exceptions import ProgAlgTypeError
 
 class ParticleFilter(state_estimator.StateEstimator):
     """
@@ -26,6 +27,17 @@ class ParticleFilter(state_estimator.StateEstimator):
 
     def __init__(self, model, x0, options = {}):
         self._model = model
+        if not hasattr(model, 'output'):
+            raise ProgAlgTypeError("model must have `output` method")
+        if not hasattr(model, 'next_state'):
+            raise ProgAlgTypeError("model must have `next_state` method")
+        if not hasattr(model, 'outputs'):
+            raise ProgAlgTypeError("model must have `outputs` property")
+        if not hasattr(model, 'states'):
+            raise ProgAlgTypeError("model must have `states` property")
+        for key in model.states:
+            if key not in x0:
+                raise ProgAlgTypeError("x0 missing state `{}`".format(key))
 
         self.parameters.update(options)
         if isinstance(self.parameters['n'], Number):
@@ -44,6 +56,9 @@ class ParticleFilter(state_estimator.StateEstimator):
         self.weights = array([1.0/len(self.particles)] * len(self.particles))
         # todo(ct): Maybe we should use numpy here
     
+    def __str__(self):
+        return "{} State Estimator".format(self.__class__)
+        
     def estimate(self, t, u, z):
         # todo(CT): assert t > self.t?
         dt = t - self.t

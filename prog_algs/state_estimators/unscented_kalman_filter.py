@@ -4,6 +4,7 @@ from . import state_estimator
 from filterpy import kalman
 from numpy import diag, array
 from ..uncertain_data import MultivariateNormalDist
+from ..exceptions import ProgAlgTypeError
 
 class UnscentedKalmanFilter(state_estimator.StateEstimator):
     """
@@ -41,6 +42,18 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         """
 
         self._model = model
+        if not hasattr(model, 'output'):
+            raise ProgAlgTypeError("model must have `output` method")
+        if not hasattr(model, 'next_state'):
+            raise ProgAlgTypeError("model must have `next_state` method")
+        if not hasattr(model, 'outputs'):
+            raise ProgAlgTypeError("model must have `outputs` property")
+        if not hasattr(model, 'states'):
+            raise ProgAlgTypeError("model must have `states` property")
+        for key in model.states:
+            if key not in x0:
+                raise ProgAlgTypeError("x0 missing state `{}`".format(key))
+
         self._input = None
         self.parameters.update(options)
 

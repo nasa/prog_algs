@@ -1,5 +1,6 @@
 # Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 import unittest
+from prog_algs.exceptions import ProgAlgTypeError
 
 class MockProgModel():
     events = ['e1']
@@ -23,7 +24,7 @@ class MockProgModel():
 
     def event_state(self, t, x):
         return {'e1': max(1-t/5.0,0)}
-
+    
     def threshold_met(self, t, x):
         return {'e1': self.event_state(t, x)['e1'] < 1e-6}
 
@@ -48,6 +49,80 @@ class TestStateEstimators(unittest.TestCase):
         self.assertGreater(m.output(0.1, x)['o1'], -2.1)
         self.assertLess(m.output(0.1, x)['o1'], -2.0) 
 
+    def __incorrect_input_tests(self, filter):
+        class IncompleteModel:
+            outputs = []
+            states = ['a', 'b']
+            def next_state(self):
+                pass
+            def output(self):
+                pass
+        m = IncompleteModel()
+        x0 = {'a': 0, 'c': 2}
+        try:
+            filt = filter(m, x0)
+            self.fail()
+        except ProgAlgTypeError:
+            pass
+
+        class IncompleteModel:
+            states = ['a', 'b']
+            def next_state(self):
+                pass
+            def output(self):
+                pass
+        m = IncompleteModel()
+        x0 = {'a': 0, 'b': 2}
+        try:
+            filt = filter(m, x0)
+            self.fail()
+        except ProgAlgTypeError:
+            pass
+
+        class IncompleteModel:
+            outputs = []
+            def next_state(self):
+                pass
+            def output(self):
+                pass
+        m = IncompleteModel()
+        x0 = {'a': 0, 'b': 2}
+        try:
+            filt = filter(m, x0)
+            self.fail()
+        except ProgAlgTypeError:
+            pass
+
+        class IncompleteModel:
+            outputs = []
+            states = ['a', 'b']
+            def output(self):
+                pass
+        m = IncompleteModel()
+        x0 = {'a': 0, 'b': 2}
+        try:
+            filt = filter(m, x0)
+            self.fail()
+        except ProgAlgTypeError:
+            pass
+
+        class IncompleteModel:
+            outputs = []
+            states = ['a', 'b']
+            def next_state(self):
+                pass
+        m = IncompleteModel()
+        x0 = {'a': 0, 'b': 2}
+        try:
+            filt = filter(m, x0)
+            self.fail()
+        except ProgAlgTypeError:
+            pass
+
+    def test_UKF_incorrect_input(self):
+        from prog_algs.state_estimators import unscented_kalman_filter
+        self.__incorrect_input_tests(unscented_kalman_filter.UnscentedKalmanFilter)
+
     def test_PF(self):
         from prog_algs.state_estimators import particle_filter
         m = MockProgModel()
@@ -55,13 +130,18 @@ class TestStateEstimators(unittest.TestCase):
         filt = particle_filter.ParticleFilter(m, x0)
         self.assertTrue(all(key in filt.x[0] for key in m.states))
         # self.assertDictEqual(x0, filt.x) // Not true - sample production means they may not be equal
-        print(filt.x)
         filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0}) # note- if input is correct, o1 should be -2.1
-        x = filt.x
-        print(x)
+        x = filt.x.mean
         self.assertFalse( x0 == x )
         self.assertFalse( {'a': 1.1, 'b': 2, 'c': -5.2} == x )
+
+        filt.estimate(0.2, {'i1': 0, 'i2': 0}, {'o1': -2.0})
+        filt.estimate(0.3, {'i1': 0, 'i2': 0}, {'o1': -2.0})
+        filt.estimate(0.4, {'i1': 0, 'i2': 0}, {'o1': -2.0})
         # Between the model and sense outputs
         self.assertGreater(m.output(0.1, x)['o1'], -2.1)
         self.assertLess(m.output(0.1, x)['o1'], -2.0) 
         
+    def test_PF_incorrect_input(self):
+        from prog_algs.state_estimators import particle_filter
+        self.__incorrect_input_tests(particle_filter.ParticleFilter)

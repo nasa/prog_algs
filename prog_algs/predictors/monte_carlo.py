@@ -26,6 +26,18 @@ class MonteCarlo(predictor.Predictor):
             A prognostics model to be used in prediction
         """
         self._model = model
+        if not hasattr(model, 'output'):
+            raise ProgAlgTypeError("model must have `output` method")
+        if not hasattr(model, 'next_state'):
+            raise ProgAlgTypeError("model must have `next_state` method")
+        if not hasattr(model, 'inputs'):
+            raise ProgAlgTypeError("model must have `inputs` property")
+        if not hasattr(model, 'outputs'):
+            raise ProgAlgTypeError("model must have `outputs` property")
+        if not hasattr(model, 'states'):
+            raise ProgAlgTypeError("model must have `states` property")
+        if not hasattr(model, 'simulate_to_threshold'):
+            raise ProgAlgTypeError("model must have `simulate_to_threshold` property")
 
     def predict(self, state_samples, future_loading_eqn, options = {}):
         """

@@ -3,6 +3,7 @@ from .test_state_estimators import TestStateEstimators
 from .test_predictors import TestPredictors
 from .test_integration import TestIntegration
 from .test_uncertain_data import TestUncertainData
+from .test_examples import TestExamples
 from .test_misc import TestMisc
 import unittest
 
@@ -17,6 +18,9 @@ if __name__ == '__main__':
 
     print('\n\nUncertain Data Tests')
     unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestUncertainData))
+
+    print('\n\nExamples Tests')
+    unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestExamples))
 
     print('\n\nIntegration Tests')
     unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestIntegration))

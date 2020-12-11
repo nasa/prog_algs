@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Prognostics Models Python Package'
+project = 'Prognostics Algorithms Python Package'
 copyright = '2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.'
 author = 'Chris Teubert, Chetan Kulkarni, and Matteo Corbetta'
 

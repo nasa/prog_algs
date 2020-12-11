@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod, abstractproperty
 from numpy.random import choice, multivariate_normal
 from numpy import array, append, delete
 
-
 class UncertainData(ABC):
     """
     Data with uncertainty
@@ -33,6 +32,26 @@ class UncertainData(ABC):
         pass
 
     # TODO(CT): Consider median
+
+class ScalarData(UncertainData):
+    """
+    Data without uncertainty- single value
+    """
+    def __init__(self, state): 
+        """Initialize Scalar Data
+
+        Args:
+            state (dict): Single state
+        """
+        self.__state = state
+
+    @property
+    def mean(self):
+        return self.__state
+
+    def sample(self, num_samples = 1):
+        return array([self.__state] * num_samples)
+
 
 class UnweightedSamples(UncertainData):
     """
@@ -110,7 +129,7 @@ class UnweightedSamples(UncertainData):
         Example:
             del samples[index]
         """
-         self.__samples = delete(self.__samples, index)
+        self.__samples = delete(self.__samples, index)
 
     def raw_samples(self):
         """Get raw samples

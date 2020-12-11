@@ -129,7 +129,7 @@ class UnweightedSamples(UncertainData):
         Example:
             del samples[index]
         """
-         self.__samples = delete(self.__samples, index)
+        self.__samples = delete(self.__samples, index)
 
     def raw_samples(self):
         """Get raw samples

@@ -31,7 +31,7 @@ Use the following to cite this repository:
 
 The corresponding reference should look like this:
 
-C. Teubert, C. Kulkarni, M. Corbetta Prognostics Algorithms Python Package, v0.0.1, Oct. 2020. URL TBD.
+C. Teubert, C. Kulkarni, M. Corbetta Prognostics Algorithms Python Package, v0.1.0, Dec. 2020. URL TBD.
 
 Indices and tables
 -----------------------

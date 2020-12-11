@@ -1,6 +1,10 @@
+# Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+
 from . import state_estimator
 from filterpy import kalman
-import numpy as np
+from numpy import diag, array
+from ..uncertain_data import MultivariateNormalDist
+from ..exceptions import ProgAlgTypeError
 
 class UnscentedKalmanFilter(state_estimator.StateEstimator):
     """
@@ -17,7 +21,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         'dt': 1         # Time step
     } 
 
-    def __init__(self, model, input_eqn, x0, options = {}):
+    def __init__(self, model, x0, options = {}):
         """
         Construct Unscented Kalman Filter
 
@@ -38,13 +42,26 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         """
 
         self._model = model
+        if not hasattr(model, 'output'):
+            raise ProgAlgTypeError("model must have `output` method")
+        if not hasattr(model, 'next_state'):
+            raise ProgAlgTypeError("model must have `next_state` method")
+        if not hasattr(model, 'outputs'):
+            raise ProgAlgTypeError("model must have `outputs` property")
+        if not hasattr(model, 'states'):
+            raise ProgAlgTypeError("model must have `states` property")
+        for key in model.states:
+            if key not in x0:
+                raise ProgAlgTypeError("x0 missing state `{}`".format(key))
+
+        self._input = None
         self.parameters.update(options)
 
         if 'Q' not in self.parameters:
-            self.parameters['Q'] = np.diag([1.0e-1 for i in model.states])
+            self.parameters['Q'] = diag([1.0e-1 for i in model.states])
 
         if 'R' not in self.parameters:
-            self.parameters['R'] = np.diag([1.0e-1 for i in model.outputs])
+            self.parameters['R'] = diag([1.0e-1 for i in model.outputs])
 
         self.t = self.parameters['t0']
 
@@ -53,20 +70,20 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         def measurement(x):
             x = {key: value for (key, value) in zip(model.states, x)}
             z = model.output(0, x)
-            return np.array(list(z.values()))
+            return array(list(z.values()))
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(model.states, x)}
-            x = model.next_state(self.t, x, input_eqn(self.t), dt)
-            return np.array(list(x.values()))
+            x = model.next_state(self.t, x, self._input, dt)
+            return array(list(x.values()))
 
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measurement, state_transition, points)
-        self.filter.x = np.array(list(x0.values()))
+        self.filter.x = array(list(x0.values()))
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
 
-    def estimate(self, t, z):
+    def estimate(self, t, u, z):
         """
         Perform one state estimation step (i.e., update the state estimate)
 
@@ -83,9 +100,10 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
             e.g., z = {'t':12.4, 'v':3.3} given inputs = ['t', 'v']
         """
         dt = t - self.t
+        self._input = u
         self.t = t
         self.filter.predict(dt=dt)
-        self.filter.update(np.array(list(z.values())))
+        self.filter.update(array(list(z.values())))
     
     @property
     def x(self):
@@ -96,15 +114,4 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         -------
         state = observer.x
         """
-        return {key: value for (key, value) in zip(self._model.states, self.filter.x)}
-
-    @property
-    def Q(self):
-        """
-        Getter for property 'Q', the covariance of current estimated state (in order of model.states)
-
-        Example
-        -------
-        covar = observer.Q
-        """
-        return self.filter.Q
+        return MultivariateNormalDist(self._model.states, self.filter.x, self.filter.Q)

@@ -1,3 +1,5 @@
+# Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+
 from abc import ABC, abstractmethod
 
 class Predictor(ABC):
@@ -7,7 +9,7 @@ class Predictor(ABC):
     Abstract base class for creating predictors that perform prediction. Predictor subclasses must implement this interface. Equivilant to "Observers" in NASA's Matlab Prognostics Algorithm Library
     """
     @abstractmethod
-    def predict(self, state_sampler, future_loading_eqn, options):
+    def predict(self, state_samples, future_loading_eqn, options):
         """
         Perform a single prediction
 

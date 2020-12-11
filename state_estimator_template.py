@@ -1,17 +1,28 @@
 # Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from abc import ABC, abstractmethod, abstractproperty
-from ..uncertain_data import UncertainData
+from prog_algs import state_estimator
 
-class StateEstimator(ABC):
+class TemplateStateEstimator(state_estimator.StateEstimator):
     """
-    Interface class for state estimators
-
-    Abstract base class for creating state estimators that perform state estimation. Subclasses must implement this interface. Equivilant to "Observers" in NASA's Matlab Prognostics Algorithm Library
+    Template for State Estimator
     """
+    t = 0 # Last timestep
 
-    @abstractmethod
-    def estimate(self, t, u, z):
+    # REPLACE THE FOLLOWING LIST WITH CONFIGURED PARAMETERS
+    parameters = { # Default Parameters, used as config for UKF
+        'Example Parameter': 0.0
+    } 
+
+    def __init__(self, model, options = {}):
+        """
+        Constructor
+        """
+        self.model = model
+
+        self.parameters.update(options)# Merge configuration options into default
+        # ADD PARAMETER CHECKS HERE
+
+    def estimate(self, t, z):
         """
         Perform one state estimation step (i.e., update the state estimate)
 
@@ -27,10 +38,11 @@ class StateEstimator(ABC):
             Measured outputs, with keys defined by model.outputs.
             e.g., z = {'t':12.4, 'v':3.3} given inputs = ['t', 'v']
         """
+        # REPLACE WITH UPDATE STATE ESTIMATION
         pass
 
-    @abstractproperty
-    def x(self) -> UncertainData:
+    @property
+    def x(self):
         """
         Getter for property 'x', the current estimated state. 
 
@@ -38,4 +50,7 @@ class StateEstimator(ABC):
         -------
         state = observer.x
         """
-        pass
+        # REPLACE THE FOLLOWING WITH THE LOGIC TO CONSTRUCT/RETURN THE STATE
+        x = {key: 0.0 for key in self.model.states}
+
+        return x

@@ -1,4 +1,8 @@
+# Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+
 from . import predictor
+from numpy import empty
+from ..exceptions import ProgAlgTypeError
 
 class MonteCarlo(predictor.Predictor):
     """
@@ -9,7 +13,6 @@ class MonteCarlo(predictor.Predictor):
     parameters = { # Default Parameters
         'dt': 0.5,          # Timestep, seconds
         'horizon': 4000,    # Prediction horizon, seconds
-        'num_samples': 100, # Number of samples used
         'save_freq': 10     # Frequency at which results are saved
     }
 
@@ -24,14 +27,26 @@ class MonteCarlo(predictor.Predictor):
             A prognostics model to be used in prediction
         """
         self._model = model
+        if not hasattr(model, 'output'):
+            raise ProgAlgTypeError("model must have `output` method")
+        if not hasattr(model, 'next_state'):
+            raise ProgAlgTypeError("model must have `next_state` method")
+        if not hasattr(model, 'inputs'):
+            raise ProgAlgTypeError("model must have `inputs` property")
+        if not hasattr(model, 'outputs'):
+            raise ProgAlgTypeError("model must have `outputs` property")
+        if not hasattr(model, 'states'):
+            raise ProgAlgTypeError("model must have `states` property")
+        if not hasattr(model, 'simulate_to_threshold'):
+            raise ProgAlgTypeError("model must have `simulate_to_threshold` property")
 
-    def predict(self, state_sampler, future_loading_eqn, options = {}):
+    def predict(self, state_samples, future_loading_eqn, options = {}):
         """
         Perform a single prediction
 
         Parameters
         ----------
-        state_sampler : function (n) -> [x1, x2, ... xn]
+        state_samples : collection of samples for the MonteCarlo
             Function to generate n samples of the state. 
             e.g., def f(n): return [x1, x2, x3, ... xn]
         future_loading_eqn : function (t) -> z
@@ -61,28 +76,32 @@ class MonteCarlo(predictor.Predictor):
         params = self.parameters # copy default parameters
         params.update(options)
 
-        state_samples = state_sampler(params['num_samples'])
-        times_all = []
-        inputs_all = []
-        states_all = []
-        outputs_all = []
-        event_states_all = []
-        time_of_event = []
-        for x in state_samples:
-            first_output = self._model.output(0, x)
+        times_all = empty(state_samples.size, dtype=object)
+        inputs_all = empty(state_samples.size, dtype=object)
+        states_all = empty(state_samples.size, dtype=object)
+        outputs_all = empty(state_samples.size, dtype=object)
+        event_states_all = empty(state_samples.size, dtype=object)
+        time_of_event = empty(state_samples.size)
+
+        # Optimization to reduce lookup
+        output = self._model.output
+        simulate_to_threshold = self._model.simulate_to_threshold
+        threshold_met = self._model.threshold_met
+
+        # Perform prediction
+        for (i, x) in zip(range(len(state_samples)), state_samples):
+            first_output = output(0, x)
             params['x'] = x
-            (times, inputs, states, outputs, event_states) = self._model.simulate_to_threshold(future_loading_eqn, first_output, params)
-            if (self._model.threshold_met(times[-1], states[-1])):
-                time_of_event.append(times[-1])
+            (times, inputs, states, outputs, event_states) = simulate_to_threshold(future_loading_eqn, first_output, params)
+            if (threshold_met(times[-1], states[-1])):
+                time_of_event[i] = times[-1]
             else:
-                time_of_event.append(None)
-            times_all.append(times)
-            inputs_all.append(inputs)
-            states_all.append(states)
-            outputs_all.append(outputs)
-            event_states_all.append(event_states)
-            # TODO(CT): Add noise
+                time_of_event[i] = None
+            times_all[i] = times
+            inputs_all[i] = inputs
+            states_all[i] = states
+            outputs_all[i] = outputs
+            event_states_all[i] = event_states
         return (times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event)
-        # TODO(CT): Consider other return types (e.g., table)
             
         

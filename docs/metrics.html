@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Metrics &#8212; Prognostics Models Python Package 0.1 documentation</title>
+    <title>Metrics &#8212; Prognostics Algorithms Python Package 0.1.0 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -33,8 +33,132 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="metrics">
-<h1>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-prog_algs.metrics.samples">
+<span id="metrics"></span><h1>Metrics<a class="headerlink" href="#module-prog_algs.metrics.samples" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="prog_algs.metrics.samples.alpha_lambda">
+<code class="sig-prename descclassname">prog_algs.metrics.samples.</code><code class="sig-name descname">alpha_lambda</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em>, <em class="sig-param"><span class="n">eols</span></em>, <em class="sig-param"><span class="n">ground_truth</span></em>, <em class="sig-param"><span class="n">lambda_value</span></em>, <em class="sig-param"><span class="n">alpha</span></em>, <em class="sig-param"><span class="n">beta</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.alpha_lambda" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute alpha lambda metrics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>times</strong> (<em>[</em><em>float</em><em>]</em>) – Times corresponding to eols (output from predictors)</p></li>
+<li><p><strong>eols</strong> (<em>[</em><em>float</em><em>]</em>) – End of life times, output from predictor</p></li>
+<li><p><strong>ground_truth</strong> (<em>float</em>) – Ground Truth end of life time</p></li>
+<li><p><strong>lambda_value</strong> (<em>fload</em>) – lambda</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – alpha</p></li>
+<li><p><strong>beta</strong> (<em>float</em>) – beta</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>if alpha-lambda met</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="prog_algs.metrics.samples.eol_metrics">
+<code class="sig-prename descclassname">prog_algs.metrics.samples.</code><code class="sig-name descname">eol_metrics</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">eol</span></em>, <em class="sig-param"><span class="n">ground_truth</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.eol_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate all end of life metrics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eol</strong> (<em>[</em><em>double</em><em>]</em>) – End of life times, output from predictor</p></li>
+<li><p><strong>ground_truth</strong> (<em>float</em><em>, </em><em>optional</em>) – Ground truth end of discharge time. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>collection of metrics</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="prog_algs.metrics.samples.eol_profile_metrics">
+<code class="sig-prename descclassname">prog_algs.metrics.samples.</code><code class="sig-name descname">eol_profile_metrics</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">eol</span></em>, <em class="sig-param"><span class="n">ground_truth</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.eol_profile_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate eol profile metrics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eol</strong> (<em>[</em><em>float</em><em>]</em>) – End of life times, output from predictor</p></li>
+<li><p><strong>ground_truth</strong> (<em>float</em>) – Ground truth EOL</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>EOL Profile Metrics</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="prog_algs.metrics.samples.mean_square_error">
+<code class="sig-prename descclassname">prog_algs.metrics.samples.</code><code class="sig-name descname">mean_square_error</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span></em>, <em class="sig-param"><span class="n">ground_truth</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.mean_square_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mean Square Error</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> (<em>[</em><em>float</em><em>]</em>) – End of life times, output from predictor</p></li>
+<li><p><strong>ground_truth</strong> (<em>float</em>) – Ground truth EOL</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>mean square error of eol predictions</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="prog_algs.metrics.samples.percentage_in_bounds">
+<code class="sig-prename descclassname">prog_algs.metrics.samples.</code><code class="sig-name descname">percentage_in_bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">eol</span></em>, <em class="sig-param"><span class="n">bounds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.percentage_in_bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate percentage of EOL dist is within specified bounds</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eol</strong> (<em>[</em><em>float</em><em>]</em>) – End of life times, output from predictor</p></li>
+<li><p><strong>bounds</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Lower and upper bounds</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Percentage within bounds (where 1 = 100%)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="prog_algs.metrics.samples.prob_success">
+<code class="sig-prename descclassname">prog_algs.metrics.samples.</code><code class="sig-name descname">prob_success</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">eol</span></em>, <em class="sig-param"><span class="n">time</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.prob_success" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate probability of success - i.e., probability that event will not occur within a given time (i.e., success)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eol</strong> (<em>[</em><em>float</em><em>]</em>) – End of life times, output from predictor</p></li>
+<li><p><strong>time</strong> (<em>[</em><em>type</em><em>]</em>) – time for calculation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Probability of success</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>fload</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 
@@ -44,7 +168,7 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">Prognostics Models Python Package</a></h1>
+<h1 class="logo"><a href="index.html">Prognostics Algorithms Python Package</a></h1>
 
 
 

@@ -1,7 +1,11 @@
 # Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 import unittest
 
-class MockProgModel():
+import sys
+sys.path.insert(1, "../python-prognostics-models-package/")
+from prog_models.prognostics_model import PrognosticsModel
+
+class MockProgModel(PrognosticsModel):
     events = ['e1']
     states = ['a', 'b', 'c']
     inputs = ['i1', 'i2']

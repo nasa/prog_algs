@@ -21,13 +21,13 @@ class TemplatePredictor(predictor.Predictor):
         self.parameters.update(options)# Merge configuration options into default
         # ADD PARAMETER CHECKS HERE
 
-    def predict(self, state_sampler, future_loading_eqn, options = {}):
+    def predict(self, state_samples, future_loading_eqn, options = {}):
         """
         Perform a single prediction
 
         Parameters
         ----------
-        state_sampler : function (n) -> [x1, x2, ... xn]
+        state_samples : 
             Function to generate n samples of the state. 
             e.g., def f(n): return [x1, x2, x3, ... xn]
         future_loading_eqn : function (t) -> z

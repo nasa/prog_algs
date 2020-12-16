@@ -29,6 +29,7 @@ class StateEstimator(ABC):
         """
         pass
 
+    @property
     @abstractproperty
     def x(self) -> UncertainData:
         """

@@ -1,5 +1,5 @@
 import unittest
-from prog_algs.uncertain_data import UnweightedSamples, MultivariateNormalDist
+from prog_algs.uncertain_data import UnweightedSamples, MultivariateNormalDist, ScalarData
 from numpy import array
 
 class TestUncertainData(unittest.TestCase):
@@ -42,3 +42,8 @@ class TestUncertainData(unittest.TestCase):
         self.assertEqual(dist.sample().size, 1)
         self.assertEqual(dist.sample(10).size, 10)
         self.assertTrue((dist.covar == array([[1, 0], [0, 1]])).all())
+
+    def test_scalardist(self):
+        d = ScalarData(12)
+        self.assertEqual(d.mean, 12)
+        self.assertListEqual(list(d.sample(10)), [12]*10)

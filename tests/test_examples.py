@@ -25,3 +25,14 @@ class TestExamples(unittest.TestCase):
 
         # Reset stdout 
         sys.stdout = _stdout
+
+    def test_new_state_est_ex(self):
+        # set stdout (so it wont print)
+        _stdout = sys.stdout
+        sys.stdout = StringIO()
+
+        from examples import new_state_estimator_example
+        new_state_estimator_example.run_example()
+
+        # Reset stdout 
+        sys.stdout = _stdout

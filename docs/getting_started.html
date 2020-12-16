@@ -16,7 +16,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="State Estimators" href="state_estimators.html" />
-    <link rel="prev" title="Prognostics Models Python Package" href="index.html" />
+    <link rel="prev" title="Prognostics Algorithms Python Package" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -36,10 +36,20 @@
   <div class="section" id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
 <p>The NASA Prognostics Algorithms Package is a python framework for defining, building, using, and testing Algorithms for prognostics (computation of remaining useful life) of engineering systems, and provides a set of prognostics algorithms developed within this framework, suitable for use in prognostics applications. It can be used in conjunction for the Prognostics Models Library to perform research in prognostics with prognostics systems.</p>
+<p>A few definitions:</p>
+<ul class="simple">
+<li><p><strong>events</strong>: some state that can be predicted (e.g., system failure). An event has either occured or not.</p></li>
+<li><p><strong>event state</strong>: progress towards event occuring. Defined as a number where an event state of 0 indicates the event has occured and 1 indicates no progress towards the event (i.e., fully healthy operation for a failure event). For gradually occuring events (e.g., discharge) the number will progress from 1 to 0 as the event nears. In prognostics, event state is frequently called “State of Health”</p></li>
+<li><p><strong>inputs</strong>: control applied to the system being modeled (e.g., current drawn from a battery)</p></li>
+<li><p><strong>outputs</strong>: measured sensor values from a system (e.g., voltage and temperature of a battery)</p></li>
+<li><p><strong>states</strong>: Internal parameters (typically hidden states) used to represent the state of the system- can be same as inputs/outputs but do not have to be.</p></li>
+<li><p><strong>process noise</strong>: stochastic process representing uncertainty in the model transition.</p></li>
+<li><p><strong>measurement noise</strong>: stochastic process representing uncertainty in the measurement process; e.g., sensor sensitivity, sensor misalignements, environmental effects</p></li>
+</ul>
 <div class="section" id="installing-dependencies">
 <h2>Installing Dependencies<a class="headerlink" href="#installing-dependencies" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
-<dt>You can do this using the included <cite>requriements.txt</cite> file. Use the following command:</dt><dd><p><cite>pip install -r requirements.txt</cite></p>
+<dt>You can install dependencies using the included <cite>requirements.txt</cite> file. This file enumerates all the dependencies of this package. Use the following command to install dependencies:</dt><dd><p><cite>pip install -r requirements.txt</cite></p>
 </dd>
 </dl>
 </div>
@@ -61,9 +71,19 @@
 </dd>
 </dl>
 </li>
+<li><dl>
+<dt><a class="reference download internal" download="" href="_downloads/067e6c82fdc9573fb921219d62002181/new_state_estimator_example.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.new_state_estimator_example</span></code></a></dt><dd><span class="target" id="module-examples.new_state_estimator_example"></span><div class="line-block">
+<div class="line"><br /></div>
+</div>
+</dd>
+</dl>
+</li>
 </ul>
-<p>Extending</p>
+</div>
+<div class="section" id="extending">
+<h2>Extending<a class="headerlink" href="#extending" title="Permalink to this headline">¶</a></h2>
 <p>New State Estimators and Predictors are created by extending the <a class="reference internal" href="state_estimators.html#prog_algs.state_estimators.state_estimator.StateEstimator" title="prog_algs.state_estimators.state_estimator.StateEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.state_estimators.state_estimator.StateEstimator</span></code></a> and <a class="reference internal" href="predictors.html#prog_algs.predictors.predictor.Predictor" title="prog_algs.predictors.predictor.Predictor"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.predictors.predictor.Predictor</span></code></a> class, respectively.</p>
+<p>See <a class="reference download internal" download="" href="_downloads/067e6c82fdc9573fb921219d62002181/new_state_estimator_example.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.new_state_estimator_example</span></code></a> for an example of this approach.</p>
 </div>
 </div>
 
@@ -88,12 +108,14 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installing-dependencies">Installing Dependencies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#use">Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extending">Extending</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="state_estimators.html">State Estimators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="predictors.html">Predictors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="uncertain_data.html">Uncertain Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualize.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dev_guide.html">Developers Guide</a></li>
 </ul>
@@ -102,7 +124,7 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Prognostics Models Python Package</a></li>
+      <li>Previous: <a href="index.html" title="previous chapter">Prognostics Algorithms Python Package</a></li>
       <li>Next: <a href="state_estimators.html" title="next chapter">State Estimators</a></li>
   </ul></li>
 </ul>

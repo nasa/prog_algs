@@ -1,8 +1,8 @@
 # Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 import sys
-sys.path.insert(1, "/Users/cteubert/Desktop/python-prognostics-models-package/")
-from prog_models.models import battery_circuit
+sys.path.insert(1, "../python-prognostics-models-package/")
+from prog_models.models.battery_circuit import BatteryCircuit
 from prog_algs import *
 
 def run_example():
@@ -21,7 +21,7 @@ def run_example():
             i = 3
         return {'i': i}
 
-    batt = battery_circuit.BatteryCircuit()
+    batt = BatteryCircuit()
 
     ## State Estimation - perform a single ukf state estimate step
 

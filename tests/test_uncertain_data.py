@@ -29,6 +29,11 @@ class TestUncertainData(unittest.TestCase):
         self.assertEqual(s.raw_samples().size, 1)
         s[0] = {'a': 2, 'b': 10}
         self.assertDictEqual(s[0], {'a': 2, 'b': 10})
+        for i in range(50):
+            s.append({'a': i, 'b': 9})
+        covar = s.cov
+        self.assertEqual(len(covar), 2)
+        self.assertEqual(len(covar[0]), 2)
 
     def test_multivariatenormaldist(self):
         try: 
@@ -41,7 +46,7 @@ class TestUncertainData(unittest.TestCase):
         self.assertDictEqual(dist.mean, {'a': 2, 'b':10})
         self.assertEqual(dist.sample().size, 1)
         self.assertEqual(dist.sample(10).size, 10)
-        self.assertTrue((dist.covar == array([[1, 0], [0, 1]])).all())
+        self.assertTrue((dist.cov == array([[1, 0], [0, 1]])).all())
 
     def test_scalardist(self):
         d = ScalarData(12)

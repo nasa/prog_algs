@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod, abstractproperty
 from numpy.random import choice, multivariate_normal
-from numpy import array, append, delete
+from numpy import array, append, delete, cov
 
 class UncertainData(ABC):
     """
@@ -31,6 +31,15 @@ class UncertainData(ABC):
         """
         pass
 
+    @property
+    @abstractproperty
+    def cov(self):
+        """Get the covariance matrix
+
+        Returns:
+            [[float]]: covariance matrix
+        """
+
     # TODO(CT): Consider median
 
 class ScalarData(UncertainData):
@@ -48,6 +57,10 @@ class ScalarData(UncertainData):
     @property
     def mean(self):
         return self.__state
+
+    @property
+    def cov(self):
+        return [[0 for i in self.__state] for j in self.__state]
 
     def sample(self, num_samples = 1):
         return array([self.__state] * num_samples)
@@ -78,6 +91,13 @@ class UnweightedSamples(UncertainData):
         for key in self.__samples[0].keys():
             mean[key] = array([x[key] for x in self.__samples]).mean()
         return mean
+
+    @property
+    def cov(self):
+        if len(self.__samples) == 0:
+            return [[]]
+        unlabeled_samples = array([[x[key] for x in self.__samples] for key in self.__samples[0].keys()])
+        return cov(unlabeled_samples)
 
     def __str__(self):
         return 'UnweightedSamples({})'.format(self.__samples)
@@ -176,13 +196,7 @@ class MultivariateNormalDist(UncertainData):
     def __str__(self):
         return 'MultivariateNormalDist(mean: {}, covar: {})'.format(self.__mean, self.__covar)     
 
-    # Dist-specific methods
     @property
-    def covar(self):
-        """Get the covariance matrix
-
-        Returns:
-            [[float]]: covariance matrix
-        """
+    def cov(self):
         return self.__covar
     

@@ -19,8 +19,8 @@ if __name__ == '__main__':
     print('\n\nUncertain Data Tests')
     unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestUncertainData))
 
-    print('\n\nExamples Tests')
-    unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestExamples))
+    # print('\n\nExamples Tests')
+    # unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestExamples))
 
     print('\n\nIntegration Tests')
     unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestIntegration))

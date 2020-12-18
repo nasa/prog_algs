@@ -41,6 +41,20 @@
 <em class="property">class </em><code class="sig-prename descclassname">prog_algs.uncertain_data.</code><code class="sig-name descname">UncertainData</code><a class="headerlink" href="#prog_algs.uncertain_data.UncertainData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Abstract base class for data with uncertainty. Any new uncertainty type must implement this class</p>
 <dl class="py method">
+<dt id="prog_algs.uncertain_data.UncertainData.cov">
+<em class="property">abstract property </em><code class="sig-name descname">cov</code><a class="headerlink" href="#prog_algs.uncertain_data.UncertainData.cov" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the covariance matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>covariance matrix</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="prog_algs.uncertain_data.UncertainData.mean">
 <em class="property">abstract property </em><code class="sig-name descname">mean</code><a class="headerlink" href="#prog_algs.uncertain_data.UncertainData.mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mean estimate</p>
@@ -80,6 +94,20 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>value</strong> (<em>dict</em>) – Value to be appended</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="prog_algs.uncertain_data.UnweightedSamples.cov">
+<em class="property">property </em><code class="sig-name descname">cov</code><a class="headerlink" href="#prog_algs.uncertain_data.UnweightedSamples.cov" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the covariance matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>covariance matrix</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[[float]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -146,8 +174,8 @@
 <em class="property">class </em><code class="sig-prename descclassname">prog_algs.uncertain_data.</code><code class="sig-name descname">MultivariateNormalDist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">labels</span></em>, <em class="sig-param"><span class="n">mean</span><span class="p">:</span> <span class="n">numpy.array</span></em>, <em class="sig-param"><span class="n">covar</span><span class="p">:</span> <span class="n">numpy.array</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.uncertain_data.MultivariateNormalDist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data represented by a multivariate normal distribution with mean and covariance matrix</p>
 <dl class="py method">
-<dt id="prog_algs.uncertain_data.MultivariateNormalDist.covar">
-<em class="property">property </em><code class="sig-name descname">covar</code><a class="headerlink" href="#prog_algs.uncertain_data.MultivariateNormalDist.covar" title="Permalink to this definition">¶</a></dt>
+<dt id="prog_algs.uncertain_data.MultivariateNormalDist.cov">
+<em class="property">property </em><code class="sig-name descname">cov</code><a class="headerlink" href="#prog_algs.uncertain_data.MultivariateNormalDist.cov" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the covariance matrix</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -192,6 +220,20 @@
 <dt id="prog_algs.uncertain_data.ScalarData">
 <em class="property">class </em><code class="sig-prename descclassname">prog_algs.uncertain_data.</code><code class="sig-name descname">ScalarData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.uncertain_data.ScalarData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data without uncertainty- single value</p>
+<dl class="py method">
+<dt id="prog_algs.uncertain_data.ScalarData.cov">
+<em class="property">property </em><code class="sig-name descname">cov</code><a class="headerlink" href="#prog_algs.uncertain_data.ScalarData.cov" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the covariance matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>covariance matrix</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt id="prog_algs.uncertain_data.ScalarData.mean">
 <em class="property">property </em><code class="sig-name descname">mean</code><a class="headerlink" href="#prog_algs.uncertain_data.ScalarData.mean" title="Permalink to this definition">¶</a></dt>

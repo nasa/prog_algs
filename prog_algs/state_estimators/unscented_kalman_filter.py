@@ -5,15 +5,22 @@ from filterpy import kalman
 from numpy import diag, array
 from ..uncertain_data import MultivariateNormalDist
 from ..exceptions import ProgAlgTypeError
+from copy import deepcopy
 
 class UnscentedKalmanFilter(state_estimator.StateEstimator):
     """
     An Unscented Kalman Filter (UKF) for state estimation
 
     This class defines logic for performing an unscented kalman filter with a Prognostics Model (see Prognostics Model Package). This filter uses measurement data with noise to generate a state estimate and covariance matrix. 
+    
+    Constructor parameters:
+     * model (ProgModel): Model to be used in state estimation
+     * x0 (dict): Initial State
+     * measurement_eqn (optional, function): Measurement equation (x)->z. Usually used in situations where what's measured don't exactly match the output (e.g., different unit, not ever output measured, etc.). see `examples.measurement_eqn_example`
+     * options (optional, dict): configuration options
     """
     t = 0 # Last timestep
-    parameters = { # Default Parameters, used as config for UKF
+    default_parameters = { # Default Parameters, used as config for UKF
         'alpha': 1,     # UKF scaling param
         'beta': 0,      # UKF scaling param
         'kappa': -1,    # UKF scaling param
@@ -55,23 +62,28 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
                 raise ProgAlgTypeError("x0 missing state `{}`".format(key))
 
         self._input = None
+        self.parameters = deepcopy(default_parameters)
         self.parameters.update(options)
-
-        if 'Q' not in self.parameters:
-            self.parameters['Q'] = diag([1.0e-1 for i in model.states])
-
-        if 'R' not in self.parameters:
-            self.parameters['R'] = diag([1.0e-1 for i in model.outputs])
 
         self.t = self.parameters['t0']
 
         num_states = len(model.states)
         num_measurements = len(model.outputs)
         if measurement_eqn is None: 
-            def measurement_eqn(x):
+            def measure(x):
                 x = {key: value for (key, value) in zip(model.states, x)}
                 z = model.output(0, x)
                 return array(list(z.values()))
+        else:
+            def measure(x):
+                x = {key: value for (key, value) in zip(model.states, x)}
+                z = measurement_eqn(x)
+                return array(list(z.values()))
+
+        if 'Q' not in self.parameters:
+            self.parameters['Q'] = diag([1.0e-1 for i in model.states])
+        if 'R' not in self.parameters:
+            self.parameters['R'] = diag([1.0e-1 for i in range(len(measure(x0)))])
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(model.states, x)}
@@ -79,7 +91,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
             return array(list(x.values()))
 
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
-        self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measurement_eqn, state_transition, points)
+        self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measure, state_transition, points)
         self.filter.x = array(list(x0.values()))
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']

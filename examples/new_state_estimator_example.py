@@ -12,7 +12,7 @@ class BlindlyStumbleEstimator(StateEstimator):
 
     This state estimator was created by copying the state estimator template and filling out each function with the logic for this algorithm
     """
-    def __init__(self, model, x0):
+    def __init__(self, model, x0, measurement = None):
         """
         Initialize the state estimator
 

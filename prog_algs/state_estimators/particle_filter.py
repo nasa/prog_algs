@@ -10,20 +10,15 @@ from ..exceptions import ProgAlgTypeError
 
 class ParticleFilter(state_estimator.StateEstimator):
     """
+    Estimates state using a particle filter algorithm
+
+    Constructor parameters:
+     * model (ProgModel): Model to be used in state estimation
+     * x0 (dict): Initial State
+     * measurement_eqn (optional, function): Measurement equation (x)->z. Usually used in situations where what's measured don't exactly match the output (e.g., different unit, not ever output measured, etc.). see `examples.measurement_eqn_example`
+     * options (optional, dict): configuration options
     """
     t = 0 # last timestep
-
-    parameters = { # Default Parameters
-        'n': 0.1, # Sensor Noise
-        'num_particles': 20, 
-        'resample_fcn': filterpy.monte_carlo.residual_resample, # Resampling function ([weights]) -> [indexes]
-        'x0_uncertainty': 0.5   # Initial State Uncertainty
-                                # Can be:
-                                #   1. scalar (standard deviation applied to all),
-                                #   2. dict (stardard deviation for each)
-                                #   Todo(CT): covar, function
-    }
-
 
     def __init__(self, model, x0, measurement_eqn = None, options = {}):
         self._model = model
@@ -40,13 +35,23 @@ class ParticleFilter(state_estimator.StateEstimator):
                 raise ProgAlgTypeError("x0 missing state `{}`".format(key))
         
         if measurement_eqn is None:
-            self.__measure = model.output
+            self.__measure = lambda x : model.output(0, x)
         else:
             self.__measure = measurement_eqn
 
+        self.parameters = { # Default Parameters
+            'n': 0.1, # Sensor Noise
+            'num_particles': 20, 
+            'resample_fcn': filterpy.monte_carlo.residual_resample, # Resampling function ([weights]) -> [indexes]
+            'x0_uncertainty': 0.5   # Initial State Uncertainty
+                                    # Can be:
+                                    #   1. scalar (standard deviation applied to all),
+                                    #   2. dict (stardard deviation for each)
+                                    #   Todo(CT): covar, function
+        }
         self.parameters.update(options)
         if isinstance(self.parameters['n'], Number):
-            self.parameters['n'] = {key : self.parameters['n'] for key in model.outputs}
+            self.parameters['n'] = {key : self.parameters['n'] for key in self.__measure(x0).keys()}
         # todo(CT): Check fields on n
 
         if isinstance(self.parameters['x0_uncertainty'], Number):
@@ -77,7 +82,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         # Propogate and calculate weights
         for i in range(len(particles)):
             self.particles[i] = next_state(t, particles[i], u, dt) 
-            zPredicted = output(t, self.particles[i])
+            zPredicted = output(self.particles[i])
             weights[i] = sum([norm(zPredicted[key], noise_params[key]).pdf(z[key]) for key in zPredicted.keys()])
         
         # Normalize

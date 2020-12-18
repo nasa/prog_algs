@@ -73,9 +73,18 @@ e.g., z = {‘t’:12.4, ‘v’:3.3} given inputs = [‘t’, ‘v’]</p></li>
 <h2>UKF State Estimator<a class="headerlink" href="#ukf-state-estimator" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter">
-<em class="property">class </em><code class="sig-prename descclassname">prog_algs.state_estimators.unscented_kalman_filter.</code><code class="sig-name descname">UnscentedKalmanFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">x0</span></em>, <em class="sig-param"><span class="n">options</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">prog_algs.state_estimators.unscented_kalman_filter.</code><code class="sig-name descname">UnscentedKalmanFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">x0</span></em>, <em class="sig-param"><span class="n">measurement_eqn</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">options</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter" title="Permalink to this definition">¶</a></dt>
 <dd><p>An Unscented Kalman Filter (UKF) for state estimation</p>
 <p>This class defines logic for performing an unscented kalman filter with a Prognostics Model (see Prognostics Model Package). This filter uses measurement data with noise to generate a state estimate and covariance matrix.</p>
+<dl class="simple">
+<dt>Constructor parameters:</dt><dd><ul class="simple">
+<li><p>model (ProgModel): Model to be used in state estimation</p></li>
+<li><p>x0 (dict): Initial State</p></li>
+<li><p>measurement_eqn (optional, function): Measurement equation (x)-&gt;z. Usually used in situations where what’s measured don’t exactly match the output (e.g., different unit, not ever output measured, etc.). see <cite>examples.measurement_eqn_example</cite></p></li>
+<li><p>options (optional, dict): configuration options</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter.estimate">
 <code class="sig-name descname">estimate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">u</span></em>, <em class="sig-param"><span class="n">z</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter.estimate" title="Permalink to this definition">¶</a></dt>
@@ -109,8 +118,18 @@ e.g., z = {‘t’:12.4, ‘v’:3.3} given inputs = [‘t’, ‘v’]</p></li>
 <h2>PF State Estimator<a class="headerlink" href="#pf-state-estimator" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="prog_algs.state_estimators.particle_filter.ParticleFilter">
-<em class="property">class </em><code class="sig-prename descclassname">prog_algs.state_estimators.particle_filter.</code><code class="sig-name descname">ParticleFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">x0</span></em>, <em class="sig-param"><span class="n">options</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.particle_filter.ParticleFilter" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
+<em class="property">class </em><code class="sig-prename descclassname">prog_algs.state_estimators.particle_filter.</code><code class="sig-name descname">ParticleFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">x0</span></em>, <em class="sig-param"><span class="n">measurement_eqn</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">options</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.particle_filter.ParticleFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates state using a particle filter algorithm</p>
+<dl class="simple">
+<dt>Constructor parameters:</dt><dd><ul class="simple">
+<li><p>model (ProgModel): Model to be used in state estimation</p></li>
+<li><p>x0 (dict): Initial State</p></li>
+<li><p>measurement_eqn (optional, function): Measurement equation (x)-&gt;z. Usually used in situations where what’s measured don’t exactly match the output (e.g., different unit, not ever output measured, etc.). see <cite>examples.measurement_eqn_example</cite></p></li>
+<li><p>options (optional, dict): configuration options</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
 <dt id="prog_algs.state_estimators.particle_filter.ParticleFilter.estimate">
 <code class="sig-name descname">estimate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">u</span></em>, <em class="sig-param"><span class="n">z</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.particle_filter.ParticleFilter.estimate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform one state estimation step (i.e., update the state estimate)</p>

@@ -25,7 +25,7 @@ class ParticleFilter(state_estimator.StateEstimator):
     }
 
 
-    def __init__(self, model, x0, options = {}):
+    def __init__(self, model, x0, measurement_eqn = None, options = {}):
         self._model = model
         if not hasattr(model, 'output'):
             raise ProgAlgTypeError("model must have `output` method")
@@ -38,6 +38,11 @@ class ParticleFilter(state_estimator.StateEstimator):
         for key in model.states:
             if key not in x0:
                 raise ProgAlgTypeError("x0 missing state `{}`".format(key))
+        
+        if measurement_eqn is None:
+            self.__measure = model.output
+        else:
+            self.__measure = measurement_eqn
 
         self.parameters.update(options)
         if isinstance(self.parameters['n'], Number):
@@ -66,7 +71,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         # Optimization
         particles = self.particles
         next_state = self._model.next_state
-        output = self._model.output
+        output = self.__measure
         noise_params = self.parameters['n']
 
         # Propogate and calculate weights

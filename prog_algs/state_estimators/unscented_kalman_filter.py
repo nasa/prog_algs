@@ -21,7 +21,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         'dt': 1         # Time step
     } 
 
-    def __init__(self, model, x0, options = {}):
+    def __init__(self, model, x0, measurement_eqn = None, options = {}):
         """
         Construct Unscented Kalman Filter
 
@@ -67,10 +67,11 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
 
         num_states = len(model.states)
         num_measurements = len(model.outputs)
-        def measurement(x):
-            x = {key: value for (key, value) in zip(model.states, x)}
-            z = model.output(0, x)
-            return array(list(z.values()))
+        if measurement_eqn is None: 
+            def measurement_eqn(x):
+                x = {key: value for (key, value) in zip(model.states, x)}
+                z = model.output(0, x)
+                return array(list(z.values()))
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(model.states, x)}
@@ -78,7 +79,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
             return array(list(x.values()))
 
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
-        self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measurement, state_transition, points)
+        self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measurement_eqn, state_transition, points)
         self.filter.x = array(list(x0.values()))
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']

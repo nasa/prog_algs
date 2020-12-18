@@ -53,7 +53,6 @@ class ParticleFilter(state_estimator.StateEstimator):
         else:
             raise Exception
             #TODO(CT): Custom exception
-        self.weights = array([1.0/len(self.particles)] * len(self.particles))
         # todo(ct): Maybe we should use numpy here
     
     def __str__(self):
@@ -77,11 +76,11 @@ class ParticleFilter(state_estimator.StateEstimator):
             weights[i] = sum([norm(zPredicted[key], noise_params[key]).pdf(z[key]) for key in zPredicted.keys()])
         
         # Normalize
-        total_weight = sum(self.weights)
+        total_weight = sum(weights)
         weights = array([weight/total_weight for weight in weights])
 
         # Resample
-        indexes = self.parameters['resample_fcn'](self.weights)
+        indexes = self.parameters['resample_fcn'](weights)
         self.particles = array([self.particles[i] for i in indexes])
 
     @property

@@ -9,6 +9,12 @@ class MonteCarlo(predictor.Predictor):
     Class for performing model-based prediction using sampling. 
 
     This class defines logic for performing model-based state prediction using sampling methods. A Predictor is constructed using a PrognosticsModel object, (See Prognostics Model Package). The states are simulated until either a specified time horizon is met, or the threshold is reached for all samples, as defined by the threshold equation. A provided future loading equation is used to compute the inputs to the system at any given time point. 
+
+    Parameters
+    ----------
+    model : prog_models.prognostics_model.PrognosticsModel
+        See: Prognostics Model Package
+        A prognostics model to be used in prediction
     """
     parameters = { # Default Parameters
         'dt': 0.5,          # Timestep, seconds
@@ -17,16 +23,7 @@ class MonteCarlo(predictor.Predictor):
     }
 
     def __init__(self, model):
-        """
-        Construct a MonteCarlo Predictor
-
-        Parameters
-        ----------
-        model : prog_models.prognostics_model.PrognosticsModel
-            See: Prognostics Model Package
-            A prognostics model to be used in prediction
-        """
-        self._model = model
+        self.__model = model
         if not hasattr(model, 'output'):
             raise ProgAlgTypeError("model must have `output` method")
         if not hasattr(model, 'next_state'):
@@ -84,9 +81,9 @@ class MonteCarlo(predictor.Predictor):
         time_of_event = empty(state_samples.size)
 
         # Optimization to reduce lookup
-        output = self._model.output
-        simulate_to_threshold = self._model.simulate_to_threshold
-        threshold_met = self._model.threshold_met
+        output = self.__model.output
+        simulate_to_threshold = self.__model.simulate_to_threshold
+        threshold_met = self.__model.threshold_met
 
         # Perform prediction
         for (i, x) in zip(range(len(state_samples)), state_samples):

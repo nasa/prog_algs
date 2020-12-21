@@ -48,7 +48,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
             R : Measurement Noise Matrix
         """
 
-        self._model = model
+        self.__model = model
         if not hasattr(model, 'output'):
             raise ProgAlgTypeError("model must have `output` method")
         if not hasattr(model, 'next_state'):
@@ -127,4 +127,4 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         -------
         state = observer.x
         """
-        return MultivariateNormalDist(self._model.states, self.filter.x, self.filter.Q)
+        return MultivariateNormalDist(self.__model.states, self.filter.x, self.filter.Q)

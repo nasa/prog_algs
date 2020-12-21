@@ -21,7 +21,7 @@ class ParticleFilter(state_estimator.StateEstimator):
     t = 0 # last timestep
 
     def __init__(self, model, x0, measurement_eqn = None, options = {}):
-        self._model = model
+        self.__model = model
         if not hasattr(model, 'output'):
             raise ProgAlgTypeError("model must have `output` method")
         if not hasattr(model, 'next_state'):
@@ -75,7 +75,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         
         # Optimization
         particles = self.particles
-        next_state = self._model.next_state
+        next_state = self.__model.next_state
         output = self.__measure
         noise_params = self.parameters['n']
 

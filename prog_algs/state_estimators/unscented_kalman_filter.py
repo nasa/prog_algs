@@ -62,7 +62,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
                 raise ProgAlgTypeError("x0 missing state `{}`".format(key))
 
         self._input = None
-        self.parameters = deepcopy(default_parameters)
+        self.parameters = deepcopy(self.default_parameters)
         self.parameters.update(options)
 
         self.t = self.parameters['t0']

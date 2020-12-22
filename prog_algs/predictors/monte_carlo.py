@@ -8,13 +8,15 @@ from multiprocessing import Pool
 from itertools import repeat
 
 def future_load(t):
+    # This high-level fcn is required for multi-threading to work
     return future_load.fcn(t)
 
-def prediction_fcn(model, i, x, params):
-    first_output = model.output(0, x)
-    params['x'] = x
-    (times, inputs, states, outputs, event_states) = model.simulate_to_threshold(future_load, first_output, params)
-    if (model.threshold_met(times[-1], states[-1])):
+def prediction_fcn(x):
+    # This is the main prediction function for the multi-threading
+    first_output = prediction_fcn.output(0, x)
+    prediction_fcn.params['x'] = x
+    (times, inputs, states, outputs, event_states) = prediction_fcn.simulate_to_threshold(future_load, first_output, prediction_fcn.params)
+    if (prediction_fcn.threshold_met(times[-1], states[-1])):
         time_of_event = times[-1]
     else:
         time_of_event = None
@@ -35,7 +37,8 @@ class MonteCarlo(predictor.Predictor):
     default_parameters = { # Default Parameters
         'dt': 0.5,          # Timestep, seconds
         'horizon': 4000,    # Prediction horizon, seconds
-        'save_freq': 10     # Frequency at which results are saved
+        'save_freq': 10,    # Frequency at which results are saved
+        'cores': 6          # Number of cores to use in parallelization
     }
 
     def __init__(self, model):
@@ -101,13 +104,14 @@ class MonteCarlo(predictor.Predictor):
         output = self.__model.output
         simulate_to_threshold = self.__model.simulate_to_threshold
         threshold_met = self.__model.threshold_met
+        prediction_fcn.params = params
+        prediction_fcn.output = self.__model.output
+        prediction_fcn.simulate_to_threshold = self.__model.simulate_to_threshold
+        prediction_fcn.threshold_met = self.__model.threshold_met
 
         # Perform prediction
-        with Pool(6) as p:
-            result = p.starmap(prediction_fcn, zip(repeat(self.__model, len(state_samples)), range(len(state_samples)), state_samples, repeat(params, len(state_samples))))
-            print(type(result[0][0]))
-            print(len(result[0][0]))
-            # [samples][element]
+        with Pool(params['cores']) as p:
+            result = p.starmap(prediction_fcn, zip(state_samples))
             times_all = [tmp[0] for tmp in result]
             inputs_all = [tmp[1] for tmp in result]
             states_all = [tmp[2] for tmp in result]

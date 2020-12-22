@@ -83,7 +83,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         if 'Q' not in self.parameters:
             self.parameters['Q'] = diag([1.0e-1 for i in model.states])
         if 'R' not in self.parameters:
-            self.parameters['R'] = diag([1.0e-1 for i in range(len(measure(x0)))])
+            self.parameters['R'] = diag([1.0e-1 for i in range(len(measure(x0.values())))])
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(model.states, x)}

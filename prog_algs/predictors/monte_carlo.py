@@ -3,6 +3,9 @@
 from . import predictor
 from numpy import empty
 from ..exceptions import ProgAlgTypeError
+from copy import deepcopy
+from multiprocessing import Pool
+from itertools import repeat
 
 class MonteCarlo(predictor.Predictor):
     """
@@ -16,7 +19,7 @@ class MonteCarlo(predictor.Predictor):
         See: Prognostics Model Package
         A prognostics model to be used in prediction
     """
-    parameters = { # Default Parameters
+    default_parameters = { # Default Parameters
         'dt': 0.5,          # Timestep, seconds
         'horizon': 4000,    # Prediction horizon, seconds
         'save_freq': 10     # Frequency at which results are saved
@@ -70,7 +73,7 @@ class MonteCarlo(predictor.Predictor):
         toe: [number]
             Estimated time where a predicted event will occur for each sample.
         """
-        params = self.parameters # copy default parameters
+        params = deepcopy(self.default_parameters) # copy default parameters
         params.update(options)
 
         times_all = empty(state_samples.size, dtype=object)

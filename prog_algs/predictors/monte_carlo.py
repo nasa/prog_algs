@@ -7,6 +7,19 @@ from copy import deepcopy
 from multiprocessing import Pool
 from itertools import repeat
 
+def future_load(t):
+    return future_load.fcn(t)
+
+def prediction_fcn(model, i, x, params):
+    first_output = model.output(0, x)
+    params['x'] = x
+    (times, inputs, states, outputs, event_states) = model.simulate_to_threshold(future_load, first_output, params)
+    if (model.threshold_met(times[-1], states[-1])):
+        time_of_event = times[-1]
+    else:
+        time_of_event = None
+    return (times, inputs, states, outputs, event_states, time_of_event)
+
 class MonteCarlo(predictor.Predictor):
     """
     Class for performing model-based prediction using sampling. 
@@ -82,6 +95,7 @@ class MonteCarlo(predictor.Predictor):
         outputs_all = empty(state_samples.size, dtype=object)
         event_states_all = empty(state_samples.size, dtype=object)
         time_of_event = empty(state_samples.size)
+        future_load.fcn = future_loading_eqn
 
         # Optimization to reduce lookup
         output = self.__model.output
@@ -89,19 +103,15 @@ class MonteCarlo(predictor.Predictor):
         threshold_met = self.__model.threshold_met
 
         # Perform prediction
-        for (i, x) in zip(range(len(state_samples)), state_samples):
-            first_output = output(0, x)
-            params['x'] = x
-            (times, inputs, states, outputs, event_states) = simulate_to_threshold(future_loading_eqn, first_output, params)
-            if (threshold_met(times[-1], states[-1])):
-                time_of_event[i] = times[-1]
-            else:
-                time_of_event[i] = None
-            times_all[i] = times
-            inputs_all[i] = inputs
-            states_all[i] = states
-            outputs_all[i] = outputs
-            event_states_all[i] = event_states
+        with Pool(6) as p:
+            result = p.starmap(prediction_fcn, zip(repeat(self.__model, len(state_samples)), range(len(state_samples)), state_samples, repeat(params, len(state_samples))))
+            print(type(result[0][0]))
+            print(len(result[0][0]))
+            # [samples][element]
+            times_all = [tmp[0] for tmp in result]
+            inputs_all = [tmp[1] for tmp in result]
+            states_all = [tmp[2] for tmp in result]
+            outputs_all = [tmp[3] for tmp in result]
+            event_states_all = [tmp[4] for tmp in result]
+            time_of_event = [tmp[5] for tmp in result]
         return (times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event)
-            
-        

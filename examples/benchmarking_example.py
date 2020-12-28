@@ -27,25 +27,24 @@ def run_example():
     filt = state_estimators.unscented_kalman_filter.UnscentedKalmanFilter(batt, batt.parameters['x0'])
 
     ## Setup Prediction
-    mc = predictors.monte_carlo.MonteCarlo(batt)
-    prediction_config = {'dt': 0.05}
+    mc = predictors.monte_carlo.MonteCarlo(batt, dt= 0.05)
 
     # Playback 
     from prog_algs.metrics import samples as metrics 
     print('Run 1 (2 samples)')
-    (t, u, x, z, es, eol) = run_prog_playback(filt, mc, future_loading, [(0.1, {'t': 32.2, 'v': 3.915}), (0.1, {'t': 32.3, 'v': 3.91})], {'predict_config': prediction_config, 'num_samples': 2})
+    (t, u, x, z, es, eol) = run_prog_playback(filt, mc, future_loading, [(0.1, {'t': 32.2, 'v': 3.915}), (0.1, {'t': 32.3, 'v': 3.91})], num_samples= 2)
     print('MSE: ', metrics.mean_square_error(eol, 3005.4))
     prediction_times = [0.1, 0.2]
     print('Alpha-lambda met: ', metrics.alpha_lambda(prediction_times, eol, 3005.4, 0.2, 1e-4, 0.65))
 
     print('Run 2 (5 samples)')
-    (t, u, x, z, es, eol) = run_prog_playback(filt, mc, future_loading, [(0.1, {'t': 32.2, 'v': 3.915}), (0.1, {'t': 32.3, 'v': 3.91})], {'predict_config': prediction_config, 'num_samples': 5})
+    (t, u, x, z, es, eol) = run_prog_playback(filt, mc, future_loading, [(0.1, {'t': 32.2, 'v': 3.915}), (0.1, {'t': 32.3, 'v': 3.91})], num_samples= 5)
     print('MSE: ', metrics.mean_square_error(eol, 3005.4))
     prediction_times = [0.1, 0.2]
     print('Alpha-lambda met: ', metrics.alpha_lambda(prediction_times, eol, 3005.4, 0.2, 1e-4, 0.65))
 
     print('Run 3 (10 samples)')
-    (t, u, x, z, es, eol) = run_prog_playback(filt, mc, future_loading, [(0.1, {'t': 32.2, 'v': 3.915}), (0.1, {'t': 32.3, 'v': 3.91})], {'predict_config': prediction_config, 'num_samples': 10})
+    (t, u, x, z, es, eol) = run_prog_playback(filt, mc, future_loading, [(0.1, {'t': 32.2, 'v': 3.915}), (0.1, {'t': 32.3, 'v': 3.91})], num_samples= 10)
     print('MSE: ', metrics.mean_square_error(eol, 3005.4))
     prediction_times = [0.1, 0.2]
     print('Alpha-lambda met: ', metrics.alpha_lambda(prediction_times, eol, 3005.4, 0.2, 1e-4, 0.65))

@@ -141,8 +141,8 @@ class TestStateEstimators(unittest.TestCase):
         self.assertFalse( {'a': 1.1, 'b': 2, 'c': -5.2} == x )
 
         # Between the model and sense outputs
-        self.assertGreater(m.output(x)['o1'], 0.75) # Should be between 0.8-0.9, choosing 0.75 gives some buffer for noise
-        self.assertLess(m.output(x)['o1'], 0.9) 
+        self.assertGreater(m.output(x)['o1'], 0.7) # Should be between 0.8-0.9, choosing this gives some buffer for noise
+        self.assertLess(m.output(x)['o1'], 0.95) # Should be between 0.8-0.9, choosing this gives some buffer for noise
 
         try:
             # Only given half of the inputs 

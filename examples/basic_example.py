@@ -24,7 +24,6 @@ def run_example():
     batt = BatteryCircuit()
 
     ## State Estimation - perform a single ukf state estimate step
-
     # filt = state_estimators.unscented_kalman_filter.UnscentedKalmanFilter(batt, batt.parameters['x0'])
     filt = state_estimators.particle_filter.ParticleFilter(batt, batt.parameters['x0'])
 
@@ -37,14 +36,15 @@ def run_example():
     print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
 
     ## Prediction - Predict EOD given current state
+    # Setup prediction
     mc = predictors.monte_carlo.MonteCarlo(batt)
-    prediction_config = {'dt': 0.1}
     if isinstance(filt, state_estimators.unscented_kalman_filter.UnscentedKalmanFilter):
-        samples = filt.x.samples(20)
+        samples = filt.x.sample(20)
     else: # Particle Filter
         samples = filt.x.raw_samples()
-        
-    (times, inputs, states, outputs, event_states, eol) = mc.predict(samples, future_loading, prediction_config)
+    
+    # Predict with a step size of 0.1
+    (times, inputs, states, outputs, event_states, eol) = mc.predict(samples, future_loading, dt=0.1)
 
     ## Print Metrics
     print("\nEOD Predictions (s):")

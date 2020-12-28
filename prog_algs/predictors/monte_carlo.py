@@ -30,9 +30,16 @@ class MonteCarlo(predictor.Predictor):
 
     Parameters
     ----------
-    model : prog_models.prognostics_model.PrognosticsModel
-        See: Prognostics Model Package
+    * model : prog_models.prognostics_model.PrognosticsModel\n
+        See: Prognostics Model Package\n
         A prognostics model to be used in prediction
+    * options (optional, kwargs): configuration options\n
+        Any additional configuration values. See default parameters. Additionally, the following configuration parameters are supported: \n
+        * dt : Step size (s)
+        * horizon : Prediction horizon (s)
+        * save_freq : Frequency at which results are saved (s)
+        * save_pts : Any additional savepoints (s) e.g., [10.1, 22.5]
+        * cores : Number of cores to use in multithreading
     """
     default_parameters = { # Default Parameters
         'dt': 0.5,          # Timestep, seconds
@@ -41,22 +48,7 @@ class MonteCarlo(predictor.Predictor):
         'cores': 6          # Number of cores to use in parallelization
     }
 
-    def __init__(self, model):
-        self.__model = model
-        if not hasattr(model, 'output'):
-            raise ProgAlgTypeError("model must have `output` method")
-        if not hasattr(model, 'next_state'):
-            raise ProgAlgTypeError("model must have `next_state` method")
-        if not hasattr(model, 'inputs'):
-            raise ProgAlgTypeError("model must have `inputs` property")
-        if not hasattr(model, 'outputs'):
-            raise ProgAlgTypeError("model must have `outputs` property")
-        if not hasattr(model, 'states'):
-            raise ProgAlgTypeError("model must have `states` property")
-        if not hasattr(model, 'simulate_to_threshold'):
-            raise ProgAlgTypeError("model must have `simulate_to_threshold` property")
-
-    def predict(self, state_samples, future_loading_eqn, options = {}):
+    def predict(self, state_samples, future_loading_eqn, **kwargs):
         """
         Perform a single prediction
 
@@ -67,8 +59,8 @@ class MonteCarlo(predictor.Predictor):
             e.g., def f(n): return [x1, x2, x3, ... xn]
         future_loading_eqn : function (t) -> z
             Function to generate an estimate of loading at future time t
-        options : dict, optional
-            Dictionary of any additional configuration values. See default parameters, above
+        config : keyword arguments, optional
+            Any additional configuration values. See default parameters
 
         Returns (tuple)
         -------
@@ -89,8 +81,8 @@ class MonteCarlo(predictor.Predictor):
         toe: [number]
             Estimated time where a predicted event will occur for each sample.
         """
-        params = deepcopy(self.default_parameters) # copy default parameters
-        params.update(options)
+        params = deepcopy(self.parameters) # copy parameters
+        params.update(kwargs) # update for specific run
 
         times_all = empty(state_samples.size, dtype=object)
         inputs_all = empty(state_samples.size, dtype=object)
@@ -101,13 +93,13 @@ class MonteCarlo(predictor.Predictor):
         future_load.fcn = future_loading_eqn
 
         # Optimization to reduce lookup
-        output = self.__model.output
-        simulate_to_threshold = self.__model.simulate_to_threshold
-        threshold_met = self.__model.threshold_met
+        output = self.model.output
+        simulate_to_threshold = self.model.simulate_to_threshold
+        threshold_met = self.model.threshold_met
         prediction_fcn.params = params
-        prediction_fcn.output = self.__model.output
-        prediction_fcn.simulate_to_threshold = self.__model.simulate_to_threshold
-        prediction_fcn.threshold_met = self.__model.threshold_met
+        prediction_fcn.output = self.model.output
+        prediction_fcn.simulate_to_threshold = self.model.simulate_to_threshold
+        prediction_fcn.threshold_met = self.model.threshold_met
 
         # Perform prediction
         with Pool(params['cores']) as p:

@@ -29,12 +29,12 @@ def run_example():
     filt = state_estimators.particle_filter.ParticleFilter(batt, batt.parameters['x0'])
 
     print("Prior State:", filt.x.mean)
-    print('\tSOC: ', batt.event_state(filt.t, filt.x.mean)['EOD'])
+    print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
     t = 0.1
     load = future_loading(t)
     filt.estimate(t, load, {'t': 32.2, 'v': 3.915})
     print("Posterior State:", filt.x.mean)
-    print('\tSOC: ', batt.event_state(filt.t, filt.x.mean)['EOD'])
+    print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
 
     ## Prediction - Predict EOD given current state
     mc = predictors.monte_carlo.MonteCarlo(batt)

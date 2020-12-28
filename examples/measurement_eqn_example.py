@@ -27,7 +27,7 @@ def run_example():
     # This example is a little different. Here we are saying that we dont have the complete output. Instead we're only measuring voltage. We use the measurement eqn to remove temp
 
     def measure(x):
-        output = batt.output(0, x)
+        output = batt.output(x)
         del output['t'] # Not measuring temperature
         return output
 
@@ -36,18 +36,18 @@ def run_example():
 
     # Simulate results
     print("Prior State:", filt.x.mean)
-    print('\tSOC: ', batt.event_state(filt.t, filt.x.mean)['EOD'])
+    print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
     t = 0.1
     load = future_loading(t)
     filt.estimate(t, load, {'v': 3.915})
     print("Posterior State:", filt.x.mean)
-    print('\tSOC: ', batt.event_state(filt.t, filt.x.mean)['EOD'])
+    print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
 
     t = 0.2
     load = future_loading(t)
     filt.estimate(t, load, {'v': 3.91})
     print("Posterior State (t={}):".format(t), filt.x.mean)
-    print('\tSOC: ', batt.event_state(filt.t, filt.x.mean)['EOD'])
+    print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
 
 # This allows the module to be executed directly 
 if __name__ == '__main__':

@@ -13,10 +13,10 @@ def future_load(t):
 
 def prediction_fcn(x):
     # This is the main prediction function for the multi-threading
-    first_output = prediction_fcn.output(0, x)
+    first_output = prediction_fcn.output(x)
     prediction_fcn.params['x'] = x
-    (times, inputs, states, outputs, event_states) = prediction_fcn.simulate_to_threshold(future_load, first_output, prediction_fcn.params)
-    if (prediction_fcn.threshold_met(times[-1], states[-1])):
+    (times, inputs, states, outputs, event_states) = prediction_fcn.simulate_to_threshold(future_load, first_output, **prediction_fcn.params)
+    if (prediction_fcn.threshold_met(states[-1])):
         time_of_event = times[-1]
     else:
         time_of_event = None

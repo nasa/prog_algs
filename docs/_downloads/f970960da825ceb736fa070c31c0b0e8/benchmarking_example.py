@@ -1,7 +1,7 @@
 # Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 import sys
-sys.path.insert(1, "/Users/cteubert/Desktop/python-prognostics-models-package/")
+sys.path.insert(1, "../python-prognostics-models-package/")
 from prog_models.models import battery_circuit
 from prog_algs import *
 

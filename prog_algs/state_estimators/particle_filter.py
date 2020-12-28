@@ -35,7 +35,7 @@ class ParticleFilter(state_estimator.StateEstimator):
                 raise ProgAlgTypeError("x0 missing state `{}`".format(key))
         
         if measurement_eqn is None:
-            self.__measure = lambda x : model.output(0, x)
+            self.__measure = model.output
         else:
             self.__measure = measurement_eqn
 
@@ -81,7 +81,7 @@ class ParticleFilter(state_estimator.StateEstimator):
 
         # Propogate and calculate weights
         for i in range(len(particles)):
-            self.particles[i] = next_state(t, particles[i], u, dt) 
+            self.particles[i] = next_state(particles[i], u, dt) 
             zPredicted = output(self.particles[i])
             weights[i] = sum([norm(zPredicted[key], noise_params[key]).pdf(z[key]) for key in zPredicted.keys()])
         

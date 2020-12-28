@@ -72,7 +72,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         if measurement_eqn is None: 
             def measure(x):
                 x = {key: value for (key, value) in zip(model.states, x)}
-                z = model.output(0, x)
+                z = model.output(x)
                 return array(list(z.values()))
         else:
             def measure(x):
@@ -87,7 +87,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(model.states, x)}
-            x = model.next_state(self.t, x, self._input, dt)
+            x = model.next_state(x, self._input, dt)
             return array(list(x.values()))
 
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])

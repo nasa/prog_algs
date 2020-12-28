@@ -12,7 +12,6 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Uncertain Data" href="uncertain_data.html" />
@@ -72,6 +71,12 @@ e.g., def f(n): return [x1, x2, x3, … xn]</p></li>
 <em class="property">class </em><code class="sig-prename descclassname">prog_algs.predictors.monte_carlo.</code><code class="sig-name descname">MonteCarlo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.monte_carlo.MonteCarlo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for performing model-based prediction using sampling.</p>
 <p>This class defines logic for performing model-based state prediction using sampling methods. A Predictor is constructed using a PrognosticsModel object, (See Prognostics Model Package). The states are simulated until either a specified time horizon is met, or the threshold is reached for all samples, as defined by the threshold equation. A provided future loading equation is used to compute the inputs to the system at any given time point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>model</strong> (<em>prog_models.prognostics_model.PrognosticsModel</em>) – See: Prognostics Model Package
+A prognostics model to be used in prediction</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="prog_algs.predictors.monte_carlo.MonteCarlo.predict">
 <code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state_samples</span></em>, <em class="sig-param"><span class="n">future_loading_eqn</span></em>, <em class="sig-param"><span class="n">options</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.monte_carlo.MonteCarlo.predict" title="Permalink to this definition">¶</a></dt>

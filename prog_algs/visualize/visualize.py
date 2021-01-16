@@ -22,6 +22,30 @@ from . import utils
 # FUNCTIONS
 # =========
 
+def plot_hist(x, options=None):
+    n_hists = len(x)
+    if options is None:
+        options = dict(name='pdf', nbins=10, fs=16, disp_mean_std=True, show_density=True,
+                            transparency=0.75, orientation='vertical', xlabel='x, -', ylabel='probability density, -',
+                            log=False, histtype='bar', align='mid', cumulative=False, weights=None)
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    for h in range(n_hists):
+        x_samps = x[h]
+        labeltxt = r'$\mathrm{' + str(options['name']) + '}_{n_{'+ str(h) + r'}}$'
+        if options['disp_mean_std']:       
+            m, s = np.round(np.mean(x_samps), 3), np.round(np.std(x_samps), 3)
+            labeltxt += '\n$\mu=$' + str(m) + ',$\sigma=$' + str(s)
+        ax.hist(x_samps, bins=options['nbins'], density=options['show_density'], weights=options['weights'],
+                alpha=options['transparency'], cumulative=options['cumulative'], histtype=options['histtype'],
+                align=options['align'], orientation=options['orientation'], log=options['log'], label=labeltxt)
+    ax.set_xlabel(options['xlabel'], fontsize=options['fs'])
+    ax.set_ylabel(options['ylabel'], fontsize=options['fs'])
+    plt.legend(fontsize=options['fs']-3, fancybox=True, shadow=True, bbox_to_anchor=(0.75, 0.95))
+    return fig
+
+
 def state_scatterplot(x, plot_options=None, diag_options=None, **kwargs):
 
     # Set options for scatterplot
@@ -50,7 +74,7 @@ def state_scatterplot(x, plot_options=None, diag_options=None, **kwargs):
     if (type(overlap_kde==bool) and overlap_kde is True) or (type(overlap_kde) == str and 'upper' in overlap_kde):
         scatterplot.map_upper(sns.kdeplot, levels=overlap_kde_levels, color=overlap_kde_color)
     plt.suptitle('State Scatterplot', fontsize=18)
-    return 
+    return scatterplot
 
 
 def plot_state_estimate(states, t, options=None):

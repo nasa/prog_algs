@@ -4,6 +4,11 @@ import sys
 sys.path.insert(1, "../python-prognostics-models-package/")
 from prog_models.models import battery_circuit
 from prog_algs import *
+from prog_algs.visualize.visualize import *
+
+import matplotlib.pyplot as plt
+
+
 
 def run_example():
     ## Setup
@@ -48,6 +53,11 @@ def run_example():
     print('MSE: ', metrics.mean_square_error(eol, 3005.4))
     prediction_times = [0.1, 0.2]
     print('Alpha-lambda met: ', metrics.alpha_lambda(prediction_times, eol, 3005.4, 0.2, 1e-4, 0.65))
+
+    plot_hist(eol)
+    plt.show()
+
+
 
 # This allows the module to be executed directly 
 if __name__=='__main__':

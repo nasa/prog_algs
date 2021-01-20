@@ -46,43 +46,46 @@ def plot_hist(x, options=None):
     return fig
 
 
-def state_scatterplot(x, plot_options=None, diag_options=None, **kwargs):
-
-    # Set options for scatterplot
-    # -------------------------------------------------------------------------------------------
-    if plot_options is None: 
-        plot_options = {'alpha': 1.0, 's': 50, 'linewidth': 1}
-    if diag_options is None:
-        diag_options = {'fill': True}
+def state_scatterplot(x, time_steps=0, **kwargs):
     
-    if kwargs:
-        for arg in list(kwargs.keys()):
-            if   arg == 'kind':                 kind               = kwargs['kind']
-            elif arg == 'diag_kind':            diag_kind          = kwargs['diag_kind']
-            elif arg == 'marker':               marker             = kwargs['marker']
-            elif arg == 'lowerdiag_only':       lowerdiag_only     = kwargs['lowerdiag_only']
-            elif arg == 'overlap_kde':          overlap_kde        = kwargs['overlap_kde']
-            elif arg == 'overlap_kde_levels':   overlap_kde_levels = kwargs['overlap_kde_levels']
-            elif arg == 'overlap_kde_color':    overlap_kde_color  = kwargs['overlap_kde_color']
+    _, x = utils.get_states(x, step=time_steps)
+
+    # Set default options
+    # -------------------------------------------------------------------------------------------
+    config                       = {}
+    config['kind']               = 'scatter'
+    config['diag_kind']          = 'hist'
+    config['marker']             = 'o'
+    config['lowerdiag_only']     = False
+    config['overlap_kde']        = False
+    config['overlap_kde_levels'] = False
+    config['overlap_kde_color']  = False
+    config['plot_options']       = {'alpha': 1.0, 's': 50, 'linewidth': 1}
+    config['diag_options']       = {'fill': True}
+    config.update(kwargs)
     # -------------------------------------------------------------------------------------------
 
-    xdf = pd.DataFrame.from_dict(data=x, orient='columns')
-    scatterplot = sns.pairplot(data=xdf, kind=kind, diag_kind=diag_kind, markers=marker,
-                               plot_kws=plot_options, diag_kws=diag_options, corner=lowerdiag_only)
-    if (type(overlap_kde==bool) and overlap_kde is True) or (type(overlap_kde) == str and 'lower' in overlap_kde):
-        scatterplot.map_lower(sns.kdeplot, levels=overlap_kde_levels, color=overlap_kde_color)
-    if (type(overlap_kde==bool) and overlap_kde is True) or (type(overlap_kde) == str and 'upper' in overlap_kde):
-        scatterplot.map_upper(sns.kdeplot, levels=overlap_kde_levels, color=overlap_kde_color)
+    scatterplot = sns.pairplot(data=pd.DataFrame.from_dict(data=x, orient='columns'),
+                               kind=config['kind'], diag_kind=config['diag_kind'], markers=config['marker'],
+                               plot_kws=config['plot_options'], diag_kws=config['diag_options'], corner=config['lowerdiag_only'])
+    if (type(config['overlap_kde']==bool) and config['overlap_kde'] is True) or \
+        (type(config['overlap_kde']) == str and 'lower' in config['overlap_kde']):
+        scatterplot.map_lower(sns.kdeplot, levels=config['overlap_kde_levels'], color=config['overlap_kde_color'])
+    if (type(config['overlap_kde']==bool) and config['overlap_kde'] is True) or \
+        (type(config['overlap_kde']) == str and 'upper' in config['overlap_kde']):
+        scatterplot.map_upper(sns.kdeplot, levels=config['overlap_kde_levels'], color=config['overlap_kde_color'])
     plt.suptitle('State Scatterplot', fontsize=18)
     return scatterplot
 
 
-def plot_state_estimate(states, t, options=None):
+def plot_state_estimate(states, time_step=0, options=None):
     
-    state_names, state_values = utils.get_states(states)
+    state_names, state_values = utils.get_states(states, step=time_step)
+    
     n_states = len(state_names)
     n_samples = len(state_values[state_names[0]])
-    state_scatterplot(state_values, kind='scatter', diag_kind='auto', marker='o',
+
+    state_scatterplot(states, time_step=time_step, kind='scatter', diag_kind='auto', marker='o',
                       lowerdiag_only=False, overlap_kde=False)
 
     fig = plt.figure()

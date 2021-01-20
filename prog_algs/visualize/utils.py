@@ -469,7 +469,7 @@ def remove_tuple_duplicates(l):
     return new_l
 
 
-def get_states(states):
+def get_states(states, step=0):
 
     if hasattr(states, '__raw_samples__'):  # Monte Carlo-based prediction
         n_samples    = len(states.raw_samples())
@@ -477,9 +477,12 @@ def get_states(states):
         state_values = dict.fromkeys(state_names)
         for state_name in state_names:
             state_values[state_name] = [states.raw_samples()[ii][state_name] for ii in range(n_samples)]
-    else:   # non-sampling-based prediction
-        
-        state_names, state_values = [], []
+    else:   # UKF-based prediction
+        n_samples    = len(states)
+        state_names  = list(states[0][0].keys())
+        state_values = dict.fromkeys(state_names)
+        for state_name in state_names:
+            state_values[state_name] = [states[ii][step][state_name] for ii in range(n_samples)]
     return state_names, state_values
 
 def zip_2d_list(l):

@@ -5,6 +5,8 @@ State Estimators
    :members:
    :inherited-members:
 
+The state estimator algorithms implemented in this package are described below:
+
 UKF State Estimator
 -----------------------
 

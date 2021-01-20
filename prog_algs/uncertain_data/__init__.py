@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod, abstractproperty
 from numpy.random import choice, multivariate_normal
-from numpy import array, append, delete
+from numpy import array, append, delete, cov
 
 class UncertainData(ABC):
     """
-    Data with uncertainty
+    Abstract base class for data with uncertainty. Any new uncertainty type must implement this class
     """
     @abstractmethod
     def sample(self, nSamples = 1):
@@ -14,7 +14,7 @@ class UncertainData(ABC):
             nSamples (int, optional): Number of samples to generate. Defaults to 1.
 
         Returns:
-            smaples (array): Array of nSamples samples
+            samples (array): Array of nSamples samples
 
         Example:
             samples = data.samples(100)
@@ -30,6 +30,15 @@ class UncertainData(ABC):
             mean_value = data.mean
         """
         pass
+
+    @property
+    @abstractproperty
+    def cov(self):
+        """Get the covariance matrix
+
+        Returns:
+            [[float]]: covariance matrix
+        """
 
     # TODO(CT): Consider median
 
@@ -49,8 +58,15 @@ class ScalarData(UncertainData):
     def mean(self):
         return self.__state
 
+    @property
+    def cov(self):
+        return [[0 for i in self.__state] for j in self.__state]
+
     def sample(self, num_samples = 1):
         return array([self.__state] * num_samples)
+
+    def __str__(self):
+        return 'ScalarData({})'.format(self.__state)
 
 
 class UnweightedSamples(UncertainData):
@@ -75,6 +91,16 @@ class UnweightedSamples(UncertainData):
         for key in self.__samples[0].keys():
             mean[key] = array([x[key] for x in self.__samples]).mean()
         return mean
+
+    @property
+    def cov(self):
+        if len(self.__samples) == 0:
+            return [[]]
+        unlabeled_samples = array([[x[key] for x in self.__samples] for key in self.__samples[0].keys()])
+        return cov(unlabeled_samples)
+
+    def __str__(self):
+        return 'UnweightedSamples({})'.format(self.__samples)
 
     # Sample-specific methods
     def append(self, value):
@@ -140,7 +166,8 @@ class UnweightedSamples(UncertainData):
         return self.__samples
 
 class MultivariateNormalDist(UncertainData):
-    """Data represented by a multivariate normal distribution with mean and covariance matrix
+    """
+    Data represented by a multivariate normal distribution with mean and covariance matrix
     """
     def __init__(self, labels, mean: array, covar : array):
         """Initialize distribution
@@ -166,13 +193,10 @@ class MultivariateNormalDist(UncertainData):
     def mean(self):
         return {key: value for (key, value) in zip(self.__labels, self.__mean)}
 
-    # Dist-specific methods
-    @property
-    def covar(self):
-        """Get the covariance matrix
+    def __str__(self):
+        return 'MultivariateNormalDist(mean: {}, covar: {})'.format(self.__mean, self.__covar)     
 
-        Returns:
-            [[float]]: covariance matrix
-        """
+    @property
+    def cov(self):
         return self.__covar
     

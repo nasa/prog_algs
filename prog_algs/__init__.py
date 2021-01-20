@@ -7,13 +7,13 @@ from .uncertain_data import *
 
 import numpy as np
 
-def run_prog_playback(obs, pred, future_loading, output_measurements, options = {}):
+def run_prog_playback(obs, pred, future_loading, output_measurements, **kwargs):
     config = {# Defaults
         'predict_rate': 0, # Default- predict every step
         'num_samples': 10,
         'predict_config': {}
     }
-    config.update(options)
+    config.update(kwargs)
 
     next_predict = output_measurements[0][0] + config['predict_rate']
     times = np.empty((len(output_measurements), config['num_samples']), dtype=object)
@@ -26,7 +26,7 @@ def run_prog_playback(obs, pred, future_loading, output_measurements, options = 
     for (t, measurement) in output_measurements:
         obs.estimate(t, future_loading(t), measurement)
         if t >= next_predict:
-            (t, u, x, z, es, eol) = pred.predict(obs.x.sample(config['num_samples']), future_loading, config['predict_config'])
+            (t, u, x, z, es, eol) = pred.predict(obs.x.sample(config['num_samples']), future_loading, **config['predict_config'])
             times[index, :] = t
             inputs[index, :]  = u
             states[index, :]  = x

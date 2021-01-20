@@ -1,7 +1,9 @@
-Prognostics Models Python Package
+Prognostics Algorithms Python Package
 =============================================================
 
-The NASA Prognostics Models Package is a python framework for defining, building, using, and testing models for prognostics (computation of remaining useful life) of engineering systems, and provides a set of prognostics models for select components developed within this framework, suitable for use in prognostics applications for these components. It can be used in conjunction for the Prognostics Algorithms Library to perform research in prognostics methods. 
+The NASA PCoE Prognostic Algorithms Package is a python framework for model-based prognostics (computation of remaining useful life) of engineering systems. The package provides an extendable set of algorithms for state estimation and prediction, including uncertainty propagation. The package also include metrics, visualization, and analysis tools needed to measure the prognostic performance. The algorithms use prognostic models (from NASA's Prognostics Model Package) to perform estimation and prediction functions. The library enables the rapid development of prognostics solutions for given models of components and systems. Different algorithms can be easily swapped to do comparative studies and evaluations of different algorithms to select the best for the application at hand.
+
+The Prognostics Models Package was developed by researchers of the NASA Prognostics Center of Excellence (PCoE).
 
 If you are new to this package, see `<getting_started.html>`__.
 
@@ -13,6 +15,7 @@ If you are new to this package, see `<getting_started.html>`__.
    predictors
    uncertain_data
    metrics
+   visualize
    exceptions
    dev_guide
 
@@ -25,13 +28,13 @@ Use the following to cite this repository:
     title     = {Prognostics Algorithms Python Package},
     month     = Dec,
     year      = 2020,
-    version   = {0.1.0},
+    version   = {0.2.0},
     url       = {TBD}
     }
 
 The corresponding reference should look like this:
 
-C. Teubert, C. Kulkarni, M. Corbetta Prognostics Algorithms Python Package, v0.0.1, Oct. 2020. URL TBD.
+C. Teubert, C. Kulkarni, M. Corbetta Prognostics Algorithms Python Package, v0.2.0, Dec. 2020. URL TBD.
 
 Indices and tables
 -----------------------

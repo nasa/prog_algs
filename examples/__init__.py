@@ -1,1 +1,1 @@
-__all__ = ['basic_example', 'benchmarking_example']
+__all__ = ['basic_example', 'benchmarking_example', 'new_state_estimator_example', 'measurement_eqn_example']

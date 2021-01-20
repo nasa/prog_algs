@@ -5,14 +5,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Predictors &#8212; Prognostics Models Python Package 0.1 documentation</title>
+    <title>Predictors &#8212; Prognostics Algorithms Python Package 0.1.0 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Uncertain Data" href="uncertain_data.html" />
@@ -37,12 +36,23 @@
 <h1>Predictors<a class="headerlink" href="#predictors" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="prog_algs.predictors.predictor.Predictor">
-<em class="property">class </em><code class="sig-prename descclassname">prog_algs.predictors.predictor.</code><code class="sig-name descname">Predictor</code><a class="headerlink" href="#prog_algs.predictors.predictor.Predictor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">prog_algs.predictors.predictor.</code><code class="sig-name descname">Predictor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.predictor.Predictor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interface class for predictors</p>
 <p>Abstract base class for creating predictors that perform prediction. Predictor subclasses must implement this interface. Equivilant to “Observers” in NASA’s Matlab Prognostics Algorithm Library</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>*</em>) – <p>See: Prognostics Model Package</p>
+<p>A prognostics model to be used in prediction</p>
+</p></li>
+<li><p><strong>options</strong><strong> (</strong><strong>optional</strong> (<em>*</em>) – Any additional configuration values. See documentation for specific predictor</p></li>
+<li><p><strong>kwargs</strong><strong>)</strong> (<em>configuration options</em>) – Any additional configuration values. See documentation for specific predictor</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="prog_algs.predictors.predictor.Predictor.predict">
-<em class="property">abstract </em><code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state_samples</span></em>, <em class="sig-param"><span class="n">future_loading_eqn</span></em>, <em class="sig-param"><span class="n">options</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.predictor.Predictor.predict" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state_samples</span></em>, <em class="sig-param"><span class="n">future_loading_eqn</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.predictor.Predictor.predict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform a single prediction</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -50,7 +60,7 @@
 <li><p><strong>state_sampler</strong> (<em>function</em><em> (</em><em>n</em><em>) </em><em>-&gt;</em><em> [</em><em>x1</em><em>, </em><em>x2</em><em>, </em><em>.. xn</em><em>]</em>) – Function to generate n samples of the state.
 e.g., def f(n): return [x1, x2, x3, … xn]</p></li>
 <li><p><strong>future_loading_eqn</strong> (<em>function</em><em> (</em><em>t</em><em>) </em><em>-&gt; z</em>) – Function to generate an estimate of loading at future time t</p></li>
-<li><p><strong>options</strong> (<em>dict</em><em>, </em><em>optional</em>) – Dictionary of any additional configuration values. See default parameters, above</p></li>
+<li><p><strong>options</strong> (<em>keyword arguments</em><em>, </em><em>optional</em>) – Any additional configuration values. See default parameters, above</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -64,16 +74,44 @@ e.g., def f(n): return [x1, x2, x3, … xn]</p></li>
 
 </dd></dl>
 
+<p>The predictor algorithms implemented in this package are described below:</p>
 <div class="section" id="mc-predictor">
 <h2>MC Predictor<a class="headerlink" href="#mc-predictor" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="prog_algs.predictors.monte_carlo.MonteCarlo">
-<em class="property">class </em><code class="sig-prename descclassname">prog_algs.predictors.monte_carlo.</code><code class="sig-name descname">MonteCarlo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.monte_carlo.MonteCarlo" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">prog_algs.predictors.monte_carlo.</code><code class="sig-name descname">MonteCarlo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.monte_carlo.MonteCarlo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for performing model-based prediction using sampling.</p>
 <p>This class defines logic for performing model-based state prediction using sampling methods. A Predictor is constructed using a PrognosticsModel object, (See Prognostics Model Package). The states are simulated until either a specified time horizon is met, or the threshold is reached for all samples, as defined by the threshold equation. A provided future loading equation is used to compute the inputs to the system at any given time point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>*</em>) – <p>See: Prognostics Model Package</p>
+<p>A prognostics model to be used in prediction</p>
+</p></li>
+<li><p><strong>options</strong><strong> (</strong><strong>optional</strong> (<em>*</em>) – <p>Any additional configuration values. See default parameters. Additionally, the following configuration parameters are supported:</p>
+<ul>
+<li><p>dt : Step size (s)</p></li>
+<li><p>horizon : Prediction horizon (s)</p></li>
+<li><p>save_freq : Frequency at which results are saved (s)</p></li>
+<li><p>save_pts : Any additional savepoints (s) e.g., [10.1, 22.5]</p></li>
+<li><p>cores : Number of cores to use in multithreading</p></li>
+</ul>
+</p></li>
+<li><p><strong>kwargs</strong><strong>)</strong> (<em>configuration options</em>) – <p>Any additional configuration values. See default parameters. Additionally, the following configuration parameters are supported:</p>
+<ul>
+<li><p>dt : Step size (s)</p></li>
+<li><p>horizon : Prediction horizon (s)</p></li>
+<li><p>save_freq : Frequency at which results are saved (s)</p></li>
+<li><p>save_pts : Any additional savepoints (s) e.g., [10.1, 22.5]</p></li>
+<li><p>cores : Number of cores to use in multithreading</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="prog_algs.predictors.monte_carlo.MonteCarlo.predict">
-<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state_samples</span></em>, <em class="sig-param"><span class="n">future_loading_eqn</span></em>, <em class="sig-param"><span class="n">options</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.monte_carlo.MonteCarlo.predict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state_samples</span></em>, <em class="sig-param"><span class="n">future_loading_eqn</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.monte_carlo.MonteCarlo.predict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform a single prediction</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -81,7 +119,7 @@ e.g., def f(n): return [x1, x2, x3, … xn]</p></li>
 <li><p><strong>state_samples</strong> (<em>collection of samples for the MonteCarlo</em>) – Function to generate n samples of the state.
 e.g., def f(n): return [x1, x2, x3, … xn]</p></li>
 <li><p><strong>future_loading_eqn</strong> (<em>function</em><em> (</em><em>t</em><em>) </em><em>-&gt; z</em>) – Function to generate an estimate of loading at future time t</p></li>
-<li><p><strong>options</strong> (<em>dict</em><em>, </em><em>optional</em>) – Dictionary of any additional configuration values. See default parameters, above</p></li>
+<li><p><strong>config</strong> (<em>keyword arguments</em><em>, </em><em>optional</em>) – Any additional configuration values. See default parameters</p></li>
 <li><p><strong>(</strong><strong>tuple</strong><strong>)</strong> (<em>Returns</em>) – </p></li>
 <li><p><strong>-------</strong> – </p></li>
 <li><p><strong>times</strong> (<em>[</em><em>[</em><em>number</em><em>]</em><em>]</em>) – Times for each simulated point in format times[sample_id][index]</p></li>
@@ -111,7 +149,7 @@ where event_states[sample_id][index] corresponds to time times[sample_id][index]
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">Prognostics Models Python Package</a></h1>
+<h1 class="logo"><a href="index.html">Prognostics Algorithms Python Package</a></h1>
 
 
 
@@ -130,6 +168,7 @@ where event_states[sample_id][index] corresponds to time times[sample_id][index]
 </li>
 <li class="toctree-l1"><a class="reference internal" href="uncertain_data.html">Uncertain Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualize.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dev_guide.html">Developers Guide</a></li>
 </ul>

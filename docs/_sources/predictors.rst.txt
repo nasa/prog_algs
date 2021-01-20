@@ -5,6 +5,8 @@ Predictors
    :members:
    :inherited-members:
 
+The predictor algorithms implemented in this package are described below:
+
 MC Predictor
 -----------------------
 

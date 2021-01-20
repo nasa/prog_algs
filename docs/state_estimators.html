@@ -5,14 +5,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>State Estimators &#8212; Prognostics Models Python Package 0.1 documentation</title>
+    <title>State Estimators &#8212; Prognostics Algorithms Python Package 0.1.0 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Predictors" href="predictors.html" />
@@ -35,11 +34,196 @@
             
   <div class="section" id="state-estimators">
 <h1>State Estimators<a class="headerlink" href="#state-estimators" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="prog_algs.state_estimators.state_estimator.StateEstimator">
+<em class="property">class </em><code class="sig-prename descclassname">prog_algs.state_estimators.state_estimator.</code><code class="sig-name descname">StateEstimator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">x0</span></em>, <em class="sig-param"><span class="n">measurement_eqn</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.state_estimator.StateEstimator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interface class for state estimators</p>
+<p>Abstract base class for creating state estimators that perform state estimation. Subclasses must implement this interface. Equivilant to “Observers” in NASA’s Matlab Prognostics Algorithm Library</p>
+<dl>
+<dt>Constructor parameters:</dt><dd><ul>
+<li><p>model (ProgModel): Model to be used in state estimation</p>
+<blockquote>
+<div><p>See: Prognostics Model Package</p>
+<p>A prognostics model to be used in state estimation</p>
+</div></blockquote>
+</li>
+<li><p>x0 (dict): Initial State</p>
+<blockquote>
+<div><p>Initial (starting) state, with keys defined by model.states</p>
+<p>e.g., x = {‘abc’: 332.1, ‘def’: 221.003} given states = [‘abc’, ‘def’]</p>
+</div></blockquote>
+</li>
+<li><p>measurement_eqn (optional, function): Measurement equation (x)-&gt;z. Usually used in situations where what’s measured don’t exactly match the output (e.g., different unit, not ever output measured, etc.). see <cite>examples.measurement_eqn_example</cite></p></li>
+<li><p>options (optional, kwargs): configuration options</p>
+<blockquote>
+<div><p>Dictionary of any additional configuration values. See state-estimator specific documentation</p>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="prog_algs.state_estimators.state_estimator.StateEstimator.estimate">
+<em class="property">abstract </em><code class="sig-name descname">estimate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">u</span></em>, <em class="sig-param"><span class="n">z</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.state_estimator.StateEstimator.estimate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform one state estimation step (i.e., update the state estimate)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>double</em>) – Current timestamp in seconds (≥ 0.0)
+e.g., t = 3.4</p></li>
+<li><p><strong>u</strong> (<em>dict</em>) – Measured inputs, with keys defined by model.inputs.
+e.g., u = {‘i’:3.2} given inputs = [‘i’]</p></li>
+<li><p><strong>z</strong> (<em>dict</em>) – Measured outputs, with keys defined by model.outputs.
+e.g., z = {‘t’:12.4, ‘v’:3.3} given inputs = [‘t’, ‘v’]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="prog_algs.state_estimators.state_estimator.StateEstimator.x">
+<em class="property">abstract property </em><code class="sig-name descname">x</code><a class="headerlink" href="#prog_algs.state_estimators.state_estimator.StateEstimator.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter for property ‘x’, the current estimated state.</p>
+<p class="rubric">Example</p>
+<p>state = observer.x</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>The state estimator algorithms implemented in this package are described below:</p>
 <div class="section" id="ukf-state-estimator">
 <h2>UKF State Estimator<a class="headerlink" href="#ukf-state-estimator" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter">
+<em class="property">class </em><code class="sig-prename descclassname">prog_algs.state_estimators.unscented_kalman_filter.</code><code class="sig-name descname">UnscentedKalmanFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">x0</span></em>, <em class="sig-param"><span class="n">measurement_eqn</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>An Unscented Kalman Filter (UKF) for state estimation</p>
+<p>This class defines logic for performing an unscented kalman filter with a Prognostics Model (see Prognostics Model Package). This filter uses measurement data with noise to generate a state estimate and covariance matrix.</p>
+<dl>
+<dt>Constructor parameters:</dt><dd><ul>
+<li><p>model (ProgModel): Model to be used in state estimation</p>
+<blockquote>
+<div><p>See: Prognostics Model Package</p>
+<p>A prognostics model to be used in state estimation</p>
+</div></blockquote>
+</li>
+<li><p>x0 (dict): Initial State</p>
+<blockquote>
+<div><p>Initial (starting) state, with keys defined by model.states</p>
+<p>e.g., x = {‘abc’: 332.1, ‘def’: 221.003} given states = [‘abc’, ‘def’]</p>
+</div></blockquote>
+</li>
+<li><p>measurement_eqn (optional, function): Measurement equation (x)-&gt;z. Usually used in situations where what’s measured don’t exactly match the output (e.g., different unit, not ever output measured, etc.). see <cite>examples.measurement_eqn_example</cite></p></li>
+<li><p>options (optional, kwargs): configuration options</p>
+<blockquote>
+<div><p>Dictionary of any additional configuration values. See default parameters. Additionally, the following configuration parameters are supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>alpha, beta, kappa: UKF Scaling parameters</p></li>
+<li><p>t0 : Starting time</p></li>
+<li><p>dt : time step</p></li>
+<li><p>Q : Process Noise Matrix</p></li>
+<li><p>R : Measurement Noise Matrix</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter.estimate">
+<code class="sig-name descname">estimate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">u</span></em>, <em class="sig-param"><span class="n">z</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter.estimate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform one state estimation step (i.e., update the state estimate)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>double</em>) – Current timestamp in seconds (≥ 0.0)
+e.g., t = 3.4</p></li>
+<li><p><strong>u</strong> (<em>dict</em>) – Measured inputs, with keys defined by model.inputs.
+e.g., u = {‘i’:3.2} given inputs = [‘i’]</p></li>
+<li><p><strong>z</strong> (<em>dict</em>) – Measured outputs, with keys defined by model.outputs.
+e.g., z = {‘t’:12.4, ‘v’:3.3} given inputs = [‘t’, ‘v’]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter.x">
+<em class="property">property </em><code class="sig-name descname">x</code><a class="headerlink" href="#prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter for property ‘x’, the current estimated state.</p>
+<p class="rubric">Example</p>
+<p>state = observer.x</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="pf-state-estimator">
 <h2>PF State Estimator<a class="headerlink" href="#pf-state-estimator" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="prog_algs.state_estimators.particle_filter.ParticleFilter">
+<em class="property">class </em><code class="sig-prename descclassname">prog_algs.state_estimators.particle_filter.</code><code class="sig-name descname">ParticleFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">x0</span></em>, <em class="sig-param"><span class="n">measurement_eqn</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.particle_filter.ParticleFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates state using a particle filter algorithm</p>
+<dl>
+<dt>Constructor parameters:</dt><dd><ul>
+<li><p>model (ProgModel): Model to be used in state estimation</p>
+<blockquote>
+<div><p>See: Prognostics Model Package</p>
+<p>A prognostics model to be used in state estimation</p>
+</div></blockquote>
+</li>
+<li><p>x0 (dict): Initial State</p>
+<blockquote>
+<div><p>Initial (starting) state, with keys defined by model.states</p>
+<p>e.g., x = {‘abc’: 332.1, ‘def’: 221.003} given states = [‘abc’, ‘def’]</p>
+</div></blockquote>
+</li>
+<li><p>measurement_eqn (optional, function): Measurement equation (x)-&gt;z. Usually used in situations where what’s measured don’t exactly match the output (e.g., different unit, not ever output measured, etc.). see <cite>examples.measurement_eqn_example</cite></p></li>
+<li><p>options (optional, kwargs): configuration options</p>
+<blockquote>
+<div><p>Any additional configuration values. See default parameters. Additionally, the following configuration parameters are supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>num_particles : Number of particles used in PF e.g., 20</p></li>
+<li><p>resample_fcn : Resampling function ([weights]) -&gt; [indexes] e.g., filterpy.monte_carlo.residual_resample</p></li>
+<li><p>x0_uncertainty : Initial uncertainty in state e.g., 0.5</p></li>
+<li><p>R (Number) : Measurement Noise. e.g., 0.1</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="prog_algs.state_estimators.particle_filter.ParticleFilter.estimate">
+<code class="sig-name descname">estimate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">u</span></em>, <em class="sig-param"><span class="n">z</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.particle_filter.ParticleFilter.estimate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform one state estimation step (i.e., update the state estimate)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>double</em>) – Current timestamp in seconds (≥ 0.0)
+e.g., t = 3.4</p></li>
+<li><p><strong>u</strong> (<em>dict</em>) – Measured inputs, with keys defined by model.inputs.
+e.g., u = {‘i’:3.2} given inputs = [‘i’]</p></li>
+<li><p><strong>z</strong> (<em>dict</em>) – Measured outputs, with keys defined by model.outputs.
+e.g., z = {‘t’:12.4, ‘v’:3.3} given inputs = [‘t’, ‘v’]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="prog_algs.state_estimators.particle_filter.ParticleFilter.x">
+<em class="property">property </em><code class="sig-name descname">x</code><a class="headerlink" href="#prog_algs.state_estimators.particle_filter.ParticleFilter.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter for property ‘x’, the current estimated state.</p>
+<p class="rubric">Example</p>
+<p>state = observer.x</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 
@@ -50,7 +234,7 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">Prognostics Models Python Package</a></h1>
+<h1 class="logo"><a href="index.html">Prognostics Algorithms Python Package</a></h1>
 
 
 
@@ -70,6 +254,7 @@
 <li class="toctree-l1"><a class="reference internal" href="predictors.html">Predictors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="uncertain_data.html">Uncertain Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualize.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dev_guide.html">Developers Guide</a></li>
 </ul>

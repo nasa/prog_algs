@@ -13,7 +13,7 @@ class TemplateStateEstimator(state_estimator.StateEstimator):
         'Example Parameter': 0.0
     } 
 
-    def __init__(self, model, options = {}):
+    def __init__(self, model, x0, measurement=None, options = {}):
         """
         Constructor
         """

@@ -8,18 +8,19 @@ class TemplatePredictor(predictor.Predictor):
     """
 
     # REPLACE THE FOLLOWING LIST WITH CONFIGURED PARAMETERS
-    parameters = { # Default Parameters, used as config for UKF
+    default_parameters = { # Default Parameters, used as config for UKF
         'Example Parameter': 0.0
     } 
 
-    def __init__(self, model, options = {}):
+    def __init__(self, model, **kwargs):
         """
         Constructor
         """
-        self.model = model
-
-        self.parameters.update(options)# Merge configuration options into default
+        super().__init__(model, **kwargs)
         # ADD PARAMETER CHECKS HERE
+        # e.g., self.parameters['some_value'] < 0
+
+        # INITIALIZE PREDICTOR
 
     def predict(self, state_samples, future_loading_eqn, options = {}):
         """
@@ -65,4 +66,4 @@ class TemplatePredictor(predictor.Predictor):
         event_states = [] # array of dict (e.g., [{'event_state 1': 1.2, ...}, ...])
         time_of_event = [] # array of double, time for each event prediction
 
-        return (times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event)
+        return (times, inputs, states, outputs, event_states, time_of_event)

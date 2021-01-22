@@ -54,7 +54,7 @@ class TestPredictors(unittest.TestCase):
             {'a': 1, 'b': 2, 'c': -2.2},
             {'a': 1, 'b': 2, 'c': -4.2}
         ]
-        def future_loading(t):
+        def future_loading(t, x={}):
             if (t < 5):
                 return {'i1': 2, 'i2': 1}
             else:

@@ -7,7 +7,7 @@ from prog_algs import *
 
 def run_example():
     ## Setup
-    def future_loading(t):
+    def future_loading(t, x={}):
         # Variable (piece-wise) future loading scheme 
         if (t < 600):
             i = 2

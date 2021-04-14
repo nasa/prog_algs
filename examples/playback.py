@@ -13,7 +13,7 @@ def run_example():
     import csv
     from sys import path
 
-    path.insert(1, "../python-prognostics-models-package/")
+    path.insert(1, "../prog_models/")
     from prog_models.models.battery_circuit import BatteryCircuit
     from prog_algs.metrics import samples as metrics
     from prog_algs import state_estimators, predictors

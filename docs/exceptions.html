@@ -4,8 +4,9 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Exceptions &#8212; Prognostics Algorithms Python Package 0.1.0 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>Exceptions &#8212; Prognostics Algorithms Python Package 1.0.0 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -32,18 +33,18 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="exceptions">
+  <section id="exceptions">
 <h1>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h1>
 <p>Exceptions returned from prog_model fall into a few custom exception types, defined below. Catching any Prognostics Model Exception can be acomplished using <cite>try-except ProgModelException</cite>. Alternatively, a user can catch a specific exception type.</p>
-<div class="section" id="prognostics-model-exceptions">
+<section id="prognostics-model-exceptions">
 <h2>Prognostics Model Exceptions<a class="headerlink" href="#prognostics-model-exceptions" title="Permalink to this headline">¶</a></h2>
 <dl class="py exception">
 <dt id="prog_algs.exceptions.ProgAlgException">
-<em class="property">exception </em><code class="sig-prename descclassname">prog_algs.exceptions.</code><code class="sig-name descname">ProgAlgException</code><a class="headerlink" href="#prog_algs.exceptions.ProgAlgException" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">prog_algs.exceptions.</span></code><code class="sig-name descname"><span class="pre">ProgAlgException</span></code><a class="headerlink" href="#prog_algs.exceptions.ProgAlgException" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base Prognostics Model Exception</p>
 <dl class="py method">
 <dt id="prog_algs.exceptions.ProgAlgException.with_traceback">
-<code class="sig-name descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.exceptions.ProgAlgException.with_traceback" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">with_traceback</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.exceptions.ProgAlgException.with_traceback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception.with_traceback(tb) –
 set self.__traceback__ to tb and return self.</p>
 </dd></dl>
@@ -52,11 +53,11 @@ set self.__traceback__ to tb and return self.</p>
 
 <dl class="py exception">
 <dt id="prog_algs.exceptions.ProgAlgInputException">
-<em class="property">exception </em><code class="sig-prename descclassname">prog_algs.exceptions.</code><code class="sig-name descname">ProgAlgInputException</code><a class="headerlink" href="#prog_algs.exceptions.ProgAlgInputException" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">prog_algs.exceptions.</span></code><code class="sig-name descname"><span class="pre">ProgAlgInputException</span></code><a class="headerlink" href="#prog_algs.exceptions.ProgAlgInputException" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prognostics Input Exception - indicates the method input parameters were incorrect</p>
 <dl class="py method">
 <dt id="prog_algs.exceptions.ProgAlgInputException.with_traceback">
-<code class="sig-name descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.exceptions.ProgAlgInputException.with_traceback" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">with_traceback</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.exceptions.ProgAlgInputException.with_traceback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception.with_traceback(tb) –
 set self.__traceback__ to tb and return self.</p>
 </dd></dl>
@@ -65,19 +66,19 @@ set self.__traceback__ to tb and return self.</p>
 
 <dl class="py exception">
 <dt id="prog_algs.exceptions.ProgAlgTypeError">
-<em class="property">exception </em><code class="sig-prename descclassname">prog_algs.exceptions.</code><code class="sig-name descname">ProgAlgTypeError</code><a class="headerlink" href="#prog_algs.exceptions.ProgAlgTypeError" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">prog_algs.exceptions.</span></code><code class="sig-name descname"><span class="pre">ProgAlgTypeError</span></code><a class="headerlink" href="#prog_algs.exceptions.ProgAlgTypeError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prognostics Type Error - indicates the model could not be constructed</p>
 <dl class="py method">
 <dt id="prog_algs.exceptions.ProgAlgTypeError.with_traceback">
-<code class="sig-name descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.exceptions.ProgAlgTypeError.with_traceback" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">with_traceback</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.exceptions.ProgAlgTypeError.with_traceback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception.with_traceback(tb) –
 set self.__traceback__ to tb and return self.</p>
 </dd></dl>
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

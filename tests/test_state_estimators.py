@@ -1,4 +1,4 @@
-# Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+# Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 import unittest
 from prog_algs.exceptions import ProgAlgTypeError
 
@@ -36,7 +36,8 @@ class MockProgModel():
 class TestStateEstimators(unittest.TestCase):
     def test_state_est_template(self):
         from state_estimator_template import TemplateStateEstimator
-        se = TemplateStateEstimator(None, None)
+        m = MockProgModel()
+        se = TemplateStateEstimator(m, None)
 
     def test_UKF(self):
         from prog_algs.state_estimators import unscented_kalman_filter

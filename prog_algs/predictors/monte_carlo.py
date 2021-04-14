@@ -1,4 +1,4 @@
-# Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+# Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from . import predictor
 from numpy import empty
@@ -7,15 +7,16 @@ from copy import deepcopy
 from multiprocessing import Pool
 from itertools import repeat
 
-def future_load(t):
+def future_load(t, x = None):
     # This high-level fcn is required for multi-threading to work
-    return future_load.fcn(t)
+    return future_load.fcn(t, x)
 
 def prediction_fcn(x):
     # This is the main prediction function for the multi-threading
     first_output = prediction_fcn.output(x)
     prediction_fcn.params['x'] = x
-    (times, inputs, states, outputs, event_states) = prediction_fcn.simulate_to_threshold(future_load, first_output, **prediction_fcn.params)
+    loading = deepcopy(future_load) # Make a copy for this sample - otherwise moving average approaches wouldn't work
+    (times, inputs, states, outputs, event_states) = prediction_fcn.simulate_to_threshold(loading, first_output, **prediction_fcn.params)
     if (prediction_fcn.threshold_met(states[-1])):
         time_of_event = times[-1]
     else:
@@ -57,7 +58,7 @@ class MonteCarlo(predictor.Predictor):
         state_samples : collection of samples for the MonteCarlo
             Function to generate n samples of the state. 
             e.g., def f(n): return [x1, x2, x3, ... xn]
-        future_loading_eqn : function (t) -> z
+        future_loading_eqn : function (t, x={}) -> z
             Function to generate an estimate of loading at future time t
         config : keyword arguments, optional
             Any additional configuration values. See default parameters

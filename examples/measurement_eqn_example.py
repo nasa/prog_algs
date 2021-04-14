@@ -1,13 +1,12 @@
-# Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+# Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 import sys
-sys.path.insert(1, "../python-prognostics-models-package/")
 from prog_models.models.battery_circuit import BatteryCircuit
 from prog_algs import *
 
 def run_example():
     ## Setup
-    def future_loading(t):
+    def future_loading(t, x={}):
         # Variable (piece-wise) future loading scheme 
         if (t < 600):
             i = 2

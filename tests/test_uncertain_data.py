@@ -1,3 +1,5 @@
+# Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
+
 import unittest
 from prog_algs.uncertain_data import UnweightedSamples, MultivariateNormalDist, ScalarData
 from numpy import array

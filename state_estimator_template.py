@@ -1,4 +1,4 @@
-# Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+# Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from prog_algs import state_estimator
 
@@ -9,20 +9,21 @@ class TemplateStateEstimator(state_estimator.StateEstimator):
     t = 0 # Last timestep
 
     # REPLACE THE FOLLOWING LIST WITH CONFIGURED PARAMETERS
-    parameters = { # Default Parameters, used as config for UKF
+    default_parameters = { # Default Parameters, used as config
         'Example Parameter': 0.0
     } 
 
-    def __init__(self, model, x0, measurement=None, options = {}):
+    def __init__(self, model, x0, measurement_eqn=None, **kwargs):
         """
         Constructor
         """
-        self.model = model
-
-        self.parameters.update(options)# Merge configuration options into default
+        super().__init__(model, x0, measurement_eqn, **kwargs)
         # ADD PARAMETER CHECKS HERE
+        # e.g., self.parameters['some_value'] < 0
 
-    def estimate(self, t, z):
+        # ADD ANY STATE ESTIMATOR INITIALIZATION LOGIC
+
+    def estimate(self, t, u, z):
         """
         Perform one state estimation step (i.e., update the state estimate)
 

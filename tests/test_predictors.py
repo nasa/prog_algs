@@ -1,8 +1,8 @@
-# Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+# Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 import unittest
 
 import sys
-sys.path.insert(1, "../python-prognostics-models-package/")
+sys.path.insert(1, "../prog_models/")
 from prog_models.prognostics_model import PrognosticsModel
 
 class MockProgModel(PrognosticsModel):
@@ -39,7 +39,8 @@ class MockProgModel(PrognosticsModel):
 class TestPredictors(unittest.TestCase):
     def test_pred_template(self):
         from predictor_template import TemplatePredictor
-        pred = TemplatePredictor(None)
+        m = MockProgModel()
+        pred = TemplatePredictor(m)
 
     def test_MC(self):
         from prog_algs.predictors import monte_carlo
@@ -54,7 +55,7 @@ class TestPredictors(unittest.TestCase):
             {'a': 1, 'b': 2, 'c': -2.2},
             {'a': 1, 'b': 2, 'c': -4.2}
         ]
-        def future_loading(t):
+        def future_loading(t, x={}):
             if (t < 5):
                 return {'i1': 2, 'i2': 1}
             else:

@@ -37,6 +37,9 @@ See the examples for examples of use. Run examples using the command `python -m 
 * :download:`examples.new_state_estimator_example <../examples/new_state_estimator_example.py>`
     .. automodule:: examples.new_state_estimator_example
     |
+* :download:`examples.playback <../examples/playback.py>`
+    .. automodule:: examples.playback
+    |
 
 Extending
 ---------

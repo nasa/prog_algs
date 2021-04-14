@@ -4,8 +4,9 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Getting Started &#8212; Prognostics Algorithms Python Package 0.1.0 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>Getting Started &#8212; Prognostics Algorithms Python Package 1.0.0 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="getting-started">
+  <section id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
 <p>The NASA Prognostics Algorithms Package is a python framework for defining, building, using, and testing Algorithms for prognostics (computation of remaining useful life) of engineering systems, and provides a set of prognostics algorithms developed within this framework, suitable for use in prognostics applications. It can be used in conjunction for the Prognostics Models Library to perform research in prognostics with prognostics systems.</p>
 <p>A few definitions:</p>
@@ -45,26 +46,26 @@
 <li><p><strong>process noise</strong>: stochastic process representing uncertainty in the model transition.</p></li>
 <li><p><strong>measurement noise</strong>: stochastic process representing uncertainty in the measurement process; e.g., sensor sensitivity, sensor misalignements, environmental effects</p></li>
 </ul>
-<div class="section" id="installing-dependencies">
+<section id="installing-dependencies">
 <h2>Installing Dependencies<a class="headerlink" href="#installing-dependencies" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
 <dt>You can install dependencies using the included <cite>requirements.txt</cite> file. This file enumerates all the dependencies of this package. Use the following command to install dependencies:</dt><dd><p><cite>pip install -r requirements.txt</cite></p>
 </dd>
 </dl>
-</div>
-<div class="section" id="use">
+</section>
+<section id="use">
 <h2>Use<a class="headerlink" href="#use" title="Permalink to this headline">¶</a></h2>
 <p>See the examples for examples of use. Run examples using the command <cite>python -m examples.[Example name]</cite> command (e.g., <cite>python -m examples.sim_example</cite>). The examples are summarized below:</p>
 <ul>
 <li><dl>
-<dt><a class="reference download internal" download="" href="_downloads/b5b078b0fe440e9fa4d922ec9f4f1eea/basic_example.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.basic_example</span></code></a></dt><dd><span class="target" id="module-examples.basic_example"></span><div class="line-block">
+<dt><a class="reference download internal" download="" href="_downloads/b5b078b0fe440e9fa4d922ec9f4f1eea/basic_example.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.basic_example</span></code></a></dt><dd><div class="line-block">
 <div class="line"><br /></div>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl>
-<dt><a class="reference download internal" download="" href="_downloads/f970960da825ceb736fa070c31c0b0e8/benchmarking_example.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.benchmarking_example</span></code></a></dt><dd><span class="target" id="module-examples.benchmarking_example"></span><div class="line-block">
+<dt><a class="reference download internal" download="" href="_downloads/f970960da825ceb736fa070c31c0b0e8/benchmarking_example.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.benchmarking_example</span></code></a></dt><dd><div class="line-block">
 <div class="line"><br /></div>
 </div>
 </dd>
@@ -77,14 +78,22 @@
 </dd>
 </dl>
 </li>
-</ul>
+<li><dl>
+<dt><a class="reference download internal" download="" href="_downloads/847c5bdc6f78e586d5a56a90de4f1d95/playback.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.playback</span></code></a></dt><dd><span class="target" id="module-examples.playback"></span><p>Example using playback data. Builds a Battery Model, runs prognostics using the playback data.</p>
+<div class="line-block">
+<div class="line"><br /></div>
 </div>
-<div class="section" id="extending">
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="extending">
 <h2>Extending<a class="headerlink" href="#extending" title="Permalink to this headline">¶</a></h2>
 <p>New State Estimators and Predictors are created by extending the <a class="reference internal" href="state_estimators.html#prog_algs.state_estimators.state_estimator.StateEstimator" title="prog_algs.state_estimators.state_estimator.StateEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.state_estimators.state_estimator.StateEstimator</span></code></a> and <a class="reference internal" href="predictors.html#prog_algs.predictors.predictor.Predictor" title="prog_algs.predictors.predictor.Predictor"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.predictors.predictor.Predictor</span></code></a> class, respectively.</p>
 <p>See <a class="reference download internal" download="" href="_downloads/067e6c82fdc9573fb921219d62002181/new_state_estimator_example.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.new_state_estimator_example</span></code></a> for an example of this approach.</p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

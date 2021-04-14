@@ -1,7 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 import sys
-sys.path.insert(1, "../prog_models/")
 from prog_models.models.battery_circuit import BatteryCircuit
 from prog_algs import *
 

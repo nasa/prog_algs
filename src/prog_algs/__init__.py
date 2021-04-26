@@ -5,6 +5,8 @@ from . import predictors, state_estimators, uncertain_data
 
 import numpy as np
 
+__version__ = '0.4.0'
+
 def run_prog_playback(obs, pred, future_loading, output_measurements, **kwargs):
     config = {# Defaults
         'predict_rate': 0, # Default- predict every step

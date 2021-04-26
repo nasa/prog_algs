@@ -22,7 +22,8 @@ copyright = '2021 United States Government as represented by the Administrator o
 author = 'Chris Teubert, Matteo Corbetta, and Chetan Kulkarni'
 
 # The full version, including alpha/beta/rc tags
-release = '0.4.0'
+from prog_algs import __version__ as version
+release = version
 
 # -- General configuration ---------------------------------------------------
 

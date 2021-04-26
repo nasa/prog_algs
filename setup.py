@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+import pkg_resources
 import pathlib
 
 here = pathlib.Path(__file__).parent.resolve()
@@ -8,7 +9,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name = 'prog_algs',
-    version = '0.4.0',
+    version = pkg_resources.require("prog_algs")[0].version,
     description = "The NASA Prognostic Algorithm Package is a framework for model-based prognostics (computation of remaining useful life) of engineering systems. It includes algorithms for state estimation and prediction, including uncertainty propagation. The algorithms use prognostic models (see prog_models) to perform estimation and prediction. The package enables rapid development of prognostics solutions for given models of components and systems. Algorithms can be swapped for comparative studies and evaluations",
     long_description=long_description,
     long_description_content_type='text/markdown',

@@ -30,7 +30,7 @@ def run_example():
         return output
 
     # Setup particle filter to use measurement eqn
-    filt = state_estimators.particle_filter.ParticleFilter(batt, batt.parameters['x0'], measurement_eqn = measure)
+    filt = state_estimators.ParticleFilter(batt, batt.parameters['x0'], measurement_eqn = measure)
 
     # Simulate results
     print("Prior State:", filt.x.mean)

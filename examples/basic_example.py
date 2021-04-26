@@ -18,13 +18,10 @@ def run_example():
         else:
             i = 3
         return {'i': i}
-
     batt = BatteryCircuit()
-
     ## State Estimation - perform a single ukf state estimate step
-    # filt = state_estimators.unscented_kalman_filter.UnscentedKalmanFilter(batt, batt.parameters['x0'])
-    filt = state_estimators.particle_filter.ParticleFilter(batt, batt.parameters['x0'])
-
+    # filt = state_estimators.UnscentedKalmanFilter(batt, batt.parameters['x0'])
+    filt = state_estimators.ParticleFilter(batt, batt.parameters['x0'])
     print("Prior State:", filt.x.mean)
     print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
     t = 0.1
@@ -32,18 +29,15 @@ def run_example():
     filt.estimate(t, load, {'t': 32.2, 'v': 3.915})
     print("Posterior State:", filt.x.mean)
     print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
-
     ## Prediction - Predict EOD given current state
     # Setup prediction
-    mc = predictors.monte_carlo.MonteCarlo(batt)
-    if isinstance(filt, state_estimators.unscented_kalman_filter.UnscentedKalmanFilter):
+    mc = predictors.MonteCarlo(batt)
+    if isinstance(filt, state_estimators.UnscentedKalmanFilter):
         samples = filt.x.sample(20)
     else: # Particle Filter
         samples = filt.x.raw_samples()
-    
     # Predict with a step size of 0.1
     (times, inputs, states, outputs, event_states, eol) = mc.predict(samples, future_loading, dt=0.1)
-
     ## Print Metrics
     print("\nEOD Predictions (s):")
     from prog_algs.metrics import samples as metrics 

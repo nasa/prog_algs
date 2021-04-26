@@ -22,10 +22,10 @@ def run_example():
     batt = BatteryCircuit()
 
     ##  Setup State Estimation 
-    filt = state_estimators.unscented_kalman_filter.UnscentedKalmanFilter(batt, batt.parameters['x0'])
+    filt = state_estimators.UnscentedKalmanFilter(batt, batt.parameters['x0'])
 
     ## Setup Prediction
-    mc = predictors.monte_carlo.MonteCarlo(batt, dt= 0.05)
+    mc = predictors.MonteCarlo(batt, dt= 0.05)
 
     # Playback 
     from prog_algs.metrics import samples as metrics 

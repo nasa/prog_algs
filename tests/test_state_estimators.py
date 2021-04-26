@@ -37,13 +37,13 @@ class TestStateEstimators(unittest.TestCase):
     def test_state_est_template(self):
         from state_estimator_template import TemplateStateEstimator
         m = MockProgModel()
-        se = TemplateStateEstimator(m, None)
+        se = TemplateStateEstimator(m, {'a': 0.0, 'b': 0.0, 'c': 0.0, 't':0.0})
 
     def test_UKF(self):
-        from prog_algs.state_estimators import unscented_kalman_filter
+        from prog_algs.state_estimators import UnscentedKalmanFilter
         m = MockProgModel()
         x0 = m.initialize()
-        filt = unscented_kalman_filter.UnscentedKalmanFilter(m, x0)
+        filt = UnscentedKalmanFilter(m, x0)
         self.assertTrue(all(key in filt.x.mean for key in m.states))
         self.assertDictEqual(x0, filt.x.mean)
         filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': 0.8}) # note- if input is correct, o1 should be 0.9
@@ -126,14 +126,14 @@ class TestStateEstimators(unittest.TestCase):
             pass
 
     def test_UKF_incorrect_input(self):
-        from prog_algs.state_estimators import unscented_kalman_filter
-        self.__incorrect_input_tests(unscented_kalman_filter.UnscentedKalmanFilter)
+        from prog_algs.state_estimators import UnscentedKalmanFilter
+        self.__incorrect_input_tests(UnscentedKalmanFilter)
 
     def test_PF(self):
-        from prog_algs.state_estimators import particle_filter
+        from prog_algs.state_estimators import ParticleFilter
         m = MockProgModel()
         x0 = m.initialize()
-        filt = particle_filter.ParticleFilter(m, x0)
+        filt = ParticleFilter(m, x0)
         self.assertTrue(all(key in filt.x[0] for key in m.states))
         # self.assertDictEqual(x0, filt.x) // Not true - sample production means they may not be equal
         filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': 0.8}) # note- if input is correct, o1 should be 0.9
@@ -172,8 +172,8 @@ class TestStateEstimators(unittest.TestCase):
         x0 = m.initialize()
 
         # Setup
-        from prog_algs.state_estimators import unscented_kalman_filter
-        filt = unscented_kalman_filter.UnscentedKalmanFilter(m, x0)
+        from prog_algs.state_estimators import UnscentedKalmanFilter
+        filt = UnscentedKalmanFilter(m, x0)
         
         # Try using
         try:
@@ -189,7 +189,7 @@ class TestStateEstimators(unittest.TestCase):
             z = m.output(x)
             del z['o2']
             return z
-        filt = unscented_kalman_filter.UnscentedKalmanFilter(m, x0, measurement_eqn=measurement_eqn)
+        filt = UnscentedKalmanFilter(m, x0, measurement_eqn=measurement_eqn)
         filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0})
 
     def test_measurement_eq_PF(self):
@@ -205,8 +205,8 @@ class TestStateEstimators(unittest.TestCase):
         x0 = m.initialize()
 
         # Setup
-        from prog_algs.state_estimators import particle_filter
-        filt = particle_filter.ParticleFilter(m, x0)
+        from prog_algs.state_estimators import ParticleFilter
+        filt = ParticleFilter(m, x0)
         
         # Try using
         try:
@@ -222,9 +222,9 @@ class TestStateEstimators(unittest.TestCase):
             z = m.output(x)
             del z['o2']
             return z
-        filt = particle_filter.ParticleFilter(m, x0, measurement_eqn=measurement_eqn)
+        filt = ParticleFilter(m, x0, measurement_eqn=measurement_eqn)
         filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0}) 
         
     def test_PF_incorrect_input(self):
-        from prog_algs.state_estimators import particle_filter
-        self.__incorrect_input_tests(particle_filter.ParticleFilter)
+        from prog_algs.state_estimators import ParticleFilter
+        self.__incorrect_input_tests(ParticleFilter)

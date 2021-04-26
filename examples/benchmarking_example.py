@@ -1,7 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-import sys
-from prog_models.models import battery_circuit
+from prog_models.models import BatteryCircuit
 from prog_algs import *
 
 def run_example():
@@ -20,13 +19,13 @@ def run_example():
             i = 3
         return {'i': i}
 
-    batt = battery_circuit.BatteryCircuit()
+    batt = BatteryCircuit()
 
     ##  Setup State Estimation 
-    filt = state_estimators.unscented_kalman_filter.UnscentedKalmanFilter(batt, batt.parameters['x0'])
+    filt = state_estimators.UnscentedKalmanFilter(batt, batt.parameters['x0'])
 
     ## Setup Prediction
-    mc = predictors.monte_carlo.MonteCarlo(batt, dt= 0.05)
+    mc = predictors.MonteCarlo(batt, dt= 0.05)
 
     # Playback 
     from prog_algs.metrics import samples as metrics 

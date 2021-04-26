@@ -37,7 +37,7 @@ class TestStateEstimators(unittest.TestCase):
     def test_state_est_template(self):
         from state_estimator_template import TemplateStateEstimator
         m = MockProgModel()
-        se = TemplateStateEstimator(m, None)
+        se = TemplateStateEstimator(m, {'a': 0.0, 'b': 0.0, 'c': 0.0, 't':0.0})
 
     def test_UKF(self):
         from prog_algs.state_estimators import unscented_kalman_filter

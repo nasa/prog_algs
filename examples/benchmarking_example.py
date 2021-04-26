@@ -1,6 +1,5 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-import sys
 from prog_models.models import battery_circuit
 from prog_algs import *
 

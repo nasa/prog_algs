@@ -10,13 +10,11 @@ time_step = 0.1
 prediction_update_freq = 5 # Number of steps between prediction update
 
 def run_example():
-    import csv
-    from sys import path
-
     from prog_models.models.battery_circuit import BatteryCircuit
     from prog_algs.metrics import samples as metrics
     from prog_algs import state_estimators, predictors
 
+    import csv
     import matplotlib.pyplot as plt 
 
     # Setup Model

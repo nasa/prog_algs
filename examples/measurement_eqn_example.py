@@ -1,6 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from prog_models.models.battery_circuit import BatteryCircuit
+from prog_models.models import BatteryCircuit
 from prog_algs import *
 
 def run_example():
@@ -30,7 +30,7 @@ def run_example():
         return output
 
     # Setup particle filter to use measurement eqn
-    filt = state_estimators.particle_filter.ParticleFilter(batt, batt.parameters['x0'], measurement_eqn = measure)
+    filt = state_estimators.ParticleFilter(batt, batt.parameters['x0'], measurement_eqn = measure)
 
     # Simulate results
     print("Prior State:", filt.x.mean)

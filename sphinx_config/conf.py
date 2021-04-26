@@ -12,17 +12,17 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../src'))
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'Prognostics Algorithms Python Package'
 copyright = '2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.'
-author = 'Chris Teubert, Chetan Kulkarni, and Matteo Corbetta'
+author = 'Chris Teubert, Matteo Corbetta, and Chetan Kulkarni'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.0'
+release = '0.3.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -40,7 +40,7 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
-autodoc_mock_imports = ['numpy', 'scipy', 'filtpy']
+autodoc_mock_imports = ['numpy', 'scipy', 'filtpy', 'prog_models']
 
 
 # -- Options for HTML output -------------------------------------------------

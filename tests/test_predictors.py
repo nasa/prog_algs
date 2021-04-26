@@ -1,7 +1,7 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 import unittest
 
-from prog_models.prognostics_model import PrognosticsModel
+from prog_models import PrognosticsModel
 
 class MockProgModel(PrognosticsModel):
     states = ['a', 'b', 'c', 't']
@@ -41,9 +41,9 @@ class TestPredictors(unittest.TestCase):
         pred = TemplatePredictor(m)
 
     def test_MC(self):
-        from prog_algs.predictors import monte_carlo
+        from prog_algs.predictors import MonteCarlo
         m = MockProgModel()
-        mc = monte_carlo.MonteCarlo(m)
+        mc = MonteCarlo(m)
         samples = [
             {'a': 1, 'b': 2, 'c': -3.2},
             {'a': 2, 'b': 2, 'c': -3.2},

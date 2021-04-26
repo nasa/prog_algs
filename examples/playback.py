@@ -10,7 +10,7 @@ time_step = 0.1
 prediction_update_freq = 5 # Number of steps between prediction update
 
 def run_example():
-    from prog_models.models.battery_circuit import BatteryCircuit
+    from prog_models.models import BatteryCircuit
     from prog_algs.metrics import samples as metrics
     from prog_algs import state_estimators, predictors
 
@@ -21,12 +21,12 @@ def run_example():
     batt = BatteryCircuit()
 
     # Setup State Estimation
-    filt = state_estimators.unscented_kalman_filter.UnscentedKalmanFilter(batt, batt.parameters['x0'])
+    filt = state_estimators.UnscentedKalmanFilter(batt, batt.parameters['x0'])
 
     # Setup Prediction
     def future_loading(t, x=None):
         return {'i': 2.35}
-    mc = predictors.monte_carlo.MonteCarlo(batt)
+    mc = predictors.MonteCarlo(batt)
 
     # Prepare Plot
     fig, ax = plt.subplots()

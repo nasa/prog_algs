@@ -31,13 +31,15 @@ setup(
         'Programming Language :: Python :: 3 :: Only'
     ],
     keywords = ['prognostics', 'diagnostics', 'fault detection', 'fdir', 'prognostics and health management', 'PHM', 'health management'],
-    packages = ['prog_algs', 'prog_algs.metrics', 'prog_algs.state_estimators', 'prog_algs.uncertain_data', 'prog_algs.visualize'],
+    package_dir = {"":"src"},
+    packages = find_packages(where = 'src'),
     python_requires='>=3.6, <3.9',
     install_requires = [
         'numpy',
         'scipy',
-        'filtpy',
-        'matplotlib'
+        'filterpy',
+        'matplotlib',
+        'prog_models'
     ],
     license = 'NOSA',
     project_urls={  # Optional

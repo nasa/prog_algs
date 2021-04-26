@@ -5,34 +5,35 @@ The Prognostic Algorithm Package is a python framework for model-based prognosti
 ## Installation
 `pip3 install prog_algs`
 
-## Directory Structure 
+## Repository Directory Structure 
 
-`prog_algs/` - The prognostics algorithm python package
-&nbsp;&nbsp;&nbsp;&nbsp;  |- `predictors/` - Algorithms for performing the prediction step of model-based prognostics
-&nbsp;&nbsp;&nbsp;&nbsp;  |- `samplers/` - Standard tools for performing state sampling
-&nbsp;&nbsp;&nbsp;&nbsp;  |- `state_estimators/` - Algorithms for performing the state estimation step of model-based prognostics
-`benchmarking_example` - An example using metrics for benchmarking
-`example.py` - An example python script using prog_algs 
-`README.md` - The readme (this file)
-`requirements.txt` - python library dependiencies required to be met to use this package. Install using `pip install -r requirements.txt`
+`prog_algs/` - The prognostics algorithm python package<br />
+&nbsp;&nbsp; |- `predictors/` - Algorithms for performing the prediction step of model-based prognostics<br />
+&nbsp;&nbsp; |- `samplers/` - Standard tools for performing state sampling<br />
+&nbsp;&nbsp; |- `state_estimators/` - Algorithms for performing the state estimation step of model-based prognostics<br />
+`benchmarking_example` - An example using metrics for benchmarking<br />
+`example.py` - An example python script using prog_algs<br />
+`README.md` - The readme (this file)<br />
+`requirements.txt` - python library dependiencies required to be met to use this package. Install using `pip install -r requirements.txt`<br />
+`tutorial.ipynb` - Tutorial (Juypter Notebook)
 
 ## Citing this repository
 Use the following to cite this repository:
 
 ```
-@misc{2020_nasa_prog_model,
-    author    = {Christopher Teubert and Chetan Kulkarni},
+@misc{2020_nasa_prog_algs,
+    author    = {Christopher Teubert and Matteo Corbetta and Chetan Kulkarni},
     title     = {Prognostics Algorithm Python Package},
-    month     = Oct,
-    year      = 2020,
-    version   = {0.0.1},
-    url       = {TBD}
+    month     = Apr,
+    year      = 2021,
+    version   = {0.3.0},
+    url       = {https://github.com/nasa/prog_algs}
     }
 ```
 
 The corresponding reference should look like this:
 
-C. Teubert, and C. Kulkarni, Prognostics Algorithm Python Package, v0.0.1, Oct. 2020. URL TBD.
+C. Teubert, M. Corbetta, and C. Kulkarni, Prognostics Algorithm Python Package, v0.3.0, Apr. 2021. URL https://github.com/nasa/prog_algs.
 
 ## Notices
 

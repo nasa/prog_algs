@@ -2,7 +2,7 @@
 
 from prog_algs import predictors
 
-class TemplatePredictor(predictor.Predictor):
+class TemplatePredictor(predictors.Predictor):
     """
     Template class for performing model-based prediction
     """

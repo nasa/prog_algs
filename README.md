@@ -5,6 +5,9 @@ The Prognostic Algorithm Package is a python framework for model-based prognosti
 ## Installation
 `pip3 install prog_algs`
 
+## Documentation
+See documentation [here](https://nasa.github.io/prog_algs/)
+
 ## Repository Directory Structure 
 
 `prog_algs/` - The prognostics algorithm python package<br />

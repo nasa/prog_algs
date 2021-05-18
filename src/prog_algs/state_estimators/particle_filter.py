@@ -59,7 +59,7 @@ class ParticleFilter(state_estimator.StateEstimator):
             x = array(list(x0.values()))
             sd = array([self.parameters['x0_uncertainty']] * len(x0))
             samples = array([random.normal(x, sd) for i in range(self.parameters['num_particles'])])
-            self.particles = array([{key: value for (key, value) in zip(model.states, x)} for x in samples])
+            self.particles = array([{key: value for (key, value) in zip(x0.keys(), x)} for x in samples])
         else:
             raise ProgAlgTypeError
     

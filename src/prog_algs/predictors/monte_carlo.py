@@ -94,7 +94,6 @@ class MonteCarlo(predictor.Predictor):
         future_load.fcn = future_loading_eqn
 
         # Optimization to reduce lookup
-        output = self.model.output
         simulate_to_threshold = self.model.simulate_to_threshold
         threshold_met = self.model.threshold_met
         prediction_fcn.params = params

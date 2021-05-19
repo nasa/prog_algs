@@ -4,24 +4,19 @@ from . import predictor
 from numpy import empty
 from ..exceptions import ProgAlgTypeError
 from copy import deepcopy
-from multiprocessing import Pool
-from itertools import repeat
+from functools import partial
 
-def future_load(t, x = None):
-    # This high-level fcn is required for multi-threading to work
-    return future_load.fcn(t, x)
-
-def prediction_fcn(x):
+def prediction_fcn(x, model, params, loading):
     # This is the main prediction function for the multi-threading
-    first_output = prediction_fcn.output(x)
-    prediction_fcn.params['x'] = x
-    loading = deepcopy(future_load) # Make a copy for this sample - otherwise moving average approaches wouldn't work
-    (times, inputs, states, outputs, event_states) = prediction_fcn.simulate_to_threshold(loading, first_output, **prediction_fcn.params)
-    if (prediction_fcn.threshold_met(states[-1])):
+    first_output = model.output(x)
+    params['x'] = x
+    (times, inputs, states, outputs, event_states) = model.simulate_to_threshold(loading, first_output, **params)
+    if (model.threshold_met(states[-1])):
         time_of_event = times[-1]
     else:
         time_of_event = None
     return (times, inputs, states, outputs, event_states, time_of_event)
+
 
 class MonteCarlo(predictor.Predictor):
     """
@@ -91,23 +86,19 @@ class MonteCarlo(predictor.Predictor):
         outputs_all = empty(state_samples.size, dtype=object)
         event_states_all = empty(state_samples.size, dtype=object)
         time_of_event = empty(state_samples.size)
-        future_load.fcn = future_loading_eqn
-
-        # Optimization to reduce lookup
-        simulate_to_threshold = self.model.simulate_to_threshold
-        threshold_met = self.model.threshold_met
-        prediction_fcn.params = params
-        prediction_fcn.output = self.model.output
-        prediction_fcn.simulate_to_threshold = self.model.simulate_to_threshold
-        prediction_fcn.threshold_met = self.model.threshold_met
 
         # Perform prediction
-        with Pool(params['cores']) as p:
-            result = p.starmap(prediction_fcn, zip(state_samples))
-            times_all = [tmp[0] for tmp in result]
-            inputs_all = [tmp[1] for tmp in result]
-            states_all = [tmp[2] for tmp in result]
-            outputs_all = [tmp[3] for tmp in result]
-            event_states_all = [tmp[4] for tmp in result]
-            time_of_event = [tmp[5] for tmp in result]
+        pred_fcn = partial(
+            prediction_fcn, 
+            model = self.model, 
+            params = params,
+            loading = future_loading_eqn)
+        
+        result = [pred_fcn(sample) for sample in state_samples]
+        times_all = [tmp[0] for tmp in result]
+        inputs_all = [tmp[1] for tmp in result]
+        states_all = [tmp[2] for tmp in result]
+        outputs_all = [tmp[3] for tmp in result]
+        event_states_all = [tmp[4] for tmp in result]
+        time_of_event = [tmp[5] for tmp in result]
         return (times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event)

@@ -44,7 +44,6 @@ class ParticleFilter(state_estimator.StateEstimator):
 
         self.t = 0 # last timestep
 
-
         if measurement_eqn is None:
             self.__measure = model.output
         else:
@@ -70,6 +69,7 @@ class ParticleFilter(state_estimator.StateEstimator):
     def estimate(self, t, u, z):
         # todo(CT): assert t > self.t?
         dt = t - self.t
+        self.t = t
         weights = empty(len(self.particles))
         
         # Optimization

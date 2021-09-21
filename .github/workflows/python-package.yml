@@ -11,7 +11,6 @@ jobs:
 
     steps:
     # NOTE: Uses pre-release (required for this version)
-    # TODO(CT): On future versions, have seperate test for released version
     - name: Clone prog_models
       uses: actions/checkout@v2
       with:
@@ -55,7 +54,6 @@ jobs:
         python-version: [3.6, 3.7, 3.8]
     steps:
     # NOTE: Uses pre-release (required for this version)
-    # TODO(CT): On future versions, have seperate test for released version
     - name: Clone prog_models
       uses: actions/checkout@v2
       with:

@@ -5,7 +5,7 @@ from . import predictors, state_estimators, uncertain_data
 
 import numpy as np
 
-__version__ = '1.0.0'
+__version__ = '0.3.4'
 
 def run_prog_playback(obs, pred, future_loading, output_measurements, **kwargs):
     config = {# Defaults

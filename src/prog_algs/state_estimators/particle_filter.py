@@ -2,12 +2,13 @@
 
 from . import state_estimator
 from numpy import array, empty, random
-import filterpy.monte_carlo
+from filterpy.monte_carlo import residual_resample
 from numbers import Number
 from scipy.stats import norm
 from ..uncertain_data import UnweightedSamples
 from ..exceptions import ProgAlgTypeError
 from copy import deepcopy
+from math import exp
 
 class ParticleFilter(state_estimator.StateEstimator):
     """
@@ -31,7 +32,7 @@ class ParticleFilter(state_estimator.StateEstimator):
     default_parameters = {
             'n': 0.1, # Sensor Noise
             'num_particles': 20, 
-            'resample_fcn': filterpy.monte_carlo.residual_resample, # Resampling function ([weights]) -> [indexes]
+            'resample_fcn': residual_resample, # Resampling function ([weights]) -> [indexes]
             'x0_uncertainty': 0.5   # Initial State Uncertainty
                                     # Can be:
                                     #   1. scalar (standard deviation applied to all),

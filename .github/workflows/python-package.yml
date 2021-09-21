@@ -2,13 +2,6 @@
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
 name: Python package
-
-on:
-  push:
-  pull_request:
-    paths:
-      - prog_algs
-
 jobs:
   analysis:
     runs-on: ubuntu-latest
@@ -17,6 +10,17 @@ jobs:
         python-version: [3.6, 3.7, 3.8]
 
     steps:
+    # NOTE: Uses pre-release (required for this version)
+    # TODO(CT): On future versions, have seperate test for released version
+    - name: Clone prog_models
+      uses: actions/checkout@v2
+      with:
+        repository: nasa/prog_models
+        ref: refs/heads/dev
+        path: prog_models
+    - name: Install prog_models
+      run: | 
+        python -m pip install -e ./prog_models
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
@@ -50,6 +54,17 @@ jobs:
       matrix:
         python-version: [3.6, 3.7, 3.8]
     steps:
+    # NOTE: Uses pre-release (required for this version)
+    # TODO(CT): On future versions, have seperate test for released version
+    - name: Clone prog_models
+      uses: actions/checkout@v2
+      with:
+        repository: nasa/prog_models
+        ref: refs/heads/dev
+        path: prog_models
+    - name: Install prog_models
+      run: | 
+        python -m pip install -e ./prog_models
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2

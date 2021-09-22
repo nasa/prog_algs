@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod, abstractproperty
 from numpy.random import choice, multivariate_normal
 from numpy import array, append, delete, cov
+from prog_algs.visualize import plot_scatter
 
 class UncertainData(ABC):
     """
@@ -50,6 +51,21 @@ class UncertainData(ABC):
             [string]: keys
         """
     # TODO(CT): Consider median
+
+    def plot_scatter(self, fig = None, keys = None, num_samples = 100, **kwargs):
+        """
+        Produce a scatter plot for a given Uncertain Data Type
+
+        Args:
+            states (UncertainData): [description]
+            fig ([type], optional): [description]. Defaults to None.
+            keys ([type], optional): [description]. Defaults to None.
+
+        Returns:
+            [type]: [description]
+        """
+        samples = self.sample(num_samples)
+        return plot_scatter(samples, fig=fig, keys=keys, **kwargs)
 
 class ScalarData(UncertainData):
     """

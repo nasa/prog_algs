@@ -2,6 +2,7 @@
 
 from prog_models.models import BatteryCircuit
 from prog_algs import *
+from prog_algs import run_prog_playback
 
 def run_example():
     ## Setup

@@ -6,6 +6,7 @@ from .test_integration import TestIntegration
 from .test_uncertain_data import TestUncertainData
 from .test_examples import TestExamples
 from .test_misc import TestMisc
+from .test_visualize import TestVisualize
 import unittest
 import sys
 from examples import basic_example
@@ -34,6 +35,9 @@ if __name__ == '__main__':
 
     print('\n\nUncertain Data Tests')
     unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestUncertainData))
+
+    print('\n\nVisualize Tests')
+    unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestVisualize))
 
     print('\n\nExamples Tests')
     unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestExamples))

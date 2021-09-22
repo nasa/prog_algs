@@ -54,18 +54,26 @@ class UncertainData(ABC):
 
     def plot_scatter(self, fig = None, keys = None, num_samples = 100, **kwargs):
         """
-        Produce a scatter plot for a given Uncertain Data Type
+        Produce a scatter plot
 
         Args:
-            states (UncertainData): [description]
-            fig ([type], optional): [description]. Defaults to None.
-            keys ([type], optional): [description]. Defaults to None.
+            fig (Figure, optional): Existing figure previously used to plot states. If passed a figure argument additional data will be added to the plot. Defaults to creating new figure
+            keys (list of strings, optional): Keys to plot. Defaults to all keys.
+            num_samples (int, optional): Number of samples to plot. Defaults to 100
+            **kwargs (optional): Additional keyword arguments passed to scatter function.
 
         Returns:
-            [type]: [description]
+            Figure
+
+        Example:
+            states = UnweightedSamples([1, 2, 3, 4, 5])
+            states.plot_scatter() # With 100 samples
+            states.plot_scatter(num_samples=5) # Specifying the number of samples to plot
+            states.plot_scatter(keys=['state1', 'state2']) # only plot those keys
         """
         samples = self.sample(num_samples)
         return plot_scatter(samples, fig=fig, keys=keys, **kwargs)
+
 
 class ScalarData(UncertainData):
     """

@@ -42,6 +42,13 @@ class UncertainData(ABC):
             [[float]]: covariance matrix
         """
 
+    @abstractmethod
+    def keys(self):
+        """Get the keys for the property represented
+
+        Returns:
+            [string]: keys
+        """
     # TODO(CT): Consider median
 
 class ScalarData(UncertainData):
@@ -62,8 +69,11 @@ class ScalarData(UncertainData):
 
     @property
     def cov(self):
-        return [[0 for i in self.__state] for j in self.__state]
+        return [[0]]
 
+    def keys(self):
+        return self.__state.keys()
+        
     def sample(self, num_samples = 1):
         return array([self.__state] * num_samples)
 
@@ -86,6 +96,11 @@ class UnweightedSamples(UncertainData):
     def sample(self, num_samples = 1):
         # Completely random resample
         return choice(self.__samples, num_samples)
+
+    def keys(self):
+        if len(self.__samples) == 0:
+            return [[]]
+        return self[0].keys()
 
     @property
     def mean(self):
@@ -190,6 +205,9 @@ class MultivariateNormalDist(UncertainData):
         samples = multivariate_normal(self.__mean, self.__covar, num_samples)
         samples = array([{key: value for (key, value) in zip(self.__labels, x)} for x in samples])
         return samples
+
+    def keys(self):
+        return self.__labels
 
     @property
     def mean(self):

@@ -87,7 +87,7 @@ def plot_scatter(samples, fig = None, keys = None, **kwargs):
     # Set legend
     if parameters['legend'] == 'auto' or parameters['legend']:
         labels = [thing.get_label() for thing in axes[0][0].get_children()
-            if type(thing) is PathCollection]
+            if isinstance(thing, PathCollection)]
         if parameters['legend'] == 'auto' and len(labels) > 0 or parameters['legend']:
             fig.legend(labels=labels, loc='upper right')
 

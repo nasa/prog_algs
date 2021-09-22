@@ -29,6 +29,8 @@ def run_example():
     filt.estimate(t, load, {'t': 32.2, 'v': 3.915})
     print("Posterior State:", filt.x.mean)
     print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
+    filt.x.plot_scatter(fig= fig, label='posterior')
+
     ## Prediction - Predict EOD given current state
     # Setup prediction
     mc = predictors.MonteCarlo(batt)
@@ -44,6 +46,14 @@ def run_example():
     print('\tPercentage between 3005.2 and 3005.6: ', metrics.percentage_in_bounds(eol, [3005.2, 3005.6])*100.0, '%')
     print('\tAssuming ground truth 3002.25: ', metrics.eol_metrics(eol, 3005.25))
     print('\tP(Success) if mission ends at 3002.25: ', metrics.prob_success(eol, 3005.25))
+
+    # Plot state transition 
+    fig = states.snapshot(0).plot_scatter(label = "t={}".format(int(times[0][0])))
+    states.snapshot(10).plot_scatter(fig = fig, label = "t={}".format(int(times[0][10])))
+    states.snapshot(50).plot_scatter(fig = fig, label = "t={}".format(int(times[0][50])))
+
+    states.snapshot(-1).plot_scatter(fig = fig, label = "t={}".format(int(times[0][-1])))
+    plt.show()
 
 # This allows the module to be executed directly 
 if __name__ == '__main__':

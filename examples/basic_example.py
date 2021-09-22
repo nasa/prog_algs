@@ -59,14 +59,6 @@ def run_example():
     print('\tAssuming ground truth 3002.25: ', metrics.eol_metrics(eol, 3005.25))
     print('\tP(Success) if mission ends at 3002.25: ', metrics.prob_success(eol, 3005.25))
 
-    # Plot state transition 
-    fig = states.snapshot(0).plot_scatter(label = "t={}".format(int(times[0][0])))
-    states.snapshot(10).plot_scatter(fig = fig, label = "t={}".format(int(times[0][10])))
-    states.snapshot(50).plot_scatter(fig = fig, label = "t={}".format(int(times[0][50])))
-
-    states.snapshot(-1).plot_scatter(fig = fig, label = "t={}".format(int(times[0][-1])))
-    plt.show()
-
 # This allows the module to be executed directly 
 if __name__ == '__main__':
     run_example()

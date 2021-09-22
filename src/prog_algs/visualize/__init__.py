@@ -89,6 +89,7 @@ def plot_scatter(samples, fig = None, keys = None, **kwargs):
         labels = [thing.get_label() for thing in axes[0][0].get_children()
             if isinstance(thing, PathCollection)]
         if parameters['legend'] == 'auto' and len(labels) > 0 or parameters['legend']:
+            fig.legend().remove()  # Remove any existing legend - prevents "ghost effect"
             fig.legend(labels=labels, loc='upper right')
 
     return fig

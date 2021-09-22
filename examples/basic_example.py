@@ -29,7 +29,6 @@ def run_example():
     filt.estimate(t, load, {'t': 32.2, 'v': 3.915})
     print("Posterior State:", filt.x.mean)
     print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
-    filt.x.plot_scatter(fig= fig, label='posterior')
 
     ## Prediction - Predict EOD given current state
     # Setup prediction

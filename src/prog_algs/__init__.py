@@ -1,13 +1,15 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-__all__ = ['predictors', 'uncertain_data', 'state_estimators', 'metrics']
+__all__ = ['predictors', 'uncertain_data', 'state_estimators', 'metrics', 'run_prog_playback']
 from . import predictors, state_estimators, uncertain_data
 
 import numpy as np
+import warnings
 
 __version__ = '1.0.0'
 
 def run_prog_playback(obs, pred, future_loading, output_measurements, **kwargs):
+    warnings.warn("Depreciated in 1.1.0, will be removed in a future release.", DeprecationWarning)
     config = {# Defaults
         'predict_rate': 0, # Default- predict every step
         'num_samples': 10,

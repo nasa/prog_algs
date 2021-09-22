@@ -28,16 +28,16 @@ class Prediction(UserList):
         """
         return self.times == other.times and self.data == other.data
 
-    def sample(self, id):
-        """Get sample by sample_id, equivalent to prediction[id]
+    def sample(self, index):
+        """Get sample by sample_id, equivalent to prediction[index]
 
         Args:
-            id (int): Id of sample
+            index (int): index of sample
 
         Returns:
             SimResult: Values for that sample at different times where result[i] corresponds to time[i]
         """
-        return self[id]
+        return self[index]
 
     def snapshot(self, index):
         """Get all samples from a specific timestep

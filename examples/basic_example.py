@@ -22,13 +22,19 @@ def run_example():
     ## State Estimation - perform a single ukf state estimate step
     # filt = state_estimators.UnscentedKalmanFilter(batt, batt.parameters['x0'])
     filt = state_estimators.ParticleFilter(batt, batt.parameters['x0'])
+
+    import matplotlib.pyplot as plt  # For plotting
     print("Prior State:", filt.x.mean)
     print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
+    fig = filt.x.plot_scatter(label='prior')
+    example_measurements = {'t': 32.2, 'v': 3.915}
     t = 0.1
-    load = future_loading(t)
-    filt.estimate(t, load, {'t': 32.2, 'v': 3.915})
+    filt.estimate(t, future_loading(t), example_measurements)
     print("Posterior State:", filt.x.mean)
     print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
+    filt.x.plot_scatter(fig= fig, label='posterior')
+    plt.show()
+
     ## Prediction - Predict EOD given current state
     # Setup prediction
     mc = predictors.MonteCarlo(batt)

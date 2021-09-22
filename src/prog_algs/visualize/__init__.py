@@ -49,6 +49,9 @@ def plot_scatter(samples, fig = None, keys = None, **kwargs):
     keys = list(keys)
 
     n = len(keys)
+    if n < 2:
+        raise Exception("At least 2 states required for scatter, got {}".format(n))
+
     if fig is None:
         # If no figure provided, create one
         fig = plt.figure()

@@ -76,12 +76,14 @@ class ParticleFilter(state_estimator.StateEstimator):
         # Optimization
         particles = self.particles
         next_state = self.model.next_state
+        apply_process_noise = self.model.apply_process_noise
         output = self.__measure
         noise_params = self.parameters['n']
 
         # Propogate and calculate weights
         for i in range(len(particles)):
             self.particles[i] = next_state(particles[i], u, dt) 
+            self.particles[i] = apply_process_noise(self.particles[i])
             zPredicted = output(self.particles[i])
             weights[i] = sum([norm(zPredicted[key], noise_params[key]).pdf(z[key]) for key in zPredicted.keys()])
         

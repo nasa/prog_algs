@@ -1,0 +1,20 @@
+name: Sync
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  sync-branches:
+    runs-on: ubuntu-latest
+    name: Syncing branch dev_v1_2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Opening pull request
+        id: pull
+        uses: tretuna/sync-branches@1.2.0
+        with:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          FROM_BRANCH: "dev"
+          TO_BRANCH: "dev_v1_2"

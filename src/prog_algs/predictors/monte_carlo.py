@@ -1,6 +1,7 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from . import predictor
+from .prediction import Prediction
 from numpy import empty
 from ..exceptions import ProgAlgTypeError
 from copy import deepcopy
@@ -96,9 +97,9 @@ class MonteCarlo(predictor.Predictor):
         
         result = [pred_fcn(sample) for sample in state_samples]
         times_all = [tmp[0] for tmp in result]
-        inputs_all = [tmp[1] for tmp in result]
-        states_all = [tmp[2] for tmp in result]
-        outputs_all = [tmp[3] for tmp in result]
-        event_states_all = [tmp[4] for tmp in result]
-        time_of_event = [tmp[5] for tmp in result]
+        inputs_all = Prediction(times_all, [tmp[1] for tmp in result])
+        states_all = Prediction(times_all, [tmp[2] for tmp in result])
+        outputs_all = Prediction(times_all, [tmp[3] for tmp in result])
+        event_states_all = Prediction(times_all, [tmp[4] for tmp in result])
+        time_of_event = Prediction(times_all, [tmp[5] for tmp in result])
         return (times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event)

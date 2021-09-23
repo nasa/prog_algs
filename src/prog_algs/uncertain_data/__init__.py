@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod, abstractproperty
 from numpy.random import choice, multivariate_normal
 from numpy import array, append, delete, cov
+from prog_algs.visualize import plot_scatter
 
 class UncertainData(ABC):
     """
@@ -42,7 +43,37 @@ class UncertainData(ABC):
             [[float]]: covariance matrix
         """
 
+    @abstractmethod
+    def keys(self):
+        """Get the keys for the property represented
+
+        Returns:
+            [string]: keys
+        """
     # TODO(CT): Consider median
+
+    def plot_scatter(self, fig = None, keys = None, num_samples = 100, **kwargs):
+        """
+        Produce a scatter plot
+
+        Args:
+            fig (Figure, optional): Existing figure previously used to plot states. If passed a figure argument additional data will be added to the plot. Defaults to creating new figure
+            keys (list of strings, optional): Keys to plot. Defaults to all keys.
+            num_samples (int, optional): Number of samples to plot. Defaults to 100
+            **kwargs (optional): Additional keyword arguments passed to scatter function.
+
+        Returns:
+            Figure
+
+        Example:
+            states = UnweightedSamples([1, 2, 3, 4, 5])
+            states.plot_scatter() # With 100 samples
+            states.plot_scatter(num_samples=5) # Specifying the number of samples to plot
+            states.plot_scatter(keys=['state1', 'state2']) # only plot those keys
+        """
+        samples = self.sample(num_samples)
+        return plot_scatter(samples, fig=fig, keys=keys, **kwargs)
+
 
 class ScalarData(UncertainData):
     """
@@ -65,8 +96,11 @@ class ScalarData(UncertainData):
 
     @property
     def cov(self):
-        return [[0 for i in self.__state] for j in self.__state]
+        return [[0]]
 
+    def keys(self):
+        return self.__state.keys()
+        
     def sample(self, num_samples = 1):
         return array([self.__state] * num_samples)
 
@@ -90,8 +124,14 @@ class UnweightedSamples(UncertainData):
         # Completely random resample
         return choice(self.__samples, num_samples)
 
+    def keys(self):
+        if len(self.__samples) == 0:
+            return [[]]
+        return self[0].keys()
+
     def __eq__(self, other):
         return isinstance(other, UnweightedSamples) and self.__samples == other.raw_samples()
+
 
     @property
     def mean(self):
@@ -196,6 +236,9 @@ class MultivariateNormalDist(UncertainData):
         samples = multivariate_normal(self.__mean, self.__covar, num_samples)
         samples = array([{key: value for (key, value) in zip(self.__labels, x)} for x in samples])
         return samples
+
+    def keys(self):
+        return self.__labels
 
     @property
     def mean(self):

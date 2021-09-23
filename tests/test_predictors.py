@@ -59,5 +59,56 @@ class TestPredictors(unittest.TestCase):
             else:
                 return {'i1': -4, 'i2': 2.5}
 
-        
-        
+    def test_prediction(self):
+        from prog_algs.predictors.prediction import Prediction
+        from prog_algs.uncertain_data import UnweightedSamples
+        times = [list(range(10))]*3
+        states = [list(range(10)), list(range(1, 11)), list(range(-1, 9))]
+        p = Prediction(times, states)
+
+        self.assertEqual(p[0], states[0])
+        self.assertEqual(p.sample(0), states[0])
+        self.assertEqual(p.sample(-1), states[-1])
+        self.assertEqual(p.snapshot(0), UnweightedSamples([0, 1, -1]))
+        self.assertEqual(p.snapshot(-1), UnweightedSamples([9, 10, 8]))
+        self.assertEqual(p.time(0), times[0])
+        self.assertEqual(p.time(-1), times[-1])
+
+        # Out of range
+        try:
+            tmp = p[10]
+            self.fail()
+        except Exception:
+            pass
+
+        try:
+            tmp = p.sample(10)
+            self.fail()
+        except Exception:
+            pass
+
+        try:
+            tmp = p.time(10)
+            self.fail()
+        except Exception:
+            pass
+
+        # Bad type
+        try:
+            tmp = p.sample('abc')
+            self.fail()
+        except Exception:
+            pass
+
+# This allows the module to be executed directly    
+def run_tests():
+    l = unittest.TestLoader()
+    runner = unittest.TextTestRunner()
+    print("\n\nTesting Predictor")
+    result = runner.run(l.loadTestsFromTestCase(TestPredictors)).wasSuccessful()
+
+    if not result:
+        raise Exception("Failed test")
+
+if __name__ == '__main__':
+    run_tests()

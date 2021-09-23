@@ -29,6 +29,7 @@ def run_example():
     filt.estimate(t, load, {'t': 32.2, 'v': 3.915})
     print("Posterior State:", filt.x.mean)
     print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
+
     ## Prediction - Predict EOD given current state
     # Setup prediction
     mc = predictors.MonteCarlo(batt)
@@ -36,8 +37,20 @@ def run_example():
         samples = filt.x.sample(20)
     else: # Particle Filter
         samples = filt.x.raw_samples()
+
     # Predict with a step size of 0.1
     (times, inputs, states, outputs, event_states, eol) = mc.predict(samples, future_loading, dt=0.1)
+
+    # The results of prediction can be accessed by sample, e.g.,
+    times_sample_1 = times[1]
+    states_sample_1 = states[1]
+    # now states_sample_1[n] corresponds to time_sample_1[n]
+    # you can also plot the results (state_sample_1.plot())
+
+    # You can also access a state at a specific time using the .snapshot function
+    states_time_1 = states.snapshot(1)
+    # now you have all the samples from the times[sample][1]
+    
     ## Print Metrics
     print("\nEOD Predictions (s):")
     from prog_algs.metrics import samples as metrics 

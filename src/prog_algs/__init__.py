@@ -6,7 +6,7 @@ from . import predictors, state_estimators, uncertain_data
 import numpy as np
 import warnings
 
-__version__ = '1.0.0'
+__version__ = '1.1.0'
 
 def run_prog_playback(obs, pred, future_loading, output_measurements, **kwargs):
     warnings.warn("Depreciated in 1.1.0, will be removed in a future release.", DeprecationWarning)

@@ -1,8 +1,9 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 import unittest
+from prog_models import PrognosticsModel
 from prog_algs.exceptions import ProgAlgTypeError
 
-class MockProgModel():
+class MockProgModel(PrognosticsModel):
     states = ['a', 'b', 'c', 't']
     inputs = ['i1', 'i2']
     outputs = ['o1']

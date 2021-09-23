@@ -17,6 +17,16 @@ jobs:
         python-version: [3.6, 3.7, 3.8]
 
     steps:
+    # NOTE: Uses pre-release (required for this version)
+    - name: Clone prog_models
+      uses: actions/checkout@v2
+      with:
+        repository: nasa/prog_models
+        ref: refs/heads/dev
+        path: prog_models
+    - name: Install prog_models
+      run: | 
+        python -m pip install -e ./prog_models
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
@@ -50,6 +60,16 @@ jobs:
       matrix:
         python-version: [3.6, 3.7, 3.8]
     steps:
+    # NOTE: Uses pre-release (required for this version)
+    - name: Clone prog_models
+      uses: actions/checkout@v2
+      with:
+        repository: nasa/prog_models
+        ref: refs/heads/dev
+        path: prog_models
+    - name: Install prog_models
+      run: | 
+        python -m pip install -e ./prog_models
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2

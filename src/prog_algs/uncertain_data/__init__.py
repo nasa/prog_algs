@@ -87,6 +87,9 @@ class ScalarData(UncertainData):
         """
         self.__state = state
 
+    def __eq__(self, other):
+        return isinstance(other, ScalarData) and other.mean() == self.__state
+
     @property
     def mean(self):
         return self.__state
@@ -125,6 +128,10 @@ class UnweightedSamples(UncertainData):
         if len(self.__samples) == 0:
             return [[]]
         return self[0].keys()
+
+    def __eq__(self, other):
+        return isinstance(other, UnweightedSamples) and self.__samples == other.raw_samples()
+
 
     @property
     def mean(self):

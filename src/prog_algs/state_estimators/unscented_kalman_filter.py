@@ -46,17 +46,17 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
 
         if measurement_eqn is None: 
             def measure(x):
-                x = {key: value for (key, value) in zip(model.states, x)}
+                x = {key: value for (key, value) in zip(x0.keys(), x)}
                 z = model.output(x)
                 return array(list(z.values()))
         else:
             def measure(x):
-                x = {key: value for (key, value) in zip(model.states, x)}
+                x = {key: value for (key, value) in zip(x0.keys(), x)}
                 z = measurement_eqn(x)
                 return array(list(z.values()))
 
         if 'Q' not in self.parameters:
-            self.parameters['Q'] = diag([1.0e-1 for i in model.states])
+            self.parameters['Q'] = diag([1.0e-1 for i in x0.keys()])
         if 'R' not in self.parameters:
             # Size of what's being measured (not output) 
             # This is determined by running the measure function on the first state

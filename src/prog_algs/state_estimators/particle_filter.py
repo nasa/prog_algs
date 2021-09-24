@@ -2,12 +2,13 @@
 
 from . import state_estimator
 from numpy import array, empty, random
-import filterpy.monte_carlo
+from filterpy.monte_carlo import residual_resample
 from numbers import Number
 from scipy.stats import norm
 from ..uncertain_data import UnweightedSamples
 from ..exceptions import ProgAlgTypeError
 from copy import deepcopy
+from math import exp
 
 class ParticleFilter(state_estimator.StateEstimator):
     """
@@ -28,12 +29,10 @@ class ParticleFilter(state_estimator.StateEstimator):
          * x0_uncertainty : Initial uncertainty in state e.g., 0.5
          * R (Number) : Measurement Noise. e.g., 0.1
     """
-    t = 0 # last timestep
-
     default_parameters = {
             'n': 0.1, # Sensor Noise
             'num_particles': 20, 
-            'resample_fcn': filterpy.monte_carlo.residual_resample, # Resampling function ([weights]) -> [indexes]
+            'resample_fcn': residual_resample, # Resampling function ([weights]) -> [indexes]
             'x0_uncertainty': 0.5   # Initial State Uncertainty
                                     # Can be:
                                     #   1. scalar (standard deviation applied to all),
@@ -43,6 +42,8 @@ class ParticleFilter(state_estimator.StateEstimator):
 
     def __init__(self, model, x0, measurement_eqn = None, **kwargs):
         super().__init__(model, x0, measurement_eqn = measurement_eqn, **kwargs)
+
+        self.t = 0 # last timestep
 
         if measurement_eqn is None:
             self.__measure = model.output
@@ -69,6 +70,7 @@ class ParticleFilter(state_estimator.StateEstimator):
     def estimate(self, t, u, z):
         # todo(CT): assert t > self.t?
         dt = t - self.t
+        self.t = t
         weights = empty(len(self.particles))
         
         # Optimization

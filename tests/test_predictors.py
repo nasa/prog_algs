@@ -3,6 +3,7 @@ import unittest
 
 from prog_models import PrognosticsModel
 
+
 class MockProgModel(PrognosticsModel):
     states = ['a', 'b', 'c', 't']
     inputs = ['i1', 'i2']

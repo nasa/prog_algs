@@ -4,6 +4,7 @@ import unittest
 from prog_algs.uncertain_data import UnweightedSamples, MultivariateNormalDist, ScalarData
 from numpy import array
 
+
 class TestUncertainData(unittest.TestCase):
     def test_unweightedsamples(self):
         empty_samples = UnweightedSamples()
@@ -21,14 +22,14 @@ class TestUncertainData(unittest.TestCase):
         self.assertDictEqual(samples[0], {'a': 1, 'b': 2})
         self.assertEqual(samples.size, 1)
 
-        s = UnweightedSamples(array([{'a': 1, 'b':2}, {'a': 3, 'b':-2}]))
+        s = UnweightedSamples([{'a': 1, 'b':2}, {'a': 3, 'b':-2}])
         self.assertDictEqual(s.mean, {'a': 2, 'b': 0})
         self.assertEqual(s.size, 2)
         samples = s.sample(10)
         self.assertEqual(samples.size, 10)
         del s[0]
         self.assertEqual(s.size, 1)
-        self.assertEqual(s.raw_samples().size, 1)
+        self.assertEqual(len(s.raw_samples()), 1)
         s[0] = {'a': 2, 'b': 10}
         self.assertDictEqual(s[0], {'a': 2, 'b': 10})
         for i in range(50):
@@ -54,3 +55,16 @@ class TestUncertainData(unittest.TestCase):
         d = ScalarData(12)
         self.assertEqual(d.mean, 12)
         self.assertListEqual(list(d.sample(10)), [12]*10)
+
+# This allows the module to be executed directly    
+def run_tests():
+    l = unittest.TestLoader()
+    runner = unittest.TextTestRunner()
+    print("\n\nTesting Uncertain Data")
+    result = runner.run(l.loadTestsFromTestCase(TestUncertainData)).wasSuccessful()
+
+    if not result:
+        raise Exception("Failed test")
+
+if __name__ == '__main__':
+    run_tests()

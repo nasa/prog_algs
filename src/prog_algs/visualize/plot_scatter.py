@@ -3,7 +3,7 @@ from matplotlib.collections import PathCollection
 import matplotlib.pyplot as plt
 from math import sqrt
 
-def plot_scatter(samples, fig = None, keys = None, **kwargs):
+def plot_scatter(samples, fig = None, keys = None, legend = 'auto', **kwargs):
     """
     Produce a scatter plot for a given list of states
 
@@ -11,11 +11,11 @@ def plot_scatter(samples, fig = None, keys = None, **kwargs):
         samples ([dict]): Non-empty list of states where each element is a dictionary containing a single sample
         fig (Figure, optional): Existing figure previously used to plot states. If passed a figure argument additional data will be added to the plot. Defaults to creating new figure
         keys (list of strings, optional): Keys to plot. Defaults to all keys.
-        **kwargs (optional): Additional keyword arguments passed to scatter function. Includes those supported by scatter and:
-          legend (optional): When the legend should be shown, options:
+        legend (optional): When the legend should be shown, options:
             False: Dont show legend
             "auto": Show legend automatically if more than one data set
             True: Always show legend
+        **kwargs (optional): Additional keyword arguments passed to scatter function. Includes those supported by scatter
 
     Returns:
         Figure
@@ -41,7 +41,7 @@ def plot_scatter(samples, fig = None, keys = None, **kwargs):
 
     # Handle input
     parameters = {  # defaults
-        'legend': 'auto'
+        'alpha': 0.5
     }
     parameters.update(kwargs)
 
@@ -79,17 +79,17 @@ def plot_scatter(samples, fig = None, keys = None, **kwargs):
             y_key = keys[j+1]
             x1 = [x[x_key] for x in samples]
             x2 = [x[y_key] for x in samples]
-            axes[j][i].scatter(x1, x2, **kwargs)
+            axes[j][i].scatter(x1, x2, **parameters)
 
         # Hide axes not used in plots 
         for j in range(0, i):
             axes[j][i].set_visible(False)
 
     # Set legend
-    if parameters['legend'] == 'auto' or parameters['legend']:
+    if legend == 'auto' or legend:
         labels = [thing.get_label() for thing in axes[0][0].get_children()
             if isinstance(thing, PathCollection)]
-        if parameters['legend'] == 'auto' and len(labels) > 0 or parameters['legend']:
+        if legend == 'auto' and len(labels) > 0 or legend:
             fig.legend().remove()  # Remove any existing legend - prevents "ghost effect"
             fig.legend(labels=labels, loc='upper right')
 

@@ -5,6 +5,7 @@ import sys
 from io import StringIO 
 from examples import *
 
+
 class TestExamples(unittest.TestCase):
     def test_main_ex(self):
         # set stdout (so it wont print)
@@ -49,3 +50,21 @@ class TestExamples(unittest.TestCase):
 
         # Reset stdout 
         sys.stdout = _stdout
+
+# This allows the module to be executed directly
+def main():
+    # This ensures that the directory containing ProgModelTemplate is in the python search directory
+    import sys
+    from os.path import dirname, join
+    sys.path.append(join(dirname(__file__), ".."))
+
+    l = unittest.TestLoader()
+    runner = unittest.TextTestRunner()
+    print("\n\nTesting Examples")
+    result = runner.run(l.loadTestsFromTestCase(TestExamples)).wasSuccessful()
+
+    if not result:
+        raise Exception("Failed test")
+
+if __name__ == '__main__':
+    main()

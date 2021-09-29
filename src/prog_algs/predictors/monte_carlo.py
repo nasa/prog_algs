@@ -1,11 +1,11 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from . import predictor
 from .prediction import Prediction
-from numpy import empty
+from .predictor import Predictor
 from ..exceptions import ProgAlgTypeError
 from copy import deepcopy
 from functools import partial
+from prog_algs.uncertain_data import UnweightedSamples
 
 def prediction_fcn(x, model, params, loading):
     # This is the main prediction function for the multi-threading
@@ -19,7 +19,7 @@ def prediction_fcn(x, model, params, loading):
     return (times, inputs, states, outputs, event_states, time_of_event)
 
 
-class MonteCarlo(predictor.Predictor):
+class MonteCarlo(Predictor):
     """
     Class for performing model-based prediction using sampling. 
 
@@ -52,8 +52,6 @@ class MonteCarlo(predictor.Predictor):
         Parameters
         ----------
         state_samples : collection of samples for the MonteCarlo
-            Function to generate n samples of the state. 
-            e.g., def f(n): return [x1, x2, x3, ... xn]
         future_loading_eqn : function (t, x={}) -> z
             Function to generate an estimate of loading at future time t
         config : keyword arguments, optional
@@ -81,14 +79,6 @@ class MonteCarlo(predictor.Predictor):
         params = deepcopy(self.parameters) # copy parameters
         params.update(kwargs) # update for specific run
 
-        n_state_samples = len(state_samples)
-        times_all = empty(n_state_samples, dtype=object)
-        inputs_all = empty(n_state_samples, dtype=object)
-        states_all = empty(n_state_samples, dtype=object)
-        outputs_all = empty(n_state_samples, dtype=object)
-        event_states_all = empty(n_state_samples, dtype=object)
-        time_of_event = empty(n_state_samples)
-
         # Perform prediction
         pred_fcn = partial(
             prediction_fcn, 
@@ -97,10 +87,11 @@ class MonteCarlo(predictor.Predictor):
             loading = future_loading_eqn)
         
         result = [pred_fcn(sample) for sample in state_samples]
-        times_all = [tmp[0] for tmp in result]
-        inputs_all = Prediction(times_all, [tmp[1] for tmp in result])
-        states_all = Prediction(times_all, [tmp[2] for tmp in result])
-        outputs_all = Prediction(times_all, [tmp[3] for tmp in result])
-        event_states_all = Prediction(times_all, [tmp[4] for tmp in result])
-        time_of_event = Prediction(times_all, [tmp[5] for tmp in result])
+        times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event = map(list, zip(*result))
+        
+        inputs_all = Prediction(times_all, inputs_all)
+        states_all = Prediction(times_all, states_all)
+        outputs_all = Prediction(times_all, outputs_all)
+        event_states_all = Prediction(times_all, event_states_all)
+        time_of_event = UnweightedSamples(time_of_event)
         return (times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event)

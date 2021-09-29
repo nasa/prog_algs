@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod, abstractproperty
 from numpy.random import choice, multivariate_normal
 from numpy import array, append, delete, cov
-from prog_algs.visualize import plot_scatter
+from prog_algs.visualize import plot_scatter, plot_hist
 from collections import UserList
 import warnings
 
@@ -75,6 +75,17 @@ class UncertainData(ABC):
         """
         samples = self.sample(num_samples)
         return plot_scatter(samples, fig=fig, keys=keys, **kwargs)
+
+    def plot_hist(self, fig = None, keys = None, num_samples = 100, **kwargs):
+        """Create a histogram
+
+        Args:
+            fig (MatPlotLib Figure, optional): Existing histogram figure to be overritten. Defaults to create new figure.
+            num_samples (int, optional): Number of samples to plot. Defaults to 100
+            keys (List(String), optional): Keys to be plotted. Defaults to None.
+        """
+        samples = self.sample(num_samples)
+        return plot_hist(samples, fig=fig, keys=keys, **kwargs)
 
 
 class ScalarData(UncertainData):
@@ -199,4 +210,3 @@ class MultivariateNormalDist(UncertainData):
     @property
     def cov(self):
         return self.__covar
-    

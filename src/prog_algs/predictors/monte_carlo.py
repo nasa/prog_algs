@@ -81,12 +81,13 @@ class MonteCarlo(predictor.Predictor):
         params = deepcopy(self.parameters) # copy parameters
         params.update(kwargs) # update for specific run
 
-        times_all = empty(state_samples.size, dtype=object)
-        inputs_all = empty(state_samples.size, dtype=object)
-        states_all = empty(state_samples.size, dtype=object)
-        outputs_all = empty(state_samples.size, dtype=object)
-        event_states_all = empty(state_samples.size, dtype=object)
-        time_of_event = empty(state_samples.size)
+        n_state_samples = len(state_samples)
+        times_all = empty(n_state_samples, dtype=object)
+        inputs_all = empty(n_state_samples, dtype=object)
+        states_all = empty(n_state_samples, dtype=object)
+        outputs_all = empty(n_state_samples, dtype=object)
+        event_states_all = empty(n_state_samples, dtype=object)
+        time_of_event = empty(n_state_samples)
 
         # Perform prediction
         pred_fcn = partial(

@@ -4,6 +4,8 @@ from abc import ABC, abstractmethod, abstractproperty
 from numpy.random import choice, multivariate_normal
 from numpy import array, append, delete, cov
 from prog_algs.visualize import plot_scatter
+from collections import UserList
+import warnings
 
 class UncertainData(ABC):
     """
@@ -108,110 +110,57 @@ class ScalarData(UncertainData):
         return 'ScalarData({})'.format(self.__state)
 
 
-class UnweightedSamples(UncertainData):
+class UnweightedSamples(UncertainData, UserList):
     """
     Uncertain Data represented by a set of samples
     """
-    def __init__(self, samples : array = array([])):
+    def __init__(self, samples = []):
         """Initialize Unweighted Samples
 
         Args:
             samples (array, optional): array of samples. Defaults to empty array.
         """
-        self.__samples = samples
+        self.data = samples
 
     def sample(self, num_samples = 1):
         # Completely random resample
-        return choice(self.__samples, num_samples)
+        return choice(self.data, num_samples)
 
     def keys(self):
         if len(self.__samples) == 0:
             return [[]]
         return self[0].keys()
 
-    def __eq__(self, other):
-        return isinstance(other, UnweightedSamples) and self.__samples == other.raw_samples()
-
-
     @property
     def mean(self):
         mean = {}
-        for key in self.__samples[0].keys():
-            mean[key] = array([x[key] for x in self.__samples]).mean()
+        for key in self.data[0].keys():
+            mean[key] = array([x[key] for x in self.data]).mean()
         return mean
 
     @property
     def cov(self):
-        if len(self.__samples) == 0:
+        if len(self.data) == 0:
             return [[]]
-        unlabeled_samples = array([[x[key] for x in self.__samples] for key in self.__samples[0].keys()])
+        unlabeled_samples = array([[x[key] for x in self.data] for key in self.data[0].keys()])
         return cov(unlabeled_samples)
 
     def __str__(self):
-        return 'UnweightedSamples({})'.format(self.__samples)
-
-    # Sample-specific methods
-    def append(self, value):
-        """Append an additional sample to the unweighted samples
-
-        Args:
-            value (dict): Value to be appended
-        """
-        self.__samples = append(self.__samples, value)
+        return 'UnweightedSamples({})'.format(self.data)
 
     @property
     def size(self):
-        """Get the number of samples
+        """Get the number of samples. Note: kept for backwards compatibility, prefer using len() instead.
 
         Returns:
             int: Number of samples
         """
-        return self.__samples.size
-
-    def __getitem__(self, index):
-        """Get a specific item by index
-
-        Args:
-            index (int): Sample index requested
-
-        Returns:
-            dict: item requested
-
-        Example:
-            sample = samples[index]
-        """
-        return self.__samples[index]
-
-    def __setitem__(self, index, value):
-        """Set a specific item by index
-
-        Args:
-            index (int): index to be set
-            value (dict): new value
-
-        Example:
-            samples[index] = new_value
-        """
-        self.__samples[index] = value
-
-    def __delitem__(self, index):
-        """Delete a specific utem
-
-        Args:
-            index (int): Index of item to be deleted
-
-        Example:
-            del samples[index]
-        """
-        self.__samples = delete(self.__samples, index)
+        return len(self)
 
     def raw_samples(self):
-        """Get raw samples
+        warnings.warn("raw_samples is deprecated and will be removed in the future")
+        return self.data
 
-        Returns:
-            np.array(dict): all the samples
-        """
-        return self.__samples
 
 class MultivariateNormalDist(UncertainData):
     """

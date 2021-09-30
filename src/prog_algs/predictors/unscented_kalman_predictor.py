@@ -74,6 +74,7 @@ class UnscentedKalmanPredictor(Predictor):
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(self.__state_keys, x)}
             x = model.next_state(x, self.__input, dt)
+            x = model.apply_limits(x)
             return array(list(x.values()))
 
         self.sigma_points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])

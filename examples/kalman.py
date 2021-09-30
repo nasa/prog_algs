@@ -3,8 +3,8 @@
 from prog_models.models import BatteryCircuit
 from prog_algs import *
 from prog_algs.uncertain_data import UnweightedSamples
-from prog_algs.visualize import plot_hist
-import matplotlib.pyplot as plt
+# from prog_algs.visualize import plot_hist
+# import matplotlib.pyplot as plt
 
 def run_example():
     ## Setup
@@ -42,8 +42,9 @@ def run_example():
 
     # Predict with a step size of 0.1
     (times, inputs, states, outputs, event_states, eol) = mc.predict(filt.x, future_loading, dt=0.1)
-    eol.plot_hist()
-    plt.show()
+    print(eol)
+    # eol.plot_hist()
+    # plt.show()
 
 # This allows the module to be executed directly 
 if __name__ == '__main__':

@@ -68,7 +68,6 @@ class ParticleFilter(state_estimator.StateEstimator):
         return "{} State Estimator".format(self.__class__)
         
     def estimate(self, t, u, z):
-        # todo(CT): assert t > self.t?
         dt = t - self.t
         self.t = t
         weights = empty(len(self.particles))

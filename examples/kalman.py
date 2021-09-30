@@ -42,7 +42,7 @@ def run_example():
 
     # Predict with a step size of 0.1
     (times, inputs, states, outputs, event_states, eol) = mc.predict(filt.x, future_loading, dt=0.1)
-    print(eol)
+    print('EOL:', eol)
     # eol.plot_hist()
     # plt.show()
 

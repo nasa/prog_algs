@@ -4,6 +4,7 @@ from .prediction import Prediction
 from .predictor import Predictor
 from numpy import diag, array, transpose
 from copy import deepcopy
+from math import isnan
 from filterpy import kalman
 from prog_algs.uncertain_data import MultivariateNormalDist
 
@@ -32,38 +33,34 @@ class UnscentedKalmanPredictor(Predictor):
         See: Prognostics Model Package\n
         A prognostics model to be used in prediction
     * options (optional, kwargs): configuration options\n
-        Any additional configuration values. See default parameters. Additionally, the following configuration parameters are supported: \n
+        Any additional configuration values. Note: These parameters can also be specified for an individual prediction. The following configuration parameters are supported: \n
+        * alpha, beta, kappa: UKF Scaling parameters
         * dt : Step size (s)
         * horizon : Prediction horizon (s)
-        * save_freq : Frequency at which results are saved (s)
-        * save_pts : Any additional savepoints (s) e.g., [10.1, 22.5]
-        * cores : Number of cores to use in multithreading
     """
     default_parameters = { # Default Parameters
         'alpha': 1,     # UKF scaling param
         'beta': 0,      # UKF scaling param
         'kappa': -1,    # UKF scaling param
-        'dt': 0.5,          # Timestep, seconds
-        'horizon': 4000,    # Prediction horizon, seconds
-        'save_freq': 10,    # Frequency at which results are saved
-        't': 0
+        't': 0,         # Starting Time (s)
+        'dt': 0.5,      # Timestep, seconds
+        'horizon': 1e99 # Prediction horizon, seconds
     }
 
     def __init__(self, model, **kwargs):
         super().__init__(model, **kwargs)
 
         self.model = model
-        self.__input = None
+        self.__input = None  # Input at an individual step. Note, this needs to be a member to pass between state_transition and predict
 
         # setup UKF
         num_states = len(model.states)
         num_measurements = len(model.outputs)
 
         if 'Q' not in self.parameters:
+            # Default 
             self.parameters['Q'] = diag([1.0e-1 for i in range(num_states)])
         if 'R' not in self.parameters:
-            # Size of what's being measured (not output) 
-            # This is determined by running the measure function on the first state
             self.parameters['R'] = diag([1.0e-1 for i in range(num_measurements)])
         
         def measure(x):
@@ -91,13 +88,17 @@ class UnscentedKalmanPredictor(Predictor):
         state (UncertaintData): Distribution of states
         future_loading_eqn : function (t, x={}) -> z
             Function to generate an estimate of loading at future time t
-        config : keyword arguments, optional
-            Any additional configuration values. See default parameters
+        options (optional, kwargs): configuration options\n
+        Any additional configuration values. Note: These parameters can also be specified in the predictor constructor. The following configuration parameters are supported: \n
+            * alpha, beta, kappa: UKF Scaling parameters
+            * t: Starting time (s)
+            * dt : Step size (s)
+            * horizon : Prediction horizon (s)
 
         Returns (tuple)
         -------
-        times: [[number]]
-            Times for each simulated point in format times[sample_id][index]
+        times: [number]
+            Times for each simulated point in format times[index]
         inputs: [[dict]]
             Future input (from future_loading_eqn) for each sample and time in times
             where inputs[sample_id][index] corresponds to time times[sample_id][index]
@@ -110,52 +111,61 @@ class UnscentedKalmanPredictor(Predictor):
         event_states: [[dict]]
             Estimated event state (e.g., SOH), between 1-0 where 0 is event occurance, for each sample and time in times
             where event_states[sample_id][index] corresponds to time times[sample_id][index]
-        toe: [number]
-            Estimated time where a predicted event will occur for each sample.
+        toe: UncertainData
+            Estimated time where a predicted event will occur for each sample. Note: Mean and Covariance Matrix will both 
+            be nan if every sigma point doesnt reach threshold within horizon
         """
         params = deepcopy(self.parameters) # copy parameters
         params.update(kwargs) # update for specific run
-        dt = self.parameters['dt']
+
+        # Optimizations 
+        dt = params['dt']
         model = self.model
+        filt = self.filter
         sigma_points = self.sigma_points
-        t = self.parameters['t']
-
-        self.__state_keys = state.mean.keys()  # Used to maintain ordering as we strip keys and return
-        self.filter.x = [x for x in state.mean.values()]
-        self.filter.P = state.cov
-        mean_state = {key: x for (key, x) in zip(state.mean.keys(), self.filter.x)}
         n_points = sigma_points.num_sigmas()
-        EOL = {key: [None for i in range(n_points)] for key in self.model.events}
 
-        while True:
+        # Update State 
+        self.__state_keys = state.mean.keys()  # Used to maintain ordering as we strip keys and return
+        filt.x = [x for x in state.mean.values()]
+        filt.P = state.cov
+
+        # Setup first states
+        t = params['t']
+        EOL = {key: [float('nan') for i in range(n_points)] for key in self.model.events}  # Keep track of final EOL values
+
+        # Simulation
+        while t < params['horizon']:
+            # Iterate through time
             t += dt
+            mean_state = {key: x for (key, x) in zip(state.mean.keys(), filt.x)}
             self.__input = future_loading_eqn(t, mean_state)
-            self.filter.predict(dt=dt)
-            mean_state = {key: x for (key, x) in zip(state.mean.keys(), self.filter.x)}
+            filt.predict(dt=dt)
             
-            # Check that every sigma point has hit event
-            points = sigma_points.sigma_points(self.filter.x, self.filter.P)
+            # Check that any sigma point has hit event
+            points = sigma_points.sigma_points(filt.x, filt.P)
             all_failed = True
             for i, point in zip(range(n_points), points):
                 x = {key: x for (key, x) in zip(state.mean.keys(), point)}
                 t_met = model.threshold_met(x)
                 for key in t_met.keys():
                     if t_met[key]:
-                        if EOL[key][i] is None:
+                        if isnan(EOL[key][i]):
+                            # First time event has been reached
                             EOL[key][i] = t
                     else:
                         all_failed = False
             if all_failed:
+                # If all events have been reched for every sigma point
                 break 
         
+        # Prepare Results
         pts = array([[e for e in EOL[key]] for key in EOL.keys()])
         pts = transpose(pts)
         mean, cov = kalman.unscented_transform(pts, sigma_points.Wm, sigma_points.Wc)
 
+        # At this point only time of event is calculated 
         times_all = []
-        inputs_all = Prediction(times_all, [])
-        states_all = Prediction(times_all, [])
-        outputs_all = Prediction(times_all, [])
-        event_states_all = Prediction(times_all, [])
+        empty_prediction = Prediction(times_all, [])
         time_of_event = MultivariateNormalDist(EOL.keys(), mean, cov)
-        return (times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event)
+        return (times_all, empty_prediction, empty_prediction, empty_prediction, empty_prediction, time_of_event)

@@ -31,8 +31,8 @@ def plot_line(times, data, keys = None, fig = None):
             raise TypeError("Keys should be a list of strings (e.g., ['state1', 'state2'], was {}".format(type(keys)))
         
         for key in keys:
-            if key not in samples[0].keys():
-                raise TypeError("Key {} was not present in samples (keys: {})".format(key, list(samples[0].keys())))
+            if key not in data[0][0].keys():
+                raise TypeError("Key {} was not present in samples (keys: {})".format(key, list(data[0][0].keys())))
     else:
         keys = data[0][0].keys()
 

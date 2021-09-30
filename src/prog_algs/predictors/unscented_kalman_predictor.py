@@ -67,9 +67,9 @@ class UnscentedKalmanPredictor(Predictor):
             self.parameters['R'] = diag([1.0e-1 for i in range(num_measurements)])
         
         def measure(x):
-                x = {key: value for (key, value) in zip(self.__state_keys, x)}
-                z = model.output(x)
-                return array(list(z.values()))
+            x = {key: value for (key, value) in zip(self.__state_keys, x)}
+            z = model.output(x)
+            return {array(list(z.values()))}
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(self.__state_keys, x)}

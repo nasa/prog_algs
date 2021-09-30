@@ -49,11 +49,13 @@ class UnscentedKalmanPredictor(Predictor):
         't': 0
     }
 
-    def __init__(self, model, filter=None, **kwargs):
+    def __init__(self, model, **kwargs):
         super().__init__(model, **kwargs)
 
         self.model = model
         self.__input = None
+
+        # setup UKF
         num_states = len(model.states)
         num_measurements = len(model.outputs)
 

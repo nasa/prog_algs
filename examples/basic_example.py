@@ -66,8 +66,9 @@ def run_example():
     fig = states.snapshot(0).plot_scatter(label = "t={}".format(int(times[0][0])))
     states.snapshot(10).plot_scatter(fig = fig, label = "t={}".format(int(times[0][10])))
     states.snapshot(50).plot_scatter(fig = fig, label = "t={}".format(int(times[0][50])))
-
     states.snapshot(-1).plot_scatter(fig = fig, label = "t={}".format(int(times[0][-1])))
+
+    eol.plot_hist()
     plt.show()
 
 # This allows the module to be executed directly 

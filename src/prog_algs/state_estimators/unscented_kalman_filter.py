@@ -41,7 +41,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
     def __init__(self, model, x0, measurement_eqn = None, **kwargs):
         super().__init__(model, x0, measurement_eqn, **kwargs)
 
-        self._input = None
+        self.__input = None
         self.t = self.parameters['t0']
 
         if measurement_eqn is None: 
@@ -64,7 +64,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(x0.keys(), x)}
-            x = model.next_state(x, self._input, dt)
+            x = model.next_state(x, self.__input, dt)
             return array(list(x.values()))
 
         num_states = len(model.states)
@@ -92,7 +92,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
             e.g., z = {'t':12.4, 'v':3.3} given inputs = ['t', 'v']
         """
         dt = t - self.t
-        self._input = u
+        self.__input = u
         self.t = t
         self.filter.predict(dt=dt)
         self.filter.update(array(list(z.values())))
@@ -106,4 +106,4 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         -------
         state = observer.x
         """
-        return MultivariateNormalDist(self.model.states, self.filter.x, self.filter.Q)
+        return MultivariateNormalDist(self.model.states, self.filter.x, self.filter.P)

@@ -49,7 +49,6 @@ class UncertainData(ABC):
         Returns:
             [string]: keys
         """
-    # TODO(CT): Consider median
 
     def plot_scatter(self, fig = None, keys = None, num_samples = 100, **kwargs):
         """

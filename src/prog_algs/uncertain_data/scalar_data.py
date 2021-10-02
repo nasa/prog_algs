@@ -1,6 +1,7 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
 from . import UncertainData
+from numpy import array
 
 
 class ScalarData(UncertainData):
@@ -30,7 +31,7 @@ class ScalarData(UncertainData):
         return self.__state.keys()
         
     def sample(self, num_samples = 1):
-        return array([self.__state] * num_samples)
+        return [self.__state] * num_samples
 
     def __str__(self):
         return 'ScalarData({})'.format(self.__state)

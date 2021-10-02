@@ -1,7 +1,7 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
 from . import UncertainData
-from numpy import array, random
+from numpy.random import multivariate_normal
 
 import warnings
 
@@ -26,8 +26,8 @@ class MultivariateNormalDist(UncertainData):
         if len(self.__mean) != len(self.__labels):
             raise Exception("labels must be provided for each value")
     
-        samples = random.multivariate_normal(self.__mean, self.__covar, num_samples)
-        samples = array([{key: value for (key, value) in zip(self.__labels, x)} for x in samples])
+        samples = multivariate_normal(self.__mean, self.__covar, num_samples)
+        samples = [{key: value for (key, value) in zip(self.__labels, x)} for x in samples]
         return samples
 
     def keys(self):

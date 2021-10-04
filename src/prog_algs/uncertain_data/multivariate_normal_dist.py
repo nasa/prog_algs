@@ -1,6 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
-from . import UncertainData
+from . import UncertainData, UnweightedSamples
 from numpy import array
 from numpy.random import multivariate_normal
 
@@ -29,7 +29,7 @@ class MultivariateNormalDist(UncertainData):
     
         samples = multivariate_normal(self.__mean, self.__covar, num_samples)
         samples = [{key: value for (key, value) in zip(self.__labels, x)} for x in samples]
-        return samples
+        return UnweightedSamples(samples)
 
     def keys(self):
         return self.__labels

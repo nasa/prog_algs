@@ -29,6 +29,7 @@ class TestUncertainData(unittest.TestCase):
         self.assertEqual(samples.size, 10)
         del s[0]
         self.assertEqual(s.size, 1)
+        k = s.keys()
         self.assertEqual(len(s.raw_samples()), 1)
         s[0] = {'a': 2, 'b': 10}
         self.assertDictEqual(s[0], {'a': 2, 'b': 10})

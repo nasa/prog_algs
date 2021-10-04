@@ -23,14 +23,14 @@ class UnweightedSamples(UncertainData, UserList):
         return random.choice(self.data, num_samples)
 
     def keys(self):
-        if len(self.__samples) == 0:
+        if len(self.data) == 0:
             return [[]]
         return self[0].keys()
 
     @property
     def mean(self):
         mean = {}
-        for key in self.data[0].keys():
+        for key in self.keys():
             mean[key] = array([x[key] for x in self.data]).mean()
         return mean
 

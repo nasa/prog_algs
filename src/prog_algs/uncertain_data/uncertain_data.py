@@ -69,5 +69,7 @@ class UncertainData(ABC):
             states.plot_scatter(num_samples=5) # Specifying the number of samples to plot
             states.plot_scatter(keys=['state1', 'state2']) # only plot those keys
         """
+        if keys is None:
+            keys = self.keys()
         samples = self.sample(num_samples)
         return plot_scatter(samples, fig=fig, keys=keys, **kwargs)

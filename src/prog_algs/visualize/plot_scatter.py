@@ -77,8 +77,8 @@ def plot_scatter(samples, fig = None, keys = None, legend = 'auto', **kwargs):
         for j in range(i, n-1): 
             # for each row
             y_key = keys[j+1]
-            x1 = [x[x_key] for x in samples]
-            x2 = [x[y_key] for x in samples]
+            x1 = [x[x_key] for x in samples if x is not None]
+            x2 = [x[y_key] for x in samples if x is not None]
             axes[j][i].scatter(x1, x2, **parameters)
 
         # Hide axes not used in plots 

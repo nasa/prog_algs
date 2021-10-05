@@ -25,20 +25,23 @@ class UnweightedSamples(UncertainData, UserList):
     def keys(self):
         if len(self.data) == 0:
             return [[]]
-        return self[0].keys()
+        for sample in self:
+            if sample is not None:
+                return sample.keys()
+        return []
 
     @property
     def mean(self):
         mean = {}
         for key in self.keys():
-            mean[key] = array([x[key] for x in self.data]).mean()
+            mean[key] = array([x[key] for x in self.data if x is not None]).mean()
         return mean
 
     @property
     def cov(self):
         if len(self.data) == 0:
             return [[]]
-        unlabeled_samples = array([[x[key] for x in self.data] for key in self.data[0].keys()])
+        unlabeled_samples = array([[x[key] for x in self.data if x is not None] for key in self.keys()])
         return cov(unlabeled_samples)
 
     def __str__(self):

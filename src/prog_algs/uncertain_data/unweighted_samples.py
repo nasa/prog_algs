@@ -20,7 +20,7 @@ class UnweightedSamples(UncertainData, UserList):
 
     def sample(self, num_samples = 1):
         # Completely random resample
-        return random.choice(self.data, num_samples)
+        return UnweightedSamples(random.choice(self.data, num_samples))
 
     def keys(self):
         if len(self.data) == 0:

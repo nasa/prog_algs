@@ -40,7 +40,7 @@ def run_example():
     if isinstance(filt, state_estimators.UnscentedKalmanFilter):
         samples = filt.x.sample(20)
     else: # Particle Filter
-        samples = filt.x.raw_samples()
+        samples = filt.x
 
     # Predict with a step size of 0.1
     (times, inputs, states, outputs, event_states, eol) = mc.predict(samples, future_loading, dt=0.1)
@@ -63,11 +63,11 @@ def run_example():
     print('\tP(Success) if mission ends at 3002.25: ', metrics.prob_success(eol, 3005.25))
 
     # Plot state transition 
-    fig = states.snapshot(0).plot_scatter(label = "t={}".format(int(times[0][0])))
-    states.snapshot(10).plot_scatter(fig = fig, label = "t={}".format(int(times[0][10])))
-    states.snapshot(50).plot_scatter(fig = fig, label = "t={}".format(int(times[0][50])))
+    fig = states.snapshot(0).plot_scatter(label = "t={}".format(int(times[0])))
+    states.snapshot(10).plot_scatter(fig = fig, label = "t={}".format(int(times[10])))
+    states.snapshot(50).plot_scatter(fig = fig, label = "t={}".format(int(times[50])))
 
-    states.snapshot(-1).plot_scatter(fig = fig, label = "t={}".format(int(times[0][-1])))
+    states.snapshot(-1).plot_scatter(fig = fig, label = "t={}".format(int(times[-1])))
     plt.show()
 
 # This allows the module to be executed directly 

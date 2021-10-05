@@ -88,7 +88,7 @@ def mean_square_error(values, ground_truth):
     Returns:
         float: mean square error of eol predictions
     """
-    return sum([(x.mean() - ground_truth)**2 for x in values])/len(values)
+    return sum([(sum(x)/len(x) - ground_truth)**2 for x in values])/len(values)
 
 def eol_profile_metrics(eol, ground_truth):
     """Calculate eol profile metrics

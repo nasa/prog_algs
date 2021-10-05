@@ -90,7 +90,7 @@ class UnweightedSamplesPrediction(Prediction, UserList):
         # Lazy calculation of tranform - only if needed
         # Note: prediction stops when event is reached, so for the length of all will not be the same. 
         # If the prediction doesn't go this far, then the value is set to None
-        self.__transform = [UnweightedSamples([sample[time_index] if len(sample) >= time_index else None for sample in self.data]) for time_index in range(len(self.times))]
+        self.__transform = [UnweightedSamples([sample[time_index] if len(sample) > time_index else None for sample in self.data]) for time_index in range(len(self.times))]
         self.__transformed = True
 
     def __str__(self):

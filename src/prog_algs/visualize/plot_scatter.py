@@ -34,10 +34,6 @@ def plot_scatter(samples, fig = None, keys = None, legend = 'auto', **kwargs):
             iter(keys)
         except TypeError:
             raise TypeError("Keys should be a list of strings (e.g., ['state1', 'state2'], was {}".format(type(keys)))
-        
-        for key in keys:
-            if key not in samples[0].keys():
-                raise TypeError("Key {} was not present in samples (keys: {})".format(key, list(samples[0].keys())))
 
     # Handle input
     parameters = {  # defaults

@@ -89,9 +89,13 @@ class MonteCarlo(Predictor):
         result = [pred_fcn(sample) for sample in state_samples]
         times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event = map(list, zip(*result))
         
-        inputs_all = UnweightedSamplesPrediction(times_all[0], inputs_all)
-        states_all = UnweightedSamplesPrediction(times_all[0], states_all)
-        outputs_all = UnweightedSamplesPrediction(times_all[0], outputs_all)
-        event_states_all = UnweightedSamplesPrediction(times_all[0], event_states_all)
-        time_of_event = time_of_event
-        return (times_all[0], inputs_all, states_all, outputs_all, event_states_all, time_of_event)
+        # Return longest time array
+        times_length = [len(t) for t in times_all]
+        times_max_len = max(times_length)
+        times = times_all[times_length.index(times_max_len)] 
+        
+        inputs_all = UnweightedSamplesPrediction(times, inputs_all)
+        states_all = UnweightedSamplesPrediction(times, states_all)
+        outputs_all = UnweightedSamplesPrediction(times, outputs_all)
+        event_states_all = UnweightedSamplesPrediction(times, event_states_all)
+        return (times, inputs_all, states_all, outputs_all, event_states_all, time_of_event)

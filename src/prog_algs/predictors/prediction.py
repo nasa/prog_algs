@@ -88,7 +88,9 @@ class UnweightedSamplesPrediction(Prediction, UserList):
         Calculate tranform of the data from data[sample_id][time_id] to data[time_id][sample_id]. Result is cached as self.__transform and is used in methods which look at a snapshot for a specific time
         """
         # Lazy calculation of tranform - only if needed
-        self.__transform = [UnweightedSamples([sample[time_index] for sample in self.data]) for time_index in range(len(self.times))]
+        # Note: prediction stops when event is reached, so for the length of all will not be the same. 
+        # If the prediction doesn't go this far, then the value is set to None
+        self.__transform = [UnweightedSamples([sample[time_index] if len(sample) >= time_index else None for sample in self.data]) for time_index in range(len(self.times))]
         self.__transformed = True
 
     def __str__(self):

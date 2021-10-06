@@ -8,24 +8,11 @@ from math import isnan
 from filterpy import kalman
 from prog_algs.uncertain_data import MultivariateNormalDist
 
-def prediction_fcn(x, model, params, loading):
-    # This is the main prediction function for the multi-threading
-    first_output = model.output(x)
-    params['x'] = x
-    
-    (times, inputs, states, outputs, event_states) = model.simulate_to_threshold(loading, first_output, **params)
-    if (model.threshold_met(states[-1])):
-        time_of_event = times[-1]
-    else:
-        time_of_event = None
-    return (times, inputs, states, outputs, event_states, time_of_event)
-
-
-class UnscentedKalmanPredictor(Predictor):
+class UnscentedTransformPredictor(Predictor):
     """
-    Class for performing model-based prediction using an unscented kalman filter. 
+    Class for performing model-based prediction using an unscented transform. 
 
-    This class defines logic for performing model-based state prediction using the unscented kalman filter method. A Predictor is constructed using a PrognosticsModel object, (See Prognostics Model Package). The states are simulated until either a specified time horizon is met, or the threshold is reached, as defined by the threshold equation. A provided future loading equation is used to compute the inputs to the system at any given time point. 
+    This class defines logic for performing model-based state prediction using sigma points and an unscented transform. A Predictor is constructed using a PrognosticsModel object, (See Prognostics Model Package). The states are simulated until either a specified time horizon is met, or the threshold is reached, as defined by the threshold equation. A provided future loading equation is used to compute the inputs to the system at any given time point. 
 
     Parameters
     ----------

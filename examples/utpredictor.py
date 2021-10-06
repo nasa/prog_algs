@@ -38,7 +38,7 @@ def run_example():
 
     ## Prediction - Predict EOD given current state
     # Setup prediction
-    mc = predictors.UnscentedKalmanPredictor(batt)
+    mc = predictors.UnscentedTransformPredictor(batt)
 
     # Predict with a step size of 0.1
     (times, inputs, states, outputs, event_states, eol) = mc.predict(filt.x, future_loading, dt=0.1)

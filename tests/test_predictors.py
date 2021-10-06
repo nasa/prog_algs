@@ -42,11 +42,11 @@ class TestPredictors(unittest.TestCase):
         pred = TemplatePredictor(m)
 
     def test_UKP_ThrownObject(self):
-        from prog_algs.predictors import UnscentedKalmanPredictor
+        from prog_algs.predictors import UnscentedTransformPredictor
         from prog_algs.uncertain_data import MultivariateNormalDist
         from prog_models.models.thrown_object import ThrownObject
         m = ThrownObject()
-        pred = UnscentedKalmanPredictor(m)
+        pred = UnscentedTransformPredictor(m)
         samples = MultivariateNormalDist(['x', 'v'], [1.83, 40], [[0.1, 0.01], [0.01, 0.1]])
         def future_loading(t, x={}):
             return {}
@@ -56,7 +56,7 @@ class TestPredictors(unittest.TestCase):
         self.assertAlmostEqual(eol.mean['falling'], 4.15, 0)
 
     def test_UKP_Battery(self):
-        from prog_algs.predictors import UnscentedKalmanPredictor
+        from prog_algs.predictors import UnscentedTransformPredictor
         from prog_algs.uncertain_data import MultivariateNormalDist
         from prog_models.models import BatteryCircuit
         from prog_algs.state_estimators import UnscentedKalmanFilter
@@ -86,7 +86,7 @@ class TestPredictors(unittest.TestCase):
 
         ## Prediction - Predict EOD given current state
         # Setup prediction
-        mc = UnscentedKalmanPredictor(batt)
+        mc = UnscentedTransformPredictor(batt)
 
         # Predict with a step size of 0.1
         (times, inputs, states, outputs, event_states, eol) = mc.predict(filt.x, future_loading, dt=0.1)

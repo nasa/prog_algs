@@ -12,12 +12,13 @@ import sys
 from examples import basic_example
 from io import StringIO 
 from timeit import timeit
+from unittest.mock import patch
 
 def run_basic_ex():
     _stdout = sys.stdout
     sys.stdout = StringIO()
-
-    basic_example.run_example()
+    with patch('matplotlib.pyplot') as p:
+        basic_example.run_example()
 
     # Reset stdout 
     sys.stdout = _stdout

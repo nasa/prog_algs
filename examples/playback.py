@@ -1,7 +1,7 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 """
-This example performs a state estimation and prediction using playback data. 
+This example performs state estimation and prediction using playback data. 
  
 Method: An instance of the BatteryCircuit model in prog_models is created, the state estimation is set up by defining a state_estimator, and the prediction method is set up by defining a predictor.
         Prediction is then performed using playback data. For each data point:

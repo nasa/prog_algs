@@ -1,7 +1,25 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 """
-Example using playback data. Builds a Battery Model, runs prognostics using the playback data. 
+This example performs a state estimation and prediction using playback data. 
+ 
+Method: An instance of the BatteryCircuit model in prog_models is created, the state estimation is set up by defining a state_estimator, and the prediction method is set up by defining a predictor.
+        Prediction is them performed using playback data. For each data point:
+        1) The necessary data is extracted (time, current load, output values) and corresponding values defined (t, i, and z)
+        2) The current state estimate is performed and samples are drawn from this distribution
+        3) Prediction of future states (with uncertainty), and the times at which the event threshold will be reached, is performed
+
+
+
+    1) State estimation of the current state is performed using a chosen state_estimator, and samples are drawn from this estimate
+    2) Prediction of future states (with uncertainty) and the times at which the event threshold will be reached
+    3) Metrics tools are used to further investigate the results of prediction
+Results: 
+    i) Predicted future values (inputs, states, outputs, event_states) with uncertainty from prediction
+    ii) Time event is predicted to occur (with uncertainty)
+    iii) Various prediction metrics
+    iv) Figures illustrating results
+
 """
 
 # Constants

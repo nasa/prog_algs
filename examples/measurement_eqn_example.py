@@ -1,5 +1,16 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
+"""
+This example performs a state estimation with uncertainty given a Prognostics Model for a system in which not all output values are measured. 
+ 
+Method: An instance of the BatteryCircuit model in prog_models is created. We assume that we are only measuring one of the output values, and we define a measurement_eqn to remove the other output value.  
+        Estimation of the current state is performed at various time steps, using the defined state_estimator. The state_estimator takes the measurement_eqn as input, to account for the missing output information. 
+
+Results: 
+    i) Estimate of the current state given various times
+    ii) Display of results, such as prior and posterior state estimate values and SOC
+"""
+
 from prog_models.models import BatteryCircuit
 from prog_algs import *
 

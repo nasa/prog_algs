@@ -40,7 +40,6 @@ class TemplateStateEstimator(state_estimators.StateEstimator):
             e.g., z = {'t':12.4, 'v':3.3} given inputs = ['t', 'v']
         """
         # REPLACE WITH UPDATE STATE ESTIMATION
-        pass
 
     @property
     def x(self):

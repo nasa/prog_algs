@@ -37,7 +37,6 @@ class ParticleFilter(state_estimator.StateEstimator):
                                     # Can be:
                                     #   1. scalar (standard deviation applied to all),
                                     #   2. dict (stardard deviation for each)
-                                    #   Todo(CT): covar, function
         }
 
     def __init__(self, model, x0, measurement_eqn = None, **kwargs):
@@ -53,7 +52,6 @@ class ParticleFilter(state_estimator.StateEstimator):
         # State-estimator specific logic
         if isinstance(self.parameters['n'], Number):
             self.parameters['n'] = {key : self.parameters['n'] for key in self.__measure(x0).keys()}
-        # todo(CT): Check fields on n
 
         if isinstance(self.parameters['x0_uncertainty'], Number):
             # Build array inplace
@@ -80,10 +78,10 @@ class ParticleFilter(state_estimator.StateEstimator):
         noise_params = self.parameters['n']
 
         # Propogate and calculate weights
-        for i in range(len(particles)):
-            self.particles[i] = next_state(particles[i], u, dt) 
-            self.particles[i] = apply_process_noise(self.particles[i])
-            zPredicted = output(self.particles[i])
+        for i, item in enumerate(particles):
+            particles[i] = next_state(item, u, dt) 
+            particles[i] = apply_process_noise(particles[i])
+            zPredicted = output(particles[i])
             weights[i] = sum([norm(zPredicted[key], noise_params[key]).pdf(z[key]) for key in zPredicted.keys()])
         
         # Normalize

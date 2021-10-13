@@ -100,7 +100,6 @@ def eol_profile_metrics(eol, ground_truth):
     Returns:
         dict: EOL Profile Metrics
     """
-    # TODO(CT): Consider ground truth optional
     return {
         'mean square error': mean_square_error(eol, ground_truth)
     }

@@ -111,7 +111,7 @@ class UnweightedSamplesPrediction(Prediction, UserList):
         Returns:
             SimResult: Values for that sample at different times where result[i] corresponds to time[i]
         """
-        warn("Depreciated. Please use prediction[sample_id] instead.")
+        warn("Deprecated. Please use prediction[sample_id] instead.")
         return self[sample_id]
 
     def snapshot(self, time_index):

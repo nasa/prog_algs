@@ -64,7 +64,7 @@ class Prediction(ABC):
         Returns:
             float: Time for which the data point at index `index` corresponds
         """
-        warn("Depreciated. Please use prediction.times[index] instead.")
+        warn("Deprecated. Please use prediction.times[index] instead.")
         return self.times[index]
 
 

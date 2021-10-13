@@ -1,6 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from .prediction import Prediction
+from .prediction import UnweightedSamplesPrediction
 from .predictor import Predictor
 from ..exceptions import ProgAlgTypeError
 from copy import deepcopy
@@ -89,9 +89,13 @@ class MonteCarlo(Predictor):
         result = [pred_fcn(sample) for sample in state_samples]
         times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event = map(list, zip(*result))
         
-        inputs_all = Prediction(times_all, inputs_all)
-        states_all = Prediction(times_all, states_all)
-        outputs_all = Prediction(times_all, outputs_all)
-        event_states_all = Prediction(times_all, event_states_all)
-        time_of_event = UnweightedSamples(time_of_event)
-        return (times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event)
+        # Return longest time array
+        times_length = [len(t) for t in times_all]
+        times_max_len = max(times_length)
+        times = times_all[times_length.index(times_max_len)] 
+        
+        inputs_all = UnweightedSamplesPrediction(times, inputs_all)
+        states_all = UnweightedSamplesPrediction(times, states_all)
+        outputs_all = UnweightedSamplesPrediction(times, outputs_all)
+        event_states_all = UnweightedSamplesPrediction(times, event_states_all)
+        return (times, inputs_all, states_all, outputs_all, event_states_all, time_of_event)

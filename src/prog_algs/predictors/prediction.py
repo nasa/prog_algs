@@ -133,7 +133,11 @@ class UnweightedSamplesPrediction(Prediction, UserList):
         """
         raise ValueError("UnweightedSamplesPrediction is immutable (i.e., read only)")
 
-    append = pop = __setitem__ = __setslice__ = __delitem__ = __not_implemented
+    append = __not_implemented
+    pop = __not_implemented
+    __setitem__ = __not_implemented
+    __setslice__ = __not_implemented
+    __delitem__ = __not_implemented
 
 
 class MultivariateNormalDistPrediction(Prediction):

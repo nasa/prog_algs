@@ -46,36 +46,6 @@ class MonteCarlo(Predictor):
     }
 
     def predict(self, state_samples, future_loading_eqn, **kwargs):
-        """
-        Perform a single prediction
-
-        Parameters
-        ----------
-        state_samples : collection of samples for the MonteCarlo
-        future_loading_eqn : function (t, x={}) -> z
-            Function to generate an estimate of loading at future time t
-        config : keyword arguments, optional
-            Any additional configuration values. See default parameters
-
-        Returns (tuple)
-        -------
-        times: [[number]]
-            Times for each simulated point in format times[sample_id][index]
-        inputs: [[dict]]
-            Future input (from future_loading_eqn) for each sample and time in times
-            where inputs[sample_id][index] corresponds to time times[sample_id][index]
-        states: [[dict]]
-            Estimated states for each sample and time in times
-            where states[sample_id][index] corresponds to time times[sample_id][index]
-        outputs: [[dict]]
-            Estimated outputs for each sample and time in times
-            where outputs[sample_id][index] corresponds to time times[sample_id][index]
-        event_states: [[dict]]
-            Estimated event state (e.g., SOH), between 1-0 where 0 is event occurance, for each sample and time in times
-            where event_states[sample_id][index] corresponds to time times[sample_id][index]
-        toe: [number]
-            Estimated time where a predicted event will occur for each sample.
-        """
         params = deepcopy(self.parameters) # copy parameters
         params.update(kwargs) # update for specific run
 

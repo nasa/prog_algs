@@ -56,6 +56,17 @@ class TestExamples(unittest.TestCase):
         # Reset stdout 
         sys.stdout = _stdout
 
+    def test_kalman_ex(self):
+        # set stdout (so it wont print)
+        _stdout = sys.stdout
+        sys.stdout = StringIO()
+
+        from examples import kalman
+        kalman.run_example()
+
+        # Reset stdout 
+        sys.stdout = _stdout
+
 # This allows the module to be executed directly
 def main():
     # This ensures that the directory containing ProgModelTemplate is in the python search directory

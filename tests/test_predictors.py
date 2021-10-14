@@ -86,10 +86,10 @@ class TestPredictors(unittest.TestCase):
 
         ## Prediction - Predict EOD given current state
         # Setup prediction
-        mc = UnscentedTransformPredictor(batt)
+        ut = UnscentedTransformPredictor(batt)
 
         # Predict with a step size of 0.1
-        (times, inputs, states, outputs, event_states, eol) = mc.predict(filt.x, future_loading, dt=0.1)
+        (times, inputs, states, outputs, event_states, eol) = ut.predict(filt.x, future_loading, dt=0.1)
         self.assertAlmostEqual(eol.mean['EOD'], 3004, -2)
 
     def test_MC(self):

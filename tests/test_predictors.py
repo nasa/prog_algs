@@ -111,12 +111,36 @@ class TestPredictors(unittest.TestCase):
             else:
                 return {'i1': -4, 'i2': 2.5}
 
-    def test_prediction(self):
-        from prog_algs.predictors.prediction import Prediction
+    def test_prediction_mvnormaldist(self):
+        from prog_algs.predictors.prediction import MultivariateNormalDistPrediction
+        from prog_algs.uncertain_data import MultivariateNormalDist
+        times = list(range(10))
+        covar = [[0.1, 0.01], [0.01, 0.1]]
+        means = [{'a': 1+i/10, 'b': 2-i/5} for i in range(10)]
+        states = [MultivariateNormalDist(means[i].keys(), means[i].values(), covar) for i in range(10)]
+        p = MultivariateNormalDistPrediction(times, states)
+
+        self.assertEqual(p.mean, means)
+        self.assertEqual(p.snapshot(0), states[0])
+        self.assertEqual(p.snapshot(-1), states[-1])
+        self.assertEqual(p.time(0), times[0])
+        self.assertEqual(p.times[0], times[0])
+        self.assertEqual(p.time(-1), times[-1])
+        self.assertEqual(p.times[-1], times[-1])
+
+        # Out of range
+        try:
+            tmp = p.time(10)
+            self.fail()
+        except Exception:
+            pass
+
+    def test_prediction_uwsamples(self):
+        from prog_algs.predictors.prediction import UnweightedSamplesPrediction
         from prog_algs.uncertain_data import UnweightedSamples
-        times = [list(range(10))]*3
+        times = list(range(10))
         states = [list(range(10)), list(range(1, 11)), list(range(-1, 9))]
-        p = Prediction(times, states)
+        p = UnweightedSamplesPrediction(times, states)
 
         self.assertEqual(p[0], states[0])
         self.assertEqual(p.sample(0), states[0])
@@ -124,6 +148,7 @@ class TestPredictors(unittest.TestCase):
         self.assertEqual(p.snapshot(0), UnweightedSamples([0, 1, -1]))
         self.assertEqual(p.snapshot(-1), UnweightedSamples([9, 10, 8]))
         self.assertEqual(p.time(0), times[0])
+        self.assertEqual(p.times[0], times[0])
         self.assertEqual(p.time(-1), times[-1])
 
         # Out of range

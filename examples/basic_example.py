@@ -14,11 +14,14 @@ Results:
     iv) Figures illustrating results
 """
 
-from prog_models.models import BatteryCircuit
+from prog_models.models import BatteryCircuit as Battery
+# VVV Uncomment this to use Electro Chemistry Model VVV
+# from prog_models.models import BatteryElectroChem as Battery
+
 from prog_algs import *
 
 def run_example():
-    ## Setup
+    # Step 1: Setup model & future loading
     def future_loading(t, x = None):
         # Variable (piece-wise) future loading scheme 
         if (t < 600):
@@ -32,56 +35,78 @@ def run_example():
         else:
             i = 3
         return {'i': i}
-    batt = BatteryCircuit()
-    ## State Estimation - perform a single ukf state estimate step
-    # filt = state_estimators.UnscentedKalmanFilter(batt, batt.parameters['x0'])
-    filt = state_estimators.ParticleFilter(batt, batt.parameters['x0'])
+    batt = Battery()
+    initial_state = batt.parameters['x0']
 
-    import matplotlib.pyplot as plt  # For plotting
+    # Step 2: Demonstrating state estimator
+    print("\nPerforming State Estimation Step")
+
+    # Step 2a: Setup
+    filt = state_estimators.ParticleFilter(batt, initial_state)
+    # VVV Uncomment this to use UKF State Estimator VVV
+    # filt = state_estimators.UnscentedKalmanFilter(batt, initial_state)
+
+    # Step 2b: Print & Plot Prior State
     print("Prior State:", filt.x.mean)
     print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
     fig = filt.x.plot_scatter(label='prior')
+
+    # Step 2c: Perform state estimation step
     example_measurements = {'t': 32.2, 'v': 3.915}
     t = 0.1
     filt.estimate(t, future_loading(t), example_measurements)
-    print("Posterior State:", filt.x.mean)
+
+    # Step 2d: Print & Plot Resulting Posterior State
+    print("\nPosterior State:", filt.x.mean)
     print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
-    filt.x.plot_scatter(fig= fig, label='posterior')
+    filt.x.plot_scatter(fig=fig, label='posterior')  # Add posterior state to figure from prior state
 
-    ## Prediction - Predict EOD given current state
-    # Setup prediction
+    # Note: in a prognostic application the above state estimation step would be repeated each time
+    #   there is new data. Here we're doing one step to demonstrate how the state estimator is used
+
+    # Step 3: Demonstrating Predictor
+    print("\n\n\nPerforming Prediction Step")
+
+    # Step 3a: Setup Predictor
     mc = predictors.MonteCarlo(batt)
-    if isinstance(filt, state_estimators.UnscentedKalmanFilter):
-        samples = filt.x.sample(20)
-    else: # Particle Filter
-        samples = filt.x
 
-    # Predict with a step size of 0.1
-    (times, inputs, states, outputs, event_states, eol) = mc.predict(samples, future_loading, dt=0.1)
+    # Step 3b: Perform a prediction
+    NUM_SAMPLES = 20
+    # Sample from the latest state in the state estimator
+    # Note: This is only required for sample-based prediction algorithms
+    samples = filt.x.sample(NUM_SAMPLES)  
+    STEP_SIZE = 0.1
+    (times, inputs, states, outputs, event_states, eol) = mc.predict(samples, future_loading, dt=STEP_SIZE)
 
-    # The results of prediction can be accessed by sample, e.g.,
-    times_sample_1 = times[1]
+    # Step 3c: Analyze the results
+
+    # Note: The results of a sample-based prediction can be accessed by sample, e.g.,
     states_sample_1 = states[1]
-    # now states_sample_1[n] corresponds to time_sample_1[n]
-    # you can also plot the results (state_sample_1.plot())
+    # now states_sample_1[n] corresponds to times[n] for the first sample
 
-    # You can also access a state at a specific time using the .snapshot function
+    # You can also access a state distribution at a specific time using the .snapshot function
     states_time_1 = states.snapshot(1)
-    # now you have all the samples from the times[sample][1]
+    # now you have all the samples corresponding to times[1]
     
-    ## Print Metrics
-    print("\nEOD Predictions (s):")
+    # You can also use the metrics package to generate some useful metrics on the result of a prediction
+    print("\nEOD Prediction Metrics")
+
     from prog_algs.metrics import samples as metrics 
     print('\tPercentage between 3005.2 and 3005.6: ', metrics.percentage_in_bounds(eol, [3005.2, 3005.6])*100.0, '%')
     print('\tAssuming ground truth 3002.25: ', metrics.eol_metrics(eol, 3005.25))
     print('\tP(Success) if mission ends at 3002.25: ', metrics.prob_success(eol, 3005.25))
 
     # Plot state transition 
-    fig = states.snapshot(0).plot_scatter(label = "t={}".format(int(times[0])))
-    states.snapshot(10).plot_scatter(fig = fig, label = "t={}".format(int(times[10])))
-    states.snapshot(50).plot_scatter(fig = fig, label = "t={}".format(int(times[50])))
+    # Here we will plot the states at t0, 25% to EOL, 50% to EOL, 75% to EOL, and EOL
+    fig = states.snapshot(0).plot_scatter(label = "t={} s".format(int(times[0])))  # 0
+    quarter_index = int(len(times)/4)
+    states.snapshot(quarter_index).plot_scatter(fig = fig, label = "t={} s".format(int(times[quarter_index])))  # 25%
+    states.snapshot(quarter_index*2).plot_scatter(fig = fig, label = "t={} s".format(int(times[quarter_index*2])))  # 50%
+    states.snapshot(quarter_index*3).plot_scatter(fig = fig, label = "t={} s".format(int(times[quarter_index*3])))  # 75%
+    states.snapshot(-1).plot_scatter(fig = fig, label = "t={} s".format(int(times[-1])))  # 100%
 
-    states.snapshot(-1).plot_scatter(fig = fig, label = "t={}".format(int(times[-1])))
+    # Step 4: Show all plots
+    import matplotlib.pyplot as plt  # For plotting
     plt.show()
 
 # This allows the module to be executed directly 

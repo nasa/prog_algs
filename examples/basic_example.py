@@ -42,7 +42,6 @@ def run_example():
     print("\nPerforming State Estimation Step")
 
     # Step 2a: Setup
-    ## State Estimation - perform a single ukf state estimate step
     filt = state_estimators.ParticleFilter(batt, initial_state)
     # VVV Uncomment this to use UKF State Estimator VVV
     # filt = state_estimators.UnscentedKalmanFilter(batt, initial_state)

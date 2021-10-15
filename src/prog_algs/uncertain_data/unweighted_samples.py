@@ -34,15 +34,15 @@ class UnweightedSamples(UncertainData, UserList):
     @property
     def median(self):
         # Calculate Geometric median of all samples
-        min = float('inf')
+        min_value = float('inf')
         for i, datem in enumerate(self.data):
             p1 = array(list(datem.values()))
             total_dist = sum(
                 sum((p1 - array(list(d.values())))**2)  # Distance between 2 points
                 for d in self.data)  # For each point
-            if total_dist < min:
+            if total_dist < min_value:
                 min_index = i
-                min = total_dist
+                min_value = total_dist
         return self[min_index]
 
     @property

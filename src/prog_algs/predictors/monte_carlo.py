@@ -11,7 +11,7 @@ def prediction_fcn(x, model, params, loading):
     # This is the main prediction function for the multi-threading
     first_output = model.output(x)
     params['x'] = x
-    (times, inputs, states, outputs, event_states) = model.simulate_to_threshold(loading, first_output, **params)
+    (times, inputs, states, outputs, event_states) = model.simulate_to_threshold(loading, first_output, **params, print=False)
     if (model.threshold_met(states[-1])):
         time_of_event = times[-1]
     else:

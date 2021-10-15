@@ -2,8 +2,9 @@
 
 from . import UncertainData
 from collections import UserList
-from numpy import array, append, delete, cov, random
+from numpy import array, cov, random
 import warnings
+from copy import deepcopy
 
 
 class UnweightedSamples(UncertainData, UserList):
@@ -29,6 +30,20 @@ class UnweightedSamples(UncertainData, UserList):
             if sample is not None:
                 return sample.keys()
         return []
+
+    @property
+    def median(self):
+        # Calculate Geometric median of all samples
+        min = float('inf')
+        for i, datem in enumerate(self.data):
+            p1 = array(list(datem.values()))
+            total_dist = sum(
+                sum((p1 - array(list(d.values())))**2)  # Distance between 2 points
+                for d in self.data)  # For each point
+            if total_dist < min:
+                min_index = i
+                min = total_dist
+        return self[min_index]
 
     @property
     def mean(self):

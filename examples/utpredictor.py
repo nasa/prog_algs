@@ -41,7 +41,14 @@ def run_example():
     mc = predictors.UnscentedTransformPredictor(batt)
 
     # Predict with a step size of 0.1
-    (times, inputs, states, outputs, event_states, eol) = mc.predict(filt.x, future_loading, dt=0.1)
+    (times, inputs, states, outputs, event_states, eol) = mc.predict(filt.x, future_loading, dt=0.1, save_freq= 100)
+
+    # Print Results
+    for i, time in enumerate(times):
+        print('\nt = {}'.format(time))
+        print('\tx = {}'.format(states.snapshot(i).mean))
+        print('\tu = {}'.format(inputs.snapshot(i).mean))
+
     print('EOL:', eol)
     # eol.plot_hist()
     # plt.show()

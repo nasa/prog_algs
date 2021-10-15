@@ -1,6 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from .prediction import Prediction
+from .prediction import MultivariateNormalDistPrediction, UnweightedSamplesPrediction
 from .predictor import Predictor
 from numpy import diag, array, transpose
 from copy import deepcopy
@@ -27,13 +27,15 @@ class UnscentedTransformPredictor(Predictor):
         
     NOTE: The resulting sigma-points along the time dimension are used to compute mean and covariance of the event time (EOL time), under the hypothesis that the EOL distribution would also be well represented by a Gaussian. This is a strong assumption that likely cannot be satisfied for real systems with strong non-linear state propagation or nonlinear EOL curves. Therefore, the user should be cautious and verify that modeling the event time using a Gaussian distribution is satisfactory.
     """
-    default_parameters = { # Default Parameters
-        'alpha': 1,     # UKF scaling param
-        'beta': 0,      # UKF scaling param
-        'kappa': -1,    # UKF scaling param
-        't': 0,         # Starting Time (s)
-        'dt': 0.5,      # Timestep, seconds
-        'horizon': 1e99 # Prediction horizon, seconds
+    default_parameters = {  # Default Parameters
+        'alpha': 1,         # UKF scaling param
+        'beta': 0,          # UKF scaling param
+        'kappa': -1,        # UKF scaling param
+        't': 0,             # Starting Time (s)
+        'dt': 0.5,          # Timestep (s)
+        'horizon': 1e99,    # Prediction horizon (s)
+        'save_pts': [],     # Save points during prediction (s)
+        'save_freq': 1e99   # Frequency at which states are saved (s)
     }
 
     def __init__(self, model, **kwargs):
@@ -121,15 +123,38 @@ class UnscentedTransformPredictor(Predictor):
 
         # Setup first states
         t = params['t']
+        save_pt_index = 0
         EOL = {key: [float('nan') for i in range(n_points)] for key in self.model.events}  # Keep track of final EOL values
 
+        times = []
+        inputs = []
+        states = []
+        save_freq = params['save_freq']
+        next_save = t + save_freq
+        save_pts = params['save_pts']
+        save_pts.append(1e99)  # Add last endpoint
+        def update_all():
+            times.append(t)
+            inputs.append(deepcopy(self.__input))  # Avoid optimization where u is not copied
+            x_dict = MultivariateNormalDist(self.__state_keys, filt.x, filt.P)
+            states.append(x_dict)  # Avoid optimization where x is not copied
+
         # Simulation
+        update_all()  # First State
         while t < params['horizon']:
             # Iterate through time
             t += dt
             mean_state = {key: x for (key, x) in zip(state.mean.keys(), filt.x)}
             self.__input = future_loading_eqn(t, mean_state)
             filt.predict(dt=dt)
+
+            # Record States
+            if (t >= next_save):
+                next_save += save_freq
+                update_all()
+            if (t >= save_pts[save_pt_index]):
+                save_pt_index += 1
+                update_all()
             
             # Check that any sigma point has hit event
             points = sigma_points.sigma_points(filt.x, filt.P)
@@ -137,6 +162,8 @@ class UnscentedTransformPredictor(Predictor):
             for i, point in zip(range(n_points), points):
                 x = {key: x for (key, x) in zip(state.mean.keys(), point)}
                 t_met = model.threshold_met(x)
+
+                # Check Thresholds
                 for key in t_met.keys():
                     if t_met[key]:
                         if isnan(EOL[key][i]):
@@ -153,8 +180,11 @@ class UnscentedTransformPredictor(Predictor):
         pts = transpose(pts)
         mean, cov = kalman.unscented_transform(pts, sigma_points.Wm, sigma_points.Wc)
 
-        # At this point only time of event is calculated 
-        times_all = []
-        empty_prediction = Prediction(times_all, [])
+        # At this point only time of event, inputs, and state are calculated 
+        inputs_prediction = UnweightedSamplesPrediction(times, [inputs])
+        state_prediction = MultivariateNormalDistPrediction(times, states)
+        empty_prediction = MultivariateNormalDistPrediction(times, [])
         time_of_event = MultivariateNormalDist(EOL.keys(), mean, cov)
-        return (times_all, empty_prediction, empty_prediction, empty_prediction, empty_prediction, time_of_event)
+        return (times, inputs_prediction, state_prediction, empty_prediction, empty_prediction, time_of_event)
+        
+        

@@ -115,9 +115,11 @@ class UnscentedTransformPredictor(Predictor):
         filt = self.filter
         sigma_points = self.sigma_points
         n_points = sigma_points.num_sigmas()
+        threshold_met = model.threshold_met
+        events = model.events
 
         # Update State 
-        self.__state_keys = state.mean.keys()  # Used to maintain ordering as we strip keys and return
+        self.__state_keys = state_keys = state.mean.keys()  # Used to maintain ordering as we strip keys and return
         filt.x = [x for x in state.mean.values()]
         filt.P = state.cov
 
@@ -144,7 +146,7 @@ class UnscentedTransformPredictor(Predictor):
         while t < params['horizon']:
             # Iterate through time
             t += dt
-            mean_state = {key: x for (key, x) in zip(state.mean.keys(), filt.x)}
+            mean_state = {key: x for (key, x) in zip(state_keys, filt.x)}
             self.__input = future_loading_eqn(t, mean_state)
             filt.predict(dt=dt)
 
@@ -160,11 +162,11 @@ class UnscentedTransformPredictor(Predictor):
             points = sigma_points.sigma_points(filt.x, filt.P)
             all_failed = True
             for i, point in zip(range(n_points), points):
-                x = {key: x for (key, x) in zip(state.mean.keys(), point)}
-                t_met = model.threshold_met(x)
+                x = {key: x for (key, x) in zip(state_keys, point)}
+                t_met = threshold_met(x)
 
                 # Check Thresholds
-                for key in t_met.keys():
+                for key in events:
                     if t_met[key]:
                         if isnan(EOL[key][i]):
                             # First time event has been reached

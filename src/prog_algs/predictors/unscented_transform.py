@@ -8,6 +8,52 @@ from math import isnan
 from filterpy import kalman
 from prog_algs.uncertain_data import MultivariateNormalDist
 
+
+class LazyMultivariateNormalDistPrediction(MultivariateNormalDistPrediction):
+    def __init__(self, state_prediction, sigma_fcn, ut_fcn, transform_fcn):
+        self.times = state_prediction.times
+        self.__states = state_prediction
+        self.__data = None
+        self.__sigma_fcn = sigma_fcn
+        self.__transform = transform_fcn
+        self.__ut_fcn = ut_fcn
+        pass
+
+    @property
+    def data(self):
+        if self.__data == None:
+            self.__data = []
+            # For each timepoint
+            for i in range(len(self.times)):
+                x = self.__states.snapshot(i)
+
+                # Get Sigma points
+                keys = x.keys()
+                mean = [x.mean[key] for key in keys]  # Maintain ordering
+                covar = x.cov
+                sigma_pts = self.__sigma_fcn.sigma_points(mean, covar)
+                
+                # Apply Tranformation (e.g., output, event_state)
+                sigma_pt_tranformed = [
+                    self.__transform({key: value for key, value in zip(keys, sigma_pt)})
+                    for sigma_pt in sigma_pts
+                ]
+                # result is [sigma_pt][ -> output/event_state (dict)]
+
+                transformed_keys = sigma_pt_tranformed[0].keys()
+
+                # Flatten 
+                sigma_pt_tranformed = array([array(list(sigma_pt.values())) for sigma_pt in sigma_pt_tranformed]) # map -> array
+
+                # Apply Unscented Transform to form output distribution
+                print(sigma_pt_tranformed)
+                print(self.__ut_fcn)
+                mean, cov = self.__ut_fcn(sigma_pt_tranformed, self.__sigma_fcn.Wm, self.__sigma_fcn.Wc)
+                self.__data.append(MultivariateNormalDist(transformed_keys, mean, cov))
+
+        return self.__data
+
+
 class UnscentedTransformPredictor(Predictor):
     """
     Class for performing model-based prediction using an unscented transform. 
@@ -131,6 +177,7 @@ class UnscentedTransformPredictor(Predictor):
         times = []
         inputs = []
         states = []
+        sigma_pts = []
         save_freq = params['save_freq']
         next_save = t + save_freq
         save_pts = params['save_pts']
@@ -185,8 +232,7 @@ class UnscentedTransformPredictor(Predictor):
         # At this point only time of event, inputs, and state are calculated 
         inputs_prediction = UnweightedSamplesPrediction(times, [inputs])
         state_prediction = MultivariateNormalDistPrediction(times, states)
-        empty_prediction = MultivariateNormalDistPrediction(times, [])
+        output_prediction = LazyMultivariateNormalDistPrediction(state_prediction, sigma_points, kalman.unscented_transform, model.output)
+        event_state_prediction = LazyMultivariateNormalDistPrediction(state_prediction, sigma_points, kalman.unscented_transform, model.event_state)
         time_of_event = MultivariateNormalDist(EOL.keys(), mean, cov)
-        return (times, inputs_prediction, state_prediction, empty_prediction, empty_prediction, time_of_event)
-        
-        
+        return (times, inputs_prediction, state_prediction, output_prediction, event_state_prediction, time_of_event)  

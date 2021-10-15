@@ -46,10 +46,12 @@ def run_example():
     # Print Results
     for i, time in enumerate(times):
         print('\nt = {}'.format(time))
-        print('\tx = {}'.format(states.snapshot(i).mean))
         print('\tu = {}'.format(inputs.snapshot(i).mean))
+        print('\tx = {}'.format(states.snapshot(i).mean))
+        print('\tz = {}'.format(outputs.snapshot(i).mean))
+        print('\tevent state = {}'.format(event_states.snapshot(i).mean))
 
-    print('EOL:', eol)
+    print('\nEOL:', eol)
     # eol.plot_hist()
     # plt.show()
 

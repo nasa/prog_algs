@@ -20,6 +20,10 @@ class ScalarData(UncertainData):
         return isinstance(other, ScalarData) and other.mean() == self.__state
 
     @property
+    def median(self):
+        return self.mean
+        
+    @property
     def mean(self):
         return self.__state
 

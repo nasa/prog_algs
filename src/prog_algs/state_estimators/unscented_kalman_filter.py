@@ -43,20 +43,24 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
 
         self.__input = None
         self.t = self.parameters['t0']
+        self.x0 = x0
 
         if measurement_eqn is None: 
             def measure(x):
-                x = {key: value for (key, value) in zip(x0.keys(), x)}
+                x = {key: value for (key, value) in zip(self.x0.keys(), x)}
+                R_err = model.parameters['measurement_noise'].copy()
+                model.parameters['measurement_noise'] = dict.fromkeys(R_err, 0)
                 z = model.output(x)
-                return array(list(z.values()))
+                model.parameters['measurement_noise'] = R_err
+                return array(list(z.values())).ravel()
         else:
             def measure(x):
-                x = {key: value for (key, value) in zip(x0.keys(), x)}
+                x = {key: value for (key, value) in zip(self.x0.keys(), x)}
                 z = measurement_eqn(x)
-                return array(list(z.values()))
+                return array(list(z.values())).ravel()
 
         if 'Q' not in self.parameters:
-            self.parameters['Q'] = diag([1.0e-1 for i in x0.keys()])
+            self.parameters['Q'] = diag([1.0e-1 for i in self.x0.keys()])
         if 'R' not in self.parameters:
             # Size of what's being measured (not output) 
             # This is determined by running the measure function on the first state
@@ -64,14 +68,19 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(x0.keys(), x)}
-            x = model.next_state(x, self.__input, dt)
-            return array(list(x.values()))
+            Q_err = model.parameters['process_noise'].copy()
+            model.parameters['process_noise'] = dict.fromkeys(Q_err, 0)
+            z = model.output(x)
+            model.parameters['process_noise'] = Q_err
+            x = model.next_state(x, self._input, dt)
+            return array(list(x.values())).ravel()
 
-        num_states = len(model.states)
+        num_states = len(self.x0.keys())
         num_measurements = len(model.outputs)
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measure, state_transition, points)
-        self.filter.x = array(list(x0.values()))
+        self.filter.x = array(list(self.x0.values())).ravel()
+        self.filter.P = self.parameters['Q'] / 10
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
 
@@ -106,4 +115,4 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         -------
         state = observer.x
         """
-        return MultivariateNormalDist(self.model.states, self.filter.x, self.filter.P)
+        return MultivariateNormalDist(self.x0.keys(), self.filter.x, self.filter.Q)

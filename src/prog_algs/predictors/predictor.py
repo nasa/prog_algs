@@ -57,3 +57,4 @@ class Predictor(ABC):
         ______
         result : recorded values for all samples
         """
+        pass

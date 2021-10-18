@@ -1,6 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from .prediction import UnweightedSamplesPrediction
+from .prediction import Prediction
 from .predictor import Predictor
 from ..exceptions import ProgAlgTypeError
 from copy import deepcopy
@@ -46,6 +46,36 @@ class MonteCarlo(Predictor):
     }
 
     def predict(self, state_samples, future_loading_eqn, **kwargs):
+        """
+        Perform a single prediction
+
+        Parameters
+        ----------
+        state_samples : collection of samples for the MonteCarlo
+        future_loading_eqn : function (t, x={}) -> z
+            Function to generate an estimate of loading at future time t
+        config : keyword arguments, optional
+            Any additional configuration values. See default parameters
+
+        Returns (tuple)
+        -------
+        times: [[number]]
+            Times for each simulated point in format times[sample_id][index]
+        inputs: [[dict]]
+            Future input (from future_loading_eqn) for each sample and time in times
+            where inputs[sample_id][index] corresponds to time times[sample_id][index]
+        states: [[dict]]
+            Estimated states for each sample and time in times
+            where states[sample_id][index] corresponds to time times[sample_id][index]
+        outputs: [[dict]]
+            Estimated outputs for each sample and time in times
+            where outputs[sample_id][index] corresponds to time times[sample_id][index]
+        event_states: [[dict]]
+            Estimated event state (e.g., SOH), between 1-0 where 0 is event occurance, for each sample and time in times
+            where event_states[sample_id][index] corresponds to time times[sample_id][index]
+        toe: [number]
+            Estimated time where a predicted event will occur for each sample.
+        """
         params = deepcopy(self.parameters) # copy parameters
         params.update(kwargs) # update for specific run
 
@@ -59,13 +89,9 @@ class MonteCarlo(Predictor):
         result = [pred_fcn(sample) for sample in state_samples]
         times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event = map(list, zip(*result))
         
-        # Return longest time array
-        times_length = [len(t) for t in times_all]
-        times_max_len = max(times_length)
-        times = times_all[times_length.index(times_max_len)] 
-        
-        inputs_all = UnweightedSamplesPrediction(times, inputs_all)
-        states_all = UnweightedSamplesPrediction(times, states_all)
-        outputs_all = UnweightedSamplesPrediction(times, outputs_all)
-        event_states_all = UnweightedSamplesPrediction(times, event_states_all)
-        return (times, inputs_all, states_all, outputs_all, event_states_all, time_of_event)
+        inputs_all = Prediction(times_all, inputs_all)
+        states_all = Prediction(times_all, states_all)
+        outputs_all = Prediction(times_all, outputs_all)
+        event_states_all = Prediction(times_all, event_states_all)
+        time_of_event = UnweightedSamples(time_of_event)
+        return (times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event)

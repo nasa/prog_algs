@@ -1,70 +1,39 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 """
-This example performs state estimation and prediction using playback data. 
- 
-Method: An instance of the BatteryCircuit model in prog_models is created, the state estimation is set up by defining a state_estimator, and the prediction method is set up by defining a predictor.
-        Prediction is then performed using playback data. For each data point:
-        1) The necessary data is extracted (time, current load, output values) and corresponding values defined (t, i, and z)
-        2) The current state estimate is performed and samples are drawn from this distribution
-        3) Prediction performed to get future states (with uncertainty) and the times at which the event threshold will be reached
-Results: 
-    i) Predicted future values (inputs, states, outputs, event_states) with uncertainty from prediction
-    ii) Time event is predicted to occur (with uncertainty)
-    iii) Various prediction metrics
-    iv) Figures illustrating results
-
+Example using playback data. Builds a Battery Model, runs prognostics using the playback data. 
 """
 
-from prog_models.models import BatteryCircuit as Battery
-# VVV Uncomment this to use Electro Chemistry Model VVV
-# from prog_models.models import BatteryElectroChem as Battery
-
-from prog_algs.state_estimators import ParticleFilter as StateEstimator
-# VVV Uncomment this to use UnscentedKalmanFilter instead VVV
-# from prog_algs.state_estimators import UnscentedKalmanFilter as StateEstimator
-
-from prog_algs.predictors import MonteCarlo
-from prog_algs.metrics import samples as metrics
-
-import csv
-import matplotlib.pyplot as plt 
-
 # Constants
-NUM_SAMPLES = 10
-TIME_STEP = 1
-PREDICTION_UPDATE_FREQ = 5 # Number of steps between prediction update
+num_samples = 10
+time_step = 0.1
+prediction_update_freq = 5 # Number of steps between prediction update
 
 def run_example():
+    from prog_models.models import BatteryCircuit
+    from prog_algs.metrics import samples as metrics
+    from prog_algs import state_estimators, predictors
+
+    import csv
+    import matplotlib.pyplot as plt 
+
     # Setup Model
-    batt = Battery()
+    batt = BatteryCircuit()
 
     # Setup State Estimation
-    filt = StateEstimator(batt, batt.parameters['x0'])
+    filt = state_estimators.UnscentedKalmanFilter(batt, batt.parameters['x0'])
 
     # Setup Prediction
     def future_loading(t, x=None):
         return {'i': 2.35}
-    mc = MonteCarlo(batt)
+    mc = predictors.MonteCarlo(batt)
 
-    # Prepare SOC Plot
+    # Prepare Plot
     fig, ax = plt.subplots()
     line, = ax.plot([], [])
     ax.grid()
-    ax.set_ylim(-0.05, 1.05)
-    ax.set_xlabel('Time (s)')
-    ax.set_ylabel('SOC')
     xdata, ydata = [], []
-    fig.show()
-
-    # Prepare RUL Plot
-    rul_fig, rulax = plt.subplots()
-    rul_line, = rulax.plot([], [])
-    rulax.grid()
-    rulax.set_xlabel('Time (s)')
-    rulax.set_ylabel('RUL (s)')
-    rul_x, rul_y = [], []
-    rul_fig.show()
+    plt.show()
 
     # Run Playback
     step = 0
@@ -90,27 +59,15 @@ def run_example():
 
             if t >= xmax:
                 ax.set_xlim(xmin, 2*xmax)
-                rulax.set_xlim(xmin, 2*xmax)
+                ax.figure.canvas.draw()
             line.set_data(xdata, ydata)
-            fig.canvas.draw()
 
-            # Prediction Step (every PREDICTION_UPDATE_FREQ steps)
-            if (step%PREDICTION_UPDATE_FREQ == 0):
-                samples = filt.x.sample(NUM_SAMPLES)
-                (times, inputs, states, outputs, event_states, eol) = mc.predict(samples, future_loading, dt=TIME_STEP)
+            # Prediction Step (every prediction_update_freq steps)
+            if (step%prediction_update_freq == 0):
+                samples = filt.x.sample(10)
+                (times, inputs, states, outputs, event_states, eol) = mc.predict(samples, future_loading, dt=1.0)
                 m = metrics.eol_metrics(eol)
-                print('  - EOL: {} (sigma: {})'.format(m['mean'], m['std']))
-
-                # Update Plot
-                rul_x.append(t)
-                rul_y.append(m['mean']-t)
-                ymin, ymax = rulax.get_ylim()
-                if m['mean']-t > ymax:
-                    rulax.set_ylim(0, (m['mean']-t)*1.1)
-                rul_line.set_data(rul_x, rul_y)
-                rul_fig.canvas.draw()
-    
-    input('Press any key to exit')
+                print('  - RUL: {} (sigma: {})'.format(m['mean'], m['std']))
 
 # This allows the module to be executed directly 
 if __name__ == '__main__':

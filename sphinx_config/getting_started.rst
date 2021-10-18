@@ -34,9 +34,6 @@ See the examples for examples of use. Run examples using the command `python -m 
 * :download:`examples.benchmarking_example <../examples/benchmarking_example.py>`
     .. automodule:: examples.benchmarking_example
     |
-* :download:`examples.measurement_eqn_example <../examples/measurement_eqn_example.py>`
-    .. automodule:: examples.measurement_eqn_example
-    |
 * :download:`examples.new_state_estimator_example <../examples/new_state_estimator_example.py>`
     .. automodule:: examples.new_state_estimator_example
     |

@@ -34,6 +34,10 @@ def plot_scatter(samples, fig = None, keys = None, legend = 'auto', **kwargs):
             iter(keys)
         except TypeError:
             raise TypeError("Keys should be a list of strings (e.g., ['state1', 'state2'], was {}".format(type(keys)))
+        
+        for key in keys:
+            if key not in samples[0].keys():
+                raise TypeError("Key {} was not present in samples (keys: {})".format(key, list(samples[0].keys())))
 
     # Handle input
     parameters = {  # defaults
@@ -73,8 +77,8 @@ def plot_scatter(samples, fig = None, keys = None, legend = 'auto', **kwargs):
         for j in range(i, n-1): 
             # for each row
             y_key = keys[j+1]
-            x1 = [x[x_key] for x in samples if x is not None]
-            x2 = [x[y_key] for x in samples if x is not None]
+            x1 = [x[x_key] for x in samples]
+            x2 = [x[y_key] for x in samples]
             axes[j][i].scatter(x1, x2, **parameters)
 
         # Hide axes not used in plots 

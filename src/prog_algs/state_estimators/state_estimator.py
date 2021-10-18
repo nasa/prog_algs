@@ -67,6 +67,7 @@ class StateEstimator(ABC):
             Measured outputs, with keys defined by model.outputs.
             e.g., z = {'t':12.4, 'v':3.3} given inputs = ['t', 'v']
         """
+        pass
 
     @property
     @abstractproperty
@@ -78,3 +79,4 @@ class StateEstimator(ABC):
         -------
         state = observer.x
         """
+        pass

@@ -21,6 +21,7 @@ class UncertainData(ABC):
         Example:
             samples = data.samples(100)
         """
+        pass
 
     @property
     @abstractproperty
@@ -30,6 +31,7 @@ class UncertainData(ABC):
         Example:
             mean_value = data.mean
         """
+        pass
 
     @property
     @abstractproperty

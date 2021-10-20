@@ -44,6 +44,8 @@ See the examples for examples of use. Run examples using the command `python -m 
     .. automodule:: examples.playback
     |
 
+There is also an included tutorial (:download:`tutorial <../tutorial.ipynb>`).
+
 Extending
 ---------
 New State Estimators and Predictors are created by extending the :class:`prog_algs.state_estimators.state_estimator.StateEstimator` and :class:`prog_algs.predictors.predictor.Predictor` class, respectively. 

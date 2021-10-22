@@ -56,13 +56,13 @@ class TestExamples(unittest.TestCase):
         # Reset stdout 
         sys.stdout = _stdout
 
-    def test_kalman_ex(self):
+    def test_utpredictor_ex(self):
         # set stdout (so it wont print)
         _stdout = sys.stdout
         sys.stdout = StringIO()
 
-        from examples import kalman
-        kalman.run_example()
+        from examples import utpredictor
+        utpredictor.run_example()
 
         # Reset stdout 
         sys.stdout = _stdout

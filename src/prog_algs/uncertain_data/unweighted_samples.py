@@ -25,11 +25,22 @@ class UnweightedSamples(UncertainData, UserList):
 
     def keys(self):
         if len(self.data) == 0:
-            return [[]]
+            return []  # is empty
         for sample in self:
             if sample is not None:
                 return sample.keys()
-        return []
+        return []  # Every element is none
+
+    def key(self, key):
+        """Return samples for given key
+
+        Args:
+            key (str): key
+
+        Returns:
+            list: list of values for given key
+        """
+        return [sample[key] for sample in self.data]
 
     @property
     def median(self):

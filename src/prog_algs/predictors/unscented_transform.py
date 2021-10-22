@@ -1,6 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from .prediction import Prediction
+from .prediction import MultivariateNormalDistPrediction
 from .predictor import Predictor
 from numpy import diag, array, transpose
 from copy import deepcopy
@@ -155,6 +155,6 @@ class UnscentedTransformPredictor(Predictor):
 
         # At this point only time of event is calculated 
         times_all = []
-        empty_prediction = Prediction(times_all, [])
+        empty_prediction = MultivariateNormalDistPrediction(times_all, [])
         time_of_event = MultivariateNormalDist(EOL.keys(), mean, cov)
         return (times_all, empty_prediction, empty_prediction, empty_prediction, empty_prediction, time_of_event)

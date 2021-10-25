@@ -24,6 +24,15 @@ class UncertainData(ABC):
 
     @property
     @abstractproperty
+    def median(self):
+        """Median estimate
+
+        Example:
+            median_value = data.median
+        """
+
+    @property
+    @abstractproperty
     def mean(self):
         """Mean estimate
 

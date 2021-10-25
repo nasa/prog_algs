@@ -35,6 +35,11 @@ class MultivariateNormalDist(UncertainData):
         return self.__labels
 
     @property
+    def median(self):
+        # For normal distribution medain = mean
+        return self.mean
+
+    @property
     def mean(self):
         return {key: value for (key, value) in zip(self.__labels, self.__mean)}
 

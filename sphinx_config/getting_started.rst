@@ -1,5 +1,7 @@
 Getting Started
 ===============
+.. image:: https://mybinder.org/badge_logo.svg
+ :target: https://mybinder.org/v2/gh/nasa/prog_algs/HEAD
 
 The NASA Prognostics Algorithms Package is a python framework for defining, building, using, and testing Algorithms for prognostics (computation of remaining useful life) of engineering systems, and provides a set of prognostics algorithms developed within this framework, suitable for use in prognostics applications. It can be used in conjunction for the Prognostics Models Library to perform research in prognostics with prognostics systems. 
 
@@ -43,6 +45,8 @@ See the examples for examples of use. Run examples using the command `python -m 
 * :download:`examples.playback <../examples/playback.py>`
     .. automodule:: examples.playback
     |
+
+There is also an included tutorial (:download:`tutorial <../tutorial.ipynb>`).
 
 Extending
 ---------

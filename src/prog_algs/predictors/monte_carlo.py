@@ -21,7 +21,7 @@ def prediction_fcn(x, model, params, events, loading):
     event_states = LazySimResult(fcn = model.event_state)
     params['x'] = x
     while len(events_remaining) > 0:  # Still events to predict
-        (t, u, xi, z, es) = model.simulate_to_threshold(loading, first_output, **params, threshold_keys=events)
+        (t, u, xi, z, es) = model.simulate_to_threshold(loading, first_output, **params, threshold_keys=events_remaining)
 
         # Add results
         times.extend(t)
@@ -32,12 +32,14 @@ def prediction_fcn(x, model, params, events, loading):
 
         # Get which event occurs
         t_met = model.threshold_met(states[-1])
+        t_met = {key: t_met[key] for key in events_remaining}  # Only look at remaining keys
         try:
             event = list(t_met.keys())[list(t_met.values()).index(True)]
         except ValueError:
             # no event has occured
             for event in events_remaining:
                 time_of_event[event] = None
+            break
 
         # An event has occured
         # TODO(CT): Multiple events occur simulatiously 

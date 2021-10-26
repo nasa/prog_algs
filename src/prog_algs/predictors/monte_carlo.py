@@ -42,7 +42,6 @@ def prediction_fcn(x, model, params, events, loading):
             break
 
         # An event has occured
-        # TODO(CT): Multiple events occur simulatiously 
         time_of_event[event] = times[-1]
         events_remaining.remove(event)  # No longer an event to predect to
 

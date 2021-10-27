@@ -41,7 +41,7 @@ class TestUncertainData(unittest.TestCase):
 
         # Test median value
         data = [{'a': 1, 'b': 2}, {'a': 3, 'b': 4}, {'a': 1, 'b': 4}, {'a': 2, 'b': 3}, {'a': 3, 'b': 1}]
-        s = UnweightedSamples(data)
+        data = UnweightedSamples(data)
         self.assertEqual(data.median, {'a': 2, 'b': 3})
 
     def test_multivariatenormaldist(self):

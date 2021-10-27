@@ -77,6 +77,7 @@ def run_example():
     samples = filt.x.sample(NUM_SAMPLES)  
     STEP_SIZE = 0.1
     (times, inputs, states, outputs, event_states, eol) = mc.predict(samples, future_loading, dt=STEP_SIZE)
+    print('EOL', eol.mean)
 
     # Step 3c: Analyze the results
 
@@ -90,6 +91,7 @@ def run_example():
     
     # You can also use the metrics package to generate some useful metrics on the result of a prediction
     print("\nEOD Prediction Metrics")
+    eol = eol.key('EOD') # Calculate metrics for event EOL
 
     from prog_algs.metrics import samples as metrics 
     print('\tPercentage between 3005.2 and 3005.6: ', metrics.percentage_in_bounds(eol, [3005.2, 3005.6])*100.0, '%')

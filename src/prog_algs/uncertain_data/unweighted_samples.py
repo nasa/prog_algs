@@ -2,6 +2,7 @@
 
 from . import UncertainData
 from collections import UserList
+from collections.abc import Iterable
 from numpy import array, cov, random
 import warnings
 from copy import deepcopy
@@ -15,13 +16,25 @@ class UnweightedSamples(UncertainData, UserList):
         """Initialize Unweighted Samples
 
         Args:
-            samples (array, optional): array of samples. Defaults to empty array.
+            samples (array, dict, optional): array of samples. Defaults to empty array. If dict, must be of the form of {key: [value, ...], ...}
         """
-        self.data = samples
+        if isinstance(samples, dict):
+            # Is in form of {key: [value, ...], ...}
+            # Convert to array of samples
+            if len(samples.keys()) == 0:
+                self.data = []  # is empty
+                return
+            n_samples = len(list(samples.values())[0])  # Number of samples
+            self.data = [{key: value[i] for key, value in samples.items()} for i in range(n_samples)]
+        elif isinstance(samples, Iterable):
+            # is in form of [{key: value, ...}, ...]
+            self.data = samples
+        else:
+            raise ValueError('Invalid input. Must be list or dict, was {}'.format(type(samples)))
 
     def sample(self, num_samples = 1):
         # Completely random resample
-        return UnweightedSamples(random.choice(self.data, num_samples))
+        return UnweightedSamples(random.choice(self.data, num_samples, replace = True))
 
     def keys(self):
         if len(self.data) == 0:

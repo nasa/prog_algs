@@ -17,7 +17,6 @@ class LazyMultivariateNormalDistPrediction(MultivariateNormalDistPrediction):
         self.__sigma_fcn = sigma_fcn
         self.__transform = transform_fcn
         self.__ut_fcn = ut_fcn
-        pass
 
     @property
     def data(self):

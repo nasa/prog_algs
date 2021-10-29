@@ -131,6 +131,7 @@ class UnscentedTransformPredictor(Predictor):
             * t: Starting time (s)
             * dt : Step size (s)
             * horizon : Prediction horizon (s)
+            * events : List of events to be predicted (subset of model.events, default is all events)
 
         Returns (tuple)
         -------
@@ -154,6 +155,7 @@ class UnscentedTransformPredictor(Predictor):
         """
         params = deepcopy(self.parameters) # copy parameters
         params.update(kwargs) # update for specific run
+        events_to_predict = params['events']
 
         # Optimizations 
         dt = params['dt']
@@ -172,7 +174,7 @@ class UnscentedTransformPredictor(Predictor):
         # Setup first states
         t = params['t']
         save_pt_index = 0
-        ToE = {key: [float('nan') for i in range(n_points)] for key in self.model.events}  # Keep track of final ToE values
+        ToE = {key: [float('nan') for i in range(n_points)] for key in events_to_predict}  # Keep track of final ToE values
 
         times = []
         inputs = []
@@ -187,6 +189,9 @@ class UnscentedTransformPredictor(Predictor):
             inputs.append(deepcopy(self.__input))  # Avoid optimization where u is not copied
             x_dict = MultivariateNormalDist(self.__state_keys, filt.x, filt.P)
             states.append(x_dict)  # Avoid optimization where x is not copied
+
+        # Optimization
+        state_keys = self.__state_keys
 
         # Simulation
         update_all()  # First State
@@ -213,13 +218,13 @@ class UnscentedTransformPredictor(Predictor):
                 t_met = threshold_met(x)
 
                 # Check Thresholds
-                for key in events:
+                for key in events_to_predict:
                     if t_met[key]:
                         if isnan(ToE[key][i]):
                             # First time event has been reached
                             ToE[key][i] = t
                     else:
-                        all_failed = False
+                        all_failed = False  # This event for this sigma point hasn't been met yet
             if all_failed:
                 # If all events have been reched for every sigma point
                 break 

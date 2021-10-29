@@ -76,8 +76,8 @@ def run_example():
     # Note: This is only required for sample-based prediction algorithms
     samples = filt.x.sample(NUM_SAMPLES)  
     STEP_SIZE = 0.1
-    (times, inputs, states, outputs, event_states, eol) = mc.predict(samples, future_loading, dt=STEP_SIZE)
-    print('EOL', eol.mean)
+    (times, inputs, states, outputs, event_states, toe) = mc.predict(samples, future_loading, dt=STEP_SIZE)
+    print('ToE', toe.mean)
 
     # Step 3c: Analyze the results
 
@@ -91,15 +91,15 @@ def run_example():
     
     # You can also use the metrics package to generate some useful metrics on the result of a prediction
     print("\nEOD Prediction Metrics")
-    eol = eol.key('EOD') # Calculate metrics for event EOL
+    toe = toe.key('EOD') # Calculate metrics for event EOL
 
     from prog_algs.metrics import samples as metrics 
-    print('\tPercentage between 3005.2 and 3005.6: ', metrics.percentage_in_bounds(eol, [3005.2, 3005.6])*100.0, '%')
-    print('\tAssuming ground truth 3002.25: ', metrics.eol_metrics(eol, 3005.25))
-    print('\tP(Success) if mission ends at 3002.25: ', metrics.prob_success(eol, 3005.25))
+    print('\tPercentage between 3005.2 and 3005.6: ', metrics.percentage_in_bounds(toe, [3005.2, 3005.6])*100.0, '%')
+    print('\tAssuming ground truth 3002.25: ', metrics.toe_metrics(toe, 3005.25))
+    print('\tP(Success) if mission ends at 3002.25: ', metrics.prob_success(toe, 3005.25))
 
     # Plot state transition 
-    # Here we will plot the states at t0, 25% to EOL, 50% to EOL, 75% to EOL, and EOL
+    # Here we will plot the states at t0, 25% to ToE, 50% to ToE, 75% to ToE, and ToE
     fig = states.snapshot(0).plot_scatter(label = "t={} s".format(int(times[0])))  # 0
     quarter_index = int(len(times)/4)
     states.snapshot(quarter_index).plot_scatter(fig = fig, label = "t={} s".format(int(times[quarter_index])))  # 25%

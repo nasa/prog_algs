@@ -51,9 +51,9 @@ class TestPredictors(unittest.TestCase):
         def future_loading(t, x={}):
             return {}
 
-        (times, inputs, states, outputs, event_states, eol) = pred.predict(samples, future_loading, dt=0.01)
-        self.assertAlmostEqual(eol.mean['impact'], 8.21, 0)
-        self.assertAlmostEqual(eol.mean['falling'], 4.15, 0)
+        (times, inputs, states, outputs, event_states, toe) = pred.predict(samples, future_loading, dt=0.01)
+        self.assertAlmostEqual(toe.mean['impact'], 8.21, 0)
+        self.assertAlmostEqual(toe.mean['falling'], 4.15, 0)
 
     def test_UKP_Battery(self):
         from prog_algs.predictors import UnscentedTransformPredictor
@@ -89,8 +89,14 @@ class TestPredictors(unittest.TestCase):
         ut = UnscentedTransformPredictor(batt)
 
         # Predict with a step size of 0.1
-        (times, inputs, states, outputs, event_states, eol) = ut.predict(filt.x, future_loading, dt=0.1)
-        self.assertAlmostEqual(eol.mean['EOD'], 3004, -2)
+        (times, inputs, states, outputs, event_states, toe) = ut.predict(filt.x, future_loading, dt=0.1)
+        self.assertAlmostEqual(toe.mean['EOD'], 3004, -2)
+
+        # Test Metrics
+        from prog_algs.metrics import samples
+        s = toe.sample(100).key('EOD')
+        samples.toe_metrics(s)
+        samples.eol_metrics(s)  # Kept for backwards compatibility
 
     def test_MC(self):
         from prog_algs.predictors import MonteCarlo

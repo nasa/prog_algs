@@ -50,8 +50,8 @@ def run_example():
     # Note: This is only required for sample-based prediction algorithms
     samples = filt.x.sample(NUM_SAMPLES)  
     STEP_SIZE = 0.1
-    (times, inputs, states, outputs, event_states, eol) = mc.predict(samples, future_loading, dt=STEP_SIZE)
-    print('EOL', eol.mean)
+    (times, inputs, states, outputs, event_states, toe) = mc.predict(samples, future_loading, dt=STEP_SIZE)
+    print('ToE', toe.mean)
 
 # This allows the module to be executed directly 
 if __name__ == '__main__':

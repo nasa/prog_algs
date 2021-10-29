@@ -36,6 +36,7 @@ class Predictor(ABC):
         self.model = model
 
         self.parameters = deepcopy(self.default_parameters)
+        self.parameters['events'] = deepcopy(self.model.events)  # Events to predict to
         self.parameters.update(kwargs)
 
     @abstractmethod

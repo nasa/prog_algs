@@ -58,7 +58,7 @@ class UnscentedTransformPredictor(Predictor):
     """
     Class for performing model-based prediction using an unscented transform. 
 
-    This class defines logic for performing model-based state prediction using sigma points and an unscented transform. A Predictor is constructed using a PrognosticsModel object, (See Prognostics Model Package). The Unscented Transform Predictor propagates the sigma-points in the state-space in time domain until the event threshold is met. The step at which the i-th sigma point reaches the threshold is the step at which the i-th sigma point will be placed along the time dimension. By repeating the procedure for all sigma-points, we obtain the sigma-points defining the distribution of the event; for example, the End Of Life EOL event. The provided future loading equation is used to compute the inputs to the system at any given time point. 
+    This class defines logic for performing model-based state prediction using sigma points and an unscented transform. A Predictor is constructed using a PrognosticsModel object, (See Prognostics Model Package). The Unscented Transform Predictor propagates the sigma-points in the state-space in time domain until the event threshold is met. The step at which the i-th sigma point reaches the threshold is the step at which the i-th sigma point will be placed along the time dimension. By repeating the procedure for all sigma-points, we obtain the sigma-points defining the distribution of the time of event (ToE); for example, the End Of Life (EOL) event. The provided future loading equation is used to compute the inputs to the system at any given time point. 
 
     Parameters
     ----------
@@ -71,7 +71,7 @@ class UnscentedTransformPredictor(Predictor):
         * dt : Step size (s)
         * horizon : Prediction horizon (s)
         
-    NOTE: The resulting sigma-points along the time dimension are used to compute mean and covariance of the event time (EOL time), under the hypothesis that the EOL distribution would also be well represented by a Gaussian. This is a strong assumption that likely cannot be satisfied for real systems with strong non-linear state propagation or nonlinear EOL curves. Therefore, the user should be cautious and verify that modeling the event time using a Gaussian distribution is satisfactory.
+    NOTE: The resulting sigma-points along the time dimension are used to compute mean and covariance of the event time (ToE), under the hypothesis that the ToE distribution would also be well represented by a Gaussian. This is a strong assumption that likely cannot be satisfied for real systems with strong non-linear state propagation or nonlinear ToE curves. Therefore, the user should be cautious and verify that modeling the event time using a Gaussian distribution is satisfactory.
     """
     default_parameters = {  # Default Parameters
         'alpha': 1,         # UKF scaling param
@@ -172,7 +172,7 @@ class UnscentedTransformPredictor(Predictor):
         # Setup first states
         t = params['t']
         save_pt_index = 0
-        EOL = {key: [float('nan') for i in range(n_points)] for key in self.model.events}  # Keep track of final EOL values
+        ToE = {key: [float('nan') for i in range(n_points)] for key in self.model.events}  # Keep track of final ToE values
 
         times = []
         inputs = []
@@ -215,9 +215,9 @@ class UnscentedTransformPredictor(Predictor):
                 # Check Thresholds
                 for key in events:
                     if t_met[key]:
-                        if isnan(EOL[key][i]):
+                        if isnan(ToE[key][i]):
                             # First time event has been reached
-                            EOL[key][i] = t
+                            ToE[key][i] = t
                     else:
                         all_failed = False
             if all_failed:
@@ -225,7 +225,7 @@ class UnscentedTransformPredictor(Predictor):
                 break 
         
         # Prepare Results
-        pts = array([[e for e in EOL[key]] for key in EOL.keys()])
+        pts = array([[e for e in ToE[key]] for key in ToE.keys()])
         pts = transpose(pts)
         mean, cov = kalman.unscented_transform(pts, sigma_points.Wm, sigma_points.Wc)
 
@@ -234,5 +234,6 @@ class UnscentedTransformPredictor(Predictor):
         state_prediction = MultivariateNormalDistPrediction(times, states)
         output_prediction = LazyMultivariateNormalDistPrediction(state_prediction, sigma_points, kalman.unscented_transform, model.output)
         event_state_prediction = LazyMultivariateNormalDistPrediction(state_prediction, sigma_points, kalman.unscented_transform, model.event_state)
-        time_of_event = MultivariateNormalDist(EOL.keys(), mean, cov)
+        time_of_event = MultivariateNormalDist(ToE.keys(), mean, cov)
         return (times, inputs_prediction, state_prediction, output_prediction, event_state_prediction, time_of_event)  
+      

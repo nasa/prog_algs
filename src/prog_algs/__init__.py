@@ -23,18 +23,18 @@ def run_prog_playback(obs, pred, future_loading, output_measurements, **kwargs):
     states = []
     outputs = []
     event_states = []
-    eols = []
+    toes = []
     index = 0
     for (t, measurement) in output_measurements:
         obs.estimate(t, future_loading(t), measurement)
         if t >= next_predict:
-            (t, u, x, z, es, eol) = pred.predict(obs.x.sample(config['num_samples']), future_loading, **config['predict_config'])
+            (t, u, x, z, es, toe) = pred.predict(obs.x.sample(config['num_samples']), future_loading, **config['predict_config'])
             times.append(t)
             inputs.append(u)
             states.append(x)
             outputs.append(z)
             event_states.append(es)
-            eols.append(eol)
+            toes.append(toe)
             index += 1
             next_predict += config['predict_rate']
-    return (times, inputs, states, outputs, event_states, eols) 
+    return (times, inputs, states, outputs, event_states, toes) 

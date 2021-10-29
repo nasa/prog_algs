@@ -45,8 +45,6 @@ class LazyMultivariateNormalDistPrediction(MultivariateNormalDistPrediction):
                 sigma_pt_tranformed = array([array(list(sigma_pt.values())) for sigma_pt in sigma_pt_tranformed]) # map -> array
 
                 # Apply Unscented Transform to form output distribution
-                print(sigma_pt_tranformed)
-                print(self.__ut_fcn)
                 mean, cov = self.__ut_fcn(sigma_pt_tranformed, self.__sigma_fcn.Wm, self.__sigma_fcn.Wc)
                 self.__data.append(MultivariateNormalDist(transformed_keys, mean, cov))
 

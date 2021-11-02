@@ -6,10 +6,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>State Estimators &#8212; Prognostics Algorithms Python Package 1.0.0 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <title>State Estimators &#8212; Prognostics Algorithms Python Package 1.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -36,8 +36,8 @@
   <section id="state-estimators">
 <h1>State Estimators<a class="headerlink" href="#state-estimators" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="prog_algs.state_estimators.state_estimator.StateEstimator">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">prog_algs.state_estimators.state_estimator.</span></code><code class="sig-name descname"><span class="pre">StateEstimator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement_eqn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.state_estimator.StateEstimator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="prog_algs.state_estimators.state_estimator.StateEstimator">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">prog_algs.state_estimators.state_estimator.</span></span><span class="sig-name descname"><span class="pre">StateEstimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement_eqn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.state_estimator.StateEstimator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interface class for state estimators</p>
 <p>Abstract base class for creating state estimators that perform state estimation. Subclasses must implement this interface. Equivilant to “Observers” in NASA’s Matlab Prognostics Algorithm Library</p>
 <dl>
@@ -64,8 +64,8 @@
 </dd>
 </dl>
 <dl class="py method">
-<dt id="prog_algs.state_estimators.state_estimator.StateEstimator.estimate">
-<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">estimate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.state_estimator.StateEstimator.estimate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="prog_algs.state_estimators.state_estimator.StateEstimator.estimate">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.state_estimator.StateEstimator.estimate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform one state estimation step (i.e., update the state estimate)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -81,9 +81,9 @@ e.g., z = {‘t’:12.4, ‘v’:3.3} given inputs = [‘t’, ‘v’]</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="prog_algs.state_estimators.state_estimator.StateEstimator.x">
-<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">x</span></code><a class="headerlink" href="#prog_algs.state_estimators.state_estimator.StateEstimator.x" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="prog_algs.state_estimators.state_estimator.StateEstimator.x">
+<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#prog_algs.state_estimators.state_estimator.StateEstimator.x" title="Permalink to this definition">¶</a></dt>
 <dd><p>Getter for property ‘x’, the current estimated state.</p>
 <p class="rubric">Example</p>
 <p>state = observer.x</p>
@@ -95,8 +95,8 @@ e.g., z = {‘t’:12.4, ‘v’:3.3} given inputs = [‘t’, ‘v’]</p></li>
 <section id="ukf-state-estimator">
 <h2>UKF State Estimator<a class="headerlink" href="#ukf-state-estimator" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">prog_algs.state_estimators.unscented_kalman_filter.</span></code><code class="sig-name descname"><span class="pre">UnscentedKalmanFilter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement_eqn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">prog_algs.state_estimators.unscented_kalman_filter.</span></span><span class="sig-name descname"><span class="pre">UnscentedKalmanFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement_eqn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter" title="Permalink to this definition">¶</a></dt>
 <dd><p>An Unscented Kalman Filter (UKF) for state estimation</p>
 <p>This class defines logic for performing an unscented kalman filter with a Prognostics Model (see Prognostics Model Package). This filter uses measurement data with noise to generate a state estimate and covariance matrix.</p>
 <dl>
@@ -132,8 +132,8 @@ e.g., z = {‘t’:12.4, ‘v’:3.3} given inputs = [‘t’, ‘v’]</p></li>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter.estimate">
-<code class="sig-name descname"><span class="pre">estimate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter.estimate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter.estimate">
+<span class="sig-name descname"><span class="pre">estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter.estimate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform one state estimation step (i.e., update the state estimate)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -149,9 +149,9 @@ e.g., z = {‘t’:12.4, ‘v’:3.3} given inputs = [‘t’, ‘v’]</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter.x">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">x</span></code><a class="headerlink" href="#prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter.x" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter.x">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter.x" title="Permalink to this definition">¶</a></dt>
 <dd><p>Getter for property ‘x’, the current estimated state.</p>
 <p class="rubric">Example</p>
 <p>state = observer.x</p>
@@ -163,8 +163,8 @@ e.g., z = {‘t’:12.4, ‘v’:3.3} given inputs = [‘t’, ‘v’]</p></li>
 <section id="pf-state-estimator">
 <h2>PF State Estimator<a class="headerlink" href="#pf-state-estimator" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="prog_algs.state_estimators.particle_filter.ParticleFilter">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">prog_algs.state_estimators.particle_filter.</span></code><code class="sig-name descname"><span class="pre">ParticleFilter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement_eqn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.particle_filter.ParticleFilter" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="prog_algs.state_estimators.particle_filter.ParticleFilter">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">prog_algs.state_estimators.particle_filter.</span></span><span class="sig-name descname"><span class="pre">ParticleFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement_eqn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.particle_filter.ParticleFilter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Estimates state using a particle filter algorithm</p>
 <dl>
 <dt>Constructor parameters:</dt><dd><ul>
@@ -198,8 +198,8 @@ e.g., z = {‘t’:12.4, ‘v’:3.3} given inputs = [‘t’, ‘v’]</p></li>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="prog_algs.state_estimators.particle_filter.ParticleFilter.estimate">
-<code class="sig-name descname"><span class="pre">estimate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.particle_filter.ParticleFilter.estimate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="prog_algs.state_estimators.particle_filter.ParticleFilter.estimate">
+<span class="sig-name descname"><span class="pre">estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.particle_filter.ParticleFilter.estimate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform one state estimation step (i.e., update the state estimate)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -215,9 +215,9 @@ e.g., z = {‘t’:12.4, ‘v’:3.3} given inputs = [‘t’, ‘v’]</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="prog_algs.state_estimators.particle_filter.ParticleFilter.x">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">x</span></code><a class="headerlink" href="#prog_algs.state_estimators.particle_filter.ParticleFilter.x" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="prog_algs.state_estimators.particle_filter.ParticleFilter.x">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#prog_algs.state_estimators.particle_filter.ParticleFilter.x" title="Permalink to this definition">¶</a></dt>
 <dd><p>Getter for property ‘x’, the current estimated state.</p>
 <p class="rubric">Example</p>
 <p>state = observer.x</p>
@@ -246,6 +246,7 @@ e.g., z = {‘t’:12.4, ‘v’:3.3} given inputs = [‘t’, ‘v’]</p></li>
 
 <h3>Navigation</h3>
 <ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://mybinder.org/v2/gh/nasa/prog_algs/dev?labpath=tutorial.ipynb">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">State Estimators</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#ukf-state-estimator">UKF State Estimator</a></li>
@@ -273,7 +274,7 @@ e.g., z = {‘t’:12.4, ‘v’:3.3} given inputs = [‘t’, ‘v’]</p></li>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

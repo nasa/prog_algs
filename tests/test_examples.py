@@ -4,6 +4,7 @@ import unittest
 import sys
 from io import StringIO 
 from examples import *
+from unittest.mock import patch
 
 
 class TestExamples(unittest.TestCase):
@@ -13,7 +14,8 @@ class TestExamples(unittest.TestCase):
         sys.stdout = StringIO()
 
         from examples import basic_example
-        basic_example.run_example()
+        with patch('matplotlib.pyplot') as p:
+            basic_example.run_example()
 
         # Reset stdout 
         sys.stdout = _stdout
@@ -24,7 +26,8 @@ class TestExamples(unittest.TestCase):
         sys.stdout = StringIO()
 
         from examples import benchmarking_example
-        benchmarking_example.run_example()
+        with patch('matplotlib.pyplot') as p:
+            benchmarking_example.run_example()
 
         # Reset stdout 
         sys.stdout = _stdout
@@ -35,7 +38,19 @@ class TestExamples(unittest.TestCase):
         sys.stdout = StringIO()
 
         from examples import new_state_estimator_example
-        new_state_estimator_example.run_example()
+        with patch('matplotlib.pyplot') as p:
+            new_state_estimator_example.run_example()
+
+        # Reset stdout 
+        sys.stdout = _stdout
+
+    def test_thrown_obj_ex(self):
+        # set stdout (so it wont print)
+        _stdout = sys.stdout
+        sys.stdout = StringIO()
+
+        from examples import thrown_object_example
+        thrown_object_example.run_example()
 
         # Reset stdout 
         sys.stdout = _stdout
@@ -46,7 +61,19 @@ class TestExamples(unittest.TestCase):
         sys.stdout = StringIO()
 
         from examples import measurement_eqn_example
-        measurement_eqn_example.run_example()
+        with patch('matplotlib.pyplot') as p:
+            measurement_eqn_example.run_example()
+
+        # Reset stdout 
+        sys.stdout = _stdout
+
+    def test_utpredictor_ex(self):
+        # set stdout (so it wont print)
+        _stdout = sys.stdout
+        sys.stdout = StringIO()
+
+        from examples import utpredictor
+        utpredictor.run_example()
 
         # Reset stdout 
         sys.stdout = _stdout

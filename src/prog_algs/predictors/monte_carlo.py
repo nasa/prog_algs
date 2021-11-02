@@ -1,21 +1,57 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from .prediction import Prediction
+from .prediction import UnweightedSamplesPrediction
 from .predictor import Predictor
-from ..exceptions import ProgAlgTypeError
 from copy import deepcopy
 from functools import partial
+from prog_models.sim_result import SimResult, LazySimResult
 from prog_algs.uncertain_data import UnweightedSamples
 
-def prediction_fcn(x, model, params, loading):
+def prediction_fcn(x, model, params, events, loading):
     # This is the main prediction function for the multi-threading
+    events_remaining = deepcopy(events)
     first_output = model.output(x)
+    time_of_event = {}
+    params['t'] = 0
+    times = []
+    # inputs will be the same as states unless we explicitly deepcopy
+    inputs = deepcopy(SimResult())
+    states = deepcopy(SimResult())  
+    outputs = LazySimResult(fcn = model.output)
+    event_states = LazySimResult(fcn = model.event_state)
     params['x'] = x
-    (times, inputs, states, outputs, event_states) = model.simulate_to_threshold(loading, first_output, **params)
-    if (model.threshold_met(states[-1])):
-        time_of_event = times[-1]
-    else:
-        time_of_event = None
+    while len(events_remaining) > 0:  # Still events to predict
+        (t, u, xi, z, es) = model.simulate_to_threshold(loading, first_output, **params, threshold_keys=events_remaining)
+
+        # Add results
+        times.extend(t)
+        inputs.extend(u)
+        states.extend(xi)
+        outputs.extend(z)
+        event_states.extend(es)
+
+        # Get which event occurs
+        t_met = model.threshold_met(states[-1])
+        t_met = {key: t_met[key] for key in events_remaining}  # Only look at remaining keys
+        try:
+            event = list(t_met.keys())[list(t_met.values()).index(True)]
+        except ValueError:
+            # no event has occured
+            for event in events_remaining:
+                time_of_event[event] = None
+            break
+
+        # An event has occured
+        time_of_event[event] = times[-1]
+        events_remaining.remove(event)  # No longer an event to predect to
+
+        # Remove last state (event)
+        params['t'] = times.pop()
+        inputs.pop()
+        params['x'] = states.pop()
+        outputs.pop()
+        event_states.pop()
+        
     return (times, inputs, states, outputs, event_states, time_of_event)
 
 
@@ -42,40 +78,9 @@ class MonteCarlo(Predictor):
         'dt': 0.5,          # Timestep, seconds
         'horizon': 4000,    # Prediction horizon, seconds
         'save_freq': 10,    # Frequency at which results are saved
-        'cores': 6          # Number of cores to use in parallelization
     }
 
     def predict(self, state_samples, future_loading_eqn, **kwargs):
-        """
-        Perform a single prediction
-
-        Parameters
-        ----------
-        state_samples : collection of samples for the MonteCarlo
-        future_loading_eqn : function (t, x={}) -> z
-            Function to generate an estimate of loading at future time t
-        config : keyword arguments, optional
-            Any additional configuration values. See default parameters
-
-        Returns (tuple)
-        -------
-        times: [[number]]
-            Times for each simulated point in format times[sample_id][index]
-        inputs: [[dict]]
-            Future input (from future_loading_eqn) for each sample and time in times
-            where inputs[sample_id][index] corresponds to time times[sample_id][index]
-        states: [[dict]]
-            Estimated states for each sample and time in times
-            where states[sample_id][index] corresponds to time times[sample_id][index]
-        outputs: [[dict]]
-            Estimated outputs for each sample and time in times
-            where outputs[sample_id][index] corresponds to time times[sample_id][index]
-        event_states: [[dict]]
-            Estimated event state (e.g., SOH), between 1-0 where 0 is event occurance, for each sample and time in times
-            where event_states[sample_id][index] corresponds to time times[sample_id][index]
-        toe: [number]
-            Estimated time where a predicted event will occur for each sample.
-        """
         params = deepcopy(self.parameters) # copy parameters
         params.update(kwargs) # update for specific run
 
@@ -84,14 +89,20 @@ class MonteCarlo(Predictor):
             prediction_fcn, 
             model = self.model, 
             params = params,
+            events = params['events'],
             loading = future_loading_eqn)
         
         result = [pred_fcn(sample) for sample in state_samples]
         times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event = map(list, zip(*result))
         
-        inputs_all = Prediction(times_all, inputs_all)
-        states_all = Prediction(times_all, states_all)
-        outputs_all = Prediction(times_all, outputs_all)
-        event_states_all = Prediction(times_all, event_states_all)
+        # Return longest time array
+        times_length = [len(t) for t in times_all]
+        times_max_len = max(times_length)
+        times = times_all[times_length.index(times_max_len)] 
+        
+        inputs_all = UnweightedSamplesPrediction(times, inputs_all)
+        states_all = UnweightedSamplesPrediction(times, states_all)
+        outputs_all = UnweightedSamplesPrediction(times, outputs_all)
+        event_states_all = UnweightedSamplesPrediction(times, event_states_all)
         time_of_event = UnweightedSamples(time_of_event)
-        return (times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event)
+        return (times, inputs_all, states_all, outputs_all, event_states_all, time_of_event)

@@ -6,10 +6,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Metrics &#8212; Prognostics Algorithms Python Package 1.0.0 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <title>Metrics &#8212; Prognostics Algorithms Python Package 1.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -37,16 +37,16 @@
 <h1>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline">¶</a></h1>
 <p>The metrics module includes tools for calculating various metrics for prognostics results. These metrics are a measurement of the performance of a prognostics algorithms. The analysis functions are described below:</p>
 <span class="target" id="module-prog_algs.metrics.samples"></span><dl class="py function">
-<dt id="prog_algs.metrics.samples.alpha_lambda">
-<code class="sig-prename descclassname"><span class="pre">prog_algs.metrics.samples.</span></code><code class="sig-name descname"><span class="pre">alpha_lambda</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eols</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.alpha_lambda" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="prog_algs.metrics.samples.alpha_lambda">
+<span class="sig-prename descclassname"><span class="pre">prog_algs.metrics.samples.</span></span><span class="sig-name descname"><span class="pre">alpha_lambda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">toes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.alpha_lambda" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute alpha lambda metrics</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>times</strong> (<em>[</em><em>float</em><em>]</em>) – Times corresponding to eols (output from predictors)</p></li>
-<li><p><strong>eols</strong> (<em>[</em><em>float</em><em>]</em>) – End of life times, output from predictor</p></li>
-<li><p><strong>ground_truth</strong> (<em>float</em>) – Ground Truth end of life time</p></li>
-<li><p><strong>lambda_value</strong> (<em>fload</em>) – lambda</p></li>
+<li><p><strong>times</strong> (<em>[</em><em>float</em><em>]</em>) – Times corresponding to toes (output from predictors)</p></li>
+<li><p><strong>toes</strong> (<em>[</em><em>float</em><em>]</em>) – Times of event for a single event, output from predictor</p></li>
+<li><p><strong>ground_truth</strong> (<em>float</em>) – Ground Truth time of event for that event</p></li>
+<li><p><strong>lambda_value</strong> (<em>float</em>) – lambda</p></li>
 <li><p><strong>alpha</strong> (<em>float</em>) – alpha</p></li>
 <li><p><strong>beta</strong> (<em>float</em>) – beta</p></li>
 </ul>
@@ -61,13 +61,13 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="prog_algs.metrics.samples.eol_metrics">
-<code class="sig-prename descclassname"><span class="pre">prog_algs.metrics.samples.</span></code><code class="sig-name descname"><span class="pre">eol_metrics</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.eol_metrics" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate all end of life metrics</p>
+<dt class="sig sig-object py" id="prog_algs.metrics.samples.eol_metrics">
+<span class="sig-prename descclassname"><span class="pre">prog_algs.metrics.samples.</span></span><span class="sig-name descname"><span class="pre">eol_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">toe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.eol_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate all time of event metrics</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>eol</strong> (<em>[</em><em>double</em><em>]</em>) – End of life times, output from predictor</p></li>
+<li><p><strong>toe</strong> (<em>[</em><em>double</em><em>]</em>) – Times of event for a single event, output from predictor</p></li>
 <li><p><strong>ground_truth</strong> (<em>float</em><em>, </em><em>optional</em>) – Ground truth end of discharge time. Defaults to None.</p></li>
 </ul>
 </dd>
@@ -81,38 +81,18 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="prog_algs.metrics.samples.eol_profile_metrics">
-<code class="sig-prename descclassname"><span class="pre">prog_algs.metrics.samples.</span></code><code class="sig-name descname"><span class="pre">eol_profile_metrics</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.eol_profile_metrics" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate eol profile metrics</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>eol</strong> (<em>[</em><em>float</em><em>]</em>) – End of life times, output from predictor</p></li>
-<li><p><strong>ground_truth</strong> (<em>float</em>) – Ground truth EOL</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>EOL Profile Metrics</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="prog_algs.metrics.samples.mean_square_error">
-<code class="sig-prename descclassname"><span class="pre">prog_algs.metrics.samples.</span></code><code class="sig-name descname"><span class="pre">mean_square_error</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.mean_square_error" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="prog_algs.metrics.samples.mean_square_error">
+<span class="sig-prename descclassname"><span class="pre">prog_algs.metrics.samples.</span></span><span class="sig-name descname"><span class="pre">mean_square_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.mean_square_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mean Square Error</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<em>[</em><em>float</em><em>]</em>) – End of life times, output from predictor</p></li>
-<li><p><strong>ground_truth</strong> (<em>float</em>) – Ground truth EOL</p></li>
+<li><p><strong>values</strong> (<em>[</em><em>float</em><em>]</em>) – time of event for a single event, output from predictor</p></li>
+<li><p><strong>ground_truth</strong> (<em>float</em>) – Ground truth ToE</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>mean square error of eol predictions</p>
+<dd class="field-even"><p>mean square error of toe predictions</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>float</p>
@@ -121,13 +101,13 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="prog_algs.metrics.samples.percentage_in_bounds">
-<code class="sig-prename descclassname"><span class="pre">prog_algs.metrics.samples.</span></code><code class="sig-name descname"><span class="pre">percentage_in_bounds</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.percentage_in_bounds" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate percentage of EOL dist is within specified bounds</p>
+<dt class="sig sig-object py" id="prog_algs.metrics.samples.percentage_in_bounds">
+<span class="sig-prename descclassname"><span class="pre">prog_algs.metrics.samples.</span></span><span class="sig-name descname"><span class="pre">percentage_in_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">toe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.percentage_in_bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate percentage of ToE dist is within specified bounds</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>eol</strong> (<em>[</em><em>float</em><em>]</em>) – End of life times, output from predictor</p></li>
+<li><p><strong>toe</strong> (<em>[</em><em>float</em><em>]</em>) – Times of event for a single event, output from predictor</p></li>
 <li><p><strong>bounds</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Lower and upper bounds</p></li>
 </ul>
 </dd>
@@ -141,13 +121,13 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="prog_algs.metrics.samples.prob_success">
-<code class="sig-prename descclassname"><span class="pre">prog_algs.metrics.samples.</span></code><code class="sig-name descname"><span class="pre">prob_success</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.prob_success" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="prog_algs.metrics.samples.prob_success">
+<span class="sig-prename descclassname"><span class="pre">prog_algs.metrics.samples.</span></span><span class="sig-name descname"><span class="pre">prob_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">toe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.prob_success" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate probability of success - i.e., probability that event will not occur within a given time (i.e., success)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>eol</strong> (<em>[</em><em>float</em><em>]</em>) – End of life times, output from predictor</p></li>
+<li><p><strong>toe</strong> (<em>[</em><em>float</em><em>]</em>) – Times of event for a single event, output from predictor</p></li>
 <li><p><strong>time</strong> (<em>[</em><em>type</em><em>]</em>) – time for calculation</p></li>
 </ul>
 </dd>
@@ -156,6 +136,46 @@
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>fload</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="prog_algs.metrics.samples.toe_metrics">
+<span class="sig-prename descclassname"><span class="pre">prog_algs.metrics.samples.</span></span><span class="sig-name descname"><span class="pre">toe_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">toe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.toe_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate all time of event metrics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>toe</strong> (<em>[</em><em>double</em><em>]</em>) – Times of event for a single event, output from predictor</p></li>
+<li><p><strong>ground_truth</strong> (<em>float</em><em>, </em><em>optional</em>) – Ground truth end of discharge time. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>collection of metrics</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="prog_algs.metrics.samples.toe_profile_metrics">
+<span class="sig-prename descclassname"><span class="pre">prog_algs.metrics.samples.</span></span><span class="sig-name descname"><span class="pre">toe_profile_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">toe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.metrics.samples.toe_profile_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate toe profile metrics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>toe</strong> (<em>[</em><em>float</em><em>]</em>) – Times of event for a single event, output from predictor</p></li>
+<li><p><strong>ground_truth</strong> (<em>float</em>) – Ground truth toe</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>toe Profile Metrics</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -180,6 +200,7 @@
 
 <h3>Navigation</h3>
 <ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://mybinder.org/v2/gh/nasa/prog_algs/dev?labpath=tutorial.ipynb">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="state_estimators.html">State Estimators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="predictors.html">Predictors</a></li>
@@ -203,7 +224,7 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

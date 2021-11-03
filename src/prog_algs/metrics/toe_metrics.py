@@ -1,7 +1,7 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
 """
-This file includes functions for calculating metrics given time of event
+This file includes functions for calculating metrics given time of event (ToE)
 """
 
 from typing import Iterable

@@ -68,6 +68,21 @@ class UncertainData(ABC):
         """
         return self.sample(1000).percentage_in_bounds(bounds)
 
+    def metrics(self, **kwargs):
+        """Calculate Metrics for this dist
+
+        Args
+            **kwargs (optional): Configuration parameters. Supported parameters include:
+             * ground_truth (int or dict): Ground truth value. Defaults to None.
+             * n_samples (int): Number of samples to use for calculating metrics (if not UnweightedSamples)
+
+
+        Returns:
+            dict: Dictionary of metrics
+        """
+        from ..metrics import calc_metrics
+        return calc_metrics(self, **kwargs)
+
     def plot_scatter(self, fig = None, keys = None, num_samples = 100, **kwargs):
         """
         Produce a scatter plot

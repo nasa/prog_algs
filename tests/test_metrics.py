@@ -1,9 +1,9 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 import unittest
-from prog_algs.uncertain_data import UnweightedSamples, MultivariateNormalDist, ScalarData
 from prog_algs.metrics import prob_success
 from prog_algs.metrics import calc_metrics as toe_metrics
+from prog_algs.uncertain_data import UnweightedSamples, MultivariateNormalDist, ScalarData
 
 
 class TestMetrics(unittest.TestCase):
@@ -101,9 +101,11 @@ class TestMetrics(unittest.TestCase):
             [0.1, 0.1, 1]]
         dist = MultivariateNormalDist(keys, mean, covar)
         metrics = toe_metrics(dist)
+        dist.metrics()
         check_metrics(metrics)
 
         metrics = toe_metrics(dist, 11)
+        dist.metrics(ground_truth=11)
         check_metrics(metrics)
         self.assertAlmostEqual(metrics['a']['ground truth percentile'], 84.3, -1)
         self.assertAlmostEqual(metrics['b']['ground truth percentile'], 50, -1)
@@ -135,10 +137,12 @@ class TestMetrics(unittest.TestCase):
             }
         scalar = ScalarData(data)
         metrics = toe_metrics(scalar)
+        self.assertDictEqual(scalar.metrics(), metrics)
         check_metrics(metrics)
 
         # Check with ground truth
         metrics = toe_metrics(scalar, 11)
+        self.assertDictEqual(scalar.metrics(ground_truth=11), metrics)
         check_metrics(metrics)
         for key in data.keys():
             for key2 in ['mean absolute percentage error', 'relative accuracy', 'ground truth percentile']:   
@@ -149,6 +153,7 @@ class TestMetrics(unittest.TestCase):
 
         # Check with limited samples
         metrics = toe_metrics(scalar, n_samples = 1000)
+        self.assertDictEqual(scalar.metrics(n_samples = 1000), metrics)
         for key in scalar.keys():
             self.assertIsNone(metrics[key]['percentiles']['0.01'])
             metrics[key]['percentiles']['0.01'] = data[key]  # Fill so we can check everything else below
@@ -210,6 +215,7 @@ class TestMetrics(unittest.TestCase):
         data = [{'a': i, 'b': i*1.1, 'c': (i/5)**2} for i in range(10)]
         u_samples = UnweightedSamples(data)
         metrics = toe_metrics(u_samples)
+        self.assertDictEqual(u_samples.metrics(), metrics)
 
         check_metrics(metrics)
         for key in u_samples.keys():
@@ -217,6 +223,7 @@ class TestMetrics(unittest.TestCase):
                 self.assertNotIn(key2, metrics[key])
 
         metrics = toe_metrics(u_samples, 5.0)
+        self.assertDictEqual(u_samples.metrics(ground_truth=5.0), metrics)
         check_metrics(metrics)
         for key in u_samples.keys():
             for key2 in ['mean absolute percentage error', 'relative accuracy', 'ground truth percentile']:   
@@ -225,7 +232,9 @@ class TestMetrics(unittest.TestCase):
         self.assertAlmostEqual(metrics['b']['mean absolute error'], 2.75)
         self.assertAlmostEqual(metrics['c']['mean absolute error'], 3.86)
 
-        metrics = toe_metrics(u_samples, ground_truth = {'a': 5.0, 'b': 4.5, 'c': 1.5})
+        ground_truth = {'a': 5.0, 'b': 4.5, 'c': 1.5}
+        metrics = toe_metrics(u_samples, ground_truth = ground_truth)
+        self.assertDictEqual(u_samples.metrics(ground_truth = ground_truth), metrics)
         check_metrics(metrics)
         for key in u_samples.keys():
             for key2 in ['mean absolute percentage error', 'relative accuracy', 'ground truth percentile']:   

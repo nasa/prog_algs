@@ -51,7 +51,7 @@ def run_example():
     samples = filt.x.sample(NUM_SAMPLES)  
     STEP_SIZE = 0.1
     (times, inputs, states, outputs, event_states, toe) = mc.predict(samples, future_loading, dt=STEP_SIZE)
-    print('ToE', toe.mean)
+    print('ToE', toe.metrics())
 
 # This allows the module to be executed directly 
 if __name__ == '__main__':

@@ -39,3 +39,10 @@ class ScalarData(UncertainData):
 
     def __str__(self):
         return 'ScalarData({})'.format(self.__state)
+
+    def percentage_in_bounds(self, bounds):
+        if isinstance(bounds, list):
+            bounds = {key: bounds for key in self.keys()}
+        if not isinstance(bounds, dict) and all([isinstance(b, list) for b in bounds]):
+            raise TypeError("Bounds must be list [lower, upper] or dict (key: [lower, upper]), was {}".format(type(bounds)))
+        return {key: (1 if bounds[key][0] < x and bounds[key][1] > x else 0) for (key, x) in self.__state.items()}

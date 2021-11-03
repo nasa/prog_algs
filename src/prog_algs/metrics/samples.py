@@ -5,6 +5,7 @@ from numpy import isscalar, mean, std
 from scipy import stats
 from ..uncertain_data import UncertainData, UnweightedSamples
 from .toe_metrics import toe_metrics, prob_success
+from warnings import warn
 
 def alpha_lambda(times, toes, ground_truth, lambda_value, alpha, beta): 
     """Compute alpha lambda metrics
@@ -63,6 +64,7 @@ def percentage_in_bounds(toe, bounds):
     Returns:
         float: Percentage within bounds (where 1 = 100%)
     """
+    warn('percentage_in_bounds has been deprecated in favor of UncertainData.percentage_in_bounds(bounds). This function will be removed in a future release')
     return sum([x < bounds[1] and x > bounds[0] for x in toe])/ len(toe)
 
 # Backwards Compatability

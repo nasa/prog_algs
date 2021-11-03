@@ -57,6 +57,17 @@ class UncertainData(ABC):
             [string]: keys
         """
 
+    def percentage_in_bounds(self, bounds):
+        """Calculate percentage of dist is within specified bounds
+
+        Args:
+            bounds ([float, float]): Lower and upper bounds
+
+        Returns:
+            float: Percentage within bounds (where 0.5 = 50%)
+        """
+        return self.sample(1000).percentage_in_bounds(bounds)
+
     def plot_scatter(self, fig = None, keys = None, num_samples = 100, **kwargs):
         """
         Produce a scatter plot

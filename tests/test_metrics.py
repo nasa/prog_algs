@@ -2,14 +2,14 @@
 
 import unittest
 from prog_algs.uncertain_data import UnweightedSamples, MultivariateNormalDist, ScalarData
-from prog_algs.metrics import toe_metrics, prob_success
+from prog_algs.metrics import prob_success
+from prog_algs.metrics import calc_metrics as toe_metrics
 
 
 class TestMetrics(unittest.TestCase):
     def test_toe_metrics_prev_name(self):
         # This is kept for backwards compatability
         from prog_algs.metrics import samples
-        self.assertIs(samples.toe_metrics, toe_metrics)
         self.assertIs(samples.eol_metrics, toe_metrics)
         self.assertIs(samples.prob_success, prob_success)
 

@@ -1,7 +1,10 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from numpy import mean
-from .toe_metrics import toe_metrics, prob_success
+
+# For backwards compatability
+from .general_metrics import calc_metrics as eol_metrics
+from .toe_metrics import prob_success
 from warnings import warn
 
 def alpha_lambda(times, toes, ground_truth, lambda_value, alpha, beta): 
@@ -63,6 +66,3 @@ def percentage_in_bounds(toe, bounds):
     """
     warn('percentage_in_bounds has been deprecated in favor of UncertainData.percentage_in_bounds(bounds). This function will be removed in a future release')
     return sum([x < bounds[1] and x > bounds[0] for x in toe])/ len(toe)
-
-# Backwards Compatability
-eol_metrics = toe_metrics

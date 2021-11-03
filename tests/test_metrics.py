@@ -111,9 +111,9 @@ class TestMetrics(unittest.TestCase):
 
         # P(success)
         p_success = prob_success(dist, 11)
-        self.assertAlmostEqual(p_success['a'], 0.1575, 2)
-        self.assertAlmostEqual(p_success['b'], 0.5, 2)
-        self.assertAlmostEqual(p_success['c'], 0.8425, 2)
+        self.assertAlmostEqual(p_success['a'], 0.1575, 1)
+        self.assertAlmostEqual(p_success['b'], 0.5, 1)
+        self.assertAlmostEqual(p_success['c'], 0.8425, 1)
 
     def test_toe_metrics_scalar(self):
         # Common checks

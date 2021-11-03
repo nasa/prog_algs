@@ -4,20 +4,7 @@ from typing import Iterable
 from numpy import isscalar, mean, std
 from scipy import stats
 from ..uncertain_data import UncertainData, UnweightedSamples
-from .import toe_metrics
-
-def prob_success(toe, time):
-    """Calculate probability of success - i.e., probability that event will not occur within a given time (i.e., success)
-
-    Args:
-        toe ([float]): Times of event for a single event, output from predictor
-        time ([type]): time for calculation
-
-    Returns:
-        float: Probability of success
-    """
-    return sum([e > time for e in toe])/len(toe)
-eol_metrics = toe_metrics  # For backwards compatability
+from .toe_metrics import toe_metrics, prob_success
 
 def alpha_lambda(times, toes, ground_truth, lambda_value, alpha, beta): 
     """Compute alpha lambda metrics
@@ -77,3 +64,6 @@ def percentage_in_bounds(toe, bounds):
         float: Percentage within bounds (where 1 = 100%)
     """
     return sum([x < bounds[1] and x > bounds[0] for x in toe])/ len(toe)
+
+# Backwards Compatability
+eol_metrics = toe_metrics

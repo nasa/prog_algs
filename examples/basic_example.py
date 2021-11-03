@@ -107,7 +107,7 @@ def run_example():
     states.snapshot(quarter_index*3).plot_scatter(fig = fig, label = "t={} s".format(int(times[quarter_index*3])))  # 75%
     states.snapshot(-1).plot_scatter(fig = fig, label = "t={} s".format(int(times[-1])))  # 100%
 
-    uncertain_data.UnweightedSamples([{'EOL': tmp} for tmp in toe]).plot_hist()
+    uncertain_data.UnweightedSamples([{'EOD': tmp} for tmp in toe]).plot_hist()
     
     # Step 4: Show all plots
     import matplotlib.pyplot as plt  # For plotting

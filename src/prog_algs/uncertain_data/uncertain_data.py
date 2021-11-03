@@ -89,5 +89,7 @@ class UncertainData(ABC):
             num_samples (int, optional): Number of samples to plot. Defaults to 100
             keys (List(String), optional): Keys to be plotted. Defaults to None.
         """
+        if keys is None:
+            keys = self.keys()
         samples = self.sample(num_samples)
         return plot_hist(samples, fig=fig, keys=keys, **kwargs)

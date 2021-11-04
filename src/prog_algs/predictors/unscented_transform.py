@@ -1,5 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
+from typing import final
 from .prediction import MultivariateNormalDistPrediction, UnweightedSamplesPrediction
 from .predictor import Predictor
 from numpy import diag, array, transpose
@@ -172,11 +173,11 @@ class UnscentedTransformPredictor(Predictor):
         t = params['t']
         save_pt_index = 0
         ToE = {key: [float('nan') for i in range(n_points)] for key in events_to_predict}  # Keep track of final ToE values
+        last_state = {key: [float('nan') for i in range(n_points)] for key in events_to_predict}  # Keep track of final state values
 
         times = []
         inputs = []
         states = []
-        sigma_pts = []
         save_freq = params['save_freq']
         next_save = t + save_freq
         save_pts = params['save_pts']
@@ -220,6 +221,7 @@ class UnscentedTransformPredictor(Predictor):
                         if isnan(ToE[key][i]):
                             # First time event has been reached
                             ToE[key][i] = t
+                            last_state[key][i] = deepcopy(x)
                     else:
                         all_failed = False  # This event for this sigma point hasn't been met yet
             if all_failed:
@@ -231,11 +233,20 @@ class UnscentedTransformPredictor(Predictor):
         pts = transpose(pts)
         mean, cov = kalman.unscented_transform(pts, sigma_points.Wm, sigma_points.Wc)
 
+        # Transform final state into {event_name: MultivariateNormalDist}
+        final_state = {}
+        for event_key in last_state.keys():
+            last_state_pts = array([[last_state_i[state_key] for state_key in state_keys] for last_state_i in last_state[event_key]])
+            # last_state_pts = transpose(last_state_pts)
+            last_state_mean, last_state_cov = kalman.unscented_transform(last_state_pts, sigma_points.Wm, sigma_points.Wc)
+            final_state[event_key] = MultivariateNormalDist(state_keys, last_state_mean, last_state_cov)
+
         # At this point only time of event, inputs, and state are calculated 
         inputs_prediction = UnweightedSamplesPrediction(times, [inputs])
         state_prediction = MultivariateNormalDistPrediction(times, states)
         output_prediction = LazyMultivariateNormalDistPrediction(state_prediction, sigma_points, kalman.unscented_transform, model.output)
         event_state_prediction = LazyMultivariateNormalDistPrediction(state_prediction, sigma_points, kalman.unscented_transform, model.event_state)
         time_of_event = MultivariateNormalDist(ToE.keys(), mean, cov)
+        time_of_event.final_state = final_state
         return (times, inputs_prediction, state_prediction, output_prediction, event_state_prediction, time_of_event)  
       

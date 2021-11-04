@@ -2,7 +2,6 @@
 
 from prog_models.models import BatteryCircuit
 from prog_algs import *
-from prog_algs.uncertain_data import UnweightedSamples
 # from prog_algs.visualize import plot_hist
 # import matplotlib.pyplot as plt
 
@@ -51,7 +50,11 @@ def run_example():
         print('\tz = {}'.format(outputs.snapshot(i).mean))
         print('\tevent state = {}'.format(event_states.snapshot(i).mean))
 
-    print('\ToE:', toe)
+    print('\nToE:', toe.mean)
+
+    # You can also access the final state (of type UncertainData), like so:
+    final_state = toe.final_state
+    print('Final state @EOD: ', final_state['EOD'].mean)
     # toe.plot_hist()
     # plt.show()
 

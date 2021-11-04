@@ -61,7 +61,7 @@ class UncertainData(ABC):
         """Calculate percentage of dist is within specified bounds
 
         Args:
-            bounds ([float, float]): Lower and upper boundsj
+            bounds ([float, float]): Lower and upper bounds
             keys (list of strings, optional): Keys to analyze. Defaults to all keys.
 
         Returns:

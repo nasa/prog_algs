@@ -65,7 +65,7 @@ def run_example():
     #   there is new data. Here we're doing one step to demonstrate how the state estimator is used
 
     # Step 3: Demonstrating Predictor
-    print("\n\nPerforming Prediction Step")
+    print("\n\n\nPerforming Prediction Step")
 
     # Step 3a: Setup Predictor
     mc = predictors.MonteCarlo(batt)

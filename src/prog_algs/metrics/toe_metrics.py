@@ -16,6 +16,7 @@ def prob_success(toe, time, **kwargs):
         time (float): time for calculation
         **kwargs (optional): Configuration parameters. Supported parameters include:
           * n_samples (int): Number of samples to use for calculating metrics (if toe is not UnweightedSamples). Defaults to 10,000.
+          * keys (list of strings, optional): Keys to calculate metrics for. Defaults to all keys.
 
     Returns:
         float: Probability of success
@@ -26,6 +27,9 @@ def prob_success(toe, time, **kwargs):
     params.update(kwargs)
 
     if isinstance(toe, UncertainData):
+        # Default to all keys
+        keys = params.setdefault('keys', toe.keys())
+
         if isinstance(toe, UnweightedSamples):
             samples = toe
         else:
@@ -36,7 +40,7 @@ def prob_success(toe, time, **kwargs):
         # If unweighted_samples, calculate metrics for each key
         return {key: prob_success(samples.key(key), 
                 time, 
-                **kwargs) for key in samples.keys()}
+                **kwargs) for key in keys}
     elif isinstance(toe, Iterable):
         if len(toe) == 0:
             raise ValueError('Time of Event must not be empty')

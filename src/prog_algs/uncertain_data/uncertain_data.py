@@ -57,11 +57,12 @@ class UncertainData(ABC):
             [string]: keys
         """
 
-    def percentage_in_bounds(self, bounds):
+    def percentage_in_bounds(self, bounds, keys = None):
         """Calculate percentage of dist is within specified bounds
 
         Args:
-            bounds ([float, float]): Lower and upper bounds
+            bounds ([float, float]): Lower and upper boundsj
+            keys (list of strings, optional): Keys to analyze. Defaults to all keys.
 
         Returns:
             float: Percentage within bounds (where 0.5 = 50%)
@@ -75,7 +76,7 @@ class UncertainData(ABC):
             **kwargs (optional): Configuration parameters. Supported parameters include:
              * ground_truth (int or dict): Ground truth value. Defaults to None.
              * n_samples (int): Number of samples to use for calculating metrics (if not UnweightedSamples)
-
+             * keys (list of strings): Keys to calculate metrics for. Defaults to all keys.
 
         Returns:
             dict: Dictionary of metrics

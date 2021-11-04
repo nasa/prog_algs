@@ -82,13 +82,15 @@ class UnweightedSamples(UncertainData, UserList):
         """
         return len(self)
 
-    def percentage_in_bounds(self, bounds):
+    def percentage_in_bounds(self, bounds, keys = None):
+        if not keys:
+            keys = self.keys()
         if isinstance(bounds, list):
             bounds = {key: bounds for key in self.keys()}
         if not isinstance(bounds, dict) or all([isinstance(b, list) and len(b) == 2 for b in bounds]):
             raise TypeError("Bounds must be list [lower, upper] or dict (key: [lower, upper]), was {}".format(type(bounds)))
         n_elements = len(self.data)
-        return {key: sum([x < bounds[key][1] and x > bounds[key][0] for x in self.key(key)])/n_elements for key in self.keys()}
+        return {key: sum([x < bounds[key][1] and x > bounds[key][0] for x in self.key(key)])/n_elements for key in keys}
 
     def raw_samples(self):
         warnings.warn("raw_samples is deprecated and will be removed in the future")

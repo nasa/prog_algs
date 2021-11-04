@@ -3,7 +3,10 @@
 """
 This file includes functions for calculating metrics given a time of event (ToE) profile (i.e., ToE's calculated at different times of prediction)
 """
-from ..predictors import ToEPredictionProfile
+# from ..predictors import ToEPredictionProfile
+
+class ToEPredictionProfile:
+    pass
 
 def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : float, lambda_value : float, alpha : float, beta : float): 
     """Compute alpha lambda metric

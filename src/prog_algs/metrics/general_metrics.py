@@ -16,6 +16,7 @@ def calc_metrics(data, ground_truth = None, **kwargs):
         ground_truth (float, optional): Ground truth value. Defaults to None.
         **kwargs (optional): Configuration parameters. Supported parameters include:
           * n_samples (int): Number of samples to use for calculating metrics (if data is not UnweightedSamples). Defaults to 10,000.
+          * keys (list of strings, optional): Keys to calculate metrics for. Defaults to all keys.
 
     Returns:
         dict: collection of metrics
@@ -26,9 +27,12 @@ def calc_metrics(data, ground_truth = None, **kwargs):
     params.update(kwargs)
     
     if isinstance(data, UncertainData):
+        # Default to all keys
+        keys = params.setdefault('keys', data.keys())
+        
         if ground_truth and isscalar(ground_truth):
             # If ground truth is scalar, create dict (expected below)
-            ground_truth = {key: ground_truth for key in data.keys()}
+            ground_truth = {key: ground_truth for key in keys}
 
         if isinstance(data, UnweightedSamples):
             samples = data
@@ -40,10 +44,10 @@ def calc_metrics(data, ground_truth = None, **kwargs):
         # If unweighted_samples, calculate metrics for each key
         result = {key: calc_metrics(samples.key(key), 
                 ground_truth if not ground_truth else ground_truth[key],  # If ground_truth is a dict, use key
-                **kwargs) for key in samples.keys()}
+                **kwargs) for key in keys}
 
         # Set values specific to distribution
-        for key in data.keys():
+        for key in keys:
             result[key]['mean'] = data.mean[key]
             result[key]['median'] = data.median[key]
             result[key]['percentiles']['50'] = data.median[key]

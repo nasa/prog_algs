@@ -176,6 +176,24 @@ class TestMetrics(unittest.TestCase):
         self.assertAlmostEqual(p_success['b'], 0)  # Exactly equal
         self.assertAlmostEqual(p_success['c'], 1)  # Before all samples
 
+    def test_toe_metrics_specific_keys(self):
+        data = {
+                'a': 10,
+                'b': 11,
+                'c': 12
+            }
+        scalar = ScalarData(data)
+        metrics = scalar.metrics(keys = ['a', 'b'])
+        self.assertNotIn('c', metrics)
+        self.assertIn('a', metrics)
+        self.assertIn('b', metrics)
+
+        # Check P(MS)
+        p_success = prob_success(scalar, 11, keys = ['a', 'c'])
+        self.assertNotIn('b', p_success)
+        self.assertIn('a', p_success)
+        self.assertIn('c', p_success)
+
     def test_toe_metrics_u_samples(self):
         # Common checks
         def check_metrics(metrics):

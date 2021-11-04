@@ -5,6 +5,7 @@ from prog_algs.uncertain_data import UncertainData
 
 class ToEPredictionProfile(UserDict):
     """
+    Data structure for storing the result of multiple predictions, including time of prediction. This data structure can be treated as a dictionary of time of prediction to toe prediction. Iteration of this data structure is in order of increasing time of prediction
     """
     def add_prediction(self, time_of_prediction: float, toe_prediction: UncertainData):
         """Add a single prediction to the profile
@@ -15,6 +16,7 @@ class ToEPredictionProfile(UserDict):
         """
         self[time_of_prediction] = toe_prediction
 
+    # Functions below are defined to ensure that any iteration is in order of increasing time of prediction
     def __iter__(self):
         return iter(sorted(super(ToEPredictionProfile, self).__iter__()))
 

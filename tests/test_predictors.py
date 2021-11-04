@@ -199,6 +199,29 @@ class TestPredictors(unittest.TestCase):
             self.fail()
         except Exception:
             pass
+    
+    def test_prediction_profile(self):
+        from prog_algs.predictors import ToEPredictionProfile
+        from prog_algs.uncertain_data import ScalarData
+        profile = ToEPredictionProfile()
+        self.assertEqual(len(profile), 0)
+
+        profile.add_prediction(0, ScalarData({'a': 1, 'b': 2, 'c': -3.2}))
+        profile.add_prediction(1, ScalarData({'a': 1.1, 'b': 2.2, 'c': -3.1}))
+        profile.add_prediction(0.5, ScalarData({'a': 1.05, 'b': 2.1, 'c': -3.15}))
+        self.assertEqual(len(profile), 3)
+        for (t_p, t_p_real) in zip(profile.keys(), [0, 0.5, 1]):
+            self.assertAlmostEqual(t_p, t_p_real)
+
+        profile[0.75] = ScalarData({'a': 1.075, 'b': 2.15, 'c': -3.125})
+        self.assertEqual(len(profile), 4)
+        for (t_p, t_p_real) in zip(profile.keys(), [0, 0.5, 0.75, 1]):
+            self.assertAlmostEqual(t_p, t_p_real)
+
+        del profile[0.5]
+        self.assertEqual(len(profile), 3)
+        for (t_p, t_p_real) in zip(profile.keys(), [0, 0.75, 1]):
+            self.assertAlmostEqual(t_p, t_p_real)
 
 # This allows the module to be executed directly    
 def run_tests():

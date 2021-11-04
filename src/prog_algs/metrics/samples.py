@@ -9,33 +9,6 @@ from .toe_profile_metrics import alpha_lambda
 
 from warnings import warn
 
-def mean_square_error(values, ground_truth):
-    """Mean Square Error
-
-    Args:
-        values ([float]): time of event for a single event, output from predictor
-        ground_truth (float): Ground truth ToE
-
-    Returns:
-        float: mean square error of toe predictions
-    """
-    warn('percentage_in_bounds has been deprecated in favor of UncertainData.percentage_in_bounds(bounds). This function will be removed in a future release')
-    return sum([(mean(x) - ground_truth)**2 for x in values])/len(values)
-
-def toe_profile_metrics(toe, ground_truth):
-    """Calculate toe profile metrics
-
-    Args:
-        toe ([float]): Times of event for a single event, output from predictor
-        ground_truth (float): Ground truth toe
-
-    Returns:
-        dict: toe Profile Metrics
-    """
-    return {
-        'mean square error': mean_square_error(toe, ground_truth)
-    }
-
 def percentage_in_bounds(toe, bounds):
     """Calculate percentage of ToE dist is within specified bounds
 

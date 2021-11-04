@@ -3,7 +3,7 @@
 from numpy import mean
 
 # For backwards compatability
-from .general_metrics import calc_metrics as eol_metrics
+from .uncertain_data_metrics import calc_metrics as eol_metrics
 from .toe_metrics import prob_success
 from .toe_profile_metrics import alpha_lambda
 

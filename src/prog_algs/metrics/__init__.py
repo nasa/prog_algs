@@ -2,6 +2,6 @@
 
 from . import samples
 from .toe_metrics import prob_success
-from .general_metrics import calc_metrics
+from .uncertain_data_metrics import calc_metrics
 
 __all__ = ['samples', 'calc_metrics', 'prob_success']

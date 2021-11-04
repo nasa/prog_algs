@@ -5,28 +5,9 @@ from numpy import mean
 # For backwards compatability
 from .general_metrics import calc_metrics as eol_metrics
 from .toe_metrics import prob_success
+from .toe_profile_metrics import alpha_lambda
+
 from warnings import warn
-
-def alpha_lambda(times, toes, ground_truth, lambda_value, alpha, beta): 
-    """Compute alpha lambda metrics
-
-    Args:
-        times ([float]): Times corresponding to toes (output from predictors)
-        toes ([float]): Times of event for a single event, output from predictor
-        ground_truth (float): Ground Truth time of event for that event
-        lambda_value (float): lambda
-        alpha (float): alpha
-        beta (float): beta
-
-    Returns:
-        bool: if alpha-lambda met
-    """
-    for (t, toe) in zip(times, toes):
-        if (t >= lambda_value):
-            upper_bound = ground_truth + alpha*(ground_truth-t)
-            lower_bound = ground_truth - alpha*(ground_truth-t)
-            return percentage_in_bounds(toe, [lower_bound, upper_bound]) >= beta 
-
 
 def mean_square_error(values, ground_truth):
     """Mean Square Error
@@ -38,6 +19,7 @@ def mean_square_error(values, ground_truth):
     Returns:
         float: mean square error of toe predictions
     """
+    warn('percentage_in_bounds has been deprecated in favor of UncertainData.percentage_in_bounds(bounds). This function will be removed in a future release')
     return sum([(mean(x) - ground_truth)**2 for x in values])/len(values)
 
 def toe_profile_metrics(toe, ground_truth):

@@ -3,5 +3,6 @@
 from . import samples
 from .toe_metrics import prob_success
 from .uncertain_data_metrics import calc_metrics
+from .toe_profile_metrics import alpha_lambda
 
-__all__ = ['samples', 'calc_metrics', 'prob_success']
+__all__ = ['samples', 'alpha_lambda', 'calc_metrics', 'prob_success']

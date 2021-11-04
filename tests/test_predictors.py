@@ -112,7 +112,6 @@ class TestPredictors(unittest.TestCase):
         # Test Metrics
         from prog_algs.metrics import samples
         s = toe.sample(100).key('EOD')
-        samples.toe_metrics(s)
         samples.eol_metrics(s)  # Kept for backwards compatibility
 
     def test_MC(self):

@@ -298,6 +298,66 @@ class TestMetrics(unittest.TestCase):
         # -Inf
         toe_metrics(UnweightedSamples([{'a': 1.0}]), ground_truth=-float('inf'))
 
+    def test_toe_profile_metrics(self):
+        from prog_algs.predictors import ToEPredictionProfile
+        profile = ToEPredictionProfile()  # Empty profile
+        for i in range(10):
+            # a will shift upward from 0-19 to 9-28
+            # b is always a-1
+            # c is always a * 2, and will therefore always have twice the spread
+            data = [{'a': j, 'b': j -1 , 'c': (j-4.5) * 2 + 4.5} for j in range(i, i+20)]
+            profile.add_prediction(
+                10-i,  # Time (reverse so data is decreasing)
+                UnweightedSamples(data)  # ToE Prediction
+            )
+
+        from prog_algs.metrics import alpha_lambda
+
+        # Test 1: Ground truth at median
+        ground_truth = {'a': 9.0, 'b': 8.0, 'c': 18.0}
+        lambda_value = 8  # Almost at prediction 
+        alpha = 0.5
+        beta = 0.05  # 5% is really bad
+        metrics = alpha_lambda(profile, ground_truth, lambda_value, alpha, beta)
+        # Result at t=8
+        # a
+        #     toe: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
+        #     Bounds: [8.5 - 9.5](0.05%)
+        # b
+        # toe: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+        # Bounds: [8.0 - 8.0](0.0%)
+        # c
+        #     toe: [-0.5, 1.5, 3.5, 5.5, 7.5, 9.5, 11.5, 13.5, 15.5, 17.5, 19.5, 21.5, 23.5, 25.5, 27.5, 29.5, 31.5, 33.5, 35.5, 37.5]
+        #     Bounds: [13.0 - 23.0](0.25%)
+        # {'a': True, 'b': False, 'c': True}
+        self.assertTrue(metrics['a'])
+        self.assertFalse(metrics['b'])
+        self.assertTrue(metrics['c'])
+
+        # Now lets do it at t=5
+        lambda_value = 5
+        metrics = alpha_lambda(profile, ground_truth, lambda_value, alpha, beta)
+        # Here all should be true
+        # a
+        #     toe: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
+        #     Bounds: [7.0 - 11.0](0.15%)
+        # b
+        #     toe: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+        #     Bounds: [6.5 - 9.5](0.15%)
+        # c
+        #     toe: [5.5, 7.5, 9.5, 11.5, 13.5, 15.5, 17.5, 19.5, 21.5, 23.5, 25.5, 27.5, 29.5, 31.5, 33.5, 35.5, 37.5, 39.5, 41.5, 43.5]
+        #     Bounds: [11.5 - 24.5](0.3%)
+        # {'a': True, 'b': True, 'c': True}
+        self.assertTrue(metrics['a'])
+        self.assertTrue(metrics['b'])
+        self.assertTrue(metrics['c'])
+
+        # Now lets try specifying only keys a and b
+        metrics = alpha_lambda(profile, ground_truth, lambda_value, alpha, beta, keys=['a', 'b'])
+        self.assertIn('a', metrics)
+        self.assertIn('b', metrics)
+        self.assertNotIn('c', metrics)
+
 # This allows the module to be executed directly    
 def run_tests():
     l = unittest.TestLoader()

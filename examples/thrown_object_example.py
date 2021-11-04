@@ -33,7 +33,7 @@ def run_example():
     # filt = state_estimators.UnscentedKalmanFilter(batt, initial_state)
 
     # Step 2b: Print & Plot Prior State
-    filt.estimate(0.1, {}, initial_state)
+    filt.estimate(0.1, {}, m.output(initial_state))
 
     # Note: in a prognostic application the above state estimation step would be repeated each time
     #   there is new data. Here we're doing one step to demonstrate how the state estimator is used

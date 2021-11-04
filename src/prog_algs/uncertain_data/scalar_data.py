@@ -17,7 +17,7 @@ class ScalarData(UncertainData):
         self.__state = state
 
     def __eq__(self, other):
-        return isinstance(other, ScalarData) and other.mean() == self.__state
+        return isinstance(other, ScalarData) and other.mean == self.__state
 
     @property
     def median(self):

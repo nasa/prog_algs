@@ -55,13 +55,12 @@ class ParticleFilter(state_estimator.StateEstimator):
         # State-estimator specific logic
         if isinstance(self.parameters['n'], Number):
             self.parameters['n'] = {key : self.parameters['n'] for key in self.__measure(x0).keys()}
-        # todo(CT): Check fields on n
         
         # Build array inplace
         x = array(list(x0.values()))
 
         if isinstance(self.parameters['x0_uncertainty'], dict):
-            sd = array(list(self.parameters['x0_uncertainty'].values()))
+            sd = array([self.parameters['x0_uncertainty'][key] for key in x0.keys()])
         elif isinstance(self.parameters['x0_uncertainty'], Number):
             sd = array([self.parameters['x0_uncertainty']] * len(x0))
         else:
@@ -101,6 +100,12 @@ class ParticleFilter(state_estimator.StateEstimator):
         log_weights = pdfs.sum(0)
 
         # Scale
+        # We subtract the max log weights for numerical stability. 
+        # Sometimes log weights can be a large negative value
+        # when you exponentiate that value the computer will round the result to 0 for most of the weights (sometimes all of them) 
+        # this causes problems when trying to sample from the particles. 
+        # We shift them up by the max log weight (essentially making the max log weight 0) to help avoid that problem. 
+        # When we normalize the weights by dividing by the sum of all the weights, that constant cancels out.
         max_log_weight = max(log_weights)
         scaled_weights = log_weights - max_log_weight
 

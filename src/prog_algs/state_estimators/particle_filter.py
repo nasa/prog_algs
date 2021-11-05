@@ -5,6 +5,7 @@ from numpy import array, empty, random, take, exp, max, take, sort, log, pi
 from filterpy.monte_carlo import residual_resample
 from numbers import Number
 from scipy.stats import norm
+from warnings import warn
 from ..uncertain_data import UnweightedSamples
 from ..exceptions import ProgAlgTypeError
 from copy import deepcopy
@@ -23,24 +24,25 @@ class ParticleFilter(state_estimator.StateEstimator):
      * measurement_eqn (optional, function): Measurement equation (x)->z. Usually used in situations where what's measured don't exactly match the output (e.g., different unit, not ever output measured, etc.). see `examples.measurement_eqn_example`
      * options (optional, kwargs): configuration options\n
         Any additional configuration values. See default parameters. Additionally, the following configuration parameters are supported: \n
-         * num_particles : Number of particles used in PF e.g., 20
-         * resample_fcn : Resampling function ([weights]) -> [indexes] e.g., filterpy.monte_carlo.residual_resample
-         * x0_uncertainty : Initial uncertainty in state e.g., 0.5
-         * R (Number) : Measurement Noise. e.g., 0.1
+         * num_particles (int): Number of particles used in PF e.g., 20
+         * resample_fcn (function): Resampling function ([weights]) -> [indexes] e.g., filterpy.monte_carlo.residual_resample
+         * x0_uncertainty : Initial uncertainty in state e.g., 0.5. Can be 1. scalar (standard deviation applied to all), or 2. dict (stardard deviation for each)
+         * t (float) Initial timestep (default -1)
     """
     default_parameters = {
             'num_particles': 20, 
-            'resample_fcn': residual_resample, # Resampling function ([weights]) -> [indexes]
-            'x0_uncertainty': 0.5   # Initial State Uncertainty
-                                    # Can be:
-                                    #   1. scalar (standard deviation applied to all),
-                                    #   2. dict (stardard deviation for each)
+            'resample_fcn': residual_resample,  
+            'x0_uncertainty': 0.5,
+            't': -1
         }
 
     def __init__(self, model, x0, measurement_eqn = None, **kwargs):
         super().__init__(model, x0, measurement_eqn = measurement_eqn, **kwargs)
 
-        self.t = 0 # last timestep
+        if 'R' in kwargs:
+            warn('Setting measurement noise in the state_estimator is no longer supported. Please set in the model instead.')
+
+        self.t = self.parameters['t'] # last timestep, initially set to self.parameters['t']
         
         if measurement_eqn is None:
             self.__measure = model.output

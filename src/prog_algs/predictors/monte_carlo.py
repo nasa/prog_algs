@@ -12,6 +12,7 @@ def prediction_fcn(x, model, params, events, loading):
     events_remaining = deepcopy(events)
     first_output = model.output(x)
     time_of_event = {}
+    last_state = {}
     params['t'] = 0
     times = []
     # inputs will be the same as states unless we explicitly deepcopy
@@ -49,10 +50,11 @@ def prediction_fcn(x, model, params, events, loading):
         params['t'] = times.pop()
         inputs.pop()
         params['x'] = states.pop()
+        last_state[event] = deepcopy(params['x'])
         outputs.pop()
         event_states.pop()
         
-    return (times, inputs, states, outputs, event_states, time_of_event)
+    return (times, inputs, states, outputs, event_states, time_of_event, last_state)
 
 
 class MonteCarlo(Predictor):
@@ -93,7 +95,7 @@ class MonteCarlo(Predictor):
             loading = future_loading_eqn)
         
         result = [pred_fcn(sample) for sample in state_samples]
-        times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event = map(list, zip(*result))
+        times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event, last_states = map(list, zip(*result))
         
         # Return longest time array
         times_length = [len(t) for t in times_all]
@@ -105,4 +107,10 @@ class MonteCarlo(Predictor):
         outputs_all = UnweightedSamplesPrediction(times, outputs_all)
         event_states_all = UnweightedSamplesPrediction(times, event_states_all)
         time_of_event = UnweightedSamples(time_of_event)
+
+        # Transform final states:
+        last_states = {
+            key: UnweightedSamples([sample[key] for sample in last_states]) for key in time_of_event.keys()
+        }
+        time_of_event.final_state = last_states
         return (times, inputs_all, states_all, outputs_all, event_states_all, time_of_event)

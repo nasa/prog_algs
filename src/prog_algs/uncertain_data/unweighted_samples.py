@@ -32,9 +32,9 @@ class UnweightedSamples(UncertainData, UserList):
         else:
             raise ValueError('Invalid input. Must be list or dict, was {}'.format(type(samples)))
 
-    def sample(self, num_samples = 1):
+    def sample(self, num_samples = 1, replace = True):
         # Completely random resample
-        return UnweightedSamples(random.choice(self.data, num_samples, replace = True))
+        return UnweightedSamples(random.choice(self.data, num_samples, replace = replace))
 
     def keys(self):
         if len(self.data) == 0:

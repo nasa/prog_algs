@@ -28,34 +28,25 @@ class ParticleFilter(state_estimator.StateEstimator):
          * x0_uncertainty : Initial uncertainty in state e.g., 0.5
          * R (Number) : Measurement Noise. e.g., 0.1
     """
+    default_parameters = {
+            'num_particles': 20, 
+            'resample_fcn': residual_resample, # Resampling function ([weights]) -> [indexes]
+            'x0_uncertainty': 0.5   # Initial State Uncertainty
+                                    # Can be:
+                                    #   1. scalar (standard deviation applied to all),
+                                    #   2. dict (stardard deviation for each)
+        }
 
     def __init__(self, model, x0, measurement_eqn = None, **kwargs):
-
-        self.default_parameters = {
-            'n': model.parameters['measurement_noise'],  # Sensor Noise
-            'num_particles': 20,
-            # Resampling function ([weights]) -> [indexes]
-            'resample_fcn': residual_resample,
-            # Initial State Uncertainty
-            'x0_uncertainty': model.parameters['process_noise'],
-            # Can be:
-            #   1. scalar (standard deviation applied to all),
-            #   2. dict (stardard deviation for each)
-            #   Todo(CT): covar, function
-        }
-        self.t = 0 # last timestep
-        
         super().__init__(model, x0, measurement_eqn = measurement_eqn, **kwargs)
+
+        self.t = 0 # last timestep
         
         if measurement_eqn is None:
             self.__measure = model.output
         else:
             self.__measure = measurement_eqn
 
-        # State-estimator specific logic
-        if isinstance(self.parameters['n'], Number):
-            self.parameters['n'] = {key : self.parameters['n'] for key in self.__measure(x0).keys()}
-        
         # Build array inplace
         x = array(list(x0.values()))
 
@@ -84,7 +75,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         apply_process_noise = self.model.apply_process_noise
         output = self.__measure
         apply_measurement_noise = self.model.apply_measurement_noise
-        noise_params = self.parameters['n']
+        noise_params = self.model.parameters['measurement_noise']
 
         # Propagate particles state
         self.particles = apply_process_noise(next_state(particles, u, dt))

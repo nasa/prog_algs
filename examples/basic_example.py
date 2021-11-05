@@ -35,7 +35,12 @@ def run_example():
         else:
             i = 3
         return {'i': i}
-    batt = Battery()
+    # Measurement noise
+    R_vars = {
+        't': 2, 
+        'v': 0.02
+    }
+    batt = Battery(measurement_noise = R_vars)
     initial_state = batt.parameters['x0']
 
     # Step 2: Demonstrating state estimator

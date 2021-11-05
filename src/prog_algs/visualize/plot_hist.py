@@ -8,7 +8,7 @@ def plot_hist(samples, fig = None, keys = None, **kwargs):
     Args:
         samples (Array(Dict)): A set of samples (e.g., states or eol estimates)
         fig (MatPlotLib Figure, optional): Existing histogram figure to be overritten. Defaults to create new figure.
-        keys (List(String), optional): Keys to be plotted. Defaults to None.
+        keys (List[String], optional): Keys to be plotted. Defaults to All.
     """
 
     # Input checks
@@ -16,6 +16,8 @@ def plot_hist(samples, fig = None, keys = None, **kwargs):
         raise Exception('Must include atleast one sample to plot')
     
     if keys is not None:
+        if isinstance(keys, str):
+            keys = [keys]
         try:
             iter(keys)
         except TypeError:
@@ -24,16 +26,15 @@ def plot_hist(samples, fig = None, keys = None, **kwargs):
         for key in keys:
             if key not in samples[0].keys():
                 raise TypeError("Key {} was not present in samples (keys: {})".format(key, list(samples[0].keys())))
+    else:
+        keys = samples[0].keys()
+    keys = list(keys)
     
     # Handle input
     parameters = {  # defaults
         'legend': True
     }
-    parameters.update(kwargs)
-
-    if keys is None:
-        keys = samples[0].keys()
-    keys = list(keys)
+    parameters.update(kwargs)        
 
     if fig is None:
         # If no figure provided, create one

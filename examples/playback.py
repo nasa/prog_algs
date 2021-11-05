@@ -24,7 +24,7 @@ from prog_algs.state_estimators import ParticleFilter as StateEstimator
 # VVV Uncomment this to use UnscentedKalmanFilter instead VVV
 # from prog_algs.state_estimators import UnscentedKalmanFilter as StateEstimator
 
-from prog_algs.predictors import MonteCarlo
+from prog_algs.predictors import MonteCarlo, ToEPredictionProfile
 from prog_algs.metrics import samples as metrics
 
 import csv
@@ -68,6 +68,7 @@ def run_example():
 
     # Run Playback
     step = 0
+    toe_predictions = ToEPredictionProfile()
     with open('examples/data_const_load.csv', 'r') as f:
         reader = csv.reader(f)
         next(reader) # Skip header
@@ -97,18 +98,20 @@ def run_example():
             # Prediction Step (every PREDICTION_UPDATE_FREQ steps)
             if (step%PREDICTION_UPDATE_FREQ == 0):
                 samples = filt.x.sample(NUM_SAMPLES)
-                (times, inputs, states, outputs, event_states, toe) = mc.predict(samples, future_loading, dt=TIME_STEP)
+                (_, _, _, _, _, toe) = mc.predict(samples, future_loading, dt=TIME_STEP)
                 m = metrics.toe_metrics(toe)
                 print('  - ToE: {} (sigma: {})'.format(m['mean'], m['std']))
 
                 # Update Plot
                 rul_x.append(t)
                 rul_y.append(m['mean']-t)
-                ymin, ymax = rulax.get_ylim()
+                _, ymax = rulax.get_ylim()
                 if m['mean']-t > ymax:
                     rulax.set_ylim(0, (m['mean']-t)*1.1)
                 rul_line.set_data(rul_x, rul_y)
                 rul_fig.canvas.draw()
+
+                toe_predictions.add_prediction(t, toe)
     
     input('Press any key to exit')
 

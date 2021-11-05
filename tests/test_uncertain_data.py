@@ -44,6 +44,12 @@ class TestUncertainData(unittest.TestCase):
         data = UnweightedSamples(data)
         self.assertEqual(data.median, {'a': 2, 'b': 3})
 
+        # Test percentage in bounds
+        self.assertEqual(data.percentage_in_bounds([0, 2.5]), 
+            {'a':0.6, 'b': 0.4})
+        self.assertEqual(data.percentage_in_bounds({'a': [0, 2.5], 'b': [0, 1.5]}), 
+            {'a':0.6, 'b': 0.2})
+
     def test_multivariatenormaldist(self):
         try: 
             dist = MultivariateNormalDist()
@@ -57,12 +63,18 @@ class TestUncertainData(unittest.TestCase):
         self.assertEqual(dist.sample().size, 1)
         self.assertEqual(dist.sample(10).size, 10)
         self.assertTrue((dist.cov == array([[1, 0], [0, 1]])).all())
+        dist.percentage_in_bounds([0, 10])
 
     def test_scalardist(self):
-        d = ScalarData(12)
-        self.assertEqual(d.mean, 12)
-        self.assertEqual(d.median, 12)
-        self.assertListEqual(list(d.sample(10)), [12]*10)
+        data = {'a': 12, 'b': 14}
+        d = ScalarData(data)
+        self.assertEqual(d.mean, data)
+        self.assertEqual(d.median, data)
+        self.assertListEqual(list(d.sample(10)), [data]*10)
+        self.assertEqual(d.percentage_in_bounds([13, 20]), {'a': 0, 'b': 1})
+        self.assertEqual(d.percentage_in_bounds([0, 10]), {'a': 0, 'b': 0})
+        self.assertEqual(d.percentage_in_bounds([0, 20]), {'a': 1, 'b': 1})
+
 
 # This allows the module to be executed directly    
 def run_tests():

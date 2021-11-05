@@ -34,8 +34,7 @@ def run_example():
                                     dt = dt)
 
     # Simulate data until EOD
-    start_u = future_loading(0)
-    start_x = battery.initialize(start_u)
+    start_x = battery.initialize()
     start_y = battery.output(start_x)
     times, inputs, states, outputs, event_states = battery.simulate_to_threshold(future_loading, start_y, save_freq = 1)
 

@@ -22,7 +22,7 @@ def run_example():
     def future_loading(t, x = None):
         return {}
     m = ThrownObject()
-    initial_state = m.initialize({}, {})
+    initial_state = m.initialize()
 
     # Step 2: Demonstrating state estimator
     print("\nPerforming State Estimation Step")

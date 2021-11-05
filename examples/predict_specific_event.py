@@ -14,7 +14,7 @@ def run_example():
         return {}
 
     m = ThrownObject()
-    initial_state = m.initialize({}, {})
+    initial_state = m.initialize()
 
     ## State Estimation - perform a single ukf state estimate step
     filt = state_estimators.UnscentedKalmanFilter(m, initial_state)

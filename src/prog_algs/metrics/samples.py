@@ -7,6 +7,16 @@ from .toe_profile_metrics import alpha_lambda
 
 from warnings import warn
 
+def mean_square_error(values, ground_truth):
+    """Mean Square Error
+    Args:
+        values ([float]): time of event for a single event, output from predictor
+        ground_truth (float): Ground truth ToE
+    Returns:
+        float: mean square error of toe predictions
+    """
+    return sum([(mean(x) - ground_truth)**2 for x in values])/len(values)
+
 def percentage_in_bounds(toe, bounds):
     """Calculate percentage of ToE dist is within specified bounds
 

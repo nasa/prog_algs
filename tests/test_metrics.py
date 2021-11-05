@@ -351,6 +351,7 @@ class TestMetrics(unittest.TestCase):
         self.assertTrue(metrics['a'])
         self.assertTrue(metrics['b'])
         self.assertTrue(metrics['c'])
+        self.assertDictEqual(metrics, profile.alpha_lambda(ground_truth, lambda_value, alpha, beta))
 
         # Now lets try specifying only keys a and b
         metrics = alpha_lambda(profile, ground_truth, lambda_value, alpha, beta, keys=['a', 'b'])

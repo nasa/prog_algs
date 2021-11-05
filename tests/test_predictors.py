@@ -112,7 +112,6 @@ class TestPredictors(unittest.TestCase):
         # Test Metrics
         from prog_algs.metrics import samples
         s = toe.sample(100).key('EOD')
-        samples.toe_metrics(s)
         samples.eol_metrics(s)  # Kept for backwards compatibility
 
     def test_MC(self):
@@ -197,6 +196,37 @@ class TestPredictors(unittest.TestCase):
         try:
             tmp = p.sample('abc')
             self.fail()
+        except Exception:
+            pass
+    
+    def test_prediction_profile(self):
+        from prog_algs.predictors import ToEPredictionProfile
+        from prog_algs.uncertain_data import ScalarData
+        profile = ToEPredictionProfile()
+        self.assertEqual(len(profile), 0)
+
+        profile.add_prediction(0, ScalarData({'a': 1, 'b': 2, 'c': -3.2}))
+        profile.add_prediction(1, ScalarData({'a': 1.1, 'b': 2.2, 'c': -3.1}))
+        profile.add_prediction(0.5, ScalarData({'a': 1.05, 'b': 2.1, 'c': -3.15}))
+        self.assertEqual(len(profile), 3)
+        for (t_p, t_p_real) in zip(profile.keys(), [0, 0.5, 1]):
+            self.assertAlmostEqual(t_p, t_p_real)
+
+        profile[0.75] = ScalarData({'a': 1.075, 'b': 2.15, 'c': -3.125})
+        self.assertEqual(len(profile), 4)
+        for (t_p, t_p_real) in zip(profile.keys(), [0, 0.5, 0.75, 1]):
+            self.assertAlmostEqual(t_p, t_p_real)
+        self.assertEqual(profile[0.75], ScalarData({'a': 1.075, 'b': 2.15, 'c': -3.125}))
+
+        del profile[0.5]
+        self.assertEqual(len(profile), 3)
+        for (t_p, t_p_real) in zip(profile.keys(), [0, 0.75, 1]):
+            self.assertAlmostEqual(t_p, t_p_real)
+        for ((t_p, toe), t_p_real) in zip(profile.items(), [0, 0.75, 1]):
+            self.assertAlmostEqual(t_p, t_p_real)
+        try:
+            tmp = profile[0.5]
+            # 0.5 doesn't exist anymore
         except Exception:
             pass
 

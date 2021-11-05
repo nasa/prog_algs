@@ -1,7 +1,7 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
 """
-This file includes functions for calculating general metrics on uncertain data
+This file includes functions for calculating general metrics (i.e. mean, std, percentiles, etc.) on any distribution of type UncertainData (e.g. states, event_states, an EOL distribution, etc.)
 """
 from typing import Iterable
 from numpy import isscalar, mean, std, array

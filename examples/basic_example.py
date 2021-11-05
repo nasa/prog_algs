@@ -93,6 +93,10 @@ def run_example():
     # You can also access a state distribution at a specific time using the .snapshot function
     states_time_1 = states.snapshot(1)
     # now you have all the samples corresponding to times[1]
+
+    # You can also access the final state (of type UncertainData), like so:
+    final_state = toe.final_state
+    print('Final state @EOD: ', final_state['EOD'].mean)
     
     # You can also use the metrics package to generate some useful metrics on the result of a prediction
     print("\nEOD Prediction Metrics")

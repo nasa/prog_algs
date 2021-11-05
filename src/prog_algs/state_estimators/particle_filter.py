@@ -1,14 +1,13 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from . import state_estimator
-from numpy import array, empty, random
+from numpy import array, empty, random, take, exp, max, take, sort, log, pi
 from filterpy.monte_carlo import residual_resample
 from numbers import Number
 from scipy.stats import norm
 from ..uncertain_data import UnweightedSamples
 from ..exceptions import ProgAlgTypeError
 from copy import deepcopy
-from math import exp
 
 class ParticleFilter(state_estimator.StateEstimator):
     """
@@ -30,7 +29,6 @@ class ParticleFilter(state_estimator.StateEstimator):
          * R (Number) : Measurement Noise. e.g., 0.1
     """
     default_parameters = {
-            'n': 0.1, # Sensor Noise
             'num_particles': 20, 
             'resample_fcn': residual_resample, # Resampling function ([weights]) -> [indexes]
             'x0_uncertainty': 0.5   # Initial State Uncertainty
@@ -43,54 +41,81 @@ class ParticleFilter(state_estimator.StateEstimator):
         super().__init__(model, x0, measurement_eqn = measurement_eqn, **kwargs)
 
         self.t = 0 # last timestep
-
+        
         if measurement_eqn is None:
             self.__measure = model.output
         else:
             self.__measure = measurement_eqn
 
-        # State-estimator specific logic
-        if isinstance(self.parameters['n'], Number):
-            self.parameters['n'] = {key : self.parameters['n'] for key in self.__measure(x0).keys()}
+        # Build array inplace
+        x = array(list(x0.values()))
 
-        if isinstance(self.parameters['x0_uncertainty'], Number):
-            # Build array inplace
-            x = array(list(x0.values()))
+        if isinstance(self.parameters['x0_uncertainty'], dict):
+            sd = array([self.parameters['x0_uncertainty'][key] for key in x0.keys()])
+        elif isinstance(self.parameters['x0_uncertainty'], Number):
             sd = array([self.parameters['x0_uncertainty']] * len(x0))
-            samples = array([random.normal(x, sd) for i in range(self.parameters['num_particles'])])
-            self.particles = array([{key: value for (key, value) in zip(x0.keys(), x)} for x in samples])
         else:
             raise ProgAlgTypeError
+
+        samples = [random.normal(
+            x[i], sd[i], self.parameters['num_particles']) for i in range(len(x))]
+        self.particles = dict(zip(x0.keys(), samples))
     
     def __str__(self):
         return "{} State Estimator".format(self.__class__)
         
     def estimate(self, t, u, z):
+        assert t > self.t, "New time must be greater than previous"
         dt = t - self.t
         self.t = t
-        weights = empty(len(self.particles))
-        
+
         # Optimization
         particles = self.particles
         next_state = self.model.next_state
         apply_process_noise = self.model.apply_process_noise
         output = self.__measure
-        noise_params = self.parameters['n']
+        apply_measurement_noise = self.model.apply_measurement_noise
+        noise_params = self.model.parameters['measurement_noise']
 
-        # Propogate and calculate weights
-        for i, item in enumerate(particles):
-            particles[i] = next_state(item, u, dt) 
-            particles[i] = apply_process_noise(particles[i])
-            zPredicted = output(particles[i])
-            weights[i] = sum([norm(zPredicted[key], noise_params[key]).pdf(z[key]) for key in zPredicted.keys()])
-        
+        # Propagate particles state
+        self.particles = apply_process_noise(next_state(particles, u, dt))
+
+        # Get particle measurements
+        zPredicted = apply_measurement_noise(output(self.particles))
+
+        # Calculate pdf values
+        pdfs = array([norm(zPredicted[key], noise_params[key]).logpdf(z[key])
+                      for key in zPredicted.keys()])
+
+        # Calculate log weights
+        log_weights = pdfs.sum(0)
+
+        # Scale
+        # We subtract the max log weights for numerical stability. 
+        # Sometimes log weights can be a large negative value
+        # when you exponentiate that value the computer will round the result to 0 for most of the weights (sometimes all of them) 
+        # this causes problems when trying to sample from the particles. 
+        # We shift them up by the max log weight (essentially making the max log weight 0) to help avoid that problem. 
+        # When we normalize the weights by dividing by the sum of all the weights, that constant cancels out.
+        max_log_weight = max(log_weights)
+        scaled_weights = log_weights - max_log_weight
+
+        # Convert to weights
+        unnorm_weights = exp(scaled_weights)
+
         # Normalize
-        total_weight = sum(weights)
-        weights = array([weight/total_weight for weight in weights])
+        total_weight = sum(unnorm_weights)
+        self.weights = unnorm_weights / total_weight
 
-        # Resample
-        indexes = self.parameters['resample_fcn'](weights)
-        self.particles = array([self.particles[i] for i in indexes])
+        # Resample indices
+        indexes = self.parameters['resample_fcn'](self.weights)
+
+        # Resampled particles
+        samples = [take(self.particles[state], indexes)
+                   for state in self.particles.keys()]
+
+        # Particles as a dictionary
+        self.particles = dict(zip(self.particles.keys(), samples))
 
     @property
     def x(self):

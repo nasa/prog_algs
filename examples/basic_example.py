@@ -100,12 +100,11 @@ def run_example():
     
     # You can also use the metrics package to generate some useful metrics on the result of a prediction
     print("\nEOD Prediction Metrics")
-    toe = toe.key('EOD') # Calculate metrics for event EOL
 
-    from prog_algs.metrics import samples as metrics 
-    print('\tPercentage between 3005.2 and 3005.6: ', metrics.percentage_in_bounds(toe, [3005.2, 3005.6])*100.0, '%')
-    print('\tAssuming ground truth 3002.25: ', metrics.toe_metrics(toe, 3005.25))
-    print('\tP(Success) if mission ends at 3002.25: ', metrics.prob_success(toe, 3005.25))
+    from prog_algs.metrics import prob_success
+    print('\Portion between 3005.2 and 3005.6: ', toe.percentage_in_bounds([3005.2, 3005.6]))
+    print('\tAssuming ground truth 3002.25: ', toe.metrics(ground_truth=3005.25))
+    print('\tP(Success) if mission ends at 3002.25: ', prob_success(toe, 3005.25))
 
     # Plot state transition 
     # Here we will plot the states at t0, 25% to ToE, 50% to ToE, 75% to ToE, and ToE

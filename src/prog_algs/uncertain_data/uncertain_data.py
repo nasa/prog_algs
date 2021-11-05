@@ -57,6 +57,33 @@ class UncertainData(ABC):
             [string]: keys
         """
 
+    def percentage_in_bounds(self, bounds, keys = None):
+        """Calculate percentage of dist is within specified bounds
+
+        Args:
+            bounds ([float, float]): Lower and upper bounds
+            keys (list of strings, optional): Keys to analyze. Defaults to all keys.
+
+        Returns:
+            float: Percentage within bounds (where 0.5 = 50%)
+        """
+        return self.sample(1000).percentage_in_bounds(bounds)
+
+    def metrics(self, **kwargs):
+        """Calculate Metrics for this dist
+
+        Args
+            **kwargs (optional): Configuration parameters. Supported parameters include:
+             * ground_truth (int or dict): Ground truth value. Defaults to None.
+             * n_samples (int): Number of samples to use for calculating metrics (if not UnweightedSamples)
+             * keys (list of strings): Keys to calculate metrics for. Defaults to all keys.
+
+        Returns:
+            dict: Dictionary of metrics
+        """
+        from ..metrics import calc_metrics
+        return calc_metrics(self, **kwargs)
+
     def plot_scatter(self, fig = None, keys = None, num_samples = 100, **kwargs):
         """
         Produce a scatter plot

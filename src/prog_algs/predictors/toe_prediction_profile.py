@@ -28,3 +28,7 @@ class ToEPredictionProfile(UserDict):
 
     def values(self):
         return [self[k] for k in self.keys()]
+
+    def alpha_lambda(self, ground_truth : float, lambda_value : float, alpha : float, beta : float, **kwargs):
+        from ..metrics import alpha_lambda
+        return alpha_lambda(self, ground_truth, lambda_value, alpha, beta, **kwargs)

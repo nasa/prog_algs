@@ -41,9 +41,18 @@ def run_example():
     mc = predictors.UnscentedTransformPredictor(batt)
 
     # Predict with a step size of 0.1
-    (times, inputs, states, outputs, event_states, eol) = mc.predict(filt.x, future_loading, dt=0.1)
-    print('EOL:', eol)
-    # eol.plot_hist()
+    (times, inputs, states, outputs, event_states, toe) = mc.predict(filt.x, future_loading, dt=0.1, save_freq= 100)
+
+    # Print Results
+    for i, time in enumerate(times):
+        print('\nt = {}'.format(time))
+        print('\tu = {}'.format(inputs.snapshot(i).mean))
+        print('\tx = {}'.format(states.snapshot(i).mean))
+        print('\tz = {}'.format(outputs.snapshot(i).mean))
+        print('\tevent state = {}'.format(event_states.snapshot(i).mean))
+
+    print('\ToE:', toe)
+    # toe.plot_hist()
     # plt.show()
 
 # This allows the module to be executed directly 

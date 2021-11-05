@@ -59,10 +59,10 @@ def run_example():
         print('\nRun 1 ({} samples)'.format(sample_count))
         start = time.perf_counter()
         samples = state_estimator.x.sample(sample_count)
-        (t, u, x, z, es, eol) = pred.predict(samples, future_loading)
-        eol = eol.key("EOD")  # Looking at EOD event
+        (t, u, x, z, es, toe) = pred.predict(samples, future_loading)
+        toe = toe.key("EOD")  # Looking at EOD event
         end = time.perf_counter()
-        print('\tMSE:     {:4.2f}s'.format(metrics.mean_square_error(eol, 3005.4)))
+        print('\tMSE:     {:4.2f}s'.format(metrics.mean_square_error(toe, 3005.4)))
         print('\tRuntime: {:4.2f}s'.format(end - start))
 
     # This same approach can be applied for benchmarking and comparing other changes 

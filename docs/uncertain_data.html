@@ -76,6 +76,14 @@
 <p>mean_value = data.mean</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="prog_algs.uncertain_data.UncertainData.median">
+<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">median</span></span><a class="headerlink" href="#prog_algs.uncertain_data.UncertainData.median" title="Permalink to this definition">¶</a></dt>
+<dd><p>Median estimate</p>
+<p class="rubric">Example</p>
+<p>median_value = data.median</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="prog_algs.uncertain_data.UncertainData.plot_scatter">
 <span class="sig-name descname"><span class="pre">plot_scatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.uncertain_data.UncertainData.plot_scatter" title="Permalink to this definition">¶</a></dt>
@@ -133,12 +141,12 @@ states.plot_scatter(keys=[‘state1’, ‘state2’]) # only plot those keys</p
 
 <dl class="py method">
 <dt class="sig sig-object py" id="prog_algs.uncertain_data.UnweightedSamples.clear">
-<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span> <span class="pre">–</span> <span class="pre">remove</span> <span class="pre">all</span> <span class="pre">items</span> <span class="pre">from</span> <span class="pre">S</span></span></span><a class="headerlink" href="#prog_algs.uncertain_data.UnweightedSamples.clear" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span> <span class="pre">--</span> <span class="pre">remove</span> <span class="pre">all</span> <span class="pre">items</span> <span class="pre">from</span> <span class="pre">S</span></span></span><a class="headerlink" href="#prog_algs.uncertain_data.UnweightedSamples.clear" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="prog_algs.uncertain_data.UnweightedSamples.count">
-<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span> <span class="pre">–</span> <span class="pre">return</span> <span class="pre">number</span> <span class="pre">of</span> <span class="pre">occurrences</span> <span class="pre">of</span> <span class="pre">value</span></span></span><a class="headerlink" href="#prog_algs.uncertain_data.UnweightedSamples.count" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span> <span class="pre">--</span> <span class="pre">return</span> <span class="pre">number</span> <span class="pre">of</span> <span class="pre">occurrences</span> <span class="pre">of</span> <span class="pre">value</span></span></span><a class="headerlink" href="#prog_algs.uncertain_data.UnweightedSamples.count" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -163,7 +171,7 @@ states.plot_scatter(keys=[‘state1’, ‘state2’]) # only plot those keys</p
 
 <dl class="py method">
 <dt class="sig sig-object py" id="prog_algs.uncertain_data.UnweightedSamples.index">
-<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value</span></em><span class="optional">[</span>, <em class="sig-param"><span class="pre">start</span></em><span class="optional">[</span>, <em class="sig-param"><span class="pre">stop</span></em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span> <span class="pre">–</span> <span class="pre">return</span> <span class="pre">first</span> <span class="pre">index</span> <span class="pre">of</span> <span class="pre">value.</span></span></span><a class="headerlink" href="#prog_algs.uncertain_data.UnweightedSamples.index" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value</span></em><span class="optional">[</span>, <em class="sig-param"><span class="pre">start</span></em><span class="optional">[</span>, <em class="sig-param"><span class="pre">stop</span></em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span> <span class="pre">--</span> <span class="pre">return</span> <span class="pre">first</span> <span class="pre">index</span> <span class="pre">of</span> <span class="pre">value.</span></span></span><a class="headerlink" href="#prog_algs.uncertain_data.UnweightedSamples.index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raises ValueError if the value is not present.</p>
 <p>Supporting start and stop arguments is optional, but
 recommended.</p>
@@ -173,6 +181,23 @@ recommended.</p>
 <dt class="sig sig-object py" id="prog_algs.uncertain_data.UnweightedSamples.insert">
 <span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.uncertain_data.UnweightedSamples.insert" title="Permalink to this definition">¶</a></dt>
 <dd><p>S.insert(index, value) – insert value before index</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="prog_algs.uncertain_data.UnweightedSamples.key">
+<span class="sig-name descname"><span class="pre">key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.uncertain_data.UnweightedSamples.key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return samples for given key</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – key</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of values for given key</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -195,6 +220,14 @@ recommended.</p>
 <dd><p>Mean estimate</p>
 <p class="rubric">Example</p>
 <p>mean_value = data.mean</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="prog_algs.uncertain_data.UnweightedSamples.median">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">median</span></span><a class="headerlink" href="#prog_algs.uncertain_data.UnweightedSamples.median" title="Permalink to this definition">¶</a></dt>
+<dd><p>Median estimate</p>
+<p class="rubric">Example</p>
+<p>median_value = data.median</p>
 </dd></dl>
 
 <dl class="py method">
@@ -223,7 +256,7 @@ states.plot_scatter(keys=[‘state1’, ‘state2’]) # only plot those keys</p
 
 <dl class="py method">
 <dt class="sig sig-object py" id="prog_algs.uncertain_data.UnweightedSamples.pop">
-<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="pre">index</span></em><span class="optional">]</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">item</span> <span class="pre">–</span> <span class="pre">remove</span> <span class="pre">and</span> <span class="pre">return</span> <span class="pre">item</span> <span class="pre">at</span> <span class="pre">index</span> <span class="pre">(default</span> <span class="pre">last).</span></span></span><a class="headerlink" href="#prog_algs.uncertain_data.UnweightedSamples.pop" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="pre">index</span></em><span class="optional">]</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">item</span> <span class="pre">--</span> <span class="pre">remove</span> <span class="pre">and</span> <span class="pre">return</span> <span class="pre">item</span> <span class="pre">at</span> <span class="pre">index</span> <span class="pre">(default</span> <span class="pre">last).</span></span></span><a class="headerlink" href="#prog_algs.uncertain_data.UnweightedSamples.pop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raise IndexError if list is empty or index is out of range.</p>
 </dd></dl>
 
@@ -318,6 +351,14 @@ Raise ValueError if the value is not present.</p>
 <p>mean_value = data.mean</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="prog_algs.uncertain_data.MultivariateNormalDist.median">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">median</span></span><a class="headerlink" href="#prog_algs.uncertain_data.MultivariateNormalDist.median" title="Permalink to this definition">¶</a></dt>
+<dd><p>Median estimate</p>
+<p class="rubric">Example</p>
+<p>median_value = data.median</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="prog_algs.uncertain_data.MultivariateNormalDist.plot_scatter">
 <span class="sig-name descname"><span class="pre">plot_scatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.uncertain_data.MultivariateNormalDist.plot_scatter" title="Permalink to this definition">¶</a></dt>
@@ -403,6 +444,14 @@ states.plot_scatter(keys=[‘state1’, ‘state2’]) # only plot those keys</p
 <p>mean_value = data.mean</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="prog_algs.uncertain_data.ScalarData.median">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">median</span></span><a class="headerlink" href="#prog_algs.uncertain_data.ScalarData.median" title="Permalink to this definition">¶</a></dt>
+<dd><p>Median estimate</p>
+<p class="rubric">Example</p>
+<p>median_value = data.median</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="prog_algs.uncertain_data.ScalarData.plot_scatter">
 <span class="sig-name descname"><span class="pre">plot_scatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.uncertain_data.ScalarData.plot_scatter" title="Permalink to this definition">¶</a></dt>
@@ -468,6 +517,7 @@ states.plot_scatter(keys=[‘state1’, ‘state2’]) # only plot those keys</p
 
 <h3>Navigation</h3>
 <ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://mybinder.org/v2/gh/nasa/prog_algs/dev?labpath=tutorial.ipynb">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="state_estimators.html">State Estimators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="predictors.html">Predictors</a></li>

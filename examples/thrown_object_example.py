@@ -33,7 +33,7 @@ def run_example():
     # filt = state_estimators.UnscentedKalmanFilter(batt, initial_state)
 
     # Step 2b: Print & Plot Prior State
-    filt.estimate(0.1, {}, initial_state)
+    filt.estimate(0.1, {}, m.output(initial_state))
 
     # Note: in a prognostic application the above state estimation step would be repeated each time
     #   there is new data. Here we're doing one step to demonstrate how the state estimator is used
@@ -50,8 +50,8 @@ def run_example():
     # Note: This is only required for sample-based prediction algorithms
     samples = filt.x.sample(NUM_SAMPLES)  
     STEP_SIZE = 0.1
-    (times, inputs, states, outputs, event_states, eol) = mc.predict(samples, future_loading, dt=STEP_SIZE)
-    print('EOL', eol.mean)
+    (times, inputs, states, outputs, event_states, toe) = mc.predict(samples, future_loading, dt=STEP_SIZE)
+    print('ToE', toe.mean)
 
 # This allows the module to be executed directly 
 if __name__ == '__main__':

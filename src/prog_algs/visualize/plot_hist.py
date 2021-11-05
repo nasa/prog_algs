@@ -51,3 +51,5 @@ def plot_hist(samples, fig = None, keys = None, **kwargs):
     if parameters['legend']:
         ax.legend().remove()  # Remove any existing legend - prevents "ghost effect"
         ax.legend(loc='upper right')
+    
+    return fig

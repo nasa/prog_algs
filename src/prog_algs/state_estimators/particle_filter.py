@@ -77,6 +77,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         apply_measurement_noise = self.model.apply_measurement_noise
         noise_params = self.model.parameters['measurement_noise']
         num_particles = self.parameters['num_particles']
+        # Check which output keys are present (i.e., output of measurement function)
         measurement_keys = output({key: particles[key][0] for key in particles.keys()}).keys()
         zPredicted = {key: empty(num_particles) for key in measurement_keys}
 

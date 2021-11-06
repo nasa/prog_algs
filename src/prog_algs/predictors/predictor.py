@@ -16,11 +16,10 @@ class Predictor(ABC):
 
     Parameters
     ----------
-    * model : prog_models.prognostics_model.PrognosticsModel\n
+    model : PrognosticsModel
         See: Prognostics Model Package\n
         A prognostics model to be used in prediction
-    * options (optional, kwargs): configuration options\n
-        Any additional configuration values. See documentation for specific predictor \n
+    kwargs : optional, keyword arguments
     """
     default_parameters = {}
 

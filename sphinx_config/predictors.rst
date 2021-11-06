@@ -23,7 +23,7 @@ Here's an example of its use. In this example we use the ThrownObject model and 
 
 Included Predictors
 -----------------------
-The following predictors are included with this package:
+The following predictors are included with this package. A new predictor can be created by subclassing `prog_algs.predictors.Predictor`. See also: `predictor_template.py`
 
 Monte Carlo Predictor
 **********************
@@ -32,8 +32,6 @@ Monte Carlo Predictor
 Unscented Transform Predictor
 *****************************
 .. autoclass:: prog_algs.predictors.UnscentedTransformPredictor
-
-A new predictor can be created by subclassing `prog_algs.predictors.Predictor`. See also: `predictor_template.py`
 
 Predictor Interface
 -----------------------

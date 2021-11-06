@@ -55,20 +55,25 @@ class UnscentedTransformPredictor(Predictor):
     """
     Class for performing model-based prediction using an unscented transform. 
 
-    This class defines logic for performing model-based state prediction using sigma points and an unscented transform. A Predictor is constructed using a PrognosticsModel object, (See Prognostics Model Package). The Unscented Transform Predictor propagates the sigma-points in the state-space in time domain until the event threshold is met. The step at which the i-th sigma point reaches the threshold is the step at which the i-th sigma point will be placed along the time dimension. By repeating the procedure for all sigma-points, we obtain the sigma-points defining the distribution of the time of event (ToE); for example, the End Of Life (EOL) event. The provided future loading equation is used to compute the inputs to the system at any given time point. 
+    This class defines logic for performing model-based state prediction using sigma points and an unscented transform. The Unscented Transform Predictor propagates the sigma-points in the state-space in time domain until the event threshold is met. The step at which the i-th sigma point reaches the threshold is the step at which the i-th sigma point will be placed along the time dimension. By repeating the procedure for all sigma-points, we obtain the sigma-points defining the distribution of the time of event (ToE); for example, the End Of Life (EOL) event. The provided future loading equation is used to compute the inputs to the system at any given time point. 
 
     Parameters
     ----------
-    * model : prog_models.prognostics_model.PrognosticsModel\n
+    model : PrognosticsModel
         See: Prognostics Model Package\n
         A prognostics model to be used in prediction
-    * options (optional, kwargs): configuration options\n
-        Any additional configuration values. Note: These parameters can also be specified for an individual prediction. The following configuration parameters are supported: \n
-        * alpha, beta, kappa: UKF Scaling parameters
-        * dt : Step size (s)
-        * horizon : Prediction horizon (s)
-        
-    NOTE: The resulting sigma-points along the time dimension are used to compute mean and covariance of the event time (ToE), under the hypothesis that the ToE distribution would also be well represented by a Gaussian. This is a strong assumption that likely cannot be satisfied for real systems with strong non-linear state propagation or nonlinear ToE curves. Therefore, the user should be cautious and verify that modeling the event time using a Gaussian distribution is satisfactory.
+    options : optional, keyword arguments
+        The following configuration parameters are supported: \n
+        * alpha, beta, kappa: UKF Scaling parameters. See: https://en.wikipedia.org/wiki/Kalman_filter#Unscented_Kalman_filter \n
+        * dt (float): Simulation step size (s), e.g., 0.1
+        * events (list[string]): Events to predict (subset of model.events) e.g., ['event1', 'event2']
+        * horizon (float): Prediction horizon (s)
+        * save_freq (float): Frequency at which results are saved (s)
+        * save_pts (list[float]): Any additional savepoints (s) e.g., [10.1, 22.5]
+
+    Note
+    ----    
+    The resulting sigma-points along the time dimension are used to compute mean and covariance of the event time (ToE), under the hypothesis that the ToE distribution would also be well represented by a Gaussian. This is a strong assumption that likely cannot be satisfied for real systems with strong non-linear state propagation or nonlinear ToE curves. Therefore, the user should be cautious and verify that modeling the event time using a Gaussian distribution is satisfactory.
     """
     default_parameters = {  # Default Parameters
         'alpha': 1,         # UKF scaling param

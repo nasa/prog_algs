@@ -65,7 +65,7 @@ class MonteCarlo(Predictor):
 
     Parameters
     ----------
-    model : prog_models.PrognosticsModel
+    model : PrognosticsModel
         See: Prognostics Model Package\n
         A prognostics model to be used in prediction
     kwargs : optional, keyword arguments

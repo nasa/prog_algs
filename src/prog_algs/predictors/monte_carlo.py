@@ -16,8 +16,8 @@ def prediction_fcn(x, model, params, events, loading):
     params['t'] = 0
     times = []
     # inputs will be the same as states unless we explicitly deepcopy
-    inputs = deepcopy(SimResult())
-    states = deepcopy(SimResult())  
+    inputs = SimResult()
+    states = SimResult()
     outputs = LazySimResult(fcn = model.output)
     event_states = LazySimResult(fcn = model.event_state)
     params['x'] = x

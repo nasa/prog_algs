@@ -27,14 +27,14 @@ The following state estimators are included with this package. A new state estim
 
 Unscented Kalman Filter
 *************************
-.. autoclass:: prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter
+.. autoclass:: prog_algs.state_estimators.UnscentedKalmanFilter
 
 Particle Filter
 *************************
-.. autoclass:: prog_algs.state_estimators.particle_filter.ParticleFilter
+.. autoclass:: prog_algs.state_estimators.ParticleFilter
 
 State Estimator Interface
 -------------------------
-.. autoclass:: prog_algs.state_estimators.state_estimator.StateEstimator
+.. autoclass:: prog_algs.state_estimators.StateEstimator
    :members:
    :inherited-members:

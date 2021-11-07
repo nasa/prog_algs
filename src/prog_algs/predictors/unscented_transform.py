@@ -57,19 +57,22 @@ class UnscentedTransformPredictor(Predictor):
 
     This class defines logic for performing model-based state prediction using sigma points and an unscented transform. The Unscented Transform Predictor propagates the sigma-points in the state-space in time domain until the event threshold is met. The step at which the i-th sigma point reaches the threshold is the step at which the i-th sigma point will be placed along the time dimension. By repeating the procedure for all sigma-points, we obtain the sigma-points defining the distribution of the time of event (ToE); for example, the End Of Life (EOL) event. The provided future loading equation is used to compute the inputs to the system at any given time point. 
 
-    Parameters
-    ----------
-    model : PrognosticsModel
-        See: Prognostics Model Package\n
-        A prognostics model to be used in prediction
-    options : optional, keyword arguments
-        The following configuration parameters are supported: \n
-        * alpha, beta, kappa: UKF Scaling parameters. See: https://en.wikipedia.org/wiki/Kalman_filter#Unscented_Kalman_filter \n
-        * dt (float): Simulation step size (s), e.g., 0.1
-        * events (list[string]): Events to predict (subset of model.events) e.g., ['event1', 'event2']
-        * horizon (float): Prediction horizon (s)
-        * save_freq (float): Frequency at which results are saved (s)
-        * save_pts (list[float]): Any additional savepoints (s) e.g., [10.1, 22.5]
+    The following configuration parameters are supported (as kwargs in constructor or as parameters in predict method):
+
+    Configuration Parameters
+    ------------------------------
+    alpha, beta, kappa: float
+        UKF Scaling parameters. See: https://en.wikipedia.org/wiki/Kalman_filter#Unscented_Kalman_filter
+    dt : float
+        Simulation step size (s), e.g., 0.1
+    events : List[string]
+        Events to predict (subset of model.events) e.g., ['event1', 'event2']
+    horizon : float
+        Prediction horizon (s)
+    save_freq : float
+        Frequency at which results are saved (s)
+    save_pts : List[float]
+        Any additional savepoints (s) e.g., [10.1, 22.5]
 
     Note
     ----    

@@ -63,18 +63,20 @@ class MonteCarlo(Predictor):
 
     A Predictor using the monte carlo algorithm. The provided initial states are simulated until either a specified time horizon is met, or the threshold for all simulated events is reached for all samples. A provided future loading equation is used to compute the inputs to the system at any given time point. 
 
-    Parameters
-    ----------
-    model : PrognosticsModel
-        See: Prognostics Model Package\n
-        A prognostics model to be used in prediction
-    kwargs : optional, keyword arguments
-        The following configuration parameters are supported: \n
-        * dt (float): Simulation step size (s), e.g., 0.1
-        * events (list[string]): Events to predict (subset of model.events) e.g., ['event1', 'event2']
-        * horizon (float): Prediction horizon (s)
-        * save_freq (float): Frequency at which results are saved (s)
-        * save_pts (list[float]): Any additional savepoints (s) e.g., [10.1, 22.5]
+    The following configuration parameters are supported (as kwargs in constructor or as parameters in predict method):
+    
+    Configuration Parameters
+    ------------------------------
+    dt : float
+        Simulation step size (s), e.g., 0.1
+    events : List[string]
+        Events to predict (subset of model.events) e.g., ['event1', 'event2']
+    horizon : float
+        Prediction horizon (s)
+    save_freq : float
+        Frequency at which results are saved (s)
+    save_pts : List[float]
+        Any additional savepoints (s) e.g., [10.1, 22.5]
     """
 
     def predict(self, state_samples, future_loading_eqn, **kwargs):

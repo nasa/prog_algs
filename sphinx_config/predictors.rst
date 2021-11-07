@@ -1,7 +1,7 @@
 Predictors
 =======================
 
-The Predictor uses a state estimate (type UncertainData subclass, output of a state estimator) and a Prognostics Model (see: `prog_models package <https://github.com/nasa/prog_models>`__) to predict both future states (also outputs, observables, event_states) at predefined points and the time that an event will occur (Time of Event, ToE) with uncertainty.
+The Predictor uses a state estimate (type UncertainData subclass, output of a state estimator), information about expected future loading, and a Prognostics Model (see: `prog_models package <https://github.com/nasa/prog_models>`__) to predict both future states (also outputs, observables, event_states) at predefined points and the time that an event will occur (Time of Event, ToE) with uncertainty.
 
 Here's an example of its use. In this example we use the ThrownObject model and the MonteCarlo predictor, and we save the state every 1s. We also use a scalar first state (i.e., no uncertainty).
 
@@ -20,6 +20,7 @@ Here's an example of its use. In this example we use the ThrownObject model and 
    >>> (t, u, x, z, es, toe) = pred.predict(first_state, future_loading, save_freq=1)
    >>> toe.plot_hist(events='impact')  # Plot a histogram of when the impact event occurred
 
+See tutorial and examples for more information and additional features.
 
 Included Predictors
 -----------------------

@@ -17,6 +17,7 @@ If you are new to this package, see `getting started <getting_started.html>`__.
    state_estimators
    predictors
    uncertain_data
+   prediction
    metrics
    visualize
    exceptions

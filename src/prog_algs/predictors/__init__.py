@@ -2,7 +2,7 @@
 
 from .monte_carlo import MonteCarlo
 from .predictor import Predictor
-from .prediction import Prediction
+from .prediction import Prediction, UnweightedSamplesPrediction
 from .toe_prediction_profile import ToEPredictionProfile
 from .unscented_transform import UnscentedTransformPredictor
-__all__ = ['predictor', 'monte_carlo', 'unscented_transform', 'MonteCarlo', 'Predictor', 'Prediction', 'ToEPredictionProfile', 'UnscentedTransformPredictor']
+__all__ = ['predictor', 'monte_carlo', 'unscented_transform', 'MonteCarlo', 'Predictor', 'Prediction', 'UnweightedSamplesPrediction', 'ToEPredictionProfile', 'UnscentedTransformPredictor']

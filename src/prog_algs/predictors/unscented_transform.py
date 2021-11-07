@@ -1,6 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from .prediction import MultivariateNormalDistPrediction, UnweightedSamplesPrediction
+from .prediction import Prediction, UnweightedSamplesPrediction
 from .predictor import Predictor
 from numpy import diag, array, transpose
 from copy import deepcopy
@@ -9,7 +9,7 @@ from filterpy import kalman
 from prog_algs.uncertain_data import MultivariateNormalDist
 
 
-class LazyMultivariateNormalDistPrediction(MultivariateNormalDistPrediction):
+class LazyUTPrediction(Prediction):
     def __init__(self, state_prediction, sigma_fcn, ut_fcn, transform_fcn):
         self.times = state_prediction.times
         self.__states = state_prediction
@@ -250,9 +250,9 @@ class UnscentedTransformPredictor(Predictor):
 
         # At this point only time of event, inputs, and state are calculated 
         inputs_prediction = UnweightedSamplesPrediction(times, [inputs])
-        state_prediction = MultivariateNormalDistPrediction(times, states)
-        output_prediction = LazyMultivariateNormalDistPrediction(state_prediction, sigma_points, kalman.unscented_transform, model.output)
-        event_state_prediction = LazyMultivariateNormalDistPrediction(state_prediction, sigma_points, kalman.unscented_transform, model.event_state)
+        state_prediction = Prediction(times, states)
+        output_prediction = LazyUTPrediction(state_prediction, sigma_points, kalman.unscented_transform, model.output)
+        event_state_prediction = LazyUTPrediction(state_prediction, sigma_points, kalman.unscented_transform, model.event_state)
         time_of_event = MultivariateNormalDist(ToE.keys(), mean, cov)
         time_of_event.final_state = final_state
         return (times, inputs_prediction, state_prediction, output_prediction, event_state_prediction, time_of_event)  

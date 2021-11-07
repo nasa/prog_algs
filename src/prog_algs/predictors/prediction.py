@@ -1,17 +1,14 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
-from abc import ABC, abstractmethod, abstractproperty
 from collections import UserList
 from warnings import warn
 
-from ..uncertain_data import UnweightedSamples, MultivariateNormalDist
+from ..uncertain_data import UnweightedSamples
 
 
-class Prediction(ABC):
+class Prediction():
     """
-    Parent class for the result of a prediction. Is returned by the predict method of a predictor. Defines the interface for operations on a prediciton data object. 
-
-    Note: This class is not intended to be instantiated directly, instead subclasses should be used
+    Class for the result of a prediction. Is returned by the predict method of a predictor.
     """
     def __init__(self, times, data):
         """
@@ -33,7 +30,6 @@ class Prediction(ABC):
         """
         return self.times == other.times and self.data == other.data
 
-    @abstractmethod
     def snapshot(self, time_index):
         """Get all samples from a specific timestep
 
@@ -43,17 +39,16 @@ class Prediction(ABC):
         Returns:
             UnweightedSamples: Samples for time corresponding to times[timestep]
         """
-        pass
+        return self.data[time_index]
 
     @property
-    @abstractproperty
     def mean(self):
         """Mean estimate
 
         Example:
             mean_value = data.mean
         """
-        pass
+        return [dist.mean for dist in self.data]
 
     def time(self, index):
         """Get time for data point at index `index`
@@ -138,26 +133,3 @@ class UnweightedSamplesPrediction(Prediction, UserList):
     __setitem__ = __not_implemented
     __setslice__ = __not_implemented
     __delitem__ = __not_implemented
-
-
-class MultivariateNormalDistPrediction(Prediction):
-    """
-    Data class for the result of a prediction, where the predictions are stored as MultivariateNormalDist. Is returned from the predict method of a MultivariateNormalDist-based prediction class (e.g., Unscented Kalman Predictor).
-    """
-    def __str__(self):
-        return "MultivariateNormalDistPrediction with {} savepoints".format(len(self.times))
-
-    @property
-    def mean(self):
-        return [dist.mean for dist in self.data]
-
-    def snapshot(self, time_index):
-        """Get all samples from a specific timestep
-
-        Args:
-            index (int): Timestep (index number from times)
-
-        Returns:
-            UnweightedSamples: Samples for time corresponding to times[timestep]
-        """
-        return self.data[time_index]

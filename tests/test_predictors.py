@@ -134,7 +134,7 @@ class TestPredictors(unittest.TestCase):
                 return {'i1': -4, 'i2': 2.5}
 
     def test_prediction_mvnormaldist(self):
-        from prog_algs.predictors.prediction import MultivariateNormalDistPrediction
+        from prog_algs.predictors import Prediction as MultivariateNormalDistPrediction
         from prog_algs.uncertain_data import MultivariateNormalDist
         times = list(range(10))
         covar = [[0.1, 0.01], [0.01, 0.1]]

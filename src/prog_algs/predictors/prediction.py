@@ -20,8 +20,8 @@ class Prediction(ABC):
     """
 
     def __init__(self, times, data):
-        self.times = deepcopy(times)
-        self.data = deepcopy(data)
+        self.times = times
+        self.data = data
 
     def __eq__(self, other):
         """Compare 2 Predictions

@@ -10,14 +10,14 @@ from copy import deepcopy
 
 class UnweightedSamples(UncertainData, UserList):
     """
-    Uncertain Data represented by a set of samples
+    Uncertain Data represented by a set of samples. Objects of this class can be treated like a list where samples[n] returns the nth sample (Dict). 
+
+    Args:
+        samples (array or dict, optional): array of samples. Defaults to empty array. \n
+            If dict, must be of the form of {key: [value, ...], ...}\n
+            If list, must be of the form of [{key: value, ...}, ...]
     """
     def __init__(self, samples = []):
-        """Initialize Unweighted Samples
-
-        Args:
-            samples (array, dict, optional): array of samples. Defaults to empty array. If dict, must be of the form of {key: [value, ...], ...}
-        """
         if isinstance(samples, dict):
             # Is in form of {key: [value, ...], ...}
             # Convert to array of samples

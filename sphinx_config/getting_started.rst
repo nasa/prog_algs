@@ -53,6 +53,15 @@ The structure of the packages is illustrated below:
 
 Prognostics is performed using `State Estimators <state_estimators.html>`__ and `Predictors <predictors.html>`__. State Estimators are resposible for estimating the current state of the modeled system using sensor data and a prognostics model (see: `prog_models package <https://github.com/nasa/prog_models>`__). The state estimator then produces an estimate of the system state with uncertainty in the form of an `uncertain data object <uncertain_data.html>`__. This state estimate is used by the predictor to predict when events will occur (Time of Event, ToE - returned as an `uncertain data object <uncertain_data.html>`__), and future system states (returned as a Prediction object).
 
+Data Structures
+***************
+
+A few custom data structures are available for storing and manipulating prognostics data of various forms. These structures are listed below and desribed on their respective pages:
+ * `SimResult (from prog_models) <https://nasa.github.io/prog_models/sim_result.html>`__ : The result of a single simulation (without uncertainty). Can be used to store inputs, outputs, states, event_states, observables, etc. Is returned by the model.simulate_to* methods.
+ * `UncertainData <uncertain_data.html>`__ : Used throughout the package to represent data with uncertainty. There are a variety of subclasses of UncertainData to represent data with uncertainty in different forms (e.g., ScalarData, MultivariateNormalDist, UnweightedSamples). Notibly, this is used to represent the output of a StateEstimator's `estimate` method, individual snapshots of a prediction, and the time of event estimate from a predictor's `predict` method.
+ * `Prediction <prediction.html#id1>`__ : Prediction of future values (with uncertainty) of some variable (e.g., input, state, output, event_states, etc.). The `predict` method of predictors return this. 
+ * `ToEPredictionProfile <prediction.html#toe-prediction-profile>`__ : The result of multiple predictions, including time of prediction. This data structure can be treated as a dictionary of time of prediction to toe prediction. 
+
 Use 
 ----
 The best way to learn how to use `prog_algs` is through the `tutorial <https://mybinder.org/v2/gh/nasa/prog_algs/master?labpath=tutorial.ipynb>`__. There are also a number of examples which show different aspects of the package, summarized and linked below:

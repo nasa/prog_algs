@@ -19,7 +19,6 @@ If you are new to this package, see `getting started <getting_started.html>`__.
    uncertain_data
    prediction
    metrics
-   visualize
    exceptions
    dev_guide
 

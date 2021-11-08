@@ -4,21 +4,17 @@ from . import UncertainData, UnweightedSamples
 from numpy import array
 from numpy.random import multivariate_normal
 
-import warnings
-
 
 class MultivariateNormalDist(UncertainData):
     """
     Data represented by a multivariate normal distribution with mean and covariance matrix
+
+    Args:
+            labels (list[str]): Labels for states, in order of mean values
+            mean (array[float]): Mean values for state in the same order as labels
+            covar (array[array[float]]): Covariance matrix for state
     """
     def __init__(self, labels, mean: array, covar : array):
-        """Initialize distribution
-
-        Args:
-            labels ([str]): Labels for states, in order of mean values
-            mean ([float]): Mean values for state in the same order as labels
-            covar ([[float]]): Covariance matrix for state
-        """
         self.__labels = labels
         self.__mean = mean
         self.__covar = covar

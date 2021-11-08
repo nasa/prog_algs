@@ -1,51 +1,46 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from . import state_estimator
-from numpy import array, empty, random, take, exp, max, take, sort, log, pi
+from numpy import array, empty, random, take, exp, max, take
 from filterpy.monte_carlo import residual_resample
 from numbers import Number
 from scipy.stats import norm
 from ..uncertain_data import UnweightedSamples
 from ..exceptions import ProgAlgTypeError
-from copy import deepcopy
+
 
 class ParticleFilter(state_estimator.StateEstimator):
     """
-    Estimates state using a particle filter algorithm
+    Estimates state using a particle filter (PF) algorithm.
 
-    Constructor parameters:
-     * model (ProgModel): Model to be used in state estimation \n
-        See: Prognostics Model Package \n
-        A prognostics model to be used in state estimation
-     * x0 (dict): Initial State \n
-        Initial (starting) state, with keys defined by model.states \n
-        e.g., x = {'abc': 332.1, 'def': 221.003} given states = ['abc', 'def']
-     * measurement_eqn (optional, function): Measurement equation (x)->z. Usually used in situations where what's measured don't exactly match the output (e.g., different unit, not ever output measured, etc.). see `examples.measurement_eqn_example`
-     * options (optional, kwargs): configuration options\n
-        Any additional configuration values. See default parameters. Additionally, the following configuration parameters are supported: \n
-         * num_particles : Number of particles used in PF e.g., 20
-         * resample_fcn : Resampling function ([weights]) -> [indexes] e.g., filterpy.monte_carlo.residual_resample
-         * x0_uncertainty : Initial uncertainty in state e.g., 0.5
-         * R (Number) : Measurement Noise. e.g., 0.1
+    This class defines logic for a PF using a Prognostics Model (see Prognostics Model Package). This filter uses measurement data with noise to estimate the state of the system using a particles. At each step, particles are predicted forward (with noise). Particles are resampled with replacement from the existing particles according to how well the particles match the observed measurements.
+
+    The supported configuration parameters (keyword arguments) for UKF construction are described below:
+
+    Constructor Configuration Parameters:
+        t0 : float
+            Starting time (s)
+        dt : float 
+            time step (s)
+        num_particles : int
+            Number of particles in particle filter
+        resample_fcn : function 
+            Resampling function ([weights]) -> [indexes] e.g., filterpy.monte_carlo.residual_resample
+        x0_uncertainty : float or dict
+            Initial uncertainty in state. Can be 1. scalar (standard deviation applied to all), or 2. dict (stardard deviation for each)\n
+            e.g., 0.5 or {'state1': 0.5, 'state2': 0.2}
     """
     default_parameters = {
+            't0': 0,
             'num_particles': 20, 
-            'resample_fcn': residual_resample, # Resampling function ([weights]) -> [indexes]
-            'x0_uncertainty': 0.5   # Initial State Uncertainty
-                                    # Can be:
-                                    #   1. scalar (standard deviation applied to all),
-                                    #   2. dict (stardard deviation for each)
+            'resample_fcn': residual_resample,
+            'x0_uncertainty': 0.5
         }
 
     def __init__(self, model, x0, measurement_eqn = None, **kwargs):
         super().__init__(model, x0, measurement_eqn = measurement_eqn, **kwargs)
-
-        self.t = 0 # last timestep
         
-        if measurement_eqn is None:
-            self.__measure = model.output
-        else:
-            self.__measure = measurement_eqn
+        self.__measure = measurement_eqn if measurement_eqn else model.output
 
         # Build array inplace
         x = array(list(x0.values()))
@@ -56,6 +51,9 @@ class ParticleFilter(state_estimator.StateEstimator):
             sd = array([self.parameters['x0_uncertainty']] * len(x0))
         else:
             raise ProgAlgTypeError
+
+        if 'measurement_noise' not in self.parameters:
+            self.parameters['measurement_noise'] = {key: 0.0 for key in x0.keys()}
 
         samples = [random.normal(
             x[i], sd[i], self.parameters['num_particles']) for i in range(len(x))]
@@ -76,12 +74,29 @@ class ParticleFilter(state_estimator.StateEstimator):
         output = self.__measure
         apply_measurement_noise = self.model.apply_measurement_noise
         noise_params = self.model.parameters['measurement_noise']
+        num_particles = self.parameters['num_particles']
+        # Check which output keys are present (i.e., output of measurement function)
+        measurement_keys = output({key: particles[key][0] for key in particles.keys()}).keys()
+        zPredicted = {key: empty(num_particles) for key in measurement_keys}
 
-        # Propagate particles state
-        self.particles = apply_process_noise(next_state(particles, u, dt))
+        if self.model.is_vectorized:
+            # Propagate particles state
+            particles = apply_process_noise(next_state(particles, u, dt))
 
-        # Get particle measurements
-        zPredicted = apply_measurement_noise(output(self.particles))
+            # Get particle measurements
+            zPredicted = apply_measurement_noise(output(particles))
+        else:
+            # Propogate and calculate weights
+            for i in range(num_particles):
+                x = {key: particles[key][i] for key in particles.keys()}
+                x = next_state(x, u, dt) 
+                x = apply_process_noise(x)
+                for key in particles.keys():
+                    self.particles[key][i] = x[key]
+                z = output(x)
+                z = apply_measurement_noise(z)
+                for key in measurement_keys:
+                    zPredicted[key][i] = z[key]
 
         # Calculate pdf values
         pdfs = array([norm(zPredicted[key], noise_params[key]).logpdf(z[key])

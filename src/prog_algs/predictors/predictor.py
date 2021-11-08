@@ -2,7 +2,11 @@
 
 from abc import ABC, abstractmethod
 from copy import deepcopy
+from typing import List, Tuple, Dict
 from ..exceptions import ProgAlgTypeError
+from ..uncertain_data import UncertainData
+from .prediction import Prediction
+
 
 class Predictor(ABC):
     """
@@ -12,11 +16,10 @@ class Predictor(ABC):
 
     Parameters
     ----------
-    * model : prog_models.prognostics_model.PrognosticsModel\n
+    model : PrognosticsModel
         See: Prognostics Model Package\n
         A prognostics model to be used in prediction
-    * options (optional, kwargs): configuration options\n
-        Any additional configuration values. See documentation for specific predictor \n
+    kwargs : optional, keyword arguments
     """
     default_parameters = {}
 
@@ -40,21 +43,36 @@ class Predictor(ABC):
         self.parameters.update(kwargs)
 
     @abstractmethod
-    def predict(self, state_samples, future_loading_eqn, **kwargs):
+    def predict(self, state, future_loading_eqn, **kwargs):
         """
         Perform a single prediction
 
         Parameters
         ----------
-        state_sampler : function (n) -> [x1, x2, ... xn]
-            Function to generate n samples of the state. 
-            e.g., def f(n): return [x1, x2, x3, ... xn]
-        future_loading_eqn : function (t) -> z
-            Function to generate an estimate of loading at future time t
-        options : keyword arguments, optional
-            Any additional configuration values. See default parameters, above
+        state : UncertainData 
+            Distribution representing current state of the system
+        future_loading_eqn : function (t, x) -> z
+            Function to generate an estimate of loading at future time t, and state x
+        options : optional, keyword arguments
+            The following configuration parameters are supported: \n
+            * dt (float): Simulation step size (s), e.g., 0.1
+            * events (list[string]): Events to predict (subset of model.events) e.g., ['event1', 'event2']
+            * horizon (float): Prediction horizon (s)
+            * save_freq (float): Frequency at which results are saved (s)
+            * save_pts (list[float]): Any additional savepoints (s) e.g., [10.1, 22.5]
 
         Return
-        ______
-        result : recorded values for all samples
+        ----------
+        times : List[float]
+            Times for each savepoint such that inputs.snapshot(i), states.snapshot(i), outputs.snapshot(i), and event_states.snapshot(i) are all at times[i]            
+        inputs : Prediction
+            Inputs at each savepoint such that inputs.snapshot(i) is the input distribution (type UncertainData) at times[i]
+        states : Prediction
+            States at each savepoint such that states.snapshot(i) is the state distribution (type UncertainData) at times[i]
+        outputs : Prediction
+            Outputs at each savepoint such that outputs.snapshot(i) is the output distribution (type UncertainData) at times[i]
+        event_states : Prediction
+            Event states at each savepoint such that event_states.snapshot(i) is the event state distribution (type UncertainData) at times[i]
+        time_of_event : Dict[UncertainData]
+            Distribution of predicted Time of Event (ToE) for each predicted event (e.g., {'event1': DISTRIBUTION, 'event2': DISTRIBUTION, ...}) where DISTRIBUTION is replaced by some subclass of UncertaintData (e.g., MultivariateNormalDist)
         """

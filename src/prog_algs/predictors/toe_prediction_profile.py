@@ -1,5 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 from collections import UserDict
+from typing import Dict
 
 from prog_algs.uncertain_data import UncertainData 
 
@@ -21,14 +22,42 @@ class ToEPredictionProfile(UserDict):
         return iter(sorted(super(ToEPredictionProfile, self).__iter__()))
 
     def items(self):
+        """
+        Get iterators for the items (time_of_prediction, toe_prediction) of the prediction profile
+        """
         return iter((k, self[k]) for k in self)
 
     def keys(self):
+        """
+        Get iterator for the keys (i.e., time_of_prediction) of the prediction profile
+        """
         return sorted(super(ToEPredictionProfile, self).keys())
 
     def values(self):
+        """
+        Get iterator for the values (i.e., toe_prediction) of the prediction profile
+        """
         return [self[k] for k in self.keys()]
 
-    def alpha_lambda(self, ground_truth : float, lambda_value : float, alpha : float, beta : float, **kwargs):
+    def alpha_lambda(self, ground_truth : Dict[str, float], lambda_value : float, alpha : float, beta : float, **kwargs) -> Dict[str, bool]:
+        """Calculate Alpha lambda metric for the prediction profile
+
+        Args:
+            ground_truth (Dict[str, float]):
+                Ground Truth time of event for each event (e.g., {'event1': 748, 'event2', 2233, ...})
+            lambda_value (float):
+                Prediction time at or after which metric is evaluated. Evaluation occurs at this time (if a prediction exists) or the next prediction following.
+            alpha (float): 
+                percentage bounds around time to event (where 0.2 allows 20% error TtE)
+            beta (float):
+                portion of prediction that must be within those bounds
+            kwargs (optional, keyword arguments):
+                configuration arguments. Accepted arge include: \n
+                 * keys (list[string]): list of keys to use. If not provided, all keys are used.
+                 * print (bool) : If True, print the results. Default is False.
+
+        Returns:
+            Dict[str, bool]: If alpha lambda was met for each key (e.g., {'event1': True, 'event2', False, ...})
+        """
         from ..metrics import alpha_lambda
         return alpha_lambda(self, ground_truth, lambda_value, alpha, beta, **kwargs)

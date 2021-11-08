@@ -6,11 +6,10 @@ class TemplateStateEstimator(state_estimators.StateEstimator):
     """
     Template for State Estimator
     """
-    t = 0 # Last timestep
-
     # REPLACE THE FOLLOWING LIST WITH CONFIGURED PARAMETERS
     default_parameters = { # Default Parameters, used as config
-        'Example Parameter': 0.0
+        'Example Parameter': 0.0,
+        't0' : 0.0  # Initial timestamp
     } 
 
     def __init__(self, model, x0, measurement_eqn=None, **kwargs):

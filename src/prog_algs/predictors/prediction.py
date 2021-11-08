@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod, abstractproperty
 from collections import UserList
 from warnings import warn
+from copy import deepcopy
 
 from ..uncertain_data import UnweightedSamples, MultivariateNormalDist
 
@@ -11,14 +12,14 @@ class Prediction(ABC):
     """
     Parent class for the result of a prediction. Is returned by the predict method of a predictor. Defines the interface for operations on a prediciton data object. 
 
-    Note: This class is not intended to be instantiated directly, instead subclasses should be used
+    Args:
+        times (array(float)):
+            Times for each data point where times[n] corresponds to data[n]
+        data (array(UncertainData)):
+            Data points for each time in times 
     """
+
     def __init__(self, times, data):
-        """
-        Args:
-            times (array(float)): Times for each data point where times[n] corresponds to data[n]
-            data
-        """
         self.times = times
         self.data = data
 
@@ -26,7 +27,7 @@ class Prediction(ABC):
         """Compare 2 Predictions
 
         Args:
-            other (Precition)
+            other (Precition):
 
         Returns:
             bool: If the two Predictions are equal
@@ -38,17 +39,24 @@ class Prediction(ABC):
         """Get all samples from a specific timestep
 
         Args:
-            index (int): Timestep (index number from times)
+            index (int):
+                Timestep (index number from times)
 
         Returns:
-            UnweightedSamples: Samples for time corresponding to times[timestep]
+            UncertainData: Distribution for time corresponding to times[timestep]
         """
         pass
 
     @property
     @abstractproperty
     def mean(self):
-        """Mean estimate
+        """Estimate of the mean value of the prediction at each time
+
+        Returns:
+            array(dict): 
+                Mean value of the prediction at each time where mean[n] corresponds to the mean value of the prediction at time times[n].\n
+                The mean value at each time is a dictionary. \n
+                e.g., [{'state1': 1.2, 'state2': 1.3, ...}, ...]
 
         Example:
             mean_value = data.mean
@@ -56,30 +64,22 @@ class Prediction(ABC):
         pass
 
     def time(self, index):
-        """Get time for data point at index `index`
-
-        Args:
-            index (int)
-
-        Returns:
-            float: Time for which the data point at index `index` corresponds
-        """
         warn("Deprecated. Please use prediction.times[index] instead.")
         return self.times[index]
 
 
 class UnweightedSamplesPrediction(Prediction, UserList):
     """
-    Data class for the result of a prediction, where the predictions are stored as UnweightedSamples. Is returned from the predict method of a sample based prediction class (e.g., MonteCarlo).
-    """
-    def __init__(self, times, data):
-        """
-        Initialize UnweightedSamplesPrediction
+    Immutable data class for the result of a prediction, where the predictions are stored as UnweightedSamples. Is returned from the predict method of a sample based prediction class (e.g., MonteCarlo). Objects of this class can be iterated and accessed like a list (e.g., prediction[0]), where prediction[n] represents a profile for sample n.
 
-        Args:
-            times (array(float)): Times for each data point where times[n] corresponds to data[n]
-            data (array(dict)): Data points where data[n] corresponds to times[n]
-        """
+    Args:
+        times : array(float)
+            Times for each data point where times[n] corresponds to data[n]
+        data : array(dict)
+            Data points where data[n] is a SimResult for sample n
+    """
+
+    def __init__(self, times, data):
         super(UnweightedSamplesPrediction, self).__init__(times, data)
         self.__transformed = False  # If transform has been calculated
 
@@ -103,14 +103,6 @@ class UnweightedSamplesPrediction(Prediction, UserList):
         return [dist.mean for dist in self.__transform]
 
     def sample(self, sample_id):
-        """Get sample by sample_id, equivalent to prediction[index]. Depreciated in favor of prediction[id]
-
-        Args:
-            index (int): index of sample
-
-        Returns:
-            SimResult: Values for that sample at different times where result[i] corresponds to time[i]
-        """
         warn("Deprecated. Please use prediction[sample_id] instead.")
         return self[sample_id]
 
@@ -129,11 +121,19 @@ class UnweightedSamplesPrediction(Prediction, UserList):
 
     def __not_implemented(self, *args, **kw):
         """
-        Called for not implemented functions. These functions are not used to make the class immutable
+        This function is not implemented. Calling this will raise an error. Is is only included to make the class immutable.
+
+        Raises:
+            ValueError: 
         """
         raise ValueError("UnweightedSamplesPrediction is immutable (i.e., read only)")
 
     append = __not_implemented
+    extend = __not_implemented
+    clear = __not_implemented
+    reverse = __not_implemented
+    remove = __not_implemented
+    insert = __not_implemented
     pop = __not_implemented
     __setitem__ = __not_implemented
     __setslice__ = __not_implemented

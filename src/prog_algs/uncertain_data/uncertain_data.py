@@ -1,7 +1,7 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
 from abc import ABC, abstractmethod, abstractproperty
-from ..visualize import plot_scatter
+from ..visualize import plot_scatter, plot_hist
 
 
 class UncertainData(ABC):
@@ -112,3 +112,16 @@ class UncertainData(ABC):
             keys = self.keys()
         samples = self.sample(num_samples)
         return plot_scatter(samples, fig=fig, keys=keys, **kwargs)
+
+    def plot_hist(self, fig = None, keys = None, num_samples = 100, **kwargs):
+        """Create a histogram
+
+        Args:
+            fig (MatPlotLib Figure, optional): Existing histogram figure to be overritten. Defaults to create new figure.
+            num_samples (int, optional): Number of samples to plot. Defaults to 100
+            keys (List(String), optional): Keys to be plotted. Defaults to None.
+        """
+        if keys is None:
+            keys = self.keys()
+        samples = self.sample(num_samples)
+        return plot_hist(samples, fig=fig, keys=keys, **kwargs)

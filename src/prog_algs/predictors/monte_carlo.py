@@ -59,28 +59,25 @@ def prediction_fcn(x, model, params, events, loading):
 
 class MonteCarlo(Predictor):
     """
-    Class for performing model-based prediction using sampling. 
+    Class for performing a monte-carlo model-based prediction.
 
-    This class defines logic for performing model-based state prediction using sampling methods. A Predictor is constructed using a PrognosticsModel object, (See Prognostics Model Package). The states are simulated until either a specified time horizon is met, or the threshold is reached for all samples, as defined by the threshold equation. A provided future loading equation is used to compute the inputs to the system at any given time point. 
+    A Predictor using the monte carlo algorithm. The provided initial states are simulated until either a specified time horizon is met, or the threshold for all simulated events is reached for all samples. A provided future loading equation is used to compute the inputs to the system at any given time point. 
 
-    Parameters
-    ----------
-    * model : prog_models.prognostics_model.PrognosticsModel\n
-        See: Prognostics Model Package\n
-        A prognostics model to be used in prediction
-    * options (optional, kwargs): configuration options\n
-        Any additional configuration values. See default parameters. Additionally, the following configuration parameters are supported: \n
-        * dt : Step size (s)
-        * horizon : Prediction horizon (s)
-        * save_freq : Frequency at which results are saved (s)
-        * save_pts : Any additional savepoints (s) e.g., [10.1, 22.5]
-        * cores : Number of cores to use in multithreading
+    The following configuration parameters are supported (as kwargs in constructor or as parameters in predict method):
+    
+    Configuration Parameters
+    ------------------------------
+    dt : float
+        Simulation step size (s), e.g., 0.1
+    events : List[string]
+        Events to predict (subset of model.events) e.g., ['event1', 'event2']
+    horizon : float
+        Prediction horizon (s)
+    save_freq : float
+        Frequency at which results are saved (s)
+    save_pts : List[float]
+        Any additional savepoints (s) e.g., [10.1, 22.5]
     """
-    default_parameters = { # Default Parameters
-        'dt': 0.5,          # Timestep, seconds
-        'horizon': 4000,    # Prediction horizon, seconds
-        'save_freq': 10,    # Frequency at which results are saved
-    }
 
     def predict(self, state_samples, future_loading_eqn, **kwargs):
         params = deepcopy(self.parameters) # copy parameters

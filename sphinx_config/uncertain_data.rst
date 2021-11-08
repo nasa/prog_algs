@@ -8,13 +8,7 @@ The `prog_algs.uncertain_data` package includes classes for representing data wi
    :inherited-members:
 
 .. autoclass:: prog_algs.uncertain_data.UnweightedSamples
-   :members:
-   :inherited-members:
 
 .. autoclass:: prog_algs.uncertain_data.MultivariateNormalDist
-   :members:
-   :inherited-members:
 
 .. autoclass:: prog_algs.uncertain_data.ScalarData
-   :members:
-   :inherited-members:

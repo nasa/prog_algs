@@ -7,6 +7,7 @@ from numbers import Number
 from scipy.stats import norm
 from ..uncertain_data import UnweightedSamples
 from ..exceptions import ProgAlgTypeError
+from warnings import warn
 
 
 class ParticleFilter(state_estimator.StateEstimator):
@@ -52,7 +53,11 @@ class ParticleFilter(state_estimator.StateEstimator):
         else:
             raise ProgAlgTypeError
 
-        if 'measurement_noise' not in self.parameters:
+        if 'R' in self.parameters:
+            # For backwards compatibility
+            warn("'R' is deprecated. Use 'measurement_noise' instead.", DeprecationWarning)
+            self.parameters['measurement_noise'] = self.parameters['R']
+        elif 'measurement_noise' not in self.parameters:
             self.parameters['measurement_noise'] = {key: 0.0 for key in x0.keys()}
 
         samples = [random.normal(

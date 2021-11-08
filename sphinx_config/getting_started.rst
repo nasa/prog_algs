@@ -99,3 +99,32 @@ Extending
 New State Estimators and Predictors are created by extending the :class:`prog_algs.state_estimators.StateEstimator` and :class:`prog_algs.predictors.Predictor` class, respectively. 
 
 See :download:`examples.new_state_estimator_example <../examples/new_state_estimator_example.py>` for an example of this approach.
+
+Updates in v1.1
+---------------
+
+Note for existing users
+***********************
+This release includes changes to the return format of the MonteCarlo Predictor's `predict` method. These changes were necessary to support non-sample based predictors. The non backwards-compatible changes are listed below:
+* times: 
+    * previous ```List[List[float]]``` where times[n][m] corresponds to timepoint m of sample n. 
+    * new ```List[float]``` where times[m] corresponds to timepoint m for all samples
+* End of Life (EOL)/ Time of Event (ToE) estimates:
+    * previous ```List[float]``` where the times correspond to the time that the first event occurs.
+    * new ```UnweightedSamples``` where keys correspond to the inidividualevents predicted.
+* State at time of event (ToE)
+   * previous: element in states 
+   * new: member of toe event (e.g., toe.final_state['event1'])
+
+General Updates
+***************
+* New Feature: Histogram and Scatter Plot of UncertainData
+* New Feature: Vectorized particle filter
+    * Particle Filter State Estimator is now vectorized for vectorized models - this significantly improves performance.
+* New Feature: Unscented Transform Predictor
+    * New predictor that propogates sigma points forward to estimate time of event and future states
+* New Feature: `Prediction` class to represent predicted future values
+* New Feature: `ToEPredictionProfile` class to represent and operate on the result of multiple predictions generated at different prediction times.
+* Added metrics `percentage_in_bounds` and `metrics` and plots to UncertainData 
+* Add support for Python3.9
+* General Bugfixes

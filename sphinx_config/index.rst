@@ -28,13 +28,13 @@ Citing this repository
 Use the following to cite this repository:
 
 @misc{2021_nasa_prog_algs,
-    author    = {Christopher Teubert and Chetan Kulkarni and Matteo Corbetta},
-    title     = {Prognostics Algorithms Python Package},
-    month     = Aug,
-    year      = 2021,
-    version   = {1.1.0},
-    url       = {https://github.com/nasa/prog_algs}
-    }
+  | author    = {Christopher Teubert and Chetan Kulkarni and Matteo Corbetta},
+  | title     = {Prognostics Algorithms Python Package},
+  | month     = Aug,
+  | year      = 2021,
+  | version   = {1.1.0},
+  | url       = {https://github.com/nasa/prog_algs}
+  | }
 
 The corresponding reference should look like this:
 

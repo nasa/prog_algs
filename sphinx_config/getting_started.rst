@@ -53,6 +53,15 @@ The structure of the packages is illustrated below:
 
 Prognostics is performed using `State Estimators <state_estimators.html>`__ and `Predictors <predictors.html>`__. State Estimators are resposible for estimating the current state of the modeled system using sensor data and a prognostics model (see: `prog_models package <https://github.com/nasa/prog_models>`__). The state estimator then produces an estimate of the system state with uncertainty in the form of an `uncertain data object <uncertain_data.html>`__. This state estimate is used by the predictor to predict when events will occur (Time of Event, ToE - returned as an `uncertain data object <uncertain_data.html>`__), and future system states (returned as a Prediction object).
 
+Data Structures
+***************
+
+A few custom data structures are available for storing and manipulating prognostics data of various forms. These structures are listed below and desribed on their respective pages:
+ * `SimResult (from prog_models) <https://nasa.github.io/prog_models/sim_result.html>`__ : The result of a single simulation (without uncertainty). Can be used to store inputs, outputs, states, event_states, observables, etc. Is returned by the model.simulate_to* methods.
+ * `UncertainData <uncertain_data.html>`__ : Used throughout the package to represent data with uncertainty. There are a variety of subclasses of UncertainData to represent data with uncertainty in different forms (e.g., ScalarData, MultivariateNormalDist, UnweightedSamples). Notibly, this is used to represent the output of a StateEstimator's `estimate` method, individual snapshots of a prediction, and the time of event estimate from a predictor's `predict` method.
+ * `Prediction <prediction.html#id1>`__ : Prediction of future values (with uncertainty) of some variable (e.g., input, state, output, event_states, etc.). The `predict` method of predictors return this. 
+ * `ToEPredictionProfile <prediction.html#toe-prediction-profile>`__ : The result of multiple predictions, including time of prediction. This data structure can be treated as a dictionary of time of prediction to toe prediction. 
+
 Use 
 ----
 The best way to learn how to use `prog_algs` is through the `tutorial <https://mybinder.org/v2/gh/nasa/prog_algs/master?labpath=tutorial.ipynb>`__. There are also a number of examples which show different aspects of the package, summarized and linked below:
@@ -90,3 +99,32 @@ Extending
 New State Estimators and Predictors are created by extending the :class:`prog_algs.state_estimators.StateEstimator` and :class:`prog_algs.predictors.Predictor` class, respectively. 
 
 See :download:`examples.new_state_estimator_example <../examples/new_state_estimator_example.py>` for an example of this approach.
+
+Updates in v1.1
+---------------
+
+Note for existing users
+***********************
+This release includes changes to the return format of the MonteCarlo Predictor's `predict` method. These changes were necessary to support non-sample based predictors. The non backwards-compatible changes are listed below:
+* times: 
+    * previous ```List[List[float]]``` where times[n][m] corresponds to timepoint m of sample n. 
+    * new ```List[float]``` where times[m] corresponds to timepoint m for all samples
+* End of Life (EOL)/ Time of Event (ToE) estimates:
+    * previous ```List[float]``` where the times correspond to the time that the first event occurs.
+    * new ```UnweightedSamples``` where keys correspond to the inidividualevents predicted.
+* State at time of event (ToE)
+   * previous: element in states 
+   * new: member of toe event (e.g., toe.final_state['event1'])
+
+General Updates
+***************
+* New Feature: Histogram and Scatter Plot of UncertainData
+* New Feature: Vectorized particle filter
+    * Particle Filter State Estimator is now vectorized for vectorized models - this significantly improves performance.
+* New Feature: Unscented Transform Predictor
+    * New predictor that propogates sigma points forward to estimate time of event and future states
+* New Feature: `Prediction` class to represent predicted future values
+* New Feature: `ToEPredictionProfile` class to represent and operate on the result of multiple predictions generated at different prediction times.
+* Added metrics `percentage_in_bounds` and `metrics` and plots to UncertainData 
+* Add support for Python3.9
+* General Bugfixes

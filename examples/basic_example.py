@@ -76,7 +76,7 @@ def run_example():
     mc = predictors.MonteCarlo(batt)
 
     # Step 3b: Perform a prediction
-    NUM_SAMPLES = 20
+    NUM_SAMPLES = 100
     # Sample from the latest state in the state estimator
     # Note: This is only required for sample-based prediction algorithms
     samples = filt.x.sample(NUM_SAMPLES)  
@@ -115,6 +115,8 @@ def run_example():
     states.snapshot(quarter_index*3).plot_scatter(fig = fig, label = "t={} s".format(int(times[quarter_index*3])))  # 75%
     states.snapshot(-1).plot_scatter(fig = fig, label = "t={} s".format(int(times[-1])))  # 100%
 
+    toe.plot_hist()
+    
     # Step 4: Show all plots
     import matplotlib.pyplot as plt  # For plotting
     plt.show()

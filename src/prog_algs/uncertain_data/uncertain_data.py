@@ -1,7 +1,7 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
 from abc import ABC, abstractmethod, abstractproperty
-from ..visualize import plot_scatter
+from ..visualize import plot_scatter, plot_hist
 
 
 class UncertainData(ABC):
@@ -9,14 +9,14 @@ class UncertainData(ABC):
     Abstract base class for data with uncertainty. Any new uncertainty type must implement this class
     """
     @abstractmethod
-    def sample(self, nSamples = 1):
+    def sample(self, nSamples : int = 1):
         """Generate samples from data
 
         Args:
             nSamples (int, optional): Number of samples to generate. Defaults to 1.
 
         Returns:
-            samples (array): Array of nSamples samples
+            samples (UnweightedSamples): Array of nSamples samples
 
         Example:
             samples = data.samples(100)
@@ -25,7 +25,10 @@ class UncertainData(ABC):
     @property
     @abstractproperty
     def median(self):
-        """Median estimate
+        """The median of the UncertainData distribution or samples 
+
+        Returns:
+            Dict[str, float]: Mean value. e.g., {'key1': 23.2, ...}
 
         Example:
             median_value = data.median
@@ -34,7 +37,10 @@ class UncertainData(ABC):
     @property
     @abstractproperty
     def mean(self):
-        """Mean estimate
+        """The mean of the UncertainData distribution or samples 
+
+        Returns:
+            Dict[str, float]: Mean value. e.g., {'key1': 23.2, ...}
 
         Example:
             mean_value = data.mean
@@ -43,10 +49,10 @@ class UncertainData(ABC):
     @property
     @abstractproperty
     def cov(self):
-        """Get the covariance matrix
+        """The covariance matrix of the UncertiantyData distribution or samples in order of keys (i.e., cov[1][1] is the standard deviation for key keys()[1])
 
         Returns:
-            [[float]]: covariance matrix
+            array[array[float]]: Covariance matrix
         """
 
     @abstractmethod
@@ -72,11 +78,10 @@ class UncertainData(ABC):
     def metrics(self, **kwargs):
         """Calculate Metrics for this dist
 
-        Args
-            **kwargs (optional): Configuration parameters. Supported parameters include:
-             * ground_truth (int or dict): Ground truth value. Defaults to None.
-             * n_samples (int): Number of samples to use for calculating metrics (if not UnweightedSamples)
-             * keys (list of strings): Keys to calculate metrics for. Defaults to all keys.
+        Keyword Args:
+            ground_truth (int or dict, optional): Ground truth value. Defaults to None.
+            n_samples (int, optional): Number of samples to use for calculating metrics (if not UnweightedSamples)
+            keys (List[str], optional): Keys to calculate metrics for. Defaults to all keys.
 
         Returns:
             dict: Dictionary of metrics
@@ -107,3 +112,16 @@ class UncertainData(ABC):
             keys = self.keys()
         samples = self.sample(num_samples)
         return plot_scatter(samples, fig=fig, keys=keys, **kwargs)
+
+    def plot_hist(self, fig = None, keys = None, num_samples = 100, **kwargs):
+        """Create a histogram
+
+        Args:
+            fig (MatPlotLib Figure, optional): Existing histogram figure to be overritten. Defaults to create new figure.
+            num_samples (int, optional): Number of samples to plot. Defaults to 100
+            keys (List(String), optional): Keys to be plotted. Defaults to None.
+        """
+        if keys is None:
+            keys = self.keys()
+        samples = self.sample(num_samples)
+        return plot_hist(samples, fig=fig, keys=keys, **kwargs)

@@ -1,13 +1,14 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from . import state_estimator
-from numpy import array, empty, random, take, exp, max, take, sort, log, pi
+from numpy import array, empty, random, take, exp, max, take
 from filterpy.monte_carlo import residual_resample
 from numbers import Number
 from scipy.stats import norm
 from ..uncertain_data import UnweightedSamples
 from ..exceptions import ProgAlgTypeError
-from copy import deepcopy
+from warnings import warn
+
 
 class ParticleFilter(state_estimator.StateEstimator):
     """
@@ -52,7 +53,11 @@ class ParticleFilter(state_estimator.StateEstimator):
         else:
             raise ProgAlgTypeError
 
-        if 'measurement_noise' not in self.parameters:
+        if 'R' in self.parameters:
+            # For backwards compatibility
+            warn("'R' is deprecated. Use 'measurement_noise' instead.", DeprecationWarning)
+            self.parameters['measurement_noise'] = self.parameters['R']
+        elif 'measurement_noise' not in self.parameters:
             self.parameters['measurement_noise'] = {key: 0.0 for key in x0.keys()}
 
         samples = [random.normal(
@@ -74,12 +79,29 @@ class ParticleFilter(state_estimator.StateEstimator):
         output = self.__measure
         apply_measurement_noise = self.model.apply_measurement_noise
         noise_params = self.model.parameters['measurement_noise']
+        num_particles = self.parameters['num_particles']
+        # Check which output keys are present (i.e., output of measurement function)
+        measurement_keys = output({key: particles[key][0] for key in particles.keys()}).keys()
+        zPredicted = {key: empty(num_particles) for key in measurement_keys}
 
-        # Propagate particles state
-        self.particles = apply_process_noise(next_state(particles, u, dt))
+        if self.model.is_vectorized:
+            # Propagate particles state
+            particles = apply_process_noise(next_state(particles, u, dt))
 
-        # Get particle measurements
-        zPredicted = apply_measurement_noise(output(self.particles))
+            # Get particle measurements
+            zPredicted = apply_measurement_noise(output(particles))
+        else:
+            # Propogate and calculate weights
+            for i in range(num_particles):
+                x = {key: particles[key][i] for key in particles.keys()}
+                x = next_state(x, u, dt) 
+                x = apply_process_noise(x)
+                for key in particles.keys():
+                    self.particles[key][i] = x[key]
+                z = output(x)
+                z = apply_measurement_noise(z)
+                for key in measurement_keys:
+                    zPredicted[key][i] = z[key]
 
         # Calculate pdf values
         pdfs = array([norm(zPredicted[key], noise_params[key]).logpdf(z[key])

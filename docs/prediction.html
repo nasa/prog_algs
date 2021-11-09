@@ -35,26 +35,114 @@
             
   <section id="prediction">
 <h1>Prediction<a class="headerlink" href="#prediction" title="Permalink to this headline">¶</a></h1>
-<section id="prediction-class">
-<h2>Prediction Class<a class="headerlink" href="#prediction-class" title="Permalink to this headline">¶</a></h2>
+<section id="id1">
+<h2>Prediction<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Predictions store the result of a prediction (i.e., returned by the predict method of a predictor). They store values (with uncertainty) at different future times. These are used to store states, inputs, outputs, observables, and event states with uncertainty at savepoints.</p>
+<p>Two types of predictions are distributed with this package: <cite>Prediction</cite> and <cite>UnweightedSamplesPrediction</cite>, described below. <cite>UnweightedSamplesPrediction</cite> extends <cite>Prediction</cite> to allow some operations specific to cases where each prediction is represented by an UnweightedSamples object (e.g., accessing SimResult for a single sample).</p>
 <section id="base-prediction">
 <h3>Base Prediction<a class="headerlink" href="#base-prediction" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="prog_algs.predictors.Prediction">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">prog_algs.predictors.</span></span><span class="sig-name descname"><span class="pre">Prediction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.Prediction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parent class for the result of a prediction. Is returned by the predict method of a predictor. Defines the interface for operations on a prediciton data object.</p>
-<p>Note: This class is not intended to be instantiated directly, instead subclasses should be used</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>times</strong> (<em>array</em><em>(</em><em>float</em><em>)</em>) – Times for each data point where times[n] corresponds to data[n]</p></li>
+<li><p><strong>data</strong> (<em>array</em><em>(</em><a class="reference internal" href="uncertain_data.html#prog_algs.uncertain_data.UncertainData" title="prog_algs.uncertain_data.UncertainData"><em>UncertainData</em></a><em>)</em>) – Data points for each time in times</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="prog_algs.predictors.Prediction.mean">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">mean</span></span><a class="headerlink" href="#prog_algs.predictors.Prediction.mean" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mean estimate</p>
+<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">mean</span></span><a class="headerlink" href="#prog_algs.predictors.Prediction.mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate of the mean value of the prediction at each time</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>Mean value of the prediction at each time where mean[n] corresponds to the mean value of the prediction at time times[n].</p>
+<p>The mean value at each time is a dictionary.</p>
+<p>e.g., [{‘state1’: 1.2, ‘state2’: 1.3, …}, …]</p>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>array(dict)</p>
+</dd>
+</dl>
 <p class="rubric">Example</p>
 <p>mean_value = data.mean</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="prog_algs.predictors.Prediction.snapshot">
-<span class="sig-name descname"><span class="pre">snapshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.Prediction.snapshot" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">snapshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.Prediction.snapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all samples from a specific timestep</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – Timestep (index number from times)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Distribution for time corresponding to times[timestep]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="uncertain_data.html#prog_algs.uncertain_data.UncertainData" title="prog_algs.uncertain_data.UncertainData">UncertainData</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="unweightedsamplesprediction">
+<h3>UnweightedSamplesPrediction<a class="headerlink" href="#unweightedsamplesprediction" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="prog_algs.predictors.UnweightedSamplesPrediction">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">prog_algs.predictors.</span></span><span class="sig-name descname"><span class="pre">UnweightedSamplesPrediction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.UnweightedSamplesPrediction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Immutable data class for the result of a prediction, where the predictions are stored as UnweightedSamples. Is returned from the predict method of a sample based prediction class (e.g., MonteCarlo). Objects of this class can be iterated and accessed like a list (e.g., prediction[0]), where prediction[n] represents a profile for sample n.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>times</strong> – array(float)
+Times for each data point where times[n] corresponds to data[n]</p></li>
+<li><p><strong>data</strong> – array(dict)
+Data points where data[n] is a SimResult for sample n</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="prog_algs.predictors.UnweightedSamplesPrediction.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span> <span class="pre">--</span> <span class="pre">return</span> <span class="pre">number</span> <span class="pre">of</span> <span class="pre">occurrences</span> <span class="pre">of</span> <span class="pre">value</span></span></span><a class="headerlink" href="#prog_algs.predictors.UnweightedSamplesPrediction.count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="prog_algs.predictors.UnweightedSamplesPrediction.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value</span></em><span class="optional">[</span>, <em class="sig-param"><span class="pre">start</span></em><span class="optional">[</span>, <em class="sig-param"><span class="pre">stop</span></em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span> <span class="pre">--</span> <span class="pre">return</span> <span class="pre">first</span> <span class="pre">index</span> <span class="pre">of</span> <span class="pre">value.</span></span></span><a class="headerlink" href="#prog_algs.predictors.UnweightedSamplesPrediction.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raises ValueError if the value is not present.</p>
+<p>Supporting start and stop arguments is optional, but
+recommended.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="prog_algs.predictors.UnweightedSamplesPrediction.mean">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">mean</span></span><a class="headerlink" href="#prog_algs.predictors.UnweightedSamplesPrediction.mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate of the mean value of the prediction at each time</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>Mean value of the prediction at each time where mean[n] corresponds to the mean value of the prediction at time times[n].</p>
+<p>The mean value at each time is a dictionary.</p>
+<p>e.g., [{‘state1’: 1.2, ‘state2’: 1.3, …}, …]</p>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>array(dict)</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>mean_value = data.mean</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="prog_algs.predictors.UnweightedSamplesPrediction.snapshot">
+<span class="sig-name descname"><span class="pre">snapshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.UnweightedSamplesPrediction.snapshot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all samples from a specific timestep</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -69,32 +157,6 @@
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="prog_algs.predictors.Prediction.time">
-<span class="sig-name descname"><span class="pre">time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.Prediction.time" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get time for data point at index <cite>index</cite></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – </p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Time for which the data point at index <cite>index</cite> corresponds</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</section>
-<section id="unweightedsamplesprediction">
-<h3>UnweightedSamplesPrediction<a class="headerlink" href="#unweightedsamplesprediction" title="Permalink to this headline">¶</a></h3>
-<dl class="py class">
-<dt class="sig sig-object py" id="prog_algs.predictors.UnweightedSamplesPrediction">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">prog_algs.predictors.</span></span><span class="sig-name descname"><span class="pre">UnweightedSamplesPrediction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.UnweightedSamplesPrediction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Data class for the result of a prediction, where the predictions are stored as UnweightedSamples. Is returned from the predict method of a sample based prediction class (e.g., MonteCarlo).</p>
 </dd></dl>
 
 </section>
@@ -120,6 +182,36 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="prog_algs.predictors.ToEPredictionProfile.alpha_lambda">
+<span class="sig-name descname"><span class="pre">alpha_lambda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#prog_algs.predictors.ToEPredictionProfile.alpha_lambda" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate Alpha lambda metric for the prediction profile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ground_truth</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>) – Ground Truth time of event for each event (e.g., {‘event1’: 748, ‘event2’, 2233, …})</p></li>
+<li><p><strong>lambda_value</strong> (<em>float</em>) – Prediction time at or after which metric is evaluated. Evaluation occurs at this time (if a prediction exists) or the next prediction following.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – percentage bounds around time to event (where 0.2 allows 20% error TtE)</p></li>
+<li><p><strong>beta</strong> (<em>float</em>) – portion of prediction that must be within those bounds</p></li>
+<li><p><strong>kwargs</strong> (<em>optional</em><em>, </em><em>keyword arguments</em>) – <p>configuration arguments. Accepted arge include:</p>
+<blockquote>
+<div><ul>
+<li><p>keys (list[string]): list of keys to use. If not provided, all keys are used.</p></li>
+<li><p>print (bool) : If True, print the results. Default is False.</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If alpha lambda was met for each key (e.g., {‘event1’: True, ‘event2’, False, …})</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, bool]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="prog_algs.predictors.ToEPredictionProfile.clear">
 <span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None.</span>&#160; <span class="pre">Remove</span> <span class="pre">all</span> <span class="pre">items</span> <span class="pre">from</span> <span class="pre">D.</span></span></span><a class="headerlink" href="#prog_algs.predictors.ToEPredictionProfile.clear" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -131,13 +223,15 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="prog_algs.predictors.ToEPredictionProfile.items">
-<span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">a</span> <span class="pre">set-like</span> <span class="pre">object</span> <span class="pre">providing</span> <span class="pre">a</span> <span class="pre">view</span> <span class="pre">on</span> <span class="pre">D's</span> <span class="pre">items</span></span></span><a class="headerlink" href="#prog_algs.predictors.ToEPredictionProfile.items" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.ToEPredictionProfile.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get iterators for the items (time_of_prediction, toe_prediction) of the prediction profile</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="prog_algs.predictors.ToEPredictionProfile.keys">
-<span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">a</span> <span class="pre">set-like</span> <span class="pre">object</span> <span class="pre">providing</span> <span class="pre">a</span> <span class="pre">view</span> <span class="pre">on</span> <span class="pre">D's</span> <span class="pre">keys</span></span></span><a class="headerlink" href="#prog_algs.predictors.ToEPredictionProfile.keys" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.ToEPredictionProfile.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get iterator for the keys (i.e., time_of_prediction) of the prediction profile</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="prog_algs.predictors.ToEPredictionProfile.pop">
@@ -166,8 +260,9 @@ In either case, this is followed by: for k, v in F.items(): D[k] = v</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="prog_algs.predictors.ToEPredictionProfile.values">
-<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">an</span> <span class="pre">object</span> <span class="pre">providing</span> <span class="pre">a</span> <span class="pre">view</span> <span class="pre">on</span> <span class="pre">D's</span> <span class="pre">values</span></span></span><a class="headerlink" href="#prog_algs.predictors.ToEPredictionProfile.values" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.predictors.ToEPredictionProfile.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get iterator for the values (i.e., toe_prediction) of the prediction profile</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -198,12 +293,11 @@ In either case, this is followed by: for k, v in F.items(): D[k] = v</p>
 <li class="toctree-l1"><a class="reference internal" href="predictors.html">Predictors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="uncertain_data.html">Uncertain Data</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Prediction</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#prediction-class">Prediction Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Prediction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#toe-prediction-profile">ToE Prediction Profile</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="visualize.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dev_guide.html">Developers Guide</a></li>
 </ul>

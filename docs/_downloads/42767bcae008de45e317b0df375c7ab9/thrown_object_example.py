@@ -17,18 +17,21 @@ from prog_models.models.thrown_object import ThrownObject
 
 from prog_algs import *
 
+from pprint import pprint
+
 def run_example():
     # Step 1: Setup model & future loading
     def future_loading(t, x = None):
         return {}
-    m = ThrownObject()
+    m = ThrownObject(process_noise = 0.25, measurement_noise = 0.2)
     initial_state = m.initialize({}, {})
 
     # Step 2: Demonstrating state estimator
-    print("\nPerforming State Estimation Step")
+    print("\nPerforming State Estimation Step...")
 
     # Step 2a: Setup
-    filt = state_estimators.ParticleFilter(m, initial_state)
+    NUM_SAMPLES = 1000
+    filt = state_estimators.ParticleFilter(m, initial_state, num_particles = NUM_SAMPLES)
     # VVV Uncomment this to use UKF State Estimator VVV
     # filt = state_estimators.UnscentedKalmanFilter(batt, initial_state)
 
@@ -39,19 +42,23 @@ def run_example():
     #   there is new data. Here we're doing one step to demonstrate how the state estimator is used
 
     # Step 3: Demonstrating Predictor
-    print("\n\n\nPerforming Prediction Step")
+    print("\nPerforming Prediction Step...")
 
     # Step 3a: Setup Predictor
     mc = predictors.MonteCarlo(m)
 
     # Step 3b: Perform a prediction
-    NUM_SAMPLES = 20
-    # Sample from the latest state in the state estimator
-    # Note: This is only required for sample-based prediction algorithms
-    samples = filt.x.sample(NUM_SAMPLES)  
+    samples = filt.x  # Since we're using a particle filter, which is also sample-based, we can directly use the samples, without changes
     STEP_SIZE = 0.1
-    (times, inputs, states, outputs, event_states, toe) = mc.predict(samples, future_loading, dt=STEP_SIZE)
-    print('ToE', toe.mean)
+    (_, _, _, _, _, toe) = mc.predict(samples, future_loading, dt=STEP_SIZE)
+    print("\nPredicted Time of Event:")
+    pprint(toe.metrics())
+    toe.plot_hist(keys = 'impact')
+    toe.plot_hist(keys = 'falling')
+    
+    # Step 4: Show all plots
+    import matplotlib.pyplot as plt  # For plotting
+    plt.show()
 
 # This allows the module to be executed directly 
 if __name__ == '__main__':

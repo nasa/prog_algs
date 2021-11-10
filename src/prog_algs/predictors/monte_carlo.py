@@ -5,7 +5,7 @@ from .predictor import Predictor
 from copy import deepcopy
 from functools import partial
 from prog_models.sim_result import SimResult, LazySimResult
-from prog_algs.uncertain_data import UnweightedSamples
+from prog_algs.uncertain_data import UnweightedSamples, UncertainData
 
 def prediction_fcn(x, model, params, events, loading):
     # This is the main prediction function for the multi-threading
@@ -78,7 +78,7 @@ class MonteCarlo(Predictor):
         Any additional savepoints (s) e.g., [10.1, 22.5]
     """
 
-    def predict(self, state_samples, future_loading_eqn, **kwargs):
+    def predict(self, state : UncertainData, future_loading_eqn, **kwargs):
         params = deepcopy(self.parameters) # copy parameters
         params.update(kwargs) # update for specific run
 

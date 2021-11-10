@@ -13,7 +13,6 @@ Results:
     ii) Time event is predicted to occur (with uncertainty)
     iii) Various prediction metrics
     iv) Figures illustrating results
-
 """
 
 from prog_models.models import BatteryCircuit as Battery

@@ -95,8 +95,7 @@ def run_example():
 
             # Prediction Step (every PREDICTION_UPDATE_FREQ steps)
             if (step%PREDICTION_UPDATE_FREQ == 0):
-                samples = filt.x.sample(NUM_SAMPLES)
-                (times, inputs, states, outputs, event_states, toe) = mc.predict(samples, future_loading, dt=TIME_STEP)
+                (times, inputs, states, outputs, event_states, toe) = mc.predict(filt.x, future_loading, n_samples=NUM_SAMPLES, dt=TIME_STEP)
                 m = metrics.toe_metrics(toe)
                 print('  - ToE: {} (sigma: {})'.format(m['mean'], m['std']))
 

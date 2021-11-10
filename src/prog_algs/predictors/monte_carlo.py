@@ -90,7 +90,7 @@ class MonteCarlo(Predictor):
             events = params['events'],
             loading = future_loading_eqn)
         
-        result = [pred_fcn(sample) for sample in state_samples]
+        result = [pred_fcn(sample) for sample in state]
         times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event, last_states = map(list, zip(*result))
         
         # Return longest time array

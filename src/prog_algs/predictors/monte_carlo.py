@@ -13,7 +13,6 @@ def prediction_fcn(x, model, params, events, loading):
     first_output = model.output(x)
     time_of_event = {}
     last_state = {}
-    params['t'] = 0
     times = []
     # inputs will be the same as states unless we explicitly deepcopy
     inputs = SimResult()

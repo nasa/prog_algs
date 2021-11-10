@@ -78,15 +78,15 @@ class UnscentedTransformPredictor(Predictor):
     ----    
     The resulting sigma-points along the time dimension are used to compute mean and covariance of the event time (ToE), under the hypothesis that the ToE distribution would also be well represented by a Gaussian. This is a strong assumption that likely cannot be satisfied for real systems with strong non-linear state propagation or nonlinear ToE curves. Therefore, the user should be cautious and verify that modeling the event time using a Gaussian distribution is satisfactory.
     """
-    default_parameters = {  # Default Parameters
-        'alpha': 1,         # UKF scaling param
-        'beta': 0,          # UKF scaling param
-        'kappa': -1,        # UKF scaling param
+    default_parameters = {
+        'alpha': 1,
+        'beta': 0,
+        'kappa': -1,
         't': 0,             # Starting Time (s)
-        'dt': 0.5,          # Timestep (s)
-        'horizon': 1e99,    # Prediction horizon (s)
-        'save_pts': [],     # Save points during prediction (s)
-        'save_freq': 1e99   # Frequency at which states are saved (s)
+        'dt': 0.5,
+        'horizon': 1e99,
+        'save_pts': [],
+        'save_freq': 1e99
     }
 
     def __init__(self, model, **kwargs):

@@ -32,7 +32,7 @@ class ParticleFilter(state_estimator.StateEstimator):
             e.g., 0.5 or {'state1': 0.5, 'state2': 0.2}
     """
     default_parameters = {
-            't0': 0,
+            't0': -1,
             'num_particles': 20, 
             'resample_fcn': residual_resample,
             'x0_uncertainty': 0.5

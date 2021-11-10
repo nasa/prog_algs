@@ -29,7 +29,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         'alpha': 1, 
         'beta': 0, 
         'kappa': -1,
-        't0': 0,
+        't0': -1,
         'dt': 1
     } 
 
@@ -94,6 +94,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
             Measured outputs, with keys defined by model.outputs.
             e.g., z = {'t':12.4, 'v':3.3} given inputs = ['t', 'v']
         """
+        assert t > self.t, "New time must be greater than previous"
         dt = t - self.t
         self.__input = u
         self.t = t

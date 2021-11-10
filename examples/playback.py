@@ -95,16 +95,16 @@ def run_example():
 
             # Prediction Step (every PREDICTION_UPDATE_FREQ steps)
             if (step%PREDICTION_UPDATE_FREQ == 0):
-                (times, inputs, states, outputs, event_states, toe) = mc.predict(filt.x, future_loading, n_samples=NUM_SAMPLES, dt=TIME_STEP)
-                m = metrics.toe_metrics(toe)
-                print('  - ToE: {} (sigma: {})'.format(m['mean'], m['std']))
+                (times, inputs, states, outputs, event_states, toe) = mc.predict(samples, future_loading, n_samples=NUM_SAMPLES, dt=TIME_STEP)
+                m = toe.metrics()
+                print('  - ToE: {} (sigma: {})'.format(m['EOD']['mean'], m['EOD']['std']))
 
                 # Update Plot
                 rul_x.append(t)
-                rul_y.append(m['mean']-t)
+                rul_y.append(m['EOD']['mean']-t)
                 ymin, ymax = rulax.get_ylim()
-                if m['mean']-t > ymax:
-                    rulax.set_ylim(0, (m['mean']-t)*1.1)
+                if m['EOD']['mean']-t > ymax:
+                    rulax.set_ylim(0, (m['EOD']['mean']-t)*1.1)
                 rul_line.set_data(rul_x, rul_y)
                 rul_fig.canvas.draw()
     

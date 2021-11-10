@@ -78,6 +78,9 @@ The best way to learn how to use `prog_algs` is through the `tutorial <https://m
 * :download:`examples.benchmarking_example <../examples/benchmarking_example.py>`
     .. automodule:: examples.benchmarking_example
     |
+* :download:`examples.eol_event <../examples/eol_event.py>`
+    .. automodule:: examples.eol_event
+    |
 * :download:`examples.measurement_eqn_example <../examples/measurement_eqn_example.py>`
     .. automodule:: examples.measurement_eqn_example
     |

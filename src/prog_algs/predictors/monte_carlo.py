@@ -72,15 +72,26 @@ class MonteCarlo(Predictor):
         Events to predict (subset of model.events) e.g., ['event1', 'event2']
     horizon : float
         Prediction horizon (s)
+    n_samples : int
+        Number of samples to use. If not specified, a default value is used. If state is type UnweightedSamples and n_samples is not provided, the provided unweighted samples will be used directly.
     save_freq : float
         Frequency at which results are saved (s)
     save_pts : List[float]
         Any additional savepoints (s) e.g., [10.1, 22.5]
     """
+    DEFAULT_N_SAMPLES = 100  # Default number of samples to use, if none specified
 
     def predict(self, state : UncertainData, future_loading_eqn, **kwargs):
         params = deepcopy(self.parameters) # copy parameters
         params.update(kwargs) # update for specific run
+
+        # Sample from state if n_samples specified or state is not UnweightedSamples
+        if 'n_samples' in self.parameters:
+            # If n_samples is specified, sample
+            state = state.sample(self.parameters['n_samples'])
+        elif not isinstance(state, UnweightedSamples):
+            # If no n_samples specified, but state is not UnweightedSamples, then sample with default
+            state = state.sample(self.DEFAULT_N_SAMPLES)
 
         # Perform prediction
         pred_fcn = partial(

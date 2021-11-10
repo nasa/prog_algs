@@ -3,7 +3,6 @@
 __all__ = ['predictors', 'uncertain_data', 'state_estimators', 'run_prog_playback', 'metrics']
 from . import predictors, state_estimators, uncertain_data
 
-import numpy as np
 import warnings
 
 __version__ = '1.1.0'

@@ -2,7 +2,6 @@
 
 from collections import UserList
 from warnings import warn
-from copy import deepcopy
 
 from ..uncertain_data import UnweightedSamples
 

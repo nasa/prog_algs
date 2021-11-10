@@ -4,8 +4,6 @@ from . import state_estimator
 from filterpy import kalman
 from numpy import diag, array
 from ..uncertain_data import MultivariateNormalDist
-from ..exceptions import ProgAlgTypeError
-from copy import deepcopy
 
 class UnscentedKalmanFilter(state_estimator.StateEstimator):
     """

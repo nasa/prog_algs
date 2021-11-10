@@ -2,10 +2,7 @@
 
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from typing import List, Tuple, Dict
 from ..exceptions import ProgAlgTypeError
-from ..uncertain_data import UncertainData
-from .prediction import Prediction
 
 
 class Predictor(ABC):

@@ -71,6 +71,6 @@ class Predictor(ABC):
             Outputs at each savepoint such that outputs.snapshot(i) is the output distribution (type UncertainData) at times[i]
         event_states : Prediction
             Event states at each savepoint such that event_states.snapshot(i) is the event state distribution (type UncertainData) at times[i]
-        time_of_event : Dict[UncertainData]
-            Distribution of predicted Time of Event (ToE) for each predicted event (e.g., {'event1': DISTRIBUTION, 'event2': DISTRIBUTION, ...}) where DISTRIBUTION is replaced by some subclass of UncertaintData (e.g., MultivariateNormalDist)
+        time_of_event : UncertainData
+            Distribution of predicted Time of Event (ToE) for each predicted event, represented by some subclass of UncertaintData (e.g., MultivariateNormalDist)
         """

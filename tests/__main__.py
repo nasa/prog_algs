@@ -6,17 +6,20 @@ from .test_integration import TestIntegration
 from .test_uncertain_data import TestUncertainData
 from .test_examples import TestExamples
 from .test_misc import TestMisc
+from .test_metrics import TestMetrics
+from .test_visualize import TestVisualize
 import unittest
 import sys
 from examples import basic_example
 from io import StringIO 
 from timeit import timeit
+from unittest.mock import patch
 
 def run_basic_ex():
     _stdout = sys.stdout
     sys.stdout = StringIO()
-
-    basic_example.run_example()
+    with patch('matplotlib.pyplot') as p:
+        basic_example.run_example()
 
     # Reset stdout 
     sys.stdout = _stdout
@@ -35,11 +38,17 @@ if __name__ == '__main__':
     print('\n\nUncertain Data Tests')
     unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestUncertainData))
 
+    print('\n\nVisualize Tests')
+    unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestVisualize))
+
     print('\n\nExamples Tests')
     unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestExamples))
 
     print('\n\nIntegration Tests')
     unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestIntegration))
+
+    print('\n\nMetrics Tests')
+    unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestMetrics))
 
     print('\n\nMisc Tests')
     unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestMisc))

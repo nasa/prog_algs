@@ -1,8 +1,10 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 import unittest
+from prog_models import PrognosticsModel
 from prog_algs.exceptions import ProgAlgTypeError
 
-class MockProgModel():
+
+class MockProgModel(PrognosticsModel):
     states = ['a', 'b', 'c', 't']
     inputs = ['i1', 'i2']
     outputs = ['o1']
@@ -228,3 +230,16 @@ class TestStateEstimators(unittest.TestCase):
     def test_PF_incorrect_input(self):
         from prog_algs.state_estimators import ParticleFilter
         self.__incorrect_input_tests(ParticleFilter)
+
+# This allows the module to be executed directly    
+def run_tests():
+    l = unittest.TestLoader()
+    runner = unittest.TextTestRunner()
+    print("\n\nTesting State Estimators")
+    result = runner.run(l.loadTestsFromTestCase(TestStateEstimators)).wasSuccessful()
+
+    if not result:
+        raise Exception("Failed test")
+
+if __name__ == '__main__':
+    run_tests()

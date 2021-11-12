@@ -4,59 +4,57 @@ from . import state_estimator
 from filterpy import kalman
 from numpy import diag, array
 from ..uncertain_data import MultivariateNormalDist
-from ..exceptions import ProgAlgTypeError
-from copy import deepcopy
 
 class UnscentedKalmanFilter(state_estimator.StateEstimator):
     """
     An Unscented Kalman Filter (UKF) for state estimation
 
     This class defines logic for performing an unscented kalman filter with a Prognostics Model (see Prognostics Model Package). This filter uses measurement data with noise to generate a state estimate and covariance matrix. 
-    
-    Constructor parameters:
-     * model (ProgModel): Model to be used in state estimation \n
-        See: Prognostics Model Package \n
-        A prognostics model to be used in state estimation
-     * x0 (dict): Initial State \n
-        Initial (starting) state, with keys defined by model.states \n
-        e.g., x = {'abc': 332.1, 'def': 221.003} given states = ['abc', 'def']
-     * measurement_eqn (optional, function): Measurement equation (x)->z. Usually used in situations where what's measured don't exactly match the output (e.g., different unit, not ever output measured, etc.). see `examples.measurement_eqn_example`
-     * options (optional, kwargs): configuration options\n
-        Dictionary of any additional configuration values. See default parameters. Additionally, the following configuration parameters are supported: \n
-         * alpha, beta, kappa: UKF Scaling parameters
-         * t0 : Starting time
-         * dt : time step
-         * Q : Process Noise Matrix 
-         * R : Measurement Noise Matrix 
+
+    The supported configuration parameters (keyword arguments) for UKF construction are described below:
+
+    Constructor Configuration Parameters:
+        alpha, beta, kappa: float
+            UKF Scaling parameters
+        t0 : float
+            Starting time (s)
+        dt : float 
+            time step (s)
+        Q : List[List[float]]
+            Process Noise Matrix 
+        R : List[List[float]]
+            Measurement Noise Matrix 
     """
-    t = 0 # Last timestep
     default_parameters = {
-        'alpha': 1,     # UKF scaling param
-        'beta': 0,      # UKF scaling param
-        'kappa': -1,    # UKF scaling param
-        't0': 0,        # Starting time
-        'dt': 1         # Time step
+        'alpha': 1, 
+        'beta': 0, 
+        'kappa': -1,
+        't0': -1,
+        'dt': 1
     } 
 
     def __init__(self, model, x0, measurement_eqn = None, **kwargs):
         super().__init__(model, x0, measurement_eqn, **kwargs)
 
-        self._input = None
-        self.t = self.parameters['t0']
+        self.__input = None
+        self.x0 = x0
 
         if measurement_eqn is None: 
             def measure(x):
-                x = {key: value for (key, value) in zip(model.states, x)}
+                x = {key: value for (key, value) in zip(x0.keys(), x)}
+                R_err = model.parameters['measurement_noise'].copy()
+                model.parameters['measurement_noise'] = dict.fromkeys(R_err, 0)
                 z = model.output(x)
-                return array(list(z.values()))
+                model.parameters['measurement_noise'] = R_err
+                return array(list(z.values())).ravel()
         else:
             def measure(x):
-                x = {key: value for (key, value) in zip(model.states, x)}
+                x = {key: value for (key, value) in zip(x0.keys(), x)}
                 z = measurement_eqn(x)
-                return array(list(z.values()))
+                return array(list(z.values())).ravel()
 
         if 'Q' not in self.parameters:
-            self.parameters['Q'] = diag([1.0e-1 for i in model.states])
+            self.parameters['Q'] = diag([1.0e-1 for i in x0.keys()])
         if 'R' not in self.parameters:
             # Size of what's being measured (not output) 
             # This is determined by running the measure function on the first state
@@ -64,14 +62,19 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(x0.keys(), x)}
-            x = model.next_state(x, self._input, dt)
-            return array(list(x.values()))
+            Q_err = model.parameters['process_noise'].copy()
+            model.parameters['process_noise'] = dict.fromkeys(Q_err, 0)
+            z = model.output(x)
+            model.parameters['process_noise'] = Q_err
+            x = model.next_state(x, self.__input, dt)
+            return array(list(x.values())).ravel()
 
-        num_states = len(model.states)
+        num_states = len(x0.keys())
         num_measurements = len(model.outputs)
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measure, state_transition, points)
-        self.filter.x = array(list(x0.values()))
+        self.filter.x = array(list(x0.values())).ravel()
+        self.filter.P = self.parameters['Q'] / 10
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
 
@@ -91,8 +94,9 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
             Measured outputs, with keys defined by model.outputs.
             e.g., z = {'t':12.4, 'v':3.3} given inputs = ['t', 'v']
         """
+        assert t > self.t, "New time must be greater than previous"
         dt = t - self.t
-        self._input = u
+        self.__input = u
         self.t = t
         self.filter.predict(dt=dt)
         self.filter.update(array(list(z.values())))
@@ -106,4 +110,4 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         -------
         state = observer.x
         """
-        return MultivariateNormalDist(self.model.states, self.filter.x, self.filter.Q)
+        return MultivariateNormalDist(self.x0.keys(), self.filter.x, self.filter.P)

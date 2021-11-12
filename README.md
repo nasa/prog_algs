@@ -1,6 +1,12 @@
 # Prognostics Algorithm Python Package
+[![CodeFactor](https://www.codefactor.io/repository/github/nasa/prog_algs/badge)](https://www.codefactor.io/repository/github/nasa/prog_algs)
+[![GitHub License](https://img.shields.io/badge/License-NOSA-green)](https://github.com/nasa/prog_algs/blob/master/license.pdf)
+[![GitHub Releases](https://img.shields.io/github/release/nasa/prog_algs.svg)](https://github.com/nasa/prog_algs/releases)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/nasa/prog_algs/HEAD?tutorial.ipynb)
 
 The Prognostic Algorithm Package is a python framework for model-based prognostics (computation of remaining useful life) of engineering systems, and provides a set of algorithms for state estimation and prediction, including uncertainty propagation. The algorithms take as inputs prognostic models (from NASA's Prognostics Model Package), and perform estimation and prediction functions. The library allows the rapid development of prognostics solutions for given models of components and systems. Different algorithms can be easily swapped to do comparative studies and evaluations of different algorithms to select the best for the application at hand.
+
+This is designed to be used with the [Prognostics Models Package](https://github.com/nasa/prog_models).
 
 ## Installation
 `pip3 install prog_algs`
@@ -10,33 +16,35 @@ See documentation [here](https://nasa.github.io/prog_algs/)
 
 ## Repository Directory Structure 
 
-`prog_algs/` - The prognostics algorithm python package<br />
+`src/prog_algs/` - The prognostics algorithm python package<br />
+&nbsp;&nbsp; |- `metrics/` - Tools for analyzing the results of state estimation and prognostics
 &nbsp;&nbsp; |- `predictors/` - Algorithms for performing the prediction step of model-based prognostics<br />
-&nbsp;&nbsp; |- `samplers/` - Standard tools for performing state sampling<br />
 &nbsp;&nbsp; |- `state_estimators/` - Algorithms for performing the state estimation step of model-based prognostics<br />
-`benchmarking_example` - An example using metrics for benchmarking<br />
-`example.py` - An example python script using prog_algs<br />
+&nbsp;&nbsp; |- `uncertain_data/` - Tools for storing and manipulating data with uncertainty<br />
+&nbsp;&nbsp; |- `visualize/` - Tools for visualizing the results of state estimation and prognostics<br />
+`docs/` - Project documentation (see also [github.io](https://nasa.github.io/prog_algs/))<br />
+`sphinx_config/` - Configuration for automatic documentation generation<br />
+`examples/` - Example Python scripts using prog_algs<br />
+`tests/` - Tests for prog_models<br />
 `README.md` - The readme (this file)<br />
-`requirements.txt` - python library dependiencies required to be met to use this package. Install using `pip install -r requirements.txt`<br />
-`tutorial.ipynb` - Tutorial (Juypter Notebook)
 
 ## Citing this repository
 Use the following to cite this repository:
 
 ```
-@misc{2020_nasa_prog_algs,
+@misc{2021_nasa_prog_algs,
     author    = {Christopher Teubert and Matteo Corbetta and Chetan Kulkarni},
     title     = {Prognostics Algorithm Python Package},
-    month     = Apr,
+    month     = Nov,
     year      = 2021,
-    version   = {0.3.0},
+    version   = {1.2.0},
     url       = {https://github.com/nasa/prog_algs}
     }
 ```
 
 The corresponding reference should look like this:
 
-C. Teubert, M. Corbetta, C. Kulkarni, Prognostics Algorithm Python Package, v0.3.0, Apr. 2021. URL https://github.com/nasa/prog_algs.
+C. Teubert, M. Corbetta, C. Kulkarni, Prognostics Algorithm Python Package, v1.2.0, Nov. 2021. URL https://github.com/nasa/prog_algs.
 
 ## Acknowledgements
 The structure and algorithms of this package are strongly inspired by the [MATLAB Prognostics Algorithm Library](https://github.com/nasa/PrognosticsAlgorithmLibrary) and the [MATLAB Prognostics Metrics Library](https://github.com/nasa/PrognosticsMetricsLibrary). We would like to recognize Matthew Daigle, Shankar Sankararaman and the rest of the team that contributed to the Prognostics Model Library for the contributions their work on the MATLAB library made to the design of prog_algs

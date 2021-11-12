@@ -1,8 +1,12 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from prog_algs import predictors
+from copy import deepcopy
+from prog_algs.predictors import Predictor, Prediction
+# Replace the following with whatever form of UncertainData you would like to use to represent ToE 
+from prog_algs.uncertain_data import ScalarData
 
-class TemplatePredictor(predictors.Predictor):
+
+class TemplatePredictor(Predictor):
     """
     Template class for performing model-based prediction
     """
@@ -14,7 +18,7 @@ class TemplatePredictor(predictors.Predictor):
 
     def __init__(self, model, **kwargs):
         """
-        Constructor
+        Constructor (optional)
         """
         super().__init__(model, **kwargs)
         # ADD PARAMETER CHECKS HERE
@@ -22,48 +26,50 @@ class TemplatePredictor(predictors.Predictor):
 
         # INITIALIZE PREDICTOR
 
-    def predict(self, state_samples, future_loading_eqn, options = {}):
+    def predict(self, state, future_loading_eqn, **kwargs):
         """
         Perform a single prediction
 
         Parameters
         ----------
-        state_samples : 
-            Function to generate n samples of the state. 
-            e.g., def f(n): return [x1, x2, x3, ... xn]
-        future_loading_eqn : function (t) -> z
-            Function to generate an estimate of loading at future time t
+        state : UncertainData
+            Estimate of the state at the time of prediction, reprecented by UncertainData
+        future_loading_eqn : function (t, x) -> z
+            Function to generate an estimate of loading at future time t and state z
         options : dict, optional
             Dictionary of any additional configuration values. See default parameters, above
 
         Returns (tuple)
         -------
-        times: [[number]]
-            Times for each simulated point in format times[sample_id][index]
-        inputs: [[dict]]
-            Future input (from future_loading_eqn) for each sample and time in times
-            where inputs[sample_id][index] corresponds to time times[sample_id][index]
-        states: [[dict]]
-            Estimated states for each sample and time in times
-            where states[sample_id][index] corresponds to time times[sample_id][index]
-        outputs: [[dict]]
-            Estimated outputs for each sample and time in times
-            where outputs[sample_id][index] corresponds to time times[sample_id][index]
-        event_states: [[dict]]
-            Estimated event state (e.g., SOH), between 1-0 where 0 is event occurance, for each sample and time in times
-            where event_states[sample_id][index] corresponds to time times[sample_id][index]
-        toe: [number]
-            Estimated time where a predicted event will occur for each sample.
+        times : List[float]
+            Times for each savepoint such that inputs.snapshot(i), states.snapshot(i), outputs.snapshot(i), and event_states.snapshot(i) are all at times[i]            
+        inputs : Prediction
+            Inputs at each savepoint such that inputs.snapshot(i) is the input distribution (type UncertainData) at times[i]
+        states : Prediction
+            States at each savepoint such that states.snapshot(i) is the state distribution (type UncertainData) at times[i]
+        outputs : Prediction
+            Outputs at each savepoint such that outputs.snapshot(i) is the output distribution (type UncertainData) at times[i]
+        event_states : Prediction
+            Event states at each savepoint such that event_states.snapshot(i) is the event state distribution (type UncertainData) at times[i]
+        time_of_event : UncertainData
+            Distribution of predicted Time of Event (ToE) for each predicted event, represented by some subclass of UncertaintData (e.g., MultivariateNormalDist)
         """
-        params = self.parameters # copy default parameters
-        params.update(options)
+        params = deepcopy(self.parameters)  # copy default parameters
+        params.update(kwargs)
 
         # PERFORM PREDICTION HERE, REPLACE THE FOLLOWING LISTS
-        times = [] # array of double (e.g., [0.0, 0.5, 1.0, ...])
-        inputs = [] # array of dict (e.g., [{'input 1': 1.2, ...}, ...])
-        states = [] # array of dict (e.g., [{'state 1': 1.2, ...}, ...])
-        outputs = [] # array of dict (e.g., [{'output 1': 1.2, ...}, ...])
-        event_states = [] # array of dict (e.g., [{'event_state 1': 1.2, ...}, ...])
-        time_of_event = [] # array of double, time for each event prediction
+
+        # Times of each savepoint (specified by savepts and save_freq)
+        times = []  # array of float (e.g., [0.0, 0.5, 1.0, ...])
+
+        # Inputs, State, Outputs, and Event States at each savepoint are stored by type Prediction
+        # Replace [] with estimates of the appropriate property in the form of a subclass of UncertainData (e.g, ScalarData)
+        inputs = Prediction(times, [])
+        states = Prediction(times, [])
+        outputs = Prediction(times, [])
+        event_states = Prediction(times, [])
+
+        # Time of event is represented by some type of UncertainData (e.g., MultivariateNormalDist)
+        time_of_event = ScalarData({'event1': 748, 'event2': 300})
 
         return (times, inputs, states, outputs, event_states, time_of_event)

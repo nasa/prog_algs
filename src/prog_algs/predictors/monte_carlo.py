@@ -1,104 +1,124 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from . import predictor
-from numpy import empty
-from ..exceptions import ProgAlgTypeError
+from .prediction import UnweightedSamplesPrediction
+from .predictor import Predictor
 from copy import deepcopy
 from functools import partial
+from prog_models.sim_result import SimResult, LazySimResult
+from prog_algs.uncertain_data import UnweightedSamples, UncertainData
 
-def prediction_fcn(x, model, params, loading):
+def prediction_fcn(x, model, params, events, loading):
     # This is the main prediction function for the multi-threading
+    events_remaining = deepcopy(events)
     first_output = model.output(x)
+    time_of_event = {}
+    last_state = {}
+    times = []
+    # inputs will be the same as states unless we explicitly deepcopy
+    inputs = SimResult()
+    states = SimResult()
+    outputs = LazySimResult(fcn = model.output)
+    event_states = LazySimResult(fcn = model.event_state)
     params['x'] = x
-    (times, inputs, states, outputs, event_states) = model.simulate_to_threshold(loading, first_output, **params)
-    if (model.threshold_met(states[-1])):
-        time_of_event = times[-1]
-    else:
-        time_of_event = None
-    return (times, inputs, states, outputs, event_states, time_of_event)
+    params['t'] = 0
+    while len(events_remaining) > 0:  # Still events to predict
+        (t, u, xi, z, es) = model.simulate_to_threshold(loading, first_output, **params, threshold_keys=events_remaining, print=False)
+
+        # Add results
+        times.extend(t)
+        inputs.extend(u)
+        states.extend(xi)
+        outputs.extend(z)
+        event_states.extend(es)
+
+        # Get which event occurs
+        t_met = model.threshold_met(states[-1])
+        t_met = {key: t_met[key] for key in events_remaining}  # Only look at remaining keys
+        try:
+            event = list(t_met.keys())[list(t_met.values()).index(True)]
+        except ValueError:
+            # no event has occured
+            for event in events_remaining:
+                time_of_event[event] = None
+            break
+
+        # An event has occured
+        time_of_event[event] = times[-1]
+        events_remaining.remove(event)  # No longer an event to predect to
+
+        # Remove last state (event)
+        params['t0'] = times.pop()
+        inputs.pop()
+        params['x'] = states.pop()
+        last_state[event] = deepcopy(params['x'])
+        outputs.pop()
+        event_states.pop()
+        
+    return (times, inputs, states, outputs, event_states, time_of_event, last_state)
 
 
-class MonteCarlo(predictor.Predictor):
+class MonteCarlo(Predictor):
     """
-    Class for performing model-based prediction using sampling. 
+    Class for performing a monte-carlo model-based prediction.
 
-    This class defines logic for performing model-based state prediction using sampling methods. A Predictor is constructed using a PrognosticsModel object, (See Prognostics Model Package). The states are simulated until either a specified time horizon is met, or the threshold is reached for all samples, as defined by the threshold equation. A provided future loading equation is used to compute the inputs to the system at any given time point. 
+    A Predictor using the monte carlo algorithm. The provided initial states are simulated until either a specified time horizon is met, or the threshold for all simulated events is reached for all samples. A provided future loading equation is used to compute the inputs to the system at any given time point. 
 
-    Parameters
-    ----------
-    * model : prog_models.prognostics_model.PrognosticsModel\n
-        See: Prognostics Model Package\n
-        A prognostics model to be used in prediction
-    * options (optional, kwargs): configuration options\n
-        Any additional configuration values. See default parameters. Additionally, the following configuration parameters are supported: \n
-        * dt : Step size (s)
-        * horizon : Prediction horizon (s)
-        * save_freq : Frequency at which results are saved (s)
-        * save_pts : Any additional savepoints (s) e.g., [10.1, 22.5]
-        * cores : Number of cores to use in multithreading
+    The following configuration parameters are supported (as kwargs in constructor or as parameters in predict method):
+    
+    Configuration Parameters
+    ------------------------------
+    dt : float
+        Simulation step size (s), e.g., 0.1
+    events : List[string]
+        Events to predict (subset of model.events) e.g., ['event1', 'event2']
+    horizon : float
+        Prediction horizon (s)
+    n_samples : int
+        Number of samples to use. If not specified, a default value is used. If state is type UnweightedSamples and n_samples is not provided, the provided unweighted samples will be used directly.
+    save_freq : float
+        Frequency at which results are saved (s)
+    save_pts : List[float]
+        Any additional savepoints (s) e.g., [10.1, 22.5]
     """
-    default_parameters = { # Default Parameters
-        'dt': 0.5,          # Timestep, seconds
-        'horizon': 4000,    # Prediction horizon, seconds
-        'save_freq': 10,    # Frequency at which results are saved
-        'cores': 6          # Number of cores to use in parallelization
-    }
+    DEFAULT_N_SAMPLES = 100  # Default number of samples to use, if none specified
 
-    def predict(self, state_samples, future_loading_eqn, **kwargs):
-        """
-        Perform a single prediction
-
-        Parameters
-        ----------
-        state_samples : collection of samples for the MonteCarlo
-            Function to generate n samples of the state. 
-            e.g., def f(n): return [x1, x2, x3, ... xn]
-        future_loading_eqn : function (t, x={}) -> z
-            Function to generate an estimate of loading at future time t
-        config : keyword arguments, optional
-            Any additional configuration values. See default parameters
-
-        Returns (tuple)
-        -------
-        times: [[number]]
-            Times for each simulated point in format times[sample_id][index]
-        inputs: [[dict]]
-            Future input (from future_loading_eqn) for each sample and time in times
-            where inputs[sample_id][index] corresponds to time times[sample_id][index]
-        states: [[dict]]
-            Estimated states for each sample and time in times
-            where states[sample_id][index] corresponds to time times[sample_id][index]
-        outputs: [[dict]]
-            Estimated outputs for each sample and time in times
-            where outputs[sample_id][index] corresponds to time times[sample_id][index]
-        event_states: [[dict]]
-            Estimated event state (e.g., SOH), between 1-0 where 0 is event occurance, for each sample and time in times
-            where event_states[sample_id][index] corresponds to time times[sample_id][index]
-        toe: [number]
-            Estimated time where a predicted event will occur for each sample.
-        """
+    def predict(self, state : UncertainData, future_loading_eqn, **kwargs):
         params = deepcopy(self.parameters) # copy parameters
         params.update(kwargs) # update for specific run
 
-        times_all = empty(state_samples.size, dtype=object)
-        inputs_all = empty(state_samples.size, dtype=object)
-        states_all = empty(state_samples.size, dtype=object)
-        outputs_all = empty(state_samples.size, dtype=object)
-        event_states_all = empty(state_samples.size, dtype=object)
-        time_of_event = empty(state_samples.size)
+        # Sample from state if n_samples specified or state is not UnweightedSamples
+        if 'n_samples' in params:
+            # If n_samples is specified, sample
+            state = state.sample(params['n_samples'])
+        elif not isinstance(state, UnweightedSamples):
+            # If no n_samples specified, but state is not UnweightedSamples, then sample with default
+            state = state.sample(self.DEFAULT_N_SAMPLES)
 
         # Perform prediction
         pred_fcn = partial(
             prediction_fcn, 
             model = self.model, 
             params = params,
+            events = params['events'],
             loading = future_loading_eqn)
         
-        result = [pred_fcn(sample) for sample in state_samples]
-        times_all = [tmp[0] for tmp in result]
-        inputs_all = [tmp[1] for tmp in result]
-        states_all = [tmp[2] for tmp in result]
-        outputs_all = [tmp[3] for tmp in result]
-        event_states_all = [tmp[4] for tmp in result]
-        time_of_event = [tmp[5] for tmp in result]
-        return (times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event)
+        result = [pred_fcn(sample) for sample in state]
+        times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event, last_states = map(list, zip(*result))
+        
+        # Return longest time array
+        times_length = [len(t) for t in times_all]
+        times_max_len = max(times_length)
+        times = times_all[times_length.index(times_max_len)] 
+        
+        inputs_all = UnweightedSamplesPrediction(times, inputs_all)
+        states_all = UnweightedSamplesPrediction(times, states_all)
+        outputs_all = UnweightedSamplesPrediction(times, outputs_all)
+        event_states_all = UnweightedSamplesPrediction(times, event_states_all)
+        time_of_event = UnweightedSamples(time_of_event)
+
+        # Transform final states:
+        last_states = {
+            key: UnweightedSamples([sample[key] for sample in last_states]) for key in time_of_event.keys()
+        }
+        time_of_event.final_state = last_states
+        return (times, inputs_all, states_all, outputs_all, event_states_all, time_of_event)

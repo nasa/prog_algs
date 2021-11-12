@@ -105,7 +105,7 @@ New State Estimators and Predictors are created by extending the :class:`prog_al
 
 See :download:`examples.new_state_estimator_example <../examples/new_state_estimator_example.py>` for an example of this approach.
 
-Updates in v1.1
+Updates in v1.2
 ---------------
 
 Note for existing users

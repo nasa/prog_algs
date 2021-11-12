@@ -1,6 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from .prediction import MultivariateNormalDistPrediction, UnweightedSamplesPrediction
+from .prediction import Prediction, UnweightedSamplesPrediction
 from .predictor import Predictor
 from numpy import diag, array, transpose
 from copy import deepcopy
@@ -9,7 +9,7 @@ from filterpy import kalman
 from prog_algs.uncertain_data import MultivariateNormalDist
 
 
-class LazyMultivariateNormalDistPrediction(MultivariateNormalDistPrediction):
+class LazyUTPrediction(Prediction):
     def __init__(self, state_prediction, sigma_fcn, ut_fcn, transform_fcn):
         self.times = state_prediction.times
         self.__states = state_prediction
@@ -78,15 +78,15 @@ class UnscentedTransformPredictor(Predictor):
     ----    
     The resulting sigma-points along the time dimension are used to compute mean and covariance of the event time (ToE), under the hypothesis that the ToE distribution would also be well represented by a Gaussian. This is a strong assumption that likely cannot be satisfied for real systems with strong non-linear state propagation or nonlinear ToE curves. Therefore, the user should be cautious and verify that modeling the event time using a Gaussian distribution is satisfactory.
     """
-    default_parameters = {  # Default Parameters
-        'alpha': 1,         # UKF scaling param
-        'beta': 0,          # UKF scaling param
-        'kappa': -1,        # UKF scaling param
-        't': 0,             # Starting Time (s)
-        'dt': 0.5,          # Timestep (s)
-        'horizon': 1e99,    # Prediction horizon (s)
-        'save_pts': [],     # Save points during prediction (s)
-        'save_freq': 1e99   # Frequency at which states are saved (s)
+    default_parameters = {
+        'alpha': 1,
+        'beta': 0,
+        'kappa': -1,
+        't0': 0,
+        'dt': 0.5,
+        'horizon': 1e99,
+        'save_pts': [],
+        'save_freq': 1e99
     }
 
     def __init__(self, model, **kwargs):
@@ -133,7 +133,7 @@ class UnscentedTransformPredictor(Predictor):
         options (optional, kwargs): configuration options\n
         Any additional configuration values. Note: These parameters can also be specified in the predictor constructor. The following configuration parameters are supported: \n
             * alpha, beta, kappa: UKF Scaling parameters
-            * t: Starting time (s)
+            * t0: Starting time (s)
             * dt : Step size (s)
             * horizon : Prediction horizon (s)
             * events : List of events to be predicted (subset of model.events, default is all events)
@@ -177,7 +177,7 @@ class UnscentedTransformPredictor(Predictor):
         filt.P = state.cov
 
         # Setup first states
-        t = params['t']
+        t = params['t0']
         save_pt_index = 0
         ToE = {key: [float('nan') for i in range(n_points)] for key in events_to_predict}  # Keep track of final ToE values
         last_state = {key: [float('nan') for i in range(n_points)] for key in events_to_predict}  # Keep track of final state values
@@ -250,9 +250,9 @@ class UnscentedTransformPredictor(Predictor):
 
         # At this point only time of event, inputs, and state are calculated 
         inputs_prediction = UnweightedSamplesPrediction(times, [inputs])
-        state_prediction = MultivariateNormalDistPrediction(times, states)
-        output_prediction = LazyMultivariateNormalDistPrediction(state_prediction, sigma_points, kalman.unscented_transform, model.output)
-        event_state_prediction = LazyMultivariateNormalDistPrediction(state_prediction, sigma_points, kalman.unscented_transform, model.event_state)
+        state_prediction = Prediction(times, states)
+        output_prediction = LazyUTPrediction(state_prediction, sigma_points, kalman.unscented_transform, model.output)
+        event_state_prediction = LazyUTPrediction(state_prediction, sigma_points, kalman.unscented_transform, model.event_state)
         time_of_event = MultivariateNormalDist(ToE.keys(), mean, cov)
         time_of_event.final_state = final_state
         return (times, inputs_prediction, state_prediction, output_prediction, event_state_prediction, time_of_event)  

@@ -22,6 +22,7 @@ If you are new to this package, see `getting started <getting_started.html>`__.
    exceptions
    ProgModels <https://nasa.github.io/prog_models>
    dev_guide
+   GitHub <https://github.com/nasa/prog_algs>
 
 Citing this repository
 -----------------------
@@ -32,13 +33,13 @@ Use the following to cite this repository:
   | title     = {Prognostics Algorithms Python Package},
   | month     = Aug,
   | year      = 2021,
-  | version   = {1.1.0},
+  | version   = {1.2.0},
   | url       = {https://github.com/nasa/prog_algs}
   | }
 
 The corresponding reference should look like this:
 
-C. Teubert, C. Kulkarni, M. Corbetta Prognostics Algorithms Python Package, v1.1.0, Aug. 2021. URL https://github.com/nasa/prog_algs.
+C. Teubert, C. Kulkarni, M. Corbetta Prognostics Algorithms Python Package, v1.2.0, Aug. 2021. URL https://github.com/nasa/prog_algs.
 
 Indices and tables
 -----------------------

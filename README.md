@@ -2,7 +2,7 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/nasa/prog_algs/badge)](https://www.codefactor.io/repository/github/nasa/prog_algs)
 [![GitHub License](https://img.shields.io/badge/License-NOSA-green)](https://github.com/nasa/prog_algs/blob/master/license.pdf)
 [![GitHub Releases](https://img.shields.io/github/release/nasa/prog_algs.svg)](https://github.com/nasa/prog_algs/releases)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/nasa/prog_algs/HEAD?tutorial.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/nasa/prog_algs/master?tutorial.ipynb)
 
 The Prognostic Algorithm Package is a python framework for model-based prognostics (computation of remaining useful life) of engineering systems, and provides a set of algorithms for state estimation and prediction, including uncertainty propagation. The algorithms take as inputs prognostic models (from NASA's Prognostics Model Package), and perform estimation and prediction functions. The library allows the rapid development of prognostics solutions for given models of components and systems. Different algorithms can be easily swapped to do comparative studies and evaluations of different algorithms to select the best for the application at hand.
 
@@ -37,14 +37,14 @@ Use the following to cite this repository:
     title     = {Prognostics Algorithm Python Package},
     month     = Nov,
     year      = 2021,
-    version   = {1.1.0},
+    version   = {1.2.0},
     url       = {https://github.com/nasa/prog_algs}
     }
 ```
 
 The corresponding reference should look like this:
 
-C. Teubert, M. Corbetta, C. Kulkarni, Prognostics Algorithm Python Package, v1.1.0, Nov. 2021. URL https://github.com/nasa/prog_algs.
+C. Teubert, M. Corbetta, C. Kulkarni, Prognostics Algorithm Python Package, v1.2.0, Nov. 2021. URL https://github.com/nasa/prog_algs.
 
 ## Acknowledgements
 The structure and algorithms of this package are strongly inspired by the [MATLAB Prognostics Algorithm Library](https://github.com/nasa/PrognosticsAlgorithmLibrary) and the [MATLAB Prognostics Metrics Library](https://github.com/nasa/PrognosticsMetricsLibrary). We would like to recognize Matthew Daigle, Shankar Sankararaman and the rest of the team that contributed to the Prognostics Model Library for the contributions their work on the MATLAB library made to the design of prog_algs

@@ -103,9 +103,9 @@ class UncertainData(ABC):
             Figure
 
         Example:
-            states = UnweightedSamples([1, 2, 3, 4, 5])
-            states.plot_scatter() # With 100 samples
-            states.plot_scatter(num_samples=5) # Specifying the number of samples to plot
+            states = UnweightedSamples([1, 2, 3, 4, 5])\n
+            states.plot_scatter() # With 100 samples\n
+            states.plot_scatter(num_samples=5) # Specifying the number of samples to plot\n
             states.plot_scatter(keys=['state1', 'state2']) # only plot those keys
         """
         if keys is None:

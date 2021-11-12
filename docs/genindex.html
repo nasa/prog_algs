@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; Prognostics Algorithms Python Package 1.1.0 documentation</title>
+    <title>Index &#8212; Prognostics Algorithms Python Package 1.2.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -37,14 +37,15 @@
  <a href="#A"><strong>A</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#E"><strong>E</strong></a>
+ | <a href="#G"><strong>G</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#K"><strong>K</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#P"><strong>P</strong></a>
- | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
  | <a href="#X"><strong>X</strong></a>
  
@@ -52,11 +53,11 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="metrics.html#prog_algs.metrics.samples.alpha_lambda">alpha_lambda() (in module prog_algs.metrics.samples)</a>
+      <li><a href="prediction.html#prog_algs.predictors.ToEPredictionProfile.add_prediction">add_prediction() (prog_algs.predictors.ToEPredictionProfile method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="uncertain_data.html#prog_algs.uncertain_data.UnweightedSamples.append">append() (prog_algs.uncertain_data.UnweightedSamples method)</a>
+      <li><a href="prediction.html#prog_algs.predictors.ToEPredictionProfile.alpha_lambda">alpha_lambda() (prog_algs.predictors.ToEPredictionProfile method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -64,36 +65,22 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="uncertain_data.html#prog_algs.uncertain_data.UnweightedSamples.clear">clear() (prog_algs.uncertain_data.UnweightedSamples method)</a>
+      <li><a href="prediction.html#prog_algs.predictors.ToEPredictionProfile.clear">clear() (prog_algs.predictors.ToEPredictionProfile method)</a>
 </li>
-      <li><a href="uncertain_data.html#prog_algs.uncertain_data.UnweightedSamples.count">count() (prog_algs.uncertain_data.UnweightedSamples method)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="prediction.html#prog_algs.predictors.UnweightedSamplesPrediction.count">count() (prog_algs.predictors.UnweightedSamplesPrediction method)</a>
 </li>
-      <li><a href="uncertain_data.html#prog_algs.uncertain_data.MultivariateNormalDist.cov">cov (prog_algs.uncertain_data.MultivariateNormalDist property)</a>
-
-      <ul>
-        <li><a href="uncertain_data.html#prog_algs.uncertain_data.ScalarData.cov">(prog_algs.uncertain_data.ScalarData property)</a>
+      <li><a href="uncertain_data.html#prog_algs.uncertain_data.UncertainData.cov">cov (prog_algs.uncertain_data.UncertainData property)</a>
 </li>
-        <li><a href="uncertain_data.html#prog_algs.uncertain_data.UncertainData.cov">(prog_algs.uncertain_data.UncertainData property)</a>
-</li>
-        <li><a href="uncertain_data.html#prog_algs.uncertain_data.UnweightedSamples.cov">(prog_algs.uncertain_data.UnweightedSamples property)</a>
-</li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="metrics.html#prog_algs.metrics.samples.eol_metrics">eol_metrics() (in module prog_algs.metrics.samples)</a>
+      <li><a href="state_estimators.html#prog_algs.state_estimators.StateEstimator.estimate">estimate() (prog_algs.state_estimators.StateEstimator method)</a>
 </li>
-      <li><a href="state_estimators.html#prog_algs.state_estimators.particle_filter.ParticleFilter.estimate">estimate() (prog_algs.state_estimators.particle_filter.ParticleFilter method)</a>
-
-      <ul>
-        <li><a href="state_estimators.html#prog_algs.state_estimators.state_estimator.StateEstimator.estimate">(prog_algs.state_estimators.state_estimator.StateEstimator method)</a>
-</li>
-        <li><a href="state_estimators.html#prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter.estimate">(prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter method)</a>
-</li>
-      </ul></li>
       <li>
     examples.basic_example
 
@@ -108,8 +95,13 @@
         <li><a href="getting_started.html#module-examples.benchmarking_example">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    examples.eol_event
+
+      <ul>
+        <li><a href="getting_started.html#module-examples.eol_event">module</a>
+</li>
+      </ul></li>
       <li>
     examples.measurement_eqn_example
 
@@ -124,6 +116,15 @@
         <li><a href="getting_started.html#module-examples.new_state_estimator_example">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    examples.particle_filter_battery_example
+
+      <ul>
+        <li><a href="getting_started.html#module-examples.particle_filter_battery_example">module</a>
+</li>
+      </ul></li>
       <li>
     examples.playback
 
@@ -131,7 +132,34 @@
         <li><a href="getting_started.html#module-examples.playback">module</a>
 </li>
       </ul></li>
-      <li><a href="uncertain_data.html#prog_algs.uncertain_data.UnweightedSamples.extend">extend() (prog_algs.uncertain_data.UnweightedSamples method)</a>
+      <li>
+    examples.predict_specific_event
+
+      <ul>
+        <li><a href="getting_started.html#module-examples.predict_specific_event">module</a>
+</li>
+      </ul></li>
+      <li>
+    examples.thrown_object_example
+
+      <ul>
+        <li><a href="getting_started.html#module-examples.thrown_object_example">module</a>
+</li>
+      </ul></li>
+      <li>
+    examples.utpredictor
+
+      <ul>
+        <li><a href="getting_started.html#module-examples.utpredictor">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="prediction.html#prog_algs.predictors.ToEPredictionProfile.get">get() (prog_algs.predictors.ToEPredictionProfile method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -139,11 +167,11 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="uncertain_data.html#prog_algs.uncertain_data.UnweightedSamples.index">index() (prog_algs.uncertain_data.UnweightedSamples method)</a>
+      <li><a href="prediction.html#prog_algs.predictors.UnweightedSamplesPrediction.index">index() (prog_algs.predictors.UnweightedSamplesPrediction method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="uncertain_data.html#prog_algs.uncertain_data.UnweightedSamples.insert">insert() (prog_algs.uncertain_data.UnweightedSamples method)</a>
+      <li><a href="prediction.html#prog_algs.predictors.ToEPredictionProfile.items">items() (prog_algs.predictors.ToEPredictionProfile method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -153,14 +181,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="uncertain_data.html#prog_algs.uncertain_data.UnweightedSamples.key">key() (prog_algs.uncertain_data.UnweightedSamples method)</a>
 </li>
-      <li><a href="uncertain_data.html#prog_algs.uncertain_data.MultivariateNormalDist.keys">keys() (prog_algs.uncertain_data.MultivariateNormalDist method)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="prediction.html#prog_algs.predictors.ToEPredictionProfile.keys">keys() (prog_algs.predictors.ToEPredictionProfile method)</a>
 
       <ul>
-        <li><a href="uncertain_data.html#prog_algs.uncertain_data.ScalarData.keys">(prog_algs.uncertain_data.ScalarData method)</a>
-</li>
         <li><a href="uncertain_data.html#prog_algs.uncertain_data.UncertainData.keys">(prog_algs.uncertain_data.UncertainData method)</a>
-</li>
-        <li><a href="uncertain_data.html#prog_algs.uncertain_data.UnweightedSamples.keys">(prog_algs.uncertain_data.UnweightedSamples method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -169,30 +195,18 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="uncertain_data.html#prog_algs.uncertain_data.MultivariateNormalDist.mean">mean (prog_algs.uncertain_data.MultivariateNormalDist property)</a>
+      <li><a href="prediction.html#prog_algs.predictors.Prediction.mean">mean (prog_algs.predictors.Prediction property)</a>
 
       <ul>
-        <li><a href="uncertain_data.html#prog_algs.uncertain_data.ScalarData.mean">(prog_algs.uncertain_data.ScalarData property)</a>
+        <li><a href="prediction.html#prog_algs.predictors.UnweightedSamplesPrediction.mean">(prog_algs.predictors.UnweightedSamplesPrediction property)</a>
 </li>
         <li><a href="uncertain_data.html#prog_algs.uncertain_data.UncertainData.mean">(prog_algs.uncertain_data.UncertainData property)</a>
 </li>
-        <li><a href="uncertain_data.html#prog_algs.uncertain_data.UnweightedSamples.mean">(prog_algs.uncertain_data.UnweightedSamples property)</a>
-</li>
       </ul></li>
-      <li><a href="metrics.html#prog_algs.metrics.samples.mean_square_error">mean_square_error() (in module prog_algs.metrics.samples)</a>
+      <li><a href="uncertain_data.html#prog_algs.uncertain_data.UncertainData.median">median (prog_algs.uncertain_data.UncertainData property)</a>
 </li>
-      <li><a href="uncertain_data.html#prog_algs.uncertain_data.MultivariateNormalDist.median">median (prog_algs.uncertain_data.MultivariateNormalDist property)</a>
-
-      <ul>
-        <li><a href="uncertain_data.html#prog_algs.uncertain_data.ScalarData.median">(prog_algs.uncertain_data.ScalarData property)</a>
+      <li><a href="uncertain_data.html#prog_algs.uncertain_data.UncertainData.metrics">metrics() (prog_algs.uncertain_data.UncertainData method)</a>
 </li>
-        <li><a href="uncertain_data.html#prog_algs.uncertain_data.UncertainData.median">(prog_algs.uncertain_data.UncertainData property)</a>
-</li>
-        <li><a href="uncertain_data.html#prog_algs.uncertain_data.UnweightedSamples.median">(prog_algs.uncertain_data.UnweightedSamples property)</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     module
 
@@ -201,18 +215,28 @@
 </li>
         <li><a href="getting_started.html#module-examples.benchmarking_example">examples.benchmarking_example</a>
 </li>
+        <li><a href="getting_started.html#module-examples.eol_event">examples.eol_event</a>
+</li>
         <li><a href="getting_started.html#module-examples.measurement_eqn_example">examples.measurement_eqn_example</a>
 </li>
         <li><a href="getting_started.html#module-examples.new_state_estimator_example">examples.new_state_estimator_example</a>
 </li>
+        <li><a href="getting_started.html#module-examples.particle_filter_battery_example">examples.particle_filter_battery_example</a>
+</li>
         <li><a href="getting_started.html#module-examples.playback">examples.playback</a>
 </li>
-        <li><a href="metrics.html#module-prog_algs.metrics.samples">prog_algs.metrics.samples</a>
+        <li><a href="getting_started.html#module-examples.predict_specific_event">examples.predict_specific_event</a>
 </li>
-        <li><a href="visualize.html#module-prog_algs.visualize">prog_algs.visualize</a>
+        <li><a href="getting_started.html#module-examples.thrown_object_example">examples.thrown_object_example</a>
+</li>
+        <li><a href="getting_started.html#module-examples.utpredictor">examples.utpredictor</a>
+</li>
+        <li><a href="metrics.html#module-prog_algs.metrics">prog_algs.metrics</a>
 </li>
       </ul></li>
-      <li><a href="predictors.html#prog_algs.predictors.monte_carlo.MonteCarlo">MonteCarlo (class in prog_algs.predictors.monte_carlo)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="predictors.html#prog_algs.predictors.MonteCarlo">MonteCarlo (class in prog_algs.predictors)</a>
 </li>
       <li><a href="uncertain_data.html#prog_algs.uncertain_data.MultivariateNormalDist">MultivariateNormalDist (class in prog_algs.uncertain_data)</a>
 </li>
@@ -222,48 +246,33 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="state_estimators.html#prog_algs.state_estimators.particle_filter.ParticleFilter">ParticleFilter (class in prog_algs.state_estimators.particle_filter)</a>
+      <li><a href="state_estimators.html#prog_algs.state_estimators.ParticleFilter">ParticleFilter (class in prog_algs.state_estimators)</a>
 </li>
-      <li><a href="metrics.html#prog_algs.metrics.samples.percentage_in_bounds">percentage_in_bounds() (in module prog_algs.metrics.samples)</a>
+      <li><a href="uncertain_data.html#prog_algs.uncertain_data.UncertainData.percentage_in_bounds">percentage_in_bounds() (prog_algs.uncertain_data.UncertainData method)</a>
 </li>
-      <li><a href="visualize.html#prog_algs.visualize.plot_scatter">plot_scatter() (in module prog_algs.visualize)</a>
-
-      <ul>
-        <li><a href="uncertain_data.html#prog_algs.uncertain_data.MultivariateNormalDist.plot_scatter">(prog_algs.uncertain_data.MultivariateNormalDist method)</a>
+      <li><a href="uncertain_data.html#prog_algs.uncertain_data.UncertainData.plot_hist">plot_hist() (prog_algs.uncertain_data.UncertainData method)</a>
 </li>
-        <li><a href="uncertain_data.html#prog_algs.uncertain_data.ScalarData.plot_scatter">(prog_algs.uncertain_data.ScalarData method)</a>
+      <li><a href="uncertain_data.html#prog_algs.uncertain_data.UncertainData.plot_scatter">plot_scatter() (prog_algs.uncertain_data.UncertainData method)</a>
 </li>
-        <li><a href="uncertain_data.html#prog_algs.uncertain_data.UncertainData.plot_scatter">(prog_algs.uncertain_data.UncertainData method)</a>
+      <li><a href="prediction.html#prog_algs.predictors.ToEPredictionProfile.pop">pop() (prog_algs.predictors.ToEPredictionProfile method)</a>
 </li>
-        <li><a href="uncertain_data.html#prog_algs.uncertain_data.UnweightedSamples.plot_scatter">(prog_algs.uncertain_data.UnweightedSamples method)</a>
+      <li><a href="prediction.html#prog_algs.predictors.ToEPredictionProfile.popitem">popitem() (prog_algs.predictors.ToEPredictionProfile method)</a>
 </li>
-      </ul></li>
-      <li><a href="uncertain_data.html#prog_algs.uncertain_data.UnweightedSamples.pop">pop() (prog_algs.uncertain_data.UnweightedSamples method)</a>
+      <li><a href="predictors.html#prog_algs.predictors.Predictor.predict">predict() (prog_algs.predictors.Predictor method)</a>
 </li>
-      <li><a href="predictors.html#prog_algs.predictors.monte_carlo.MonteCarlo.predict">predict() (prog_algs.predictors.monte_carlo.MonteCarlo method)</a>
-
-      <ul>
-        <li><a href="predictors.html#prog_algs.predictors.predictor.Predictor.predict">(prog_algs.predictors.predictor.Predictor method)</a>
-</li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="predictors.html#prog_algs.predictors.predictor.Predictor">Predictor (class in prog_algs.predictors.predictor)</a>
+      <li><a href="prediction.html#prog_algs.predictors.Prediction">Prediction (class in prog_algs.predictors)</a>
 </li>
-      <li><a href="metrics.html#prog_algs.metrics.samples.prob_success">prob_success() (in module prog_algs.metrics.samples)</a>
+      <li><a href="predictors.html#prog_algs.predictors.Predictor">Predictor (class in prog_algs.predictors)</a>
+</li>
+      <li><a href="metrics.html#prog_algs.metrics.prob_success">prob_success() (in module prog_algs.metrics)</a>
 </li>
       <li>
-    prog_algs.metrics.samples
+    prog_algs.metrics
 
       <ul>
-        <li><a href="metrics.html#module-prog_algs.metrics.samples">module</a>
-</li>
-      </ul></li>
-      <li>
-    prog_algs.visualize
-
-      <ul>
-        <li><a href="visualize.html#module-prog_algs.visualize">module</a>
+        <li><a href="metrics.html#module-prog_algs.metrics">module</a>
 </li>
       </ul></li>
       <li><a href="exceptions.html#prog_algs.exceptions.ProgAlgException">ProgAlgException</a>
@@ -275,38 +284,24 @@
   </ul></td>
 </tr></table>
 
-<h2 id="R">R</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="uncertain_data.html#prog_algs.uncertain_data.UnweightedSamples.remove">remove() (prog_algs.uncertain_data.UnweightedSamples method)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="uncertain_data.html#prog_algs.uncertain_data.UnweightedSamples.reverse">reverse() (prog_algs.uncertain_data.UnweightedSamples method)</a>
-</li>
-  </ul></td>
-</tr></table>
-
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="uncertain_data.html#prog_algs.uncertain_data.MultivariateNormalDist.sample">sample() (prog_algs.uncertain_data.MultivariateNormalDist method)</a>
-
-      <ul>
-        <li><a href="uncertain_data.html#prog_algs.uncertain_data.ScalarData.sample">(prog_algs.uncertain_data.ScalarData method)</a>
+      <li><a href="uncertain_data.html#prog_algs.uncertain_data.UncertainData.sample">sample() (prog_algs.uncertain_data.UncertainData method)</a>
 </li>
-        <li><a href="uncertain_data.html#prog_algs.uncertain_data.UncertainData.sample">(prog_algs.uncertain_data.UncertainData method)</a>
-</li>
-        <li><a href="uncertain_data.html#prog_algs.uncertain_data.UnweightedSamples.sample">(prog_algs.uncertain_data.UnweightedSamples method)</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="uncertain_data.html#prog_algs.uncertain_data.ScalarData">ScalarData (class in prog_algs.uncertain_data)</a>
 </li>
-      <li><a href="uncertain_data.html#prog_algs.uncertain_data.UnweightedSamples.size">size (prog_algs.uncertain_data.UnweightedSamples property)</a>
+      <li><a href="prediction.html#prog_algs.predictors.ToEPredictionProfile.setdefault">setdefault() (prog_algs.predictors.ToEPredictionProfile method)</a>
 </li>
-      <li><a href="state_estimators.html#prog_algs.state_estimators.state_estimator.StateEstimator">StateEstimator (class in prog_algs.state_estimators.state_estimator)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="prediction.html#prog_algs.predictors.Prediction.snapshot">snapshot() (prog_algs.predictors.Prediction method)</a>
+
+      <ul>
+        <li><a href="prediction.html#prog_algs.predictors.UnweightedSamplesPrediction.snapshot">(prog_algs.predictors.UnweightedSamplesPrediction method)</a>
+</li>
+      </ul></li>
+      <li><a href="state_estimators.html#prog_algs.state_estimators.StateEstimator">StateEstimator (class in prog_algs.state_estimators)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -314,11 +309,7 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="metrics.html#prog_algs.metrics.samples.toe_metrics">toe_metrics() (in module prog_algs.metrics.samples)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="metrics.html#prog_algs.metrics.samples.toe_profile_metrics">toe_profile_metrics() (in module prog_algs.metrics.samples)</a>
+      <li><a href="prediction.html#prog_algs.predictors.ToEPredictionProfile">ToEPredictionProfile (class in prog_algs.predictors)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -328,11 +319,25 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="uncertain_data.html#prog_algs.uncertain_data.UncertainData">UncertainData (class in prog_algs.uncertain_data)</a>
 </li>
+      <li><a href="state_estimators.html#prog_algs.state_estimators.UnscentedKalmanFilter">UnscentedKalmanFilter (class in prog_algs.state_estimators)</a>
+</li>
+      <li><a href="predictors.html#prog_algs.predictors.UnscentedTransformPredictor">UnscentedTransformPredictor (class in prog_algs.predictors)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="state_estimators.html#prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter">UnscentedKalmanFilter (class in prog_algs.state_estimators.unscented_kalman_filter)</a>
-</li>
       <li><a href="uncertain_data.html#prog_algs.uncertain_data.UnweightedSamples">UnweightedSamples (class in prog_algs.uncertain_data)</a>
+</li>
+      <li><a href="prediction.html#prog_algs.predictors.UnweightedSamplesPrediction">UnweightedSamplesPrediction (class in prog_algs.predictors)</a>
+</li>
+      <li><a href="prediction.html#prog_algs.predictors.ToEPredictionProfile.update">update() (prog_algs.predictors.ToEPredictionProfile method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="prediction.html#prog_algs.predictors.ToEPredictionProfile.values">values() (prog_algs.predictors.ToEPredictionProfile method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -354,14 +359,8 @@
 <h2 id="X">X</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="state_estimators.html#prog_algs.state_estimators.particle_filter.ParticleFilter.x">x (prog_algs.state_estimators.particle_filter.ParticleFilter property)</a>
-
-      <ul>
-        <li><a href="state_estimators.html#prog_algs.state_estimators.state_estimator.StateEstimator.x">(prog_algs.state_estimators.state_estimator.StateEstimator property)</a>
+      <li><a href="state_estimators.html#prog_algs.state_estimators.StateEstimator.x">x (prog_algs.state_estimators.StateEstimator property)</a>
 </li>
-        <li><a href="state_estimators.html#prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter.x">(prog_algs.state_estimators.unscented_kalman_filter.UnscentedKalmanFilter property)</a>
-</li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -384,15 +383,17 @@
 
 <h3>Navigation</h3>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://mybinder.org/v2/gh/nasa/prog_algs/dev?labpath=tutorial.ipynb">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://mybinder.org/v2/gh/nasa/prog_algs/master?labpath=tutorial.ipynb">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="state_estimators.html">State Estimators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="predictors.html">Predictors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="uncertain_data.html">Uncertain Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="prediction.html">Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="visualize.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://nasa.github.io/prog_models">ProgModels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dev_guide.html">Developers Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/nasa/prog_algs">GitHub</a></li>
 </ul>
 
 <div class="relations">

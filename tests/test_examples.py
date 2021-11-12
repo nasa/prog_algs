@@ -32,6 +32,18 @@ class TestExamples(unittest.TestCase):
         # Reset stdout 
         sys.stdout = _stdout
 
+    def test_eol_ex(self):
+        # set stdout (so it wont print)
+        _stdout = sys.stdout
+        sys.stdout = StringIO()
+
+        from examples import eol_event
+        with patch('matplotlib.pyplot') as p:
+            eol_event.run_example()
+
+        # Reset stdout 
+        sys.stdout = _stdout
+
     def test_new_state_est_ex(self):
         # set stdout (so it wont print)
         _stdout = sys.stdout

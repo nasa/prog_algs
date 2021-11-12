@@ -5,7 +5,7 @@ from .predictor import Predictor
 from copy import deepcopy
 from functools import partial
 from prog_models.sim_result import SimResult, LazySimResult
-from prog_algs.uncertain_data import UnweightedSamples
+from prog_algs.uncertain_data import UnweightedSamples, UncertainData
 
 def prediction_fcn(x, model, params, events, loading):
     # This is the main prediction function for the multi-threading
@@ -13,7 +13,6 @@ def prediction_fcn(x, model, params, events, loading):
     first_output = model.output(x)
     time_of_event = {}
     last_state = {}
-    params['t'] = 0
     times = []
     # inputs will be the same as states unless we explicitly deepcopy
     inputs = SimResult()
@@ -21,6 +20,7 @@ def prediction_fcn(x, model, params, events, loading):
     outputs = LazySimResult(fcn = model.output)
     event_states = LazySimResult(fcn = model.event_state)
     params['x'] = x
+    params['t'] = 0
     while len(events_remaining) > 0:  # Still events to predict
         (t, u, xi, z, es) = model.simulate_to_threshold(loading, first_output, **params, threshold_keys=events_remaining, print=False)
 
@@ -47,7 +47,7 @@ def prediction_fcn(x, model, params, events, loading):
         events_remaining.remove(event)  # No longer an event to predect to
 
         # Remove last state (event)
-        params['t'] = times.pop()
+        params['t0'] = times.pop()
         inputs.pop()
         params['x'] = states.pop()
         last_state[event] = deepcopy(params['x'])
@@ -73,15 +73,26 @@ class MonteCarlo(Predictor):
         Events to predict (subset of model.events) e.g., ['event1', 'event2']
     horizon : float
         Prediction horizon (s)
+    n_samples : int
+        Number of samples to use. If not specified, a default value is used. If state is type UnweightedSamples and n_samples is not provided, the provided unweighted samples will be used directly.
     save_freq : float
         Frequency at which results are saved (s)
     save_pts : List[float]
         Any additional savepoints (s) e.g., [10.1, 22.5]
     """
+    DEFAULT_N_SAMPLES = 100  # Default number of samples to use, if none specified
 
-    def predict(self, state_samples, future_loading_eqn, **kwargs):
+    def predict(self, state : UncertainData, future_loading_eqn, **kwargs):
         params = deepcopy(self.parameters) # copy parameters
         params.update(kwargs) # update for specific run
+
+        # Sample from state if n_samples specified or state is not UnweightedSamples
+        if 'n_samples' in params:
+            # If n_samples is specified, sample
+            state = state.sample(params['n_samples'])
+        elif not isinstance(state, UnweightedSamples):
+            # If no n_samples specified, but state is not UnweightedSamples, then sample with default
+            state = state.sample(self.DEFAULT_N_SAMPLES)
 
         # Perform prediction
         pred_fcn = partial(
@@ -91,7 +102,7 @@ class MonteCarlo(Predictor):
             events = params['events'],
             loading = future_loading_eqn)
         
-        result = [pred_fcn(sample) for sample in state_samples]
+        result = [pred_fcn(sample) for sample in state]
         times_all, inputs_all, states_all, outputs_all, event_states_all, time_of_event, last_states = map(list, zip(*result))
         
         # Return longest time array

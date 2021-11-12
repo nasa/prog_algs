@@ -82,7 +82,7 @@ class UnscentedTransformPredictor(Predictor):
         'alpha': 1,
         'beta': 0,
         'kappa': -1,
-        't': 0,             # Starting Time (s)
+        't0': 0,
         'dt': 0.5,
         'horizon': 1e99,
         'save_pts': [],
@@ -133,7 +133,7 @@ class UnscentedTransformPredictor(Predictor):
         options (optional, kwargs): configuration options\n
         Any additional configuration values. Note: These parameters can also be specified in the predictor constructor. The following configuration parameters are supported: \n
             * alpha, beta, kappa: UKF Scaling parameters
-            * t: Starting time (s)
+            * t0: Starting time (s)
             * dt : Step size (s)
             * horizon : Prediction horizon (s)
             * events : List of events to be predicted (subset of model.events, default is all events)
@@ -177,7 +177,7 @@ class UnscentedTransformPredictor(Predictor):
         filt.P = state.cov
 
         # Setup first states
-        t = params['t']
+        t = params['t0']
         save_pt_index = 0
         ToE = {key: [float('nan') for i in range(n_points)] for key in events_to_predict}  # Keep track of final ToE values
         last_state = {key: [float('nan') for i in range(n_points)] for key in events_to_predict}  # Keep track of final state values

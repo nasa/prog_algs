@@ -47,7 +47,7 @@ def prediction_fcn(x, model, params, events, loading):
         events_remaining.remove(event)  # No longer an event to predect to
 
         # Remove last state (event)
-        params['t'] = times.pop()
+        params['t0'] = times.pop()
         inputs.pop()
         params['x'] = states.pop()
         last_state[event] = deepcopy(params['x'])

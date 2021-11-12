@@ -20,6 +20,7 @@ def prediction_fcn(x, model, params, events, loading):
     outputs = LazySimResult(fcn = model.output)
     event_states = LazySimResult(fcn = model.event_state)
     params['x'] = x
+    params['t'] = 0
     while len(events_remaining) > 0:  # Still events to predict
         (t, u, xi, z, es) = model.simulate_to_threshold(loading, first_output, **params, threshold_keys=events_remaining, print=False)
 
@@ -86,9 +87,9 @@ class MonteCarlo(Predictor):
         params.update(kwargs) # update for specific run
 
         # Sample from state if n_samples specified or state is not UnweightedSamples
-        if 'n_samples' in self.parameters:
+        if 'n_samples' in params:
             # If n_samples is specified, sample
-            state = state.sample(self.parameters['n_samples'])
+            state = state.sample(params['n_samples'])
         elif not isinstance(state, UnweightedSamples):
             # If no n_samples specified, but state is not UnweightedSamples, then sample with default
             state = state.sample(self.DEFAULT_N_SAMPLES)

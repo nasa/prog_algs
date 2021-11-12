@@ -6,3 +6,4 @@ The metrics module includes tools for calculating various metrics for prognostic
 .. automodule:: prog_algs.metrics
    :members:
    :inherited-members:
+   :exclude-members: calc_metrics, alpha_lambda

@@ -70,18 +70,15 @@ def run_example():
     #   there is new data. Here we're doing one step to demonstrate how the state estimator is used
 
     # Step 3: Demonstrating Predictor
-    print("\n\n\nPerforming Prediction Step")
+    print("\n\nPerforming Prediction Step")
 
     # Step 3a: Setup Predictor
     mc = predictors.MonteCarlo(batt)
 
     # Step 3b: Perform a prediction
-    NUM_SAMPLES = 100
-    # Sample from the latest state in the state estimator
-    # Note: This is only required for sample-based prediction algorithms
-    samples = filt.x.sample(NUM_SAMPLES)  
+    NUM_SAMPLES = 5
     STEP_SIZE = 0.1
-    (times, inputs, states, outputs, event_states, toe) = mc.predict(samples, future_loading, dt=STEP_SIZE)
+    (times, inputs, states, outputs, event_states, toe) = mc.predict(filt.x, future_loading, n_samples = NUM_SAMPLES, dt=STEP_SIZE)
     print('ToE', toe.mean)
 
     # Step 3c: Analyze the results

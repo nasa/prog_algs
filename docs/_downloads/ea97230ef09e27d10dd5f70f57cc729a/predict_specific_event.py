@@ -22,10 +22,10 @@ def run_example():
 
     ## Prediction - Predict EOD given current state
     # Setup prediction
-    mc = predictors.UnscentedTransformPredictor(m)
+    pred = predictors.UnscentedTransformPredictor(m)
 
     # Predict with a step size of 0.1
-    (times, inputs, states, outputs, event_states, toe) = mc.predict(filt.x, future_loading, dt=0.1, save_freq= 1, events=['impact'])
+    (times, inputs, states, outputs, event_states, toe) = pred.predict(filt.x, future_loading, dt=0.1, save_freq= 1, events=['impact'])
 
     # Print Results
     for i, time in enumerate(times):

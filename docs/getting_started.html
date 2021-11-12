@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Getting Started &#8212; Prognostics Algorithms Python Package 1.1.0 documentation</title>
+    <title>Getting Started &#8212; Prognostics Algorithms Python Package 1.2.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -153,6 +153,23 @@ Metrics are calculated and displayed for each run.</p>
 </ol>
 </dd>
 </dl>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt><a class="reference download internal" download="" href="_downloads/d8bf57631d1133f1784a65d1b777032f/eol_event.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.eol_event</span></code></a></dt><dd><span class="target" id="module-examples.eol_event"></span><p>This example demonstrates a use case where someone wants to predict the first event (i.e., EOL) of a system. Many system models have multiple events that can occur. In some prognostics applications, users are not interested in predicting a specific event, and are instead interested in when the first event occurs, regardless of the event. This example demonstrates how to predict the first event of a system.</p>
+<p>Method: An instance of ThrownObject is used for this example. In this case it is trivial because the event ‘falling’ will always occur before ‘impact’, but for some other models that might not be true. The ThrownObject class is subclassed to add a new event ‘EOL’ which occurs if any other event occurs. The new model is then instantiated and used for prognostics like in basic_example. Prediction specifically specifies EOL as the event to be predicted.
+Results:</p>
+<blockquote>
+<div><ol class="lowerroman simple">
+<li><p>Predicted future values (inputs, states, outputs, event_states) with uncertainty from prediction</p></li>
+<li><p>Time the event ‘EOL’ is predicted to occur (with uncertainty)</p></li>
+<li><p>Histogram of the event ‘EOL’</p></li>
+</ol>
+</div></blockquote>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>

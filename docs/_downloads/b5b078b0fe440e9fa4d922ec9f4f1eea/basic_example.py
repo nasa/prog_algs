@@ -76,7 +76,7 @@ def run_example():
     mc = predictors.MonteCarlo(batt)
 
     # Step 3b: Perform a prediction
-    NUM_SAMPLES = 5
+    NUM_SAMPLES = 100
     STEP_SIZE = 0.1
     (times, inputs, states, outputs, event_states, toe) = mc.predict(filt.x, future_loading, n_samples = NUM_SAMPLES, dt=STEP_SIZE)
     print('ToE', toe.mean)

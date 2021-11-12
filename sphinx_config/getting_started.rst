@@ -96,6 +96,8 @@ The best way to learn how to use `prog_algs` is through the `tutorial <https://m
 * :download:`examples.particle_filter_battery_example <../examples/particle_filter_battery_example.py>`
     .. automodule:: examples.particle_filter_battery_example
     |
+* :download:`tutorial <../tutorial.ipynb>`
+    |
 
 Extending
 ---------

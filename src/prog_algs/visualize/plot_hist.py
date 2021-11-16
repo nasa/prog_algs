@@ -45,7 +45,7 @@ def plot_hist(samples, fig = None, keys = None, **kwargs):
     
     # Plot
     for key in keys:
-        ax.hist([sample[key] for sample in samples], label=key, **kwargs)
+        ax.hist([sample[key] for sample in samples if sample[key] is not None], label=key, **kwargs)
 
     # Set legend
     if parameters['legend']:

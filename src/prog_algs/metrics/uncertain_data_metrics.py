@@ -6,6 +6,7 @@ This file includes functions for calculating general metrics (i.e. mean, std, pe
 from typing import Iterable
 from numpy import isscalar, mean, std, array
 from scipy import stats
+from warnings import warn
 from ..uncertain_data import UncertainData, UnweightedSamples
 
 def calc_metrics(data, ground_truth = None, **kwargs):
@@ -57,7 +58,7 @@ def calc_metrics(data, ground_truth = None, **kwargs):
         if len(data) == 0:
             raise ValueError('Data must not be empty')
         # Is list or array
-        if isscalar(data[0]):
+        if isscalar(data[0]) or data[0] is None:
             # list of numbers - this is the case that we can calculate
             pass
         elif isinstance(data[0], dict):
@@ -70,35 +71,37 @@ def calc_metrics(data, ground_truth = None, **kwargs):
         raise TypeError("Data must be type Uncertain Data or array of dicts, was {}".format(type(data)))
 
     # If we get here then Data is a list of numbers- calculate metrics for numbers
-    data = array(data)  # Must be array
-    data.sort()
-    m = mean(data)
-    median = data[int(len(data)/2)]
+    data_abridged = array([d for d in data if d is not None]) # Must be array
+    if len(data_abridged) < len(data):
+        warn("Some samples were None, resulting metrics are of all non-None samples. Note: in some cases, this will bias the metrics.")
+    data_abridged.sort()
+    m = mean(data_abridged)
+    median = data_abridged[int(len(data_abridged)/2)]
     metrics = {
-        'min': data[0],
+        'min': data_abridged[0],
         'percentiles': {
-            '0.01': data[int(len(data)/10000)] if len(data) >= 10000 else None,
-            '0.1': data[int(len(data)/1000)] if len(data) >= 1000 else None,
-            '1': data[int(len(data)/100)] if len(data) >= 100 else None,
-            '10': data[int(len(data)/10)] if len(data) >= 10 else None,
-            '25': data[int(len(data)/4)] if len(data) >= 4 else None,
+            '0.01': data_abridged[int(len(data_abridged)/10000)] if len(data_abridged) >= 10000 else None,
+            '0.1': data_abridged[int(len(data_abridged)/1000)] if len(data_abridged) >= 1000 else None,
+            '1': data_abridged[int(len(data_abridged)/100)] if len(data_abridged) >= 100 else None,
+            '10': data_abridged[int(len(data_abridged)/10)] if len(data_abridged) >= 10 else None,
+            '25': data_abridged[int(len(data_abridged)/4)] if len(data_abridged) >= 4 else None,
             '50': median,
-            '75': data[int(3*len(data)/4)] if len(data) >= 4 else None,
+            '75': data_abridged[int(3*len(data_abridged)/4)] if len(data_abridged) >= 4 else None,
         },
         'median': median,
         'mean': m,
-        'std': std(data),
-        'max': data[-1],
-        'median absolute deviation': sum([abs(x - median) for x in data])/len(data),
-        'mean absolute deviation':   sum([abs(x - m)   for x in data])/len(data),
-        'number of samples': len(data)
+        'std': std(data_abridged),
+        'max': data_abridged[-1],
+        'median absolute deviation': sum([abs(x - median) for x in data_abridged])/len(data_abridged),
+        'mean absolute deviation':   sum([abs(x - m)   for x in data_abridged])/len(data_abridged),
+        'number of samples': len(data_abridged)
     }
 
     if ground_truth is not None:
         # Metrics comparing to ground truth
-        metrics['mean absolute error'] = sum([abs(x - ground_truth) for x in data])/len(data)
+        metrics['mean absolute error'] = sum([abs(x - ground_truth) for x in data_abridged])/len(data_abridged)
         metrics['mean absolute percentage error'] = metrics['mean absolute error']/ ground_truth
         metrics['relative accuracy'] = 1 - abs(ground_truth - metrics['mean'])/ground_truth
-        metrics['ground truth percentile'] = stats.percentileofscore(data, ground_truth)
+        metrics['ground truth percentile'] = stats.percentileofscore(data_abridged, ground_truth)
 
     return metrics

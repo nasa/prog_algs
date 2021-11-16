@@ -45,7 +45,7 @@ def prob_success(toe, time, **kwargs):
         if len(toe) == 0:
             raise ValueError('Time of Event must not be empty')
         # Is list or array
-        if isscalar(toe[0]):
+        if isscalar(toe[0]) or toe[0] is None:
             # list of numbers - this is the case that we can calculate
             pass
         elif isinstance(toe[0], dict):
@@ -57,4 +57,4 @@ def prob_success(toe, time, **kwargs):
     else:
         raise TypeError("ToE must be type Uncertain Data or array of dicts, was {}".format(type(toe)))
 
-    return sum([e > time for e in toe])/len(toe)
+    return sum([e is None or e > time for e in toe])/len(toe)

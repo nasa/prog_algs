@@ -4,7 +4,8 @@ from . import UncertainData
 from collections import UserList
 from collections.abc import Iterable
 from numpy import array, cov, random
-import warnings
+from warnings import warn
+from copy import deepcopy
 
 
 class UnweightedSamples(UncertainData, UserList):
@@ -58,10 +59,14 @@ class UnweightedSamples(UncertainData, UserList):
     def median(self):
         # Calculate Geometric median of all samples
         min_value = float('inf')
+        none_flag = False
         for i, datem in enumerate(self.data):
-            p1 = array(list(datem.values()))
+            p1 = array([d for d in datem.values() if d is not None])
+            if not none_flag and len(p1) < len(datem):
+                none_flag = True
+                warn("Some samples were None, resulting median is of all non-None samples. Note: in some cases, this will bias the median result.")
             total_dist = sum(
-                sum((p1 - array(list(d.values())))**2)  # Distance between 2 points
+                sum((p1 - array([d for d in datem.values() if d is not None]))**2)  # Distance between 2 points
                 for d in self.data)  # For each point
             if total_dist < min_value:
                 min_index = i
@@ -72,14 +77,19 @@ class UnweightedSamples(UncertainData, UserList):
     def mean(self):
         mean = {}
         for key in self.keys():
-            mean[key] = array([x[key] for x in self.data if x is not None]).mean()
+            values = array([x[key] for x in self.data if x is not None and x[key] is not None])
+            if len(values) < len(self.data):
+                warn("Some samples were None, resulting mean is of all non-None samples. Note: in some cases, this will bias the mean result.")
+            mean[key] = values.mean()
         return mean
 
     @property
     def cov(self):
         if len(self.data) == 0:
             return [[]]
-        unlabeled_samples = array([[x[key] for x in self.data if x is not None] for key in self.keys()])
+        unlabeled_samples = array([[x[key] for x in self.data if x is not None and x[key] is not None] for key in self.keys()])
+        if len(unlabeled_samples) < len(self.data):
+            warn("Some samples were None, resulting covariance is of all non-None samples. Note: in some cases, this will bias the covariance result.")
         return cov(unlabeled_samples)
 
     def __str__(self):
@@ -102,8 +112,8 @@ class UnweightedSamples(UncertainData, UserList):
         if not isinstance(bounds, dict) or all([isinstance(b, list) and len(b) == 2 for b in bounds]):
             raise TypeError("Bounds must be list [lower, upper] or dict (key: [lower, upper]), was {}".format(type(bounds)))
         n_elements = len(self.data)
-        return {key: sum([x < bounds[key][1] and x > bounds[key][0] for x in self.key(key)])/n_elements for key in keys}
+        return {key: sum([x is not None and x < bounds[key][1] and x > bounds[key][0] for x in self.key(key)])/n_elements for key in keys}
 
     def raw_samples(self):
-        warnings.warn("raw_samples is deprecated and will be removed in the future")
+        warn("raw_samples is deprecated and will be removed in the future")
         return self.data

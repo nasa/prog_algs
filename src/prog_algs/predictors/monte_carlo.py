@@ -40,6 +40,7 @@ def prediction_fcn(x, model, params, events, loading):
             # no event has occured
             for event in events_remaining:
                 time_of_event[event] = None
+                last_state[event] = None
             break
 
         # An event has occured

@@ -20,7 +20,7 @@ def prediction_fcn(x, model, params, events, loading):
     outputs = LazySimResult(fcn = model.output)
     event_states = LazySimResult(fcn = model.event_state)
     params['x'] = x
-    params['t'] = 0
+    params['t0'] = 0
     while len(events_remaining) > 0:  # Still events to predict
         (t, u, xi, z, es) = model.simulate_to_threshold(loading, first_output, **params, threshold_keys=events_remaining, print=False)
 

@@ -44,6 +44,17 @@ class TestExamples(unittest.TestCase):
         # Reset stdout 
         sys.stdout = _stdout
 
+    def test_horizon_ex(self):
+        # set stdout (so it wont print)
+        _stdout = sys.stdout
+        sys.stdout = StringIO()
+
+        from examples import horizon
+        horizon.run_example()
+
+        # Reset stdout 
+        sys.stdout = _stdout
+
     def test_new_state_est_ex(self):
         # set stdout (so it wont print)
         _stdout = sys.stdout

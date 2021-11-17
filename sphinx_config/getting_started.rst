@@ -81,6 +81,9 @@ The best way to learn how to use `prog_algs` is through the `tutorial <https://m
 * :download:`examples.eol_event <../examples/eol_event.py>`
     .. automodule:: examples.eol_event
     |
+* :download:`examples.horizon <../examples/horizon.py>`
+    .. automodule:: examples.horizon
+    |
 * :download:`examples.measurement_eqn_example <../examples/measurement_eqn_example.py>`
     .. automodule:: examples.measurement_eqn_example
     |

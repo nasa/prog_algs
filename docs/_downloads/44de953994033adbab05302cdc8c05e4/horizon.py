@@ -1,11 +1,11 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
 """
-This example performs a state estimation and prediction with uncertainty given a Prognostics Model. Unlike basic_example, this example uses a model with multiple events (ThrownObject). Prediction only ends when all events are met
+This example performs a state estimation and prediction with uncertainty given a Prognostics Model with a specific prediction horizon. This prediction horizon marks the end of the "time of interest" for the prediction. Often this represents the end of a mission or sufficiently in the future where the user is unconcerned with the events
  
 Method: An instance of the Thrown Object model in prog_models is created, and the prediction process is achieved in three steps:
     1) State estimation of the current state is performed using a chosen state_estimator, and samples are drawn from this estimate
-    2) Prediction of future states (with uncertainty) and the times at which the event thresholds will be reached
+    2) Prediction of future states (with uncertainty) and the times at which the event thresholds will be reached, within the prediction horizon. All events outside the horizon come back as None and are ignored in metrics
 Results: 
     i) Predicted future values (inputs, states, outputs, event_states) with uncertainty from prediction
     ii) Time event is predicted to occur (with uncertainty)
@@ -48,13 +48,20 @@ def run_example():
     mc = predictors.MonteCarlo(m)
 
     # Step 3b: Perform a prediction
+    # THIS IS WHERE WE DIVERGE FROM THE THROWN_OBJECT_EXAMPLE
+    # Here we set a prediction horizon
+    # We're saying we are not interested in any events that occur after this time
+    PREDICTION_HORIZON = 7.75
     samples = filt.x  # Since we're using a particle filter, which is also sample-based, we can directly use the samples, without changes
     STEP_SIZE = 0.1
-    (_, _, _, _, _, toe) = mc.predict(samples, future_loading, dt=STEP_SIZE, horizon=8)
+    (_, _, _, _, _, toe) = mc.predict(samples, future_loading, dt=STEP_SIZE, horizon = PREDICTION_HORIZON)
     print("\nPredicted Time of Event:")
-    pprint(toe.metrics())  # Note this takes some time
+    metrics = toe.metrics()
+    pprint(metrics)  # Note this takes some time
     toe.plot_hist(keys = 'impact')
     toe.plot_hist(keys = 'falling')
+
+    print("\nSamples where impact occurs before horizon: {:.2f}%".format(metrics['impact']['number of samples']/NUM_SAMPLES*100))
     
     # Step 4: Show all plots
     import matplotlib.pyplot as plt  # For plotting

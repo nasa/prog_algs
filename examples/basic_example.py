@@ -76,7 +76,7 @@ def run_example():
     mc = predictors.MonteCarlo(batt)
 
     # Step 3b: Perform a prediction
-    NUM_SAMPLES = 100
+    NUM_SAMPLES = 5
     STEP_SIZE = 0.1
     (times, inputs, states, outputs, event_states, toe) = mc.predict(filt.x, future_loading, n_samples = NUM_SAMPLES, dt=STEP_SIZE)
     print('ToE', toe.mean)
@@ -99,7 +99,7 @@ def run_example():
     print("\nEOD Prediction Metrics")
 
     from prog_algs.metrics import prob_success
-    print('\Portion between 3005.2 and 3005.6: ', toe.percentage_in_bounds([3005.2, 3005.6]))
+    print('\tPortion between 3005.2 and 3005.6: ', toe.percentage_in_bounds([3005.2, 3005.6]))
     print('\tAssuming ground truth 3002.25: ', toe.metrics(ground_truth=3005.25))
     print('\tP(Success) if mission ends at 3002.25: ', prob_success(toe, 3005.25))
 

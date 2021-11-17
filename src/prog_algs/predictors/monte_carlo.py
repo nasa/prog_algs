@@ -19,8 +19,8 @@ def prediction_fcn(x, model, params, events, loading):
     states = SimResult()
     outputs = LazySimResult(fcn = model.output)
     event_states = LazySimResult(fcn = model.event_state)
+    params = deepcopy(params)
     params['x'] = x
-    params['t'] = 0
     while len(events_remaining) > 0:  # Still events to predict
         (t, u, xi, z, es) = model.simulate_to_threshold(loading, first_output, **params, threshold_keys=events_remaining, print=False)
 
@@ -40,6 +40,7 @@ def prediction_fcn(x, model, params, events, loading):
             # no event has occured
             for event in events_remaining:
                 time_of_event[event] = None
+                last_state[event] = None
             break
 
         # An event has occured
@@ -48,6 +49,9 @@ def prediction_fcn(x, model, params, events, loading):
 
         # Remove last state (event)
         params['t0'] = times.pop()
+        if 'horizon' in params:
+            # Reset horizon to account for time spent
+            params['horizon'] = params['horizon'] - params['t0']
         inputs.pop()
         params['x'] = states.pop()
         last_state[event] = deepcopy(params['x'])

@@ -61,7 +61,7 @@ def run_example():
     toe.plot_hist(keys = 'impact')
     toe.plot_hist(keys = 'falling')
 
-    print(f"\nEvents that occur before horizon: {metrics['impact']['number of samples']}")
+    print("\nSamples where impact occurs before horizon: {:.2f}%".format(metrics['impact']['number of samples']/NUM_SAMPLES*100))
     
     # Step 4: Show all plots
     import matplotlib.pyplot as plt  # For plotting

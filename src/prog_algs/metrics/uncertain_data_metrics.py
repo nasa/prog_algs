@@ -73,7 +73,7 @@ def calc_metrics(data, ground_truth = None, **kwargs):
     # If we get here then Data is a list of numbers- calculate metrics for numbers
     data_abridged = array([d for d in data if d is not None]) # Must be array
     if len(data_abridged) < len(data):
-        warn("Some samples were None, resulting metrics are of all non-None samples. Note: in some cases, this will bias the metrics.")
+        warn("Some samples were None, resulting metrics only consider non-None samples. Note: in some cases, this will bias the metrics.")
     data_abridged.sort()
     m = mean(data_abridged)
     median = data_abridged[int(len(data_abridged)/2)]

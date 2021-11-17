@@ -84,6 +84,32 @@ class TestMetrics(unittest.TestCase):
         except ValueError:
             pass
 
+        # USamples with None
+        u_samples.append({'a': None, 'b': None, 'c': None})
+        try:
+            metrics = toe_metrics(u_samples, 5.0)
+            self.fail()  # Should raise warning
+        except Warning:
+            pass
+        check_metrics(metrics, "USamples with None should be equal to u_samples without")  # Should be same
+        
+        # Try none at front
+        u_samples = [{'a': None, 'b': None, 'c': None}] + [{'a': i, 'b': i*1.1, 'c': (i/5)**2} for i in range(10)]
+        try:
+            metrics = toe_metrics(u_samples, 5.0)
+            self.fail()  # Should raise warning
+        except Warning:
+            pass
+        check_metrics(metrics, "USamples with None should be equal to u_samples without")  # Should be same
+
+        # Try all none
+        u_samples = [{'a': None, 'b': None, 'c': None}] * 10
+        try:
+            metrics = toe_metrics(u_samples, 5.0)
+            self.fail()  # Should raise warning
+        except Warning:
+            pass
+
     def test_toe_metrics_mvnd(self):
         # Common checks
         def check_metrics(metrics):

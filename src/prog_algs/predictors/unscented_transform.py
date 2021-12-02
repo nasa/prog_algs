@@ -63,6 +63,8 @@ class UnscentedTransformPredictor(Predictor):
     ------------------------------
     alpha, beta, kappa: float
         UKF Scaling parameters. See: https://en.wikipedia.org/wiki/Kalman_filter#Unscented_Kalman_filter
+    t0 : float
+        Initial time at which prediction begins, e.g., 0
     dt : float
         Simulation step size (s), e.g., 0.1
     events : List[string]

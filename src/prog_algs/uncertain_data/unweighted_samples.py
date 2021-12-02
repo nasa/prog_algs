@@ -5,7 +5,6 @@ from collections import UserList
 from collections.abc import Iterable
 from numpy import array, cov, random
 from warnings import warn
-from copy import deepcopy
 
 
 class UnweightedSamples(UncertainData, UserList):

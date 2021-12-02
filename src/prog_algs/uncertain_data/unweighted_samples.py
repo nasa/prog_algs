@@ -66,7 +66,7 @@ class UnweightedSamples(UncertainData, UserList):
                 none_flag = True
                 warn("Some samples were None, resulting median is of all non-None samples. Note: in some cases, this will bias the median result.")
             total_dist = sum(
-                sum((p1 - array([d for d in datem.values() if d is not None]))**2)  # Distance between 2 points
+                sum((p1 - array([di for di in d.values() if di is not None]))**2)  # Distance between 2 points
                 for d in self.data)  # For each point
             if total_dist < min_value:
                 min_index = i

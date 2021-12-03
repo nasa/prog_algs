@@ -43,19 +43,22 @@ class TestStateEstimators(unittest.TestCase):
 
     def test_UKF(self):
         from prog_algs.state_estimators import UnscentedKalmanFilter
-        m = MockProgModel()
+        m = MockProgModel(process_noise = 1e-3, measurement_noise = 1e-4)
         x0 = m.initialize()
         filt = UnscentedKalmanFilter(m, x0)
         self.assertTrue(all(key in filt.x.mean for key in m.states))
         self.assertDictEqual(x0, filt.x.mean)
-        filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': 0.8}) # note- if input is correct, o1 should be 0.9
+        filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': 0.8}) 
+        filt.estimate(0.15, {'i1': 1, 'i2': 2}, {'o1': 0.8})# note- if input is correct, o1 should be 0.9
         x = filt.x.mean
         self.assertFalse( x0 == x )
         self.assertFalse( {'a': 1.1, 'b': 2, 'c': -5.2, 't': 0} == x )
 
         # Between the model and sense outputs
-        self.assertGreater(m.output(x)['o1'], 0.8)
-        self.assertLess(m.output(x)['o1'], 0.9) 
+        o = m.output(x)
+        o0 = m.output(x0)
+        self.assertGreater(o['o1'], 0.5)
+        self.assertLess(o['o1'], o0['o1']) 
 
     def __incorrect_input_tests(self, filter):
         class IncompleteModel:
@@ -133,19 +136,21 @@ class TestStateEstimators(unittest.TestCase):
 
     def test_PF(self):
         from prog_algs.state_estimators import ParticleFilter
-        m = MockProgModel()
+        m = MockProgModel(process_noise=1e-2, measurement_noise=0)
         x0 = m.initialize()
-        filt = ParticleFilter(m, x0)
+        filt = ParticleFilter(m, x0, n_samples=200)
         self.assertTrue(all(key in filt.x[0] for key in m.states))
         # self.assertDictEqual(x0, filt.x) // Not true - sample production means they may not be equal
-        filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': 0.8}) # note- if input is correct, o1 should be 0.9
+        filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': 0.8})  # note- if input is correct, o1 should be 0.9
         x = filt.x.mean
         self.assertFalse( x0 == x )
         self.assertFalse( {'a': 1.1, 'b': 2, 'c': -5.2} == x )
 
         # Between the model and sense outputs
-        self.assertGreater(m.output(x)['o1'], 0.7) # Should be between 0.8-0.9, choosing this gives some buffer for noise
-        self.assertLess(m.output(x)['o1'], 0.95) # Should be between 0.8-0.9, choosing this gives some buffer for noise
+        o = m.output(x)
+        o0 = m.output(x0)
+        self.assertGreater(o['o1'], 0.7) # Should be between 0.8-0.9, choosing this gives some buffer for noise
+        self.assertLess(o['o1'], o0['o1']) # Should be between 0.8-0.9, choosing this gives some buffer for noise. Testing that the estimate is improving
 
         try:
             # Only given half of the inputs 
@@ -233,6 +238,11 @@ class TestStateEstimators(unittest.TestCase):
 
 # This allows the module to be executed directly    
 def run_tests():
+     # This ensures that the directory containing StateEstimatorTemplate is in the python search directory
+    import sys
+    from os.path import dirname, join
+    sys.path.append(join(dirname(__file__), ".."))
+
     l = unittest.TestLoader()
     runner = unittest.TextTestRunner()
     print("\n\nTesting State Estimators")

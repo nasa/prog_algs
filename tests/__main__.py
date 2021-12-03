@@ -1,13 +1,12 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from .test_state_estimators import TestStateEstimators
-from .test_predictors import TestPredictors
-from .test_integration import TestIntegration
-from .test_uncertain_data import TestUncertainData
-from .test_examples import TestExamples
-from .test_misc import TestMisc
-from .test_metrics import TestMetrics
-from .test_visualize import TestVisualize
+from .test_state_estimators import run_tests as state_est_main
+from .test_predictors import run_tests as pred_main
+from .test_uncertain_data import run_tests as udata_main
+from .test_examples import main as examples_main
+from .test_metrics import run_tests as metrics_main
+from .test_visualize import run_tests as visualize_main
+
 import unittest
 import sys
 from examples import basic_example
@@ -30,25 +29,37 @@ if __name__ == '__main__':
     print("\nExample Runtime: ", timeit(run_basic_ex, number=3))
 
     print('\n\nTesting State Estimators')
-    unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestStateEstimators))
+
+    was_successful = True
+    try:
+        state_est_main()
+    except Exception:
+        was_successful = False
     
-    print('\n\nTesting Predictors')
-    unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestPredictors))
+    try:
+        pred_main()
+    except Exception:
+        was_successful = False
 
-    print('\n\nUncertain Data Tests')
-    unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestUncertainData))
+    try:
+        udata_main()
+    except Exception:
+        was_successful = False
 
-    print('\n\nVisualize Tests')
-    unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestVisualize))
+    try:
+        visualize_main()
+    except Exception:
+        was_successful = False
 
-    print('\n\nExamples Tests')
-    unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestExamples))
+    try:
+        examples_main()
+    except Exception:
+        was_successful = False
 
-    print('\n\nIntegration Tests')
-    unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestIntegration))
+    try:
+        metrics_main()
+    except Exception:
+        was_successful = False
 
-    print('\n\nMetrics Tests')
-    unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestMetrics))
-
-    print('\n\nMisc Tests')
-    unittest.TextTestRunner().run(l.loadTestsFromTestCase(TestMisc))
+    if not was_successful:
+        raise Exception('Tests Failed')

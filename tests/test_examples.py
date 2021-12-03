@@ -50,7 +50,8 @@ class TestExamples(unittest.TestCase):
         sys.stdout = StringIO()
 
         from examples import horizon
-        horizon.run_example()
+        with patch('matplotlib.pyplot') as p:
+            horizon.run_example()
 
         # Reset stdout 
         sys.stdout = _stdout
@@ -73,22 +74,12 @@ class TestExamples(unittest.TestCase):
         sys.stdout = StringIO()
 
         from examples import thrown_object_example
-        thrown_object_example.run_example()
+        with patch('matplotlib.pyplot') as p:
+            thrown_object_example.run_example()
 
         # Reset stdout 
         sys.stdout = _stdout
 
-    def test_thrown_obj_ex(self):
-        # set stdout (so it wont print)
-        _stdout = sys.stdout
-        sys.stdout = StringIO()
-
-        from examples import predict_specific_event
-        thrown_object_example.run_example()
-
-        # Reset stdout 
-        sys.stdout = _stdout
-    
     def test_measurement_ex(self):
         # set stdout (so it wont print)
         _stdout = sys.stdout
@@ -107,7 +98,8 @@ class TestExamples(unittest.TestCase):
         sys.stdout = StringIO()
 
         from examples import utpredictor
-        utpredictor.run_example()
+        with patch('matplotlib.pyplot') as p:
+            utpredictor.run_example()
 
         # Reset stdout 
         sys.stdout = _stdout

@@ -93,7 +93,6 @@ class TestUncertainData(unittest.TestCase):
         data2 = pickle.load(open('test.pkl', 'rb'))
         self.assertEqual(d, data2)
 
-
 # This allows the module to be executed directly    
 def run_tests():
     l = unittest.TestLoader()

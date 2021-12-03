@@ -157,11 +157,18 @@ class TestPredictors(unittest.TestCase):
         except Exception:
             pass
 
+        # Test pickle
+        import pickle
+        p2 = pickle.loads(pickle.dumps(p))
+        self.assertEqual(p2, p)
+
     def test_prediction_uwsamples(self):
         from prog_algs.predictors.prediction import UnweightedSamplesPrediction
         from prog_algs.uncertain_data import UnweightedSamples
         times = list(range(10))
-        states = [list(range(10)), list(range(1, 11)), list(range(-1, 9))]
+        states = [UnweightedSamples(list(range(10))), 
+            UnweightedSamples(list(range(1, 11))), 
+            UnweightedSamples(list(range(-1, 9)))]
         p = UnweightedSamplesPrediction(times, states)
 
         self.assertEqual(p[0], states[0])
@@ -198,6 +205,11 @@ class TestPredictors(unittest.TestCase):
             self.fail()
         except Exception:
             pass
+
+        # Test pickle
+        import pickle
+        p2 = pickle.loads(pickle.dumps(p))
+        self.assertEqual(p2, p)
     
     def test_prediction_profile(self):
         from prog_algs.predictors import ToEPredictionProfile

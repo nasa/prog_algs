@@ -28,8 +28,6 @@ if __name__ == '__main__':
 
     print("\nExample Runtime: ", timeit(run_basic_ex, number=3))
 
-    print('\n\nTesting State Estimators')
-
     was_successful = True
     try:
         state_est_main()

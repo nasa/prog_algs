@@ -52,7 +52,7 @@ class UnweightedSamples(UncertainData, UserList):
         Returns:
             list: list of values for given key
         """
-        return [sample[key] for sample in self.data]
+        return [sample[key] for sample in self.data if sample is not None]
 
     @property
     def median(self):
@@ -60,13 +60,15 @@ class UnweightedSamples(UncertainData, UserList):
         min_value = float('inf')
         none_flag = False
         for i, datem in enumerate(self.data):
+            if datem is None:
+                continue
             p1 = array([d for d in datem.values() if d is not None])
             if not none_flag and len(p1) < len(datem):
                 none_flag = True
                 warn("Some samples were None, resulting median is of all non-None samples. Note: in some cases, this will bias the median result.")
             total_dist = sum(
                 sum((p1 - array([di for di in d.values() if di is not None]))**2)  # Distance between 2 points
-                for d in self.data)  # For each point
+                for d in self.data if d is not None)  # For each point
             if total_dist < min_value:
                 min_index = i
                 min_value = total_dist

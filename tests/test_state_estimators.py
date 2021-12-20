@@ -136,9 +136,9 @@ class TestStateEstimators(unittest.TestCase):
 
     def test_PF(self):
         from prog_algs.state_estimators import ParticleFilter
-        m = MockProgModel(process_noise=1e-2, measurement_noise=0)
+        m = MockProgModel(process_noise=5e-2, measurement_noise=0)
         x0 = m.initialize()
-        filt = ParticleFilter(m, x0, n_samples=200)
+        filt = ParticleFilter(m, x0, n_samples=200, x0_uncertainty=0.1)
         self.assertTrue(all(key in filt.x[0] for key in m.states))
         # self.assertDictEqual(x0, filt.x) // Not true - sample production means they may not be equal
         filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': 0.8})  # note- if input is correct, o1 should be 0.9

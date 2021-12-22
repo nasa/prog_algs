@@ -47,7 +47,7 @@ class TestPredictors(unittest.TestCase):
         from prog_models.models.thrown_object import ThrownObject
         m = ThrownObject()
         pred = UnscentedTransformPredictor(m)
-        samples = MultivariateNormalDist(['x', 'v'], [1.83, 40], [[0.1, 0.01], [0.01, 0.1]])
+        samples = MultivariateNormalDist(['x', 'v', 'max_x'], [1.83, 40, 1.83], [[0.1, 0.01, 0.01], [0.01, 0.1, 0.01], [0.01, 0.01, 0.1]])
         def future_loading(t, x={}):
             return {}
 
@@ -63,7 +63,7 @@ class TestPredictors(unittest.TestCase):
         from prog_models.models.thrown_object import ThrownObject
         m = ThrownObject()
         pred = UnscentedTransformPredictor(m)
-        samples = MultivariateNormalDist(['x', 'v'], [1.83, 40], [[0.1, 0.01], [0.01, 0.1]])
+        samples = MultivariateNormalDist(['x', 'v', 'max_x'], [1.83, 40, 1.83], [[0.1, 0.01, 0.01], [0.01, 0.1, 0.01], [0.01, 0.01, 0.1]])
         def future_loading(t, x={}):
             return {}
 

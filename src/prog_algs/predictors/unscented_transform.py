@@ -63,6 +63,8 @@ class UnscentedTransformPredictor(Predictor):
     ------------------------------
     alpha, beta, kappa: float
         UKF Scaling parameters. See: https://en.wikipedia.org/wiki/Kalman_filter#Unscented_Kalman_filter
+    t0 : float
+        Initial time at which prediction begins, e.g., 0
     dt : float
         Simulation step size (s), e.g., 0.1
     events : List[string]
@@ -169,7 +171,6 @@ class UnscentedTransformPredictor(Predictor):
         sigma_points = self.sigma_points
         n_points = sigma_points.num_sigmas()
         threshold_met = model.threshold_met
-        events = model.events
 
         # Update State 
         self.__state_keys = state_keys = state.mean.keys()  # Used to maintain ordering as we strip keys and return

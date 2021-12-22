@@ -71,6 +71,8 @@ class MonteCarlo(Predictor):
     
     Configuration Parameters
     ------------------------------
+    t0 : float
+        Initial time at which prediction begins, e.g., 0
     dt : float
         Simulation step size (s), e.g., 0.1
     events : List[string]
@@ -87,6 +89,11 @@ class MonteCarlo(Predictor):
     DEFAULT_N_SAMPLES = 100  # Default number of samples to use, if none specified
 
     def predict(self, state : UncertainData, future_loading_eqn, **kwargs):
+        if isinstance(state, dict):
+            # Convert to UnweightedSamples
+            from prog_algs.uncertain_data import ScalarData
+            state = ScalarData(state)
+
         params = deepcopy(self.parameters) # copy parameters
         params.update(kwargs) # update for specific run
 

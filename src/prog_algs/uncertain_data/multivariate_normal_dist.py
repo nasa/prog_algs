@@ -15,9 +15,12 @@ class MultivariateNormalDist(UncertainData):
             covar (array[array[float]]): Covariance matrix for state
     """
     def __init__(self, labels, mean: array, covar : array):
-        self.__labels = labels
-        self.__mean = mean
-        self.__covar = covar
+        self.__labels = list(labels)
+        self.__mean = array(list(mean))
+        self.__covar = array(list(covar))
+
+    def __eq__(self, other):
+        return self.keys() == other.keys() and self.mean == other.mean and (self.cov == other.cov).all()
 
     def sample(self, num_samples = 1):
         if len(self.__mean) != len(self.__labels):

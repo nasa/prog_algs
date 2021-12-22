@@ -5,4 +5,12 @@ from .predictor import Predictor
 from .prediction import Prediction, UnweightedSamplesPrediction
 from .toe_prediction_profile import ToEPredictionProfile
 from .unscented_transform import UnscentedTransformPredictor
-__all__ = ['predictor', 'monte_carlo', 'unscented_transform', 'MonteCarlo', 'Predictor', 'Prediction', 'UnweightedSamplesPrediction', 'ToEPredictionProfile', 'UnscentedTransformPredictor']
+
+# For naming consistancy
+# Unortionately, prog_algs was released with inconsistant naming (UnscentedTransformPredictor vs MonteCarlo).
+# For naming consistancy and to avoid confusion, we created aliases for the two classes.
+# They can be called by the name of the method (e.g., UnscentedTranform) or with 'predictor' at the end (e.g., UnscentedTransformPredictor).
+UnscentedTransform = UnscentedTransformPredictor
+MonteCarloPredictor = MonteCarlo
+
+__all__ = ['predictor', 'monte_carlo', 'unscented_transform', 'MonteCarlo', 'Predictor', 'Prediction', 'UnweightedSamplesPrediction', 'ToEPredictionProfile', 'UnscentedTransformPredictor', 'UnscentedTransform', 'MonteCarloPredictor']

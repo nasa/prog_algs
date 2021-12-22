@@ -47,7 +47,7 @@ class TestPredictors(unittest.TestCase):
         from prog_models.models.thrown_object import ThrownObject
         m = ThrownObject()
         pred = UnscentedTransformPredictor(m)
-        samples = MultivariateNormalDist(['x', 'v'], [1.83, 40], [[0.1, 0.01], [0.01, 0.1]])
+        samples = MultivariateNormalDist(['x', 'v', 'max_x'], [1.83, 40, 1.83], [[0.1, 0.01, 0.01], [0.01, 0.1, 0.01], [0.01, 0.01, 0.1]])
         def future_loading(t, x={}):
             return {}
 
@@ -63,7 +63,7 @@ class TestPredictors(unittest.TestCase):
         from prog_models.models.thrown_object import ThrownObject
         m = ThrownObject()
         pred = UnscentedTransformPredictor(m)
-        samples = MultivariateNormalDist(['x', 'v'], [1.83, 40], [[0.1, 0.01], [0.01, 0.1]])
+        samples = MultivariateNormalDist(['x', 'v', 'max_x'], [1.83, 40, 1.83], [[0.1, 0.01, 0.01], [0.01, 0.1, 0.01], [0.01, 0.01, 0.1]])
         def future_loading(t, x={}):
             return {}
 
@@ -115,23 +115,14 @@ class TestPredictors(unittest.TestCase):
         samples.eol_metrics(s)  # Kept for backwards compatibility
 
     def test_MC(self):
+        from prog_models.models import ThrownObject
         from prog_algs.predictors import MonteCarlo
-        m = MockProgModel()
+        m = ThrownObject()
         mc = MonteCarlo(m)
-        samples = [
-            {'a': 1, 'b': 2, 'c': -3.2},
-            {'a': 2, 'b': 2, 'c': -3.2},
-            {'a': 0, 'b': 2, 'c': -3.2},
-            {'a': 1, 'b': 1, 'c': -3.2},
-            {'a': 1, 'b': 3, 'c': -3.2},
-            {'a': 1, 'b': 2, 'c': -2.2},
-            {'a': 1, 'b': 2, 'c': -4.2}
-        ]
-        def future_loading(t, x={}):
-            if (t < 5):
-                return {'i1': 2, 'i2': 1}
-            else:
-                return {'i1': -4, 'i2': 2.5}
+        def future_loading(t = None, x = None):
+            return {}
+            
+        (times, inputs, states, outputs, event_states, toe) = mc.predict(m.initialize(), future_loading, dt=0.2, num_samples=3, save_freq=1)
 
     def test_prediction_mvnormaldist(self):
         from prog_algs.predictors import Prediction as MultivariateNormalDistPrediction
@@ -157,11 +148,18 @@ class TestPredictors(unittest.TestCase):
         except Exception:
             pass
 
+        # Test pickle
+        import pickle
+        p2 = pickle.loads(pickle.dumps(p))
+        self.assertEqual(p2, p)
+
     def test_prediction_uwsamples(self):
         from prog_algs.predictors.prediction import UnweightedSamplesPrediction
         from prog_algs.uncertain_data import UnweightedSamples
         times = list(range(10))
-        states = [list(range(10)), list(range(1, 11)), list(range(-1, 9))]
+        states = [UnweightedSamples(list(range(10))), 
+            UnweightedSamples(list(range(1, 11))), 
+            UnweightedSamples(list(range(-1, 9)))]
         p = UnweightedSamplesPrediction(times, states)
 
         self.assertEqual(p[0], states[0])
@@ -198,6 +196,11 @@ class TestPredictors(unittest.TestCase):
             self.fail()
         except Exception:
             pass
+
+        # Test pickle
+        import pickle
+        p2 = pickle.loads(pickle.dumps(p))
+        self.assertEqual(p2, p)
     
     def test_prediction_profile(self):
         from prog_algs.predictors import ToEPredictionProfile

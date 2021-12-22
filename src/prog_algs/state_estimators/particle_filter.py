@@ -32,7 +32,7 @@ class ParticleFilter(state_estimator.StateEstimator):
             e.g., 0.5 or {'state1': 0.5, 'state2': 0.2}
     """
     default_parameters = {
-            't0': -1,
+            't0': -1e-99,  # practically 0, but allowing for a 0 first estimate
             'num_particles': 20, 
             'resample_fcn': residual_resample,
             'x0_uncertainty': 0.5
@@ -86,10 +86,10 @@ class ParticleFilter(state_estimator.StateEstimator):
 
         if self.model.is_vectorized:
             # Propagate particles state
-            particles = apply_process_noise(next_state(particles, u, dt))
+            self.particles = apply_process_noise(next_state(particles, u, dt))
 
             # Get particle measurements
-            zPredicted = apply_measurement_noise(output(particles))
+            zPredicted = apply_measurement_noise(output(self.particles))
         else:
             # Propogate and calculate weights
             for i in range(num_particles):

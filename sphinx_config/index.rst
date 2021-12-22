@@ -31,15 +31,15 @@ Use the following to cite this repository:
 @misc{2021_nasa_prog_algs,
   | author    = {Christopher Teubert and Chetan Kulkarni and Matteo Corbetta},
   | title     = {Prognostics Algorithms Python Package},
-  | month     = May,
-  | year      = 2022,
-  | version   = {1.3.0},
+  | month     = Dec,
+  | year      = 2021,
+  | version   = {1.2.3},
   | url       = {https://github.com/nasa/prog_algs}
   | }
 
 The corresponding reference should look like this:
 
-C. Teubert, C. Kulkarni, M. Corbetta Prognostics Algorithms Python Package, v1.3.0, May 2022. URL https://github.com/nasa/prog_algs.
+C. Teubert, C. Kulkarni, M. Corbetta Prognostics Algorithms Python Package, v1.2.3, Dec 2021. URL https://github.com/nasa/prog_algs.
 
 Indices and tables
 -----------------------

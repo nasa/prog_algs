@@ -171,7 +171,6 @@ class UnscentedTransformPredictor(Predictor):
         sigma_points = self.sigma_points
         n_points = sigma_points.num_sigmas()
         threshold_met = model.threshold_met
-        events = model.events
 
         # Update State 
         self.__state_keys = state_keys = state.mean.keys()  # Used to maintain ordering as we strip keys and return

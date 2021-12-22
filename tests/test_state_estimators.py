@@ -141,16 +141,18 @@ class TestStateEstimators(unittest.TestCase):
         filt = ParticleFilter(m, x0, n_samples=200, x0_uncertainty=0.1)
         self.assertTrue(all(key in filt.x[0] for key in m.states))
         # self.assertDictEqual(x0, filt.x) // Not true - sample production means they may not be equal
-        filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': 0.8})  # note- if input is correct, o1 should be 0.9
-        x = filt.x.mean
-        self.assertFalse( x0 == x )
-        self.assertFalse( {'a': 1.1, 'b': 2, 'c': -5.2} == x )
+        u = {'i1': 1, 'i2': 2}
+        x = m.next_state(m.initialize(), u, 0.1)
+        filt.estimate(0.1, u, m.output(x))  
+        x_est = filt.x.mean
+        self.assertFalse( x0 == x_est )
+        self.assertFalse( {'a': 1.1, 'b': 2, 'c': -5.2} == x_est )
 
         # Between the model and sense outputs
-        o = m.output(x)
+        o_est = m.output(x_est)
         o0 = m.output(x0)
-        self.assertGreater(o['o1'], 0.7) # Should be between 0.8-0.9, choosing this gives some buffer for noise
-        self.assertLess(o['o1'], o0['o1']) # Should be between 0.8-0.9, choosing this gives some buffer for noise. Testing that the estimate is improving
+        self.assertGreater(o_est['o1'], 0.7) # Should be between 0.9-o0['o1'], choosing this gives some buffer for noise
+        self.assertLess(o_est['o1'], o0['o1']) # Should be between 0.8-0.9, choosing this gives some buffer for noise. Testing that the estimate is improving
 
         try:
             # Only given half of the inputs 

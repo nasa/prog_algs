@@ -70,11 +70,8 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'c': 2}
-        try:
-            filt = filter(m, x0)
-            self.fail()
-        except ProgAlgTypeError:
-            pass
+        with self.assertRaises(ProgAlgTypeError):
+            filter(m, x0)
 
         class IncompleteModel:
             states = ['a', 'b']
@@ -84,11 +81,8 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'b': 2}
-        try:
-            filt = filter(m, x0)
-            self.fail()
-        except ProgAlgTypeError:
-            pass
+        with self.assertRaises(ProgAlgTypeError):
+            filter(m, x0)
 
         class IncompleteModel:
             outputs = []
@@ -98,11 +92,8 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'b': 2}
-        try:
-            filt = filter(m, x0)
-            self.fail()
-        except ProgAlgTypeError:
-            pass
+        with self.assertRaises(ProgAlgTypeError):
+            filter(m, x0)
 
         class IncompleteModel:
             outputs = []
@@ -111,12 +102,8 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'b': 2}
-        try:
-            filt = filter(m, x0)
-            self.fail()
-        except ProgAlgTypeError:
-            pass
-
+        with self.assertRaises(ProgAlgTypeError):
+            filter(m, x0)
         class IncompleteModel:
             outputs = []
             states = ['a', 'b']
@@ -124,11 +111,8 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'b': 2}
-        try:
-            filt = filter(m, x0)
-            self.fail()
-        except ProgAlgTypeError:
-            pass
+        with self.assertRaises(ProgAlgTypeError):
+            filter(m, x0)
 
     def test_UKF_incorrect_input(self):
         from prog_algs.state_estimators import UnscentedKalmanFilter
@@ -154,19 +138,13 @@ class TestStateEstimators(unittest.TestCase):
         self.assertGreater(o_est['o1'], 0.7) # Should be between 0.9-o0['o1'], choosing this gives some buffer for noise
         self.assertLess(o_est['o1'], o0['o1']) # Should be between 0.8-0.9, choosing this gives some buffer for noise. Testing that the estimate is improving
 
-        try:
+        with self.assertRaises(Exception):
             # Only given half of the inputs 
             filt.estimate(0.5, {'i1': 0}, {'o1': -2.0})
-            self.fail("Shouldn't have made it here- only half the inputs")
-        except Exception:
-            pass
 
-        try:
+        with self.assertRaises(Exception):
             # Missing output
             filt.estimate(0.5, {'i1': 0, 'i2': 0}, {})
-            self.fail("Shouldn't have made it here- missing output")
-        except Exception:
-            pass
 
     def test_measurement_eq_UKF(self):
         class MockProgModel2(MockProgModel):
@@ -185,12 +163,6 @@ class TestStateEstimators(unittest.TestCase):
         filt = UnscentedKalmanFilter(m, x0)
         
         # Try using
-        try:
-            filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0}) 
-            self.fail('Should have failed- missing o2')
-        except Exception:
-            pass
-        
         filt.estimate(0.2, {'i1': 1, 'i2': 2}, {'o1': -2.0, 'o2': 7})
 
         # Add Measurement eqn
@@ -217,13 +189,7 @@ class TestStateEstimators(unittest.TestCase):
         from prog_algs.state_estimators import ParticleFilter
         filt = ParticleFilter(m, x0)
         
-        # Try using
-        try:
-            filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0}) 
-            self.fail('Should have failed- missing o2')
-        except Exception:
-            pass
-        
+        # This one should work
         filt.estimate(0.2, {'i1': 1, 'i2': 2}, {'o1': -2.0, 'o2': 7})
 
         # Add Measurement eqn

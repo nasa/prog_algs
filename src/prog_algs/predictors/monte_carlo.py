@@ -107,9 +107,6 @@ class MonteCarlo(Predictor):
 
                 # Remove last state (event)
                 params['t0'] = times.pop()
-                if 'horizon' in params:
-                    # Reset horizon to account for time spent
-                    params['horizon'] = params['horizon'] - params['t0']
                 inputs.pop()
                 params['x'] = states.pop()
                 last_state[event] = deepcopy(params['x'])

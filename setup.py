@@ -25,7 +25,6 @@ setup(
         'Topic :: Scientific/Engineering :: Physics',
         'License :: Other/Proprietary License ',   
         'Programming Language :: Python :: 3',     
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
@@ -35,7 +34,7 @@ setup(
     keywords = ['prognostics', 'diagnostics', 'fault detection', 'fdir', 'prognostics and health management', 'PHM', 'health management'],
     package_dir = {"":"src"},
     packages = find_packages(where = 'src'),
-    python_requires='>=3.6, <3.11',
+    python_requires='>=3.7, <3.11',
     install_requires = [
         'numpy',
         'scipy',

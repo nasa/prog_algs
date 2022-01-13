@@ -25,6 +25,9 @@ class KalmanFilter(state_estimator.StateEstimator):
             Process Noise Matrix 
         R : List[List[float]]
             Measurement Noise Matrix 
+
+    Note:
+        The Kalman Filter does not support a custom measurement function
     """
     default_parameters = {
         'alpha': 1, 
@@ -33,41 +36,33 @@ class KalmanFilter(state_estimator.StateEstimator):
     } 
 
     def __init__(self, model, x0, measurement_eqn = None, **kwargs):
-        super().__init__(model, x0, measurement_eqn, **kwargs)
+        # Note: Measurement equation kept in constructor to keep it consistent with other state estimators. This way measurement equation can be provided as an ordered argument, and will just be ignored here
+        super().__init__(model, x0, None, **kwargs)
 
         self.x0 = x0
-
-        if measurement_eqn is None: 
-            def measure(x):
-                x = {key: value for (key, value) in zip(x0.keys(), x)}
-                R_err = model.parameters['measurement_noise'].copy()
-                model.parameters['measurement_noise'] = dict.fromkeys(R_err, 0)
-                z = model.output(x)
-                model.parameters['measurement_noise'] = R_err
-                return np.array(list(z.values())).ravel()
-        else:
-            def measure(x):
-                x = {key: value for (key, value) in zip(x0.keys(), x)}
-                z = measurement_eqn(x)
-                return np.array(list(z.values())).ravel()
 
         if 'Q' not in self.parameters:
             self.parameters['Q'] = np.diag([1.0e-3 for i in x0.keys()])
         if 'R' not in self.parameters:
             # Size of what's being measured (not output) 
             # This is determined by running the measure function on the first state
-            self.parameters['R'] = np.diag([1.0e-3 for i in range(len(measure(x0.values())))])
+            self.parameters['R'] = np.diag([1.0e-3 for i in range(len(model.outputs))])
 
         num_states = len(x0.keys())
         num_inputs = len(model.inputs) + 1
         num_measurements = len(model.outputs)
         F = deepcopy(model.A)
         B = deepcopy(model.B)
-        B = np.append(B, deepcopy(model.E).T, 0)
+        if np.size(B) == 0:
+            # If B is empty, replace with E. 
+            # Append wont work if B is empty
+            B = deepcopy(model.E).T
+        else:
+            B = np.append(B, deepcopy(model.E).T, 0)
 
         self.filter = kalman.KalmanFilter(num_states, num_measurements, num_inputs)
 
-        self.filter.x = np.array(list(x0.values())).ravel()
+        self.filter.x = np.array([[x0[key]] for key in model.states])
         self.filter.P = self.parameters['Q'] / 10
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
@@ -97,15 +92,35 @@ class KalmanFilter(state_estimator.StateEstimator):
         inputs = np.array([u[key] for key in self.model.inputs])
 
         # Add row of ones (to account for constant E term)
-        inputs = np.array(inputs, [[1]]* len(inputs), 1)
+        if np.size(inputs) == 0:
+            inputs = np.array([[1]]*len(self.model.states))
+        else:
+            inputs = np.append(inputs, [[1]] * len(self.model.states), 1)
 
         self.t = t
-        self.filter.predict(u=inputs, dt=dt)
+
+        # Update equations
+        # prog_models is dx = Ax + Bu + E
+        # kalman_models is x' = Fx + Bu, where x' is the next state
+        # Therefore we need to add the diagnol matrix 1 to A to convert
+        # And A and B should be multiplied by the time step
+        B = np.multiply(self.filter.B, dt) 
+        F = np.multiply(self.filter.F, dt) + np.diag([1]* len(self.model.states))
+
+        # Predict
+        self.filter.predict(u = inputs, B = B, F = F)
 
         # Create z array, ensuring order of model.outputs
         outputs = np.array([z[key] for key in self.model.outputs])
 
-        self.filter.update(outputs)
+        # Subtract D from outputs
+        # This is done because prog_models expects the form: 
+        #   z = Cx + D
+        # While kalman expect
+        #   z = Cx
+        outputs = outputs - self.model.D
+
+        self.filter.update(outputs, H=self.model.C)
     
     @property
     def x(self):
@@ -116,4 +131,4 @@ class KalmanFilter(state_estimator.StateEstimator):
         -------
         state = observer.x
         """
-        return MultivariateNormalDist(self.x0.keys(), self.filter.x, self.filter.P)
+        return MultivariateNormalDist(self.model.states, self.filter.x.ravel(), self.filter.P)

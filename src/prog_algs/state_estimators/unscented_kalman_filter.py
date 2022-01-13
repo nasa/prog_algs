@@ -29,7 +29,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         'alpha': 1, 
         'beta': 0, 
         'kappa': -1,
-        't0': -1,
+        't0': -1e-10,
         'dt': 1
     } 
 

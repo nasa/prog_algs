@@ -3,10 +3,10 @@
 from copy import deepcopy
 import numpy as np
 from filterpy import kalman
-from . import state_estimator
+from . import StateEstimator
 from ..uncertain_data import MultivariateNormalDist
 
-class UnscentedKalmanFilter(state_estimator.StateEstimator):
+class KalmanFilter(StateEstimator):
     """
     An Kalman Filter (KF) for state estimation
 

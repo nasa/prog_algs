@@ -107,19 +107,27 @@ def run_example():
 
     # Step 3: Run the Kalman Filter State Estimator
     # Here we're using simulated data from the thrown_object. In a real application you would be using sensor data from the system
-    dt = 0.1
+    dt = 0.01  # Time step (s)
+    print_freq = 50  # Print every print_freq'th iteration
     x = m.initialize()
     u = {}  # No input for this model
-    print(f"Initial\n\tEstimate: {kf.x.mean}\n\tTruth: {x}")
     
-    for i in range(20):
-        x = m.next_state(x, u, dt)
+    for i in range(500):
+        # Get simulated output (would be measured in a real application)
         z = m.output(x)
+
+        # Estimate New State
         kf.estimate(i*dt, u, z)
         x_est = kf.x.mean
-        print(f"t: {i*dt:.2f}\n\tEstimate: {x_est}\n\tTruth: {x}")
-        diff = {key: x_est[key] - x[key] for key in x.keys()}
-        print(f"\t Diff: {diff}")
+
+        # Print Results
+        if i%print_freq == 0:  # Print every print_freq'th iteration
+            print(f"t: {i*dt:.2f}\n\tEstimate: {x_est}\n\tTruth: {x}")
+            diff = {key: x_est[key] - x[key] for key in x.keys()}
+            print(f"\t Diff: {diff}")
+
+        # Update Real state for next step
+        x = m.next_state(x, u, dt)
 
 if __name__ == '__main__':
     run_example()

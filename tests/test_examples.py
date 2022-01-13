@@ -1,115 +1,50 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+# This ensures that the directory containing examples is in the python search directories 
+
+import sys
+from os.path import dirname, join
+sys.path.append(join(dirname(__file__), ".."))
 
 import unittest
-import sys
 from io import StringIO 
 from examples import *
 from unittest.mock import patch
+import pkgutil
+from importlib import import_module
+
+skipped_examples = ['playback']
+
+def make_test_function(example):
+    def test(self):
+        ex = import_module("examples." + example)
+
+        with patch('matplotlib.pyplot.show'):
+            ex.run_example()
+    return test
 
 
 class TestExamples(unittest.TestCase):
-    def test_main_ex(self):
+    def setUp(self):
         # set stdout (so it wont print)
-        _stdout = sys.stdout
+        self._stdout = sys.stdout
         sys.stdout = StringIO()
 
-        from examples import basic_example
-        with patch('matplotlib.pyplot') as p:
-            basic_example.run_example()
-
-        # Reset stdout 
-        sys.stdout = _stdout
-
-    def test_benchmarking_ex(self):
-        # set stdout (so it wont print)
-        _stdout = sys.stdout
-        sys.stdout = StringIO()
-
-        from examples import benchmarking_example
-        with patch('matplotlib.pyplot') as p:
-            benchmarking_example.run_example()
-
-        # Reset stdout 
-        sys.stdout = _stdout
-
-    def test_eol_ex(self):
-        # set stdout (so it wont print)
-        _stdout = sys.stdout
-        sys.stdout = StringIO()
-
-        from examples import eol_event
-        with patch('matplotlib.pyplot') as p:
-            eol_event.run_example()
-
-        # Reset stdout 
-        sys.stdout = _stdout
-
-    def test_horizon_ex(self):
-        # set stdout (so it wont print)
-        _stdout = sys.stdout
-        sys.stdout = StringIO()
-
-        from examples import horizon
-        with patch('matplotlib.pyplot') as p:
-            horizon.run_example()
-
-        # Reset stdout 
-        sys.stdout = _stdout
-
-    def test_new_state_est_ex(self):
-        # set stdout (so it wont print)
-        _stdout = sys.stdout
-        sys.stdout = StringIO()
-
-        from examples import new_state_estimator_example
-        with patch('matplotlib.pyplot') as p:
-            new_state_estimator_example.run_example()
-
-        # Reset stdout 
-        sys.stdout = _stdout
-
-    def test_thrown_obj_ex(self):
-        # set stdout (so it wont print)
-        _stdout = sys.stdout
-        sys.stdout = StringIO()
-
-        from examples import thrown_object_example
-        with patch('matplotlib.pyplot') as p:
-            thrown_object_example.run_example()
-
-        # Reset stdout 
-        sys.stdout = _stdout
-
-    def test_measurement_ex(self):
-        # set stdout (so it wont print)
-        _stdout = sys.stdout
-        sys.stdout = StringIO()
-
-        from examples import measurement_eqn_example
-        with patch('matplotlib.pyplot') as p:
-            measurement_eqn_example.run_example()
-
-        # Reset stdout 
-        sys.stdout = _stdout
-
-    def test_utpredictor_ex(self):
-        # set stdout (so it wont print)
-        _stdout = sys.stdout
-        sys.stdout = StringIO()
-
-        from examples import utpredictor
-        with patch('matplotlib.pyplot') as p:
-            utpredictor.run_example()
-
-        # Reset stdout 
-        sys.stdout = _stdout
+    def tearDown(self):
+        # reset stdout
+        sys.stdout = self._stdout
 
 # This allows the module to be executed directly
+def run_tests():
+    unittest.main()
+    
 def main():
-    # This ensures that the directory containing ProgModelTemplate is in the python search directory
-    import sys
-    from os.path import dirname, join
-    sys.path.append(join(dirname(__file__), ".."))
+    # Create tests for each example
+    for _, name, _ in pkgutil.iter_modules(['examples']):
+        if name in skipped_examples:
+            continue
+        test_func = make_test_function(name)
+        setattr(TestExamples, 'test_{0}'.format(name), test_func)   
+
 
     l = unittest.TestLoader()
     runner = unittest.TextTestRunner()

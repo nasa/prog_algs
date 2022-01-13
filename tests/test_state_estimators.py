@@ -1,5 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 import unittest
+import numpy as np
 
 from prog_models import PrognosticsModel
 from prog_algs.exceptions import ProgAlgTypeError
@@ -42,10 +43,8 @@ class TestStateEstimators(unittest.TestCase):
         m = MockProgModel()
         se = TemplateStateEstimator(m, {'a': 0.0, 'b': 0.0, 'c': 0.0, 't':0.0})
 
-    def __test_state_est(self, StateEstimatorClass):
-        from prog_models.models import ThrownObject
-
-        m = ThrownObject(process_noise=5e-2, measurement_noise=5e-2)
+    def __test_state_est(self, StateEstimatorClass, ModelClass):
+        m = ModelClass(process_noise=5e-2, measurement_noise=5e-2)
         x_guess = {'x': 1.75, 'v': 35} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
         x = m.initialize()
 
@@ -86,9 +85,9 @@ class TestStateEstimators(unittest.TestCase):
 
     def test_UKF(self):
         from prog_algs.state_estimators import UnscentedKalmanFilter
-        self.__test_state_est(UnscentedKalmanFilter)
+        from prog_models.models import ThrownObject
+        self.__test_state_est(UnscentedKalmanFilter, ThrownObject)
         
-
     def __incorrect_input_tests(self, filter):
         class IncompleteModel:
             outputs = []
@@ -150,7 +149,8 @@ class TestStateEstimators(unittest.TestCase):
     @unittest.skip
     def test_PF(self):
         from prog_algs.state_estimators import ParticleFilter
-        self.__test_state_est(ParticleFilter)
+        from prog_models.models import ThrownObject
+        self.__test_state_est(ParticleFilter, ThrownObject)
 
         m = MockProgModel(process_noise=5e-2, measurement_noise=0)
         x0 = m.initialize()
@@ -235,6 +235,57 @@ class TestStateEstimators(unittest.TestCase):
     def test_PF_incorrect_input(self):
         from prog_algs.state_estimators import ParticleFilter
         self.__incorrect_input_tests(ParticleFilter)
+
+    def test_KF(self):
+        from prog_algs.state_estimators import KalmanFilter
+        from prog_models import LinearModel
+        class ThrownObject(LinearModel):
+            inputs = []  # no inputs, no way to control
+            states = ['x', 'v']
+            outputs = ['x']
+            events = ['falling', 'impact']
+
+            A = np.array([[0, 1], [0, 0]])
+            E = np.array([[0], [-9.81]])
+            C = np.array([[1, 0]])
+            F = None # Will override method
+
+            default_parameters = {
+                'thrower_height': 1.83, 
+                'throwing_speed': 40, 
+                'g': -9.81 
+            }
+
+            def initialize(self, u=None, z=None):
+                return {
+                    'x': self.parameters['thrower_height'], 
+                    'v': self.parameters['throwing_speed'] 
+                    }
+            
+            def threshold_met(self, x):
+                return {
+                    'falling': x['v'] < 0,
+                    'impact': x['x'] <= 0
+                }
+
+            def event_state(self, x): 
+                x_max = x['x'] + np.square(x['v'])/(-self.parameters['g']*2) # Use speed and position to estimate maximum height
+                return {
+                    'falling': np.maximum(x['v']/self.parameters['throwing_speed'],0),  # Throwing speed is max speed
+                    'impact': np.maximum(x['x']/x_max,0) if x['v'] < 0 else 1  # 1 until falling begins, then it's fraction of height
+                }
+
+        self.__test_state_est(KalmanFilter, ThrownObject)
+
+        from prog_models.models import BatteryElectroChem
+
+        with self.assertRaises(Exception):
+            # Not linear model
+            KalmanFilter(BatteryElectroChem, {})
+
+        with self.assertRaises(Exception):
+            # Missing states
+            KalmanFilter(ThrownObject, {})
 
 # This allows the module to be executed directly    
 def run_tests():

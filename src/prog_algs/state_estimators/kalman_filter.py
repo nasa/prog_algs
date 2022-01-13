@@ -56,9 +56,9 @@ class KalmanFilter(state_estimator.StateEstimator):
         if np.size(B) == 0:
             # If B is empty, replace with E. 
             # Append wont work if B is empty
-            B = deepcopy(model.E).T
+            B = deepcopy(model.E)
         else:
-            B = np.append(B, deepcopy(model.E).T, 0)
+            B = np.append(B, deepcopy(model.E), 0)
 
         self.filter = kalman.KalmanFilter(num_states, num_measurements, num_inputs)
 
@@ -93,9 +93,9 @@ class KalmanFilter(state_estimator.StateEstimator):
 
         # Add row of ones (to account for constant E term)
         if np.size(inputs) == 0:
-            inputs = np.array([[1]]*len(self.model.states))
+            inputs = np.array([[1]])
         else:
-            inputs = np.append(inputs, [[1]] * len(self.model.states), 1)
+            inputs = np.append(inputs, [[1]], 0)
 
         self.t = t
 

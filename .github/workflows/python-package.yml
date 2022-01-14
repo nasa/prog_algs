@@ -92,6 +92,9 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Install prog_models from dev
+      run: |
+        python -m pip install git+https://github.com/nasa/prog_models.git@dev
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip

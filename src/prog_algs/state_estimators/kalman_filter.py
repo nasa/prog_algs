@@ -11,7 +11,7 @@ class KalmanFilter(state_estimator.StateEstimator):
     """
     An Kalman Filter (KF) for state estimation
 
-    This class defines logic for performing an kalman filter with a LinearModel (see Prognostics Model Package). This filter uses measurement data with noise to generate a state estimate and covariance matrix. 
+    This class defines logic for performing a kalman filter with a LinearModel (see Prognostics Model Package). This filter uses measurement data with noise to generate a state estimate and covariance matrix. 
 
     The supported configuration parameters (keyword arguments) for UKF construction are described below:
 
@@ -120,7 +120,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         # Subtract D from outputs
         # This is done because prog_models expects the form: 
         #   z = Cx + D
-        # While kalman expect
+        # While kalman expects
         #   z = Cx
         outputs = outputs - self.model.D
 

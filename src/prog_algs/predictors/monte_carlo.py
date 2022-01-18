@@ -75,12 +75,11 @@ class MonteCarlo(Predictor):
             outputs = LazySimResult(fcn = ouput_eqn)
             event_states = LazySimResult(fcn = es_eqn)
 
-            params = deepcopy(params)
-            params['x'] = x
+            t0 = params.get('t0', 0)
 
             # Non-vectorized prediction
             while len(events_remaining) > 0:  # Still events to predict
-                (t, u, xi, z, es) = simulate_to_threshold(future_loading_eqn, first_output, **params, threshold_keys=events_remaining, print=False)
+                (t, u, xi, z, es) = simulate_to_threshold(future_loading_eqn, first_output, **params, threshold_keys=events_remaining, print=False, t0=t0, x=x)
 
                 # Add results
                 times.extend(t)
@@ -106,10 +105,10 @@ class MonteCarlo(Predictor):
                 events_remaining.remove(event)  # No longer an event to predect to
 
                 # Remove last state (event)
-                params['t0'] = times.pop()
+                t0 = times.pop()
                 inputs.pop()
-                params['x'] = states.pop()
-                last_state[event] = deepcopy(params['x'])
+                x = states.pop()
+                last_state[event] = deepcopy(x)
                 outputs.pop()
                 event_states.pop()
             

@@ -99,3 +99,4 @@ cython_debug/
 # VS Code
 .vscode/
 .pypirc
+.DS_Store

@@ -3,6 +3,8 @@
 from .prediction import UnweightedSamplesPrediction
 from .predictor import Predictor
 from copy import deepcopy
+from collections import namedtuple
+
 from prog_models.sim_result import SimResult, LazySimResult
 from prog_algs.uncertain_data import UnweightedSamples, UncertainData
 
@@ -36,6 +38,7 @@ class MonteCarlo(Predictor):
     default_parameters = { 
         'n_samples': 100  # Default number of samples to use, if none specified
     }
+    PredictionResults = namedtuple('PredictionResults', ["times", "inputs_all", "states_all", "outputs_all", "event_states_all", "time_of_event"])
 
     def predict(self, state : UncertainData, future_loading_eqn, **kwargs):
         if isinstance(state, dict):
@@ -141,4 +144,11 @@ class MonteCarlo(Predictor):
         }
         time_of_event.final_state = last_states
 
-        return (times, inputs_all, states_all, outputs_all, event_states_all, time_of_event)
+        return self.PredictionResults(
+            times, 
+            inputs_all, 
+            states_all, 
+            outputs_all, 
+            event_states_all, 
+            time_of_event
+        )

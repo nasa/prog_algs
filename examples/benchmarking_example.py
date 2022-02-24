@@ -58,8 +58,8 @@ def run_example():
     for sample_count in sample_counts:
         print('\nRun 1 ({} samples)'.format(sample_count))
         start = time.perf_counter()
-        (t, u, x, z, es, toe) = pred.predict(state_estimator.x, future_loading, n_samples = sample_count)
-        toe = toe.key("EOD")  # Looking at EOD event
+        benchmark_prediction = pred.predict(state_estimator.x, future_loading, n_samples = sample_count)
+        toe = benchmark_prediction.time_of_event.key("EOD")  # Looking at EOD event
         end = time.perf_counter()
         print('\tMSE:     {:4.2f}s'.format(metrics.mean_square_error(toe, 3005.4)))
         print('\tRuntime: {:4.2f}s'.format(end - start))

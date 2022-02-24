@@ -38,7 +38,7 @@ class MonteCarlo(Predictor):
     default_parameters = { 
         'n_samples': 100  # Default number of samples to use, if none specified
     }
-    PredictionResults = namedtuple('PredictionResults', ["times", "inputs", "states", "outputs", "event_states_all", "time_of_event"])
+    PredictionResults = namedtuple('PredictionResults', ["times", "inputs", "states", "outputs", "event_states", "time_of_event"])
 
     def predict(self, state : UncertainData, future_loading_eqn, **kwargs):
         if isinstance(state, dict):

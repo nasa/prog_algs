@@ -91,7 +91,7 @@ class UnscentedTransformPredictor(Predictor):
         'save_pts': [],
         'save_freq': 1e99
     }
-    PredictionResults = namedtuple('PredictionResults', ["times", "inputs_prediction", "state_prediction", "output_prediction", "event_state_prediction", "time_of_event"])
+    PredictionResults = namedtuple('PredictionResults', ["times", "inputs", "states", "outputs", "event_states", "time_of_event"])
 
 
     def __init__(self, model, **kwargs):

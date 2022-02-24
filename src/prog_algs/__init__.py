@@ -17,7 +17,7 @@ def run_prog_playback(obs, pred, future_loading, output_measurements, **kwargs):
     }
     config.update(kwargs)
 
-    PlaybackResults = namedtuple('PlaybackResults', ["times", "inputs", "states", "outputs", "event_states", "toes"])
+    PlaybackResults = namedtuple('PlaybackResults', ["times", "inputs", "states", "outputs", "event_states", "time_of_event"])
     next_predict = output_measurements[0][0] + config['predict_rate']
     times = []
     inputs = []

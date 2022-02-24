@@ -37,30 +37,30 @@ def run_example():
     start_u = future_loading(0)
     start_x = battery.initialize(start_u)
     start_y = battery.output(start_x)
-    times, inputs, states, outputs, event_states = battery.simulate_to_threshold(future_loading, start_y, save_freq = 1)
+    simulation_results = battery.simulate_to_threshold(future_loading, start_y, save_freq = 1)
 
     # Run particle filter
     all_particles = []
-    n_times = int(np.round(np.random.uniform(len(times)*.25,len(times)*.45,1)))# Random current time
+    n_times = int(np.round(np.random.uniform(len(simulation_results.times)*.25,len(simulation_results.times)*.45,1)))# Random current time
 
     for i in range(n_times):
         if i == 0:
-            batt_pf = state_estimators.ParticleFilter(model = battery,  x0 = states[i], num_particles = 250)
+            batt_pf = state_estimators.ParticleFilter(model = battery,  x0 = simulation_results.states[i], num_particles = 250)
         else:
-            batt_pf.estimate(t = times[i], u = inputs[i], z = outputs[i])
+            batt_pf.estimate(t = simulation_results.times[i], u = simulation_results.inputs[i], z = simulation_results.outputs[i])
         all_particles.append(batt_pf.particles)
 
     # Mean of the particles
     alpha = 0.05
-    states_vsn = [s['tb'] for s in states]
+    states_vsn = [s['tb'] for s in simulation_results.states]
     pf_mean = [{key: np.mean(ps[key]) for key in battery.states} for ps in all_particles]
     pf_low = [{key: np.quantile(ps[key], alpha / 2.0) for key in battery.states} for ps in all_particles]
     pf_upp = [{key: np.quantile(ps[key], 1.0 - alpha / 2.0) for key in battery.states} for ps in all_particles]
     print("First State:", pf_mean[0])
     print("Current State:", pf_mean[-1])
-    plt.plot(times[:n_times],[p['tb'] for p in pf_mean],linewidth=0.7,color="blue")
-    plt.plot(times[:n_times], states_vsn[:n_times],"--",linewidth=0.7,color="red")
-    plt.fill_between(times[:n_times],[p['tb'] for p in pf_low],[p['tb'] for p in pf_upp],alpha=0.5,color="blue")
+    plt.plot(simulation_results.times[:n_times],[p['tb'] for p in pf_mean],linewidth=0.7,color="blue")
+    plt.plot(simulation_results.times[:n_times], states_vsn[:n_times],"--",linewidth=0.7,color="red")
+    plt.fill_between(simulation_results.times[:n_times],[p['tb'] for p in pf_low],[p['tb'] for p in pf_upp],alpha=0.5,color="blue")
     plt.show()
     
 

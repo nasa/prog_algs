@@ -26,7 +26,7 @@ class TemplatePredictor(Predictor):
 
         # INITIALIZE PREDICTOR
 
-    def predict(self, state, future_loading_eqn, **kwargs) -> namedtuple:
+    def predict(self, state, future_loading_eqn, **kwargs):
         """
         Perform a single prediction
 

@@ -51,10 +51,10 @@ class TestPredictors(unittest.TestCase):
         def future_loading(t, x={}):
             return {}
 
-        (times, inputs, states, outputs, event_states, toe) = pred.predict(samples, future_loading, dt=0.01, save_freq=1)
-        self.assertAlmostEqual(toe.mean['impact'], 8.21, 0)
-        self.assertAlmostEqual(toe.mean['falling'], 4.15, 0)
-        self.assertAlmostEqual(times[-1], 9, 1)  # Saving every second, last time should be around the 1s after impact event (because one of the sigma points fails afterwards)
+        prediction_results = pred.predict(samples, future_loading, dt=0.01, save_freq=1)
+        self.assertAlmostEqual(prediction_results.time_of_event.mean['impact'], 8.21, 0)
+        self.assertAlmostEqual(prediction_results.time_of_event.mean['falling'], 4.15, 0)
+        self.assertAlmostEqual(prediction_results.times[-1], 9, 1)  # Saving every second, last time should be around the 1s after impact event (because one of the sigma points fails afterwards)
 
     def test_UKP_ThrownObject_One_Event(self):
         # Test thrown object, similar to test_UKP_ThrownObject, but with only the 'falling' event
@@ -67,10 +67,10 @@ class TestPredictors(unittest.TestCase):
         def future_loading(t, x={}):
             return {}
 
-        (times, inputs, states, outputs, event_states, toe) = pred.predict(samples, future_loading, dt=0.01, events=['falling'], save_freq=1)
-        self.assertAlmostEqual(toe.mean['falling'], 4.15, 0)
-        self.assertTrue('impact' not in toe.mean)
-        self.assertAlmostEqual(times[-1], 4, 1)  # Saving every second, last time should be around the nearest 1s before falling event
+        prediction_results = pred.predict(samples, future_loading, dt=0.01, events=['falling'], save_freq=1)
+        self.assertAlmostEqual(prediction_results.time_of_event.mean['falling'], 4.15, 0)
+        self.assertTrue('impact' not in prediction_results.time_of_event.mean)
+        self.assertAlmostEqual(prediction_results.times[-1], 4, 1)  # Saving every second, last time should be around the nearest 1s before falling event
 
     def test_UKP_Battery(self):
         from prog_algs.predictors import UnscentedTransformPredictor
@@ -106,12 +106,12 @@ class TestPredictors(unittest.TestCase):
         ut = UnscentedTransformPredictor(batt)
 
         # Predict with a step size of 0.1
-        (times, inputs, states, outputs, event_states, toe) = ut.predict(filt.x, future_loading, dt=0.1)
-        self.assertAlmostEqual(toe.mean['EOD'], 3004, -2)
+        prediction_results = ut.predict(filt.x, future_loading, dt=0.1)
+        self.assertAlmostEqual(prediction_results.time_of_event.mean['EOD'], 3004, -2)
 
         # Test Metrics
         from prog_algs.metrics import samples
-        s = toe.sample(100).key('EOD')
+        s = prediction_results.time_of_event.sample(100).key('EOD')
         samples.eol_metrics(s)  # Kept for backwards compatibility
 
     def test_MC(self):
@@ -122,7 +122,7 @@ class TestPredictors(unittest.TestCase):
         def future_loading(t = None, x = None):
             return {}
             
-        (times, inputs, states, outputs, event_states, toe) = mc.predict(m.initialize(), future_loading, dt=0.2, num_samples=3, save_freq=1)
+        prediction_results = mc.predict(m.initialize(), future_loading, dt=0.2, num_samples=3, save_freq=1)
 
     def test_prediction_mvnormaldist(self):
         from prog_algs.predictors import Prediction as MultivariateNormalDistPrediction

@@ -3,7 +3,6 @@
 from .prediction import UnweightedSamplesPrediction, PredictionResults
 from .predictor import Predictor
 from copy import deepcopy
-from collections import namedtuple
 
 from prog_models.sim_result import SimResult, LazySimResult
 from prog_algs.uncertain_data import UnweightedSamples, UncertainData

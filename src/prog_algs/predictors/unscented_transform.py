@@ -1,9 +1,8 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from .prediction import Prediction, UnweightedSamplesPrediction
+from .prediction import Prediction, UnweightedSamplesPrediction, PredictionResults
 from .predictor import Predictor
 from numpy import diag, array, transpose
-from collections import namedtuple
 from copy import deepcopy
 from math import isnan
 from filterpy import kalman
@@ -91,8 +90,6 @@ class UnscentedTransformPredictor(Predictor):
         'save_pts': [],
         'save_freq': 1e99
     }
-    PredictionResults = namedtuple('PredictionResults', ["times", "inputs", "states", "outputs", "event_states", "time_of_event"])
-
 
     def __init__(self, model, **kwargs):
         super().__init__(model, **kwargs)
@@ -259,7 +256,7 @@ class UnscentedTransformPredictor(Predictor):
         event_state_prediction = LazyUTPrediction(state_prediction, sigma_points, kalman.unscented_transform, model.event_state)
         time_of_event = MultivariateNormalDist(ToE.keys(), mean, cov)
         time_of_event.final_state = final_state
-        return self.PredictionResults(
+        return PredictionResults(
             times, 
             inputs_prediction, 
             state_prediction, 

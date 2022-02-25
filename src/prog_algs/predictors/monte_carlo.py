@@ -1,6 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from .prediction import UnweightedSamplesPrediction
+from .prediction import UnweightedSamplesPrediction, PredictionResults
 from .predictor import Predictor
 from copy import deepcopy
 from collections import namedtuple
@@ -38,7 +38,6 @@ class MonteCarlo(Predictor):
     default_parameters = { 
         'n_samples': 100  # Default number of samples to use, if none specified
     }
-    PredictionResults = namedtuple('PredictionResults', ["times", "inputs", "states", "outputs", "event_states", "time_of_event"])
 
     def predict(self, state : UncertainData, future_loading_eqn, **kwargs):
         if isinstance(state, dict):
@@ -144,7 +143,7 @@ class MonteCarlo(Predictor):
         }
         time_of_event.final_state = last_states
 
-        return self.PredictionResults(
+        return PredictionResults(
             times, 
             inputs_all, 
             states_all, 

@@ -1,10 +1,11 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
-from collections import UserList
+from collections import UserList, namedtuple
 from warnings import warn
 
 from ..uncertain_data import UnweightedSamples
 
+PredictionResults = namedtuple('PredictionResults', ["times", "inputs", "states", "outputs", "event_states", "time_of_event"])
 
 class Prediction():
     """

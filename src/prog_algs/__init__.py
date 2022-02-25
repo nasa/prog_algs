@@ -1,10 +1,9 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 __all__ = ['predictors', 'uncertain_data', 'state_estimators', 'run_prog_playback', 'metrics']
-from . import predictors, state_estimators, uncertain_data
+from . import predictors, state_estimators, uncertain_data, PredictionResults
 
 import warnings
-from collections import namedtuple
 
 __version__ = '1.3.0'
 
@@ -17,7 +16,6 @@ def run_prog_playback(obs, pred, future_loading, output_measurements, **kwargs):
     }
     config.update(kwargs)
 
-    PlaybackResults = namedtuple('PlaybackResults', ["times", "inputs", "states", "outputs", "event_states", "time_of_event"])
     next_predict = output_measurements[0][0] + config['predict_rate']
     times = []
     inputs = []
@@ -38,7 +36,7 @@ def run_prog_playback(obs, pred, future_loading, output_measurements, **kwargs):
             toes.append(toe)
             index += 1
             next_predict += config['predict_rate']
-    return PlaybackResults(
+    return PredictionResults(
         times, 
         inputs, 
         states, 

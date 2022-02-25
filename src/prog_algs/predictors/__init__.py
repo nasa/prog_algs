@@ -2,7 +2,7 @@
 
 from .monte_carlo import MonteCarlo
 from .predictor import Predictor
-from .prediction import Prediction, UnweightedSamplesPrediction
+from .prediction import Prediction, UnweightedSamplesPrediction, PredictionResults
 from .toe_prediction_profile import ToEPredictionProfile
 from .unscented_transform import UnscentedTransformPredictor
 

@@ -2,7 +2,7 @@
 
 from copy import deepcopy
 from collections import namedtuple
-from prog_algs.predictors import Predictor, Prediction
+from prog_algs.predictors import Predictor, Prediction, PredictionResults
 # Replace the following with whatever form of UncertainData you would like to use to represent ToE 
 from prog_algs.uncertain_data import ScalarData
 
@@ -16,7 +16,6 @@ class TemplatePredictor(Predictor):
     default_parameters = { # Default Parameters, used as config for UKF
         'Example Parameter': 0.0
     } 
-    PredictorResults = namedtuple('PredictorResults', ["times", "inputs", "states", "outputs", "event_states", "time_of_event"])
 
     def __init__(self, model, **kwargs):
         """
@@ -74,7 +73,7 @@ class TemplatePredictor(Predictor):
         # Time of event is represented by some type of UncertainData (e.g., MultivariateNormalDist)
         time_of_event = ScalarData({'event1': 748, 'event2': 300})
 
-        return self.PredictorResults(
+        return PredictorResults(
             times, 
             inputs, 
             states, 

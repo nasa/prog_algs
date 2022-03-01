@@ -98,8 +98,8 @@ class UnscentedTransformPredictor(Predictor):
         self.__input = None  # Input at an individual step. Note, this needs to be a member to pass between state_transition and predict
 
         # setup UKF
-        num_states = len(model.states)
-        num_measurements = len(model.outputs)
+        num_states = model.n_states
+        num_measurements = model.n_outputs
 
         if 'Q' not in self.parameters:
             # Default 

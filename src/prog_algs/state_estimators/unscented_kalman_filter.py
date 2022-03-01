@@ -70,7 +70,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
             return array(list(x.values())).ravel()
 
         num_states = len(x0.keys())
-        num_measurements = len(model.outputs)
+        num_measurements = model.n_outputs
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measure, state_transition, points)
         self.filter.x = array(list(x0.values())).ravel()

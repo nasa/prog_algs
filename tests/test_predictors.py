@@ -1,7 +1,11 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+import sys
 import unittest
 
 from prog_models import PrognosticsModel
+# This ensures that the directory containing predictor_template is in the Python search directory
+from os.path import dirname, join
+sys.path.append(join(dirname(__file__), ".."))
 
 
 class MockProgModel(PrognosticsModel):

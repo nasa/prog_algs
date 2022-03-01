@@ -36,4 +36,11 @@ def run_prog_playback(obs, pred, future_loading, output_measurements, **kwargs):
             toes.append(toe)
             index += 1
             next_predict += config['predict_rate']
-    return (times, inputs, states, outputs, event_states, toes) 
+    return predictors.PredictionResults(
+        times, 
+        inputs, 
+        states, 
+        outputs, 
+        event_states, 
+        toes
+    ) 

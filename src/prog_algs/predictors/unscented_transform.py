@@ -1,6 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from .prediction import Prediction, UnweightedSamplesPrediction
+from .prediction import Prediction, UnweightedSamplesPrediction, PredictionResults
 from .predictor import Predictor
 from numpy import diag, array, transpose
 from copy import deepcopy
@@ -98,8 +98,8 @@ class UnscentedTransformPredictor(Predictor):
         self.__input = None  # Input at an individual step. Note, this needs to be a member to pass between state_transition and predict
 
         # setup UKF
-        num_states = len(model.states)
-        num_measurements = len(model.outputs)
+        num_states = model.n_states
+        num_measurements = model.n_outputs
 
         if 'Q' not in self.parameters:
             # Default 
@@ -256,5 +256,12 @@ class UnscentedTransformPredictor(Predictor):
         event_state_prediction = LazyUTPrediction(state_prediction, sigma_points, kalman.unscented_transform, model.event_state)
         time_of_event = MultivariateNormalDist(ToE.keys(), mean, cov)
         time_of_event.final_state = final_state
-        return (times, inputs_prediction, state_prediction, output_prediction, event_state_prediction, time_of_event)  
+        return PredictionResults(
+            times, 
+            inputs_prediction, 
+            state_prediction, 
+            output_prediction, 
+            event_state_prediction, 
+            time_of_event
+        )  
       

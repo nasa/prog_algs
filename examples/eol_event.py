@@ -41,10 +41,10 @@ def run_example():
     state = ScalarData(m.initialize())
 
     # Step 4: Predict to EOL event
-    (times, inputs, states, outputs, event_states, toe) = pred.predict(state, future_loading, events=['EOL'], dt=0.025)
+    pred_results = pred.predict(state, future_loading, events=['EOL'], dt=0.025)
 
     # Step 5: Plot results
-    toe.plot_hist()
+    pred_results.time_of_event.plot_hist()
 
     import matplotlib.pyplot as plt
     plt.show()

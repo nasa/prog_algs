@@ -1,6 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from .prediction import UnweightedSamplesPrediction
+from .prediction import UnweightedSamplesPrediction, PredictionResults
 from .predictor import Predictor
 from copy import deepcopy
 from prog_models.sim_result import SimResult, LazySimResult
@@ -141,4 +141,11 @@ class MonteCarlo(Predictor):
         }
         time_of_event.final_state = last_states
 
-        return (times, inputs_all, states_all, outputs_all, event_states_all, time_of_event)
+        return PredictionResults(
+            times, 
+            inputs_all, 
+            states_all, 
+            outputs_all, 
+            event_states_all, 
+            time_of_event
+        )

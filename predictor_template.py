@@ -1,7 +1,7 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from copy import deepcopy
-from prog_algs.predictors import Predictor, Prediction
+from prog_algs.predictors import Predictor, Prediction, PredictionResults
 # Replace the following with whatever form of UncertainData you would like to use to represent ToE 
 from prog_algs.uncertain_data import ScalarData
 
@@ -39,7 +39,7 @@ class TemplatePredictor(Predictor):
         options : dict, optional
             Dictionary of any additional configuration values. See default parameters, above
 
-        Returns (tuple)
+        Returns (namedtuple)
         -------
         times : List[float]
             Times for each savepoint such that inputs.snapshot(i), states.snapshot(i), outputs.snapshot(i), and event_states.snapshot(i) are all at times[i]            
@@ -72,4 +72,11 @@ class TemplatePredictor(Predictor):
         # Time of event is represented by some type of UncertainData (e.g., MultivariateNormalDist)
         time_of_event = ScalarData({'event1': 748, 'event2': 300})
 
-        return (times, inputs, states, outputs, event_states, time_of_event)
+        return PredictionResults(
+            times, 
+            inputs, 
+            states, 
+            outputs, 
+            event_states, 
+            time_of_event
+        )

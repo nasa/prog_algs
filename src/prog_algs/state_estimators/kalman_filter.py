@@ -50,11 +50,11 @@ class KalmanFilter(state_estimator.StateEstimator):
         if 'R' not in self.parameters:
             # Size of what's being measured (not output) 
             # This is determined by running the measure function on the first state
-            self.parameters['R'] = np.diag([1.0e-3 for i in range(len(model.outputs))])
+            self.parameters['R'] = np.diag([1.0e-3 for i in range(model.n_outputs)])
 
         num_states = len(x0.keys())
-        num_inputs = len(model.inputs) + 1
-        num_measurements = len(model.outputs)
+        num_inputs = model.n_inputs + 1
+        num_measurements = model.n_outputs
         F = deepcopy(model.A)
         B = deepcopy(model.B)
         if np.size(B) == 0:
@@ -109,7 +109,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         # Therefore we need to add the diagnol matrix 1 to A to convert
         # And A and B should be multiplied by the time step
         B = np.multiply(self.filter.B, dt) 
-        F = np.multiply(self.filter.F, dt) + np.diag([1]* len(self.model.states))
+        F = np.multiply(self.filter.F, dt) + np.diag([1]* self.model.n_states)
 
         # Predict
         self.filter.predict(u = inputs, B = B, F = F)

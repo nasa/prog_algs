@@ -5,3 +5,15 @@ import papermill
 
 class TestTutorials(unittest.TestCase):
     pass
+
+def run_tests():
+    l = unittest.TestLoader()
+    runner = unittest.TextTestRunner()
+    print("\n\nTesting Tutorials")
+    result = runner.run(l.loadTestsFromTestCase(TestTutorials)).wasSuccessful()
+
+    if not result:
+        raise Exception("Failed test")
+
+if __name__ == '__main__':
+    run_tests()

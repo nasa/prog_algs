@@ -109,7 +109,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         # Therefore we need to add the diagnol matrix 1 to A to convert
         # And A and B should be multiplied by the time step
         B = np.multiply(self.filter.B, dt) 
-        F = np.multiply(self.filter.F, dt) + np.diag([1]* len(self.model.states))
+        F = np.multiply(self.filter.F, dt) + np.diag([1]* self.model.n_states)
 
         # Predict
         self.filter.predict(u = inputs, B = B, F = F)

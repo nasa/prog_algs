@@ -96,8 +96,8 @@ def run_example():
 
             # Prediction Step (every PREDICTION_UPDATE_FREQ steps)
             if (step%PREDICTION_UPDATE_FREQ == 0):
-                (times, inputs, states, outputs, event_states, toe) = mc.predict(filt.x, future_loading, n_samples=NUM_SAMPLES, dt=TIME_STEP)
-                m = toe.metrics()
+                mc_results = mc.predict(filt.x, future_loading, n_samples=NUM_SAMPLES, dt=TIME_STEP)
+                m = mc_results.time_of_event.metrics()
                 print('  - ToE: {} (sigma: {})'.format(m['EOD']['mean'], m['EOD']['std']))
 
                 # Update Plot
@@ -108,7 +108,7 @@ def run_example():
                     rulax.set_ylim(0, (m['EOD']['mean']-t)*1.1)
                 rul_line.set_data(rul_x, rul_y)
                 rul_fig.canvas.draw()
-                profile.add_prediction(t, toe)
+                profile.add_prediction(t, mc_results.time_of_event)
 
     input('Press any key to exit')
 

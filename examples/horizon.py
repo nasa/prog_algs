@@ -54,12 +54,12 @@ def run_example():
     PREDICTION_HORIZON = 7.75
     samples = filt.x  # Since we're using a particle filter, which is also sample-based, we can directly use the samples, without changes
     STEP_SIZE = 0.1
-    (_, _, _, _, _, toe) = mc.predict(samples, future_loading, dt=STEP_SIZE, horizon = PREDICTION_HORIZON)
+    mc_results = mc.predict(samples, future_loading, dt=STEP_SIZE, horizon = PREDICTION_HORIZON)
     print("\nPredicted Time of Event:")
-    metrics = toe.metrics()
+    metrics = mc_results.time_of_event.metrics()
     pprint(metrics)  # Note this takes some time
-    toe.plot_hist(keys = 'impact')
-    toe.plot_hist(keys = 'falling')
+    mc_results.time_of_event.plot_hist(keys = 'impact')
+    mc_results.time_of_event.plot_hist(keys = 'falling')
 
     print("\nSamples where impact occurs before horizon: {:.2f}%".format(metrics['impact']['number of samples']/NUM_SAMPLES*100))
     

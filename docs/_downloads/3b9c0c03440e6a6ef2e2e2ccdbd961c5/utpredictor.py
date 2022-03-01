@@ -55,7 +55,7 @@ def run_example():
     # You can also access the final state (of type UncertainData), like so:
     final_state = mc_results.time_of_event.final_state
     print('Final state @EOD: ', final_state['EOD'].mean)
-    # toe.plot_hist()
+    # mc_results.time_of_event.plot_hist()
     # plt.show()
 
 # This allows the module to be executed directly 

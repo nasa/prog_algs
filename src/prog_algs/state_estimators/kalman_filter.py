@@ -50,11 +50,11 @@ class KalmanFilter(state_estimator.StateEstimator):
         if 'R' not in self.parameters:
             # Size of what's being measured (not output) 
             # This is determined by running the measure function on the first state
-            self.parameters['R'] = np.diag([1.0e-3 for i in range(len(model.outputs))])
+            self.parameters['R'] = np.diag([1.0e-3 for i in range(model.n_outputs)])
 
         num_states = len(x0.keys())
-        num_inputs = len(model.inputs) + 1
-        num_measurements = len(model.outputs)
+        num_inputs = model.n_inputs + 1
+        num_measurements = model.n_outputs
         F = deepcopy(model.A)
         B = deepcopy(model.B)
         if np.size(B) == 0:

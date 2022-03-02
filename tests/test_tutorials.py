@@ -4,10 +4,10 @@ import unittest
 from testbook import testbook
 
 class TestTutorials(unittest.TestCase):
-    with testbook('./tutorial.ipynb', execute=True) as tb:
-        def test_loading_notebook(self):
-            # with testbook('./tutorial.ipynb', execute=True) as tb:
-            ipynb_batt = self.tb.ref("m")
+    # with testbook('./tutorial.ipynb', execute=True) as tb:
+    def test_loading_notebook(self):
+        with testbook('./tutorial.ipynb', execute=True) as tb:
+            ipynb_batt = tb.ref("m")
 
 def run_tests():
     l = unittest.TestLoader()

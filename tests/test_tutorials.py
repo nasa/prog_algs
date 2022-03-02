@@ -5,8 +5,11 @@ import papermill as pm
 from testbook import testbook
 
 class TestTutorials(unittest.TestCase):
-    def test_inspect_notebook(self):
-        pm.inspect_notebook('./tutorial.ipynb')
+    def test_loading_notebook(self):
+        with testbook('./tutorial.ipynb', execute=True) as tb:
+            ipynb_batt = tb.ref("m")
+            
+
 
 def run_tests():
     l = unittest.TestLoader()

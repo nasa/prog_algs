@@ -2,6 +2,7 @@
 
 import unittest
 import papermill as pm
+from testbook import testbook
 
 class TestTutorials(unittest.TestCase):
     def test_inspect_notebook(self):

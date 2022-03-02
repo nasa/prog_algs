@@ -1,10 +1,11 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 import unittest
-import papermill
+import papermill as pm
 
 class TestTutorials(unittest.TestCase):
-    pass
+    def test_inspect_notebook(self):
+        pm.inspect_notebook('./tutorial.ipynb')
 
 def run_tests():
     l = unittest.TestLoader()

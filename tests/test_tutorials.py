@@ -4,15 +4,10 @@ import unittest
 from testbook import testbook
 
 class TestTutorials(unittest.TestCase):
-    # using wrapper; doesn't work, doesn't recognize tb var?
-    @testbook('./tutorial.ipynb', execute=True)
-    def test_loading_notebook1(self, tb):
-        ipynb_batt = tb.ref("m")
-
-    # using context manager
-    def test_loading_notebook2(self):
-        with testbook('./tutorial.ipynb', execute=True) as tb:
-            ipynb_batt = tb.ref("m")
+    def test_tutorial_ipynb(self):
+        with testbook('./tutorial.ipynb', execute=False) as tb:
+            # Test importing BatteryCircuit, UnscentedKalmanFilter
+            tb.execute_cell([0])
 
 def run_tests():
     l = unittest.TestLoader()

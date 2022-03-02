@@ -9,9 +9,10 @@ class TestTutorials(unittest.TestCase):
             # TESTING STATE ESTIMATION
             # Test importing and initializing BatteryCircuit, UnscentedKalmanFilter
             tb.execute_cell([0,1,2,3,4,5,6])
-            t = tb.ref("m")
-            # self.assertEqual(type(tb.ref("m")), "BatteryCircuit")
-
+            self.assertEqual(tb.ref("m")._type, "BatteryCircuit")
+            self.assertEqual(tb.ref("x0"), {'tb': 18.95, 'qb': 7856.3254, 'qcp': 0, 'qcs': 0})
+            self.assertEqual(tb.ref("est")._type, "UnscentedKalmanFilter")
+            
 
 def run_tests():
     l = unittest.TestLoader()

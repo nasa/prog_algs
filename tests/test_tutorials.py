@@ -12,6 +12,20 @@ class TestTutorials(unittest.TestCase):
             self.assertEqual(tb.ref("m")._type, "BatteryCircuit")
             self.assertEqual(tb.ref("x0"), {'tb': 18.95, 'qb': 7856.3254, 'qcp': 0, 'qcs': 0})
             self.assertEqual(tb.ref("est")._type, "UnscentedKalmanFilter")
+            # Test estimating the system state; compare against expected print output
+            tb.execute_cell([7,8])
+            state_estimation_prints = [line.strip() for line in tb.cell_output_text(8).splitlines()]
+            self.assertEqual(state_estimation_prints[0], "Prior State: {'tb': 18.95, 'qb': 7856.3254, 'qcp': 0.0, 'qcs': 0.0}")
+            self.assertEqual(state_estimation_prints[1], "SOC:  1.0")
+            self.assertEqual(state_estimation_prints[2], "Posterior State: {'tb': 20.15440859119512, 'qb': 7856.125354781064, 'qcp': 0.20143751745290445, 'qcs': 0.20014829013698857}")
+            self.assertEqual(state_estimation_prints[3], "SOC:  0.9999742773281554")
+            self.assertEqual(state_estimation_prints[4], "<Figure size 1000x900 with 9 Axes><Figure size 1000x900 with 9 Axes>")
+
+            # Expected STDOUT
+            # Prior State: {'tb': 18.95, 'qb': 7856.3254, 'qcp': 0.0, 'qcs': 0.0} 
+            # SOC:  1.0
+            # Posterior State: {'tb': 20.153040257821697, 'qb': 7854.124938401348, 'qcp': 2.2004631247958346, 'qcs': 2.200499193776155}
+	        # SOC:  0.9997170552142662
             
 
 def run_tests():

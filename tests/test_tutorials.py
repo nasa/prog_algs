@@ -6,8 +6,12 @@ from testbook import testbook
 class TestTutorials(unittest.TestCase):
     def test_tutorial_ipynb(self):
         with testbook('./tutorial.ipynb', execute=False) as tb:
-            # Test importing BatteryCircuit, UnscentedKalmanFilter
-            tb.execute_cell([0])
+            # TESTING STATE ESTIMATION
+            # Test importing and initializing BatteryCircuit, UnscentedKalmanFilter
+            tb.execute_cell([0,1,2,3,4,5,6])
+            t = tb.ref("m")
+            # self.assertEqual(type(tb.ref("m")), "BatteryCircuit")
+
 
 def run_tests():
     l = unittest.TestLoader()

@@ -29,6 +29,10 @@ class TestTutorials(unittest.TestCase):
             # TESTING TO ENSURE EXECUTION WITHOUT FAIL
             self.assertEqual(tb.ref("m")._type, "BatteryCircuit")
             self.assertEqual(tb.ref("est")._type, "UnscentedKalmanFilter")
+            self.assertEqual(tb.ref("m").event_state(tb.ref("est").x.mean)['EOD'], 0.9999742773281554)
+            self.assertEqual(tb.ref("est").x.mean, {'tb': 20.15440859119512, 'qb': 7856.125354781064, 'qcp': 0.20143751745290445, 'qcs': 0.20014829013698857})
+
+
 
 def run_tests():
     l = unittest.TestLoader()

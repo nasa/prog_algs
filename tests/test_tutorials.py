@@ -4,8 +4,13 @@ import unittest
 from testbook import testbook
 
 class TestTutorials(unittest.TestCase):
-    # with testbook('./tutorial.ipynb', execute=True) as tb:
-    def test_loading_notebook(self):
+    # using wrapper; doesn't work, doesn't recognize tb var?
+    @testbook('./tutorial.ipynb', execute=True)
+    def test_loading_notebook1(self, tb):
+        ipynb_batt = tb.ref("m")
+
+    # using context manager
+    def test_loading_notebook2(self):
         with testbook('./tutorial.ipynb', execute=True) as tb:
             ipynb_batt = tb.ref("m")
 

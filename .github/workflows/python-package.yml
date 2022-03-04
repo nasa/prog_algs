@@ -10,13 +10,13 @@ on:
       - prog_algs
 
 jobs:
-  python3: &python 'python'
+  aliases:
+    python3: &python 'python'
   analysis:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ['3.8']
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}

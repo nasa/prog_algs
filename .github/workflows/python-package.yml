@@ -62,8 +62,8 @@ jobs:
         python -m pip install -e .
         python -m pip install testbook
     - name : Create Python kernel alias
-      uses: 
-        python3: &python 'python'
+      run: 
+        alias python3="python"
     - name: Run tests
       run: python -m tests
   test-prog_models-released:
@@ -83,8 +83,8 @@ jobs:
         python -m pip install -e .
         python -m pip install testbook
     - name : Create Python kernel alias
-      uses: 
-        python3: &python 'python'
+      run: 
+        alias python3="python"
     - name: Run tests
       run: python -m tests
 

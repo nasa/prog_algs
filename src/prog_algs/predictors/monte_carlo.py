@@ -80,7 +80,7 @@ class MonteCarlo(Predictor):
             # Non-vectorized prediction
             while len(events_remaining) > 0:  # Still events to predict
                 (t, u, xi, z, es) = simulate_to_threshold(future_loading_eqn, first_output, 
-                    **{**params, 'threshold_keys': events_remaining, 'print': False, 't0': t0, 'x': x}  # Merge then separate
+                    **{**params, 'threshold_keys': events_remaining, 'print': False, 'progress': False, 't0': t0, 'x': x}  # Merge then separate
                 )
                 
 

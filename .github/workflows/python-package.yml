@@ -64,8 +64,6 @@ jobs:
     - name : Create Python kernel alias
       run: 
         alias python3="python"
-        python -m pip install ipykernel
-        python -m ipykernel install
     - name: Run tests
       run: python -m tests
   test-prog_models-released:
@@ -87,8 +85,6 @@ jobs:
     - name : Create Python kernel alias
       run: 
         alias python3="python"
-        python -m pip install ipykernel
-        python -m ipykernel install
     - name: Run tests
       run: python -m tests
 

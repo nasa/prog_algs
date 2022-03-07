@@ -5,7 +5,7 @@ import numpy as np
 from filterpy import kalman
 from prog_models import LinearModel
 from . import state_estimator
-from ..uncertain_data import MultivariateNormalDist
+from ..uncertain_data import MultivariateNormalDist, UncertainData, UnweightedSamples, ScalarData
 
 class KalmanFilter(state_estimator.StateEstimator):
     """
@@ -53,11 +53,15 @@ class KalmanFilter(state_estimator.StateEstimator):
             self.parameters['R'] = np.diag([1.0e-3 for i in range(model.n_outputs)])
         # consider x0 check here
         if isinstance(x0, dict):
-            # raise warning?
+            # raise warning? maybe check if uncertain key exists before issuing warning?
+            print(f"Warning: Use UncertainData type if estimating filtering with uncertain data (UncertainData, UnweightedSamples, ScalarData, MultivariateNormalDist)")
+        elif isinstance(x0, (UncertainData, UnweightedSamples, ScalarData, MultivariateNormalDist)):
+            # all other uncertain_data, assign to a mem var
+            # might not need this? we don't seem to use uncertain data in this filter
             pass
         else:
-            # all other uncertain_data, assign to a mem var
-            pass
+            # raise error 
+            raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData, UnweightedSamples, ScalarData, MultivariateNormalDist}}")
         
 
         num_states = len(x0.keys())

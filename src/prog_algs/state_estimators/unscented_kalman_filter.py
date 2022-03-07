@@ -3,7 +3,7 @@
 from . import state_estimator
 from filterpy import kalman
 from numpy import diag, array
-from ..uncertain_data import MultivariateNormalDist
+from ..uncertain_data import MultivariateNormalDist, UncertainData, UnweightedSamples, ScalarData
 
 class UnscentedKalmanFilter(state_estimator.StateEstimator):
     """
@@ -59,6 +59,18 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
             # Size of what's being measured (not output) 
             # This is determined by running the measure function on the first state
             self.parameters['R'] = diag([1.0e-3 for i in range(len(measure(x0.values())))])
+
+        # consider x0 check here
+        if isinstance(x0, dict):
+            # raise warning? maybe check if uncertain key exists before issuing warning?
+            print(f"Warning: Use UncertainData type if estimating filtering with uncertain data (UncertainData, UnweightedSamples, ScalarData, MultivariateNormalDist)")
+        elif isinstance(x0, (UncertainData, UnweightedSamples, ScalarData, MultivariateNormalDist)):
+            # all other uncertain_data, assign to a mem var
+            # might not need this? we don't seem to use uncertain data in this filter
+            pass
+        else:
+            # raise error 
+            raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData, UnweightedSamples, ScalarData, MultivariateNormalDist}}")
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(x0.keys(), x)}

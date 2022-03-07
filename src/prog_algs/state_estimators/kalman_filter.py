@@ -51,6 +51,7 @@ class KalmanFilter(state_estimator.StateEstimator):
             # Size of what's being measured (not output) 
             # This is determined by running the measure function on the first state
             self.parameters['R'] = np.diag([1.0e-3 for i in range(model.n_outputs)])
+
         # consider x0 check here
         if isinstance(x0, dict):
             # raise warning? maybe check if uncertain key exists before issuing warning?
@@ -63,7 +64,6 @@ class KalmanFilter(state_estimator.StateEstimator):
             # raise error 
             raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData, UnweightedSamples, ScalarData, MultivariateNormalDist}}")
         
-
         num_states = len(x0.keys())
         num_inputs = model.n_inputs + 1
         num_measurements = model.n_outputs

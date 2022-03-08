@@ -54,6 +54,9 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
                 z = measurement_eqn(x)
                 return array(list(z.values())).ravel()
 
+        if 'Q' not in self.parameters:
+            self.parameters['Q'] = diag([1.0e-3 for i in x0.keys()])
+
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(x0.keys(), x)}
             Q_err = model.parameters['process_noise'].copy()
@@ -68,27 +71,24 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measure, state_transition, points)
         
-        parameter_Q_bool = 'Q' not in self.parameters # cache check
         parameter_R_bool = 'R' not in self.parameters
         if isinstance(x0, dict):
             warnings.warn(f"Warning: Use UncertainData type if estimating filtering with uncertain data.")
             array(list(x0.values())).ravel()
-            if parameter_Q_bool:
-                self.parameters['Q'] = diag([1.0e-3 for i in x0.keys()])
+            self.filter.P = self.parameters['Q'] / 10
             if parameter_R_bool:
                 # Size of what's being measured (not output) 
                 # This is determined by running the measure function on the first state
                 self.parameters['R'] = diag([1.0e-3 for i in range(len(measure(x0.values())))])
+       
         elif isinstance(x0, UncertainData):
             self.filter.x = None # UncertainData x implementation
-            if parameter_Q_bool:
-                self.parameters['Q'] = x0.cov()
+            self.filter.P = x0.cov()
             if parameter_R_bool:
                 pass # Alternative set R
         else:
             raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
 
-        self.filter.P = self.parameters['Q'] / 10
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
 

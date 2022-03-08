@@ -52,18 +52,6 @@ class KalmanFilter(state_estimator.StateEstimator):
             # Size of what's being measured (not output) 
             # This is determined by running the measure function on the first state
             self.parameters['R'] = np.diag([1.0e-3 for i in range(model.n_outputs)])
-
-        # consider x0 check here
-        if isinstance(x0, dict):
-            # for now issue warning whenever dict is used
-            warnings.warn(f"Warning: Use UncertainData type if estimating filtering with uncertain data.")
-        elif isinstance(x0, UncertainData):
-            # all other uncertain_data, assign to a mem var
-            # IMPLEMENT LOGIC HERE
-            pass
-        else:
-            # raise error if type is not dict or UncertainData
-            raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
         
         num_states = len(x0.keys())
         num_inputs = model.n_inputs + 1
@@ -79,7 +67,17 @@ class KalmanFilter(state_estimator.StateEstimator):
 
         self.filter = kalman.KalmanFilter(num_states, num_measurements, num_inputs)
 
-        self.filter.x = np.array([[x0[key]] for key in model.states])
+        if isinstance(x0, dict):
+            # for now issue warning whenever dict is used
+            warnings.warn(f"Warning: Use UncertainData type if estimating filtering with uncertain data.")
+            self.filter.x = np.array([[x0[key]] for key in model.states])
+        elif isinstance(x0, UncertainData):
+            # get dict x0[key] equivalent from uncertain_data type below 
+            self.filter.x = np.array([[x0.key(key)] for key in model.states])
+        else:
+            # raise error if type is not dict or UncertainData
+            raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
+
         self.filter.P = self.parameters['Q'] / 10
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']

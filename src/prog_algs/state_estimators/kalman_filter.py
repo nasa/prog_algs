@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 import numpy as np
+import warnings
 from filterpy import kalman
 from prog_models import LinearModel
 from . import state_estimator
@@ -54,15 +55,15 @@ class KalmanFilter(state_estimator.StateEstimator):
 
         # consider x0 check here
         if isinstance(x0, dict):
-            # raise warning? maybe check if uncertain key exists before issuing warning?
-            print(f"Warning: Use UncertainData type if estimating filtering with uncertain data (UncertainData, UnweightedSamples, ScalarData, MultivariateNormalDist)")
-        elif isinstance(x0, (UncertainData, UnweightedSamples, ScalarData, MultivariateNormalDist)):
+            # for now issue warning whenever dict is used
+            warnings.warn(f"Warning: Use UncertainData type if estimating filtering with uncertain data.")
+        elif isinstance(x0, UncertainData):
             # all other uncertain_data, assign to a mem var
-            # might not need this? we don't seem to use uncertain data in this filter
+            # IMPLEMENT LOGIC HERE
             pass
         else:
-            # raise error 
-            raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData, UnweightedSamples, ScalarData, MultivariateNormalDist}}")
+            # raise error if type is not dict or UncertainData
+            raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
         
         num_states = len(x0.keys())
         num_inputs = model.n_inputs + 1

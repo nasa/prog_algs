@@ -69,14 +69,12 @@ class KalmanFilter(state_estimator.StateEstimator):
         if isinstance(x0, dict):
             warnings.warn(f"Warning: Use UncertainData type if estimating filtering with uncertain data.")
             self.filter.x = np.array([[x0[key]] for key in model.states])
-            if parameter_Q_bool: # find cleaner way to check Q in both if branches?
+            if parameter_Q_bool:
                 self.parameters['Q'] = np.diag([1.0e-3 for i in x0.keys()])
         elif isinstance(x0, UncertainData):
             self.filter.x = np.array([[x0.mean()[key]] for key in model.states])
             if parameter_Q_bool:
-                # self.parameters['Q'] = np.diag([1.0e-3 for i in x0.keys()])
                 self.parameters['Q'] = x0.cov() # need something to start off, use covariance 2d numpy array
-
         else:
             raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
 

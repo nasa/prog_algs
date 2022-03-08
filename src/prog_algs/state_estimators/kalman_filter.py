@@ -72,7 +72,8 @@ class KalmanFilter(state_estimator.StateEstimator):
             if parameter_Q_bool:
                 self.parameters['Q'] = np.diag([1.0e-3 for i in x0.keys()])
         elif isinstance(x0, UncertainData):
-            self.filter.x = np.array([[x0.mean()[key]] for key in model.states])
+            x_mean = x0.mean()
+            self.filter.x = np.array([[x_mean[key]] for key in model.states])
             if parameter_Q_bool:
                 self.parameters['Q'] = x0.cov() # need something to start off, use covariance 2d numpy array
         else:

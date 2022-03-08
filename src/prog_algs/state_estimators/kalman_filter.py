@@ -6,7 +6,7 @@ import warnings
 from filterpy import kalman
 from prog_models import LinearModel
 from . import state_estimator
-from ..uncertain_data import MultivariateNormalDist, UncertainData
+from ..uncertain_data import MultivariateNormalDist, UncertainData, UnweightedSamples, ScalarData
 
 class KalmanFilter(state_estimator.StateEstimator):
     """
@@ -71,15 +71,15 @@ class KalmanFilter(state_estimator.StateEstimator):
             self.filter.x = np.array([[x0[key]] for key in model.states])
             if parameter_Q_bool:
                 self.parameters['Q'] = np.diag([1.0e-3 for i in x0.keys()])
+                self.filter.P = self.parameters['Q'] / 10
         elif isinstance(x0, UncertainData):
-            x_mean = x0.mean()
-            self.filter.x = np.array([[x_mean[key]] for key in model.states])
+            self.filter.x = np.array([[x0.mean()[key]] for key in model.states])
             if parameter_Q_bool:
                 self.parameters['Q'] = x0.cov() # need something to start off, use covariance 2d numpy array
+                self.filter.P = self.parameters['Q']
         else:
             raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
 
-        self.filter.P = self.parameters['Q'] / 10
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
         self.filter.F = F

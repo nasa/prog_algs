@@ -1,5 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
+import warnings
 from . import state_estimator
 from filterpy import kalman
 from numpy import diag, array
@@ -63,14 +64,14 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         # consider x0 check here
         if isinstance(x0, dict):
             # raise warning? maybe check if uncertain key exists before issuing warning?
-            print(f"Warning: Use UncertainData type if estimating filtering with uncertain data (UncertainData, UnweightedSamples, ScalarData, MultivariateNormalDist)")
-        elif isinstance(x0, (UncertainData, UnweightedSamples, ScalarData, MultivariateNormalDist)):
+            warnings.warn(f"Warning: Use UncertainData type if estimating filtering with uncertain data.")
+        elif isinstance(x0, UncertainData):
             # all other uncertain_data, assign to a mem var
-            # might not need this? we don't seem to use uncertain data in this filter
+            # IMPLEMENT LOGIC HERE
             pass
         else:
             # raise error 
-            raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData, UnweightedSamples, ScalarData, MultivariateNormalDist}}")
+            raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(x0.keys(), x)}

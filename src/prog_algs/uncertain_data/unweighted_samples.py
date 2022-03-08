@@ -33,7 +33,8 @@ class UnweightedSamples(UncertainData, UserList):
 
     def sample(self, num_samples = 1, replace = True):
         # Completely random resample
-        return UnweightedSamples(random.choice(self.data, num_samples, replace = replace))
+        indices = random.choice(len(self.data), num_samples, replace = replace)
+        return UnweightedSamples([self.data[i] for i in indices])
 
     def keys(self):
         if len(self.data) == 0:

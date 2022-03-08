@@ -41,7 +41,18 @@ class ParticleFilter(state_estimator.StateEstimator):
     def __init__(self, model, x0, measurement_eqn = None, **kwargs):
         super().__init__(model, x0, measurement_eqn = measurement_eqn, **kwargs)
         
-        self.__measure = measurement_eqn if measurement_eqn else model.output
+        if measurement_eqn:
+            self.__measure = measurement_eqn
+            
+            # update output_container
+            z0 = measurement_eqn(x0)
+            from prog_models.utils.containers import DictLikeMatrixWrapper
+            class MeasureContainer(DictLikeMatrixWrapper):
+                def __init__(self, z):
+                    super().__init__(list(z0.keys()), z)
+            self.model.OutputContainer = MeasureContainer
+        else:
+            self.__measure = model.output
 
         # Build array inplace
         x = array(list(x0.values()))

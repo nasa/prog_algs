@@ -257,10 +257,10 @@ class TestStateEstimators(unittest.TestCase):
             }
 
             def initialize(self, u=None, z=None):
-                return {
+                return self.StateContainer({
                     'x': self.parameters['thrower_height'], 
                     'v': self.parameters['throwing_speed'] 
-                    }
+                    })
             
             def threshold_met(self, x):
                 return {

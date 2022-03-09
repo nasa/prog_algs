@@ -76,10 +76,10 @@ class ThrownObject(LinearModel):
     }
 
     def initialize(self, u=None, z=None):
-        return {
+        return self.StateContainer({
             'x': self.parameters['thrower_height'],  # Thrown, so initial altitude is height of thrower
             'v': self.parameters['throwing_speed']  # Velocity at which the ball is thrown - this guy is a professional baseball pitcher
-            }
+            })
     
     # This is actually optional. Leaving thresholds_met empty will use the event state to define thresholds.
     #  Threshold = Event State == 0. However, this implementation is more efficient, so we included it

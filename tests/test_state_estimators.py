@@ -4,6 +4,7 @@ import numpy as np
 
 from prog_models import PrognosticsModel
 from prog_algs.exceptions import ProgAlgTypeError
+from prog_algs.state_estimators import KalmanFilter, UnscentedKalmanFilter
 from prog_algs.uncertain_data.scalar_data import ScalarData
 
 
@@ -47,11 +48,12 @@ class TestStateEstimators(unittest.TestCase):
     def __test_state_est(self, StateEstimatorClass, ModelClass):
         m = ModelClass(process_noise=5e-2, measurement_noise=5e-2)
         # where we initialize, put various other data types
-        x = ScalarData()
+        x_scalar = ScalarData({'x': 1.75, 'v': 35})
 
         x_guess = {'x': 1.75, 'v': 35} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
         x = m.initialize()
         # dict initial state is x_guess
+        filt = KalmanFilter
         filt = StateEstimatorClass(m, x_guess) # passed into state estimator function, test state estimator in same way
         # filt = kalmanfilter(m, x) # uncertain data initialization
 
@@ -90,7 +92,6 @@ class TestStateEstimators(unittest.TestCase):
             self.assertAlmostEqual(x_est[key], x[key])
 
     def test_UKF(self):
-        from prog_algs.state_estimators import UnscentedKalmanFilter
         from prog_models.models import ThrownObject
         self.__test_state_est(UnscentedKalmanFilter, ThrownObject)
         
@@ -149,7 +150,6 @@ class TestStateEstimators(unittest.TestCase):
             filter(m, x0)
 
     def test_UKF_incorrect_input(self):
-        from prog_algs.state_estimators import UnscentedKalmanFilter
         self.__incorrect_input_tests(UnscentedKalmanFilter)
 
     @unittest.skip
@@ -197,7 +197,6 @@ class TestStateEstimators(unittest.TestCase):
         x0 = m.initialize()
 
         # Setup
-        from prog_algs.state_estimators import UnscentedKalmanFilter
         filt = UnscentedKalmanFilter(m, x0)
         
         # Try using
@@ -243,7 +242,6 @@ class TestStateEstimators(unittest.TestCase):
         self.__incorrect_input_tests(ParticleFilter)
 
     def test_KF(self):
-        from prog_algs.state_estimators import KalmanFilter
         from prog_models import LinearModel
         class ThrownObject(LinearModel):
             inputs = []  # no inputs, no way to control

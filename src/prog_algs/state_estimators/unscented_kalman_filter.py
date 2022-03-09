@@ -74,7 +74,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         parameter_R_bool = 'R' not in self.parameters
         if isinstance(x0, dict):
             warnings.warn(f"Warning: Use UncertainData type if estimating filtering with uncertain data.")
-            array(list(x0.values())).ravel()
+            self.filter.x = array(list(x0.values())).ravel()
             self.filter.P = self.parameters['Q'] / 10
             if parameter_R_bool:
                 # Size of what's being measured (not output) 
@@ -82,10 +82,11 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
                 self.parameters['R'] = diag([1.0e-3 for i in range(len(measure(x0.values())))])
        
         elif isinstance(x0, UncertainData):
-            self.filter.x = None # UncertainData x implementation
+            x_mean = x0.mean()
+            self.filter.x = array(list(x_mean.values())).ravel() # what is x0 values equivalent to?
             self.filter.P = x0.cov()
             if parameter_R_bool:
-                pass # Alternative set R
+                self.parameters['R'] = diag([1.0e-3 for i in range(len(measure(x_mean.values())))])
         else:
             raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
 

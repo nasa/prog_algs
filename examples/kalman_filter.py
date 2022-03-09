@@ -110,7 +110,7 @@ def run_example():
     dt = 0.01  # Time step (s)
     print_freq = 50  # Print every print_freq'th iteration
     x = m.initialize()
-    u = {}  # No input for this model
+    u = m.InputContainer({})  # No input for this model
     
     for i in range(500):
         # Get simulated output (would be measured in a real application)

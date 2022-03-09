@@ -4,6 +4,7 @@ import numpy as np
 
 from prog_models import PrognosticsModel
 from prog_algs.exceptions import ProgAlgTypeError
+from prog_algs.uncertain_data.scalar_data import ScalarData
 
 
 class MockProgModel(PrognosticsModel):
@@ -45,12 +46,17 @@ class TestStateEstimators(unittest.TestCase):
 
     def __test_state_est(self, StateEstimatorClass, ModelClass):
         m = ModelClass(process_noise=5e-2, measurement_noise=5e-2)
+        # where we initialize, put various other data types
+        x = ScalarData()
+
         x_guess = {'x': 1.75, 'v': 35} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
         x = m.initialize()
+        # dict initial state is x_guess
+        filt = StateEstimatorClass(m, x_guess) # passed into state estimator function, test state estimator in same way
+        # filt = kalmanfilter(m, x) # uncertain data initialization
 
-        filt = StateEstimatorClass(m, x_guess)
-        x_guess = filt.x.mean  # Might be new
-
+        x_guess = filt.x.mean  # Might be new, distritbution should be the same
+        # check to see if set correctly
         self.assertTrue(all(key in filt.x.mean for key in m.states))
 
         # Run filter

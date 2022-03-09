@@ -39,7 +39,7 @@ class StateEstimator(ABC):
             raise ProgAlgTypeError("model must have `outputs` property")
         if not hasattr(model, 'states'):
             raise ProgAlgTypeError("model must have `states` property")
-        self.model = model
+        self.model = deepcopy(model)
 
         # Check x0
         for key in model.states:

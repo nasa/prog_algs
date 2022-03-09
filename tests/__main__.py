@@ -27,7 +27,11 @@ def run_basic_ex():
 if __name__ == '__main__':
     l = unittest.TestLoader()
 
-    print("\nExample Runtime: ", timeit(run_basic_ex, number=3))
+    try:
+        print("\nExample Runtime: ", timeit(run_basic_ex, number=3))
+    except Exception:
+        print("\nFailed benchmarking")
+        was_successful = False
 
     was_successful = True
     try:

@@ -6,7 +6,7 @@ import warnings
 from filterpy import kalman
 from prog_models import LinearModel
 from . import state_estimator
-from ..uncertain_data import MultivariateNormalDist, UncertainData, UnweightedSamples, ScalarData
+from ..uncertain_data import MultivariateNormalDist, UncertainData
 
 class KalmanFilter(state_estimator.StateEstimator):
     """

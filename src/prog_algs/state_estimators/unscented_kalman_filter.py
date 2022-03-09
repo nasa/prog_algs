@@ -82,7 +82,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
                 self.parameters['R'] = diag([1.0e-3 for i in range(len(measure(x0.values())))])
        
         elif isinstance(x0, UncertainData):
-            x_mean = x0.mean()
+            x_mean = x0.mean
             self.filter.x = array(list(x_mean.values())).ravel() # what is x0 values equivalent to?
             self.filter.P = x0.cov()
             if parameter_R_bool:

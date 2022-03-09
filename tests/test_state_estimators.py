@@ -46,21 +46,16 @@ class TestStateEstimators(unittest.TestCase):
 
     def __test_state_est(self, StateEstimatorClass, ModelClass):
         m = ModelClass(process_noise=5e-2, measurement_noise=5e-2)
-        # where we initialize, put various other data types
-        x_scalar = ScalarData({'x': 1.75, 'v': 35})
 
         x_guess = {'x': 1.75, 'v': 35} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
         x = m.initialize()
         # dict initial state is x_guess
 
         filt = StateEstimatorClass(m, x_guess) # passed into state estimator function, test state estimator in same way
-        # filt_kf_scalar = KalmanFilter(m, x_scalar)
-        # filt_ukf_scalar = UnscentedKalmanFilter(m, x_scalar)
         x_guess = m.StateContainer(filt.x.mean)  # Might be new, distritbution should be the same
 
         # check to see if set correctly
         self.assertTrue(all(key in filt.x.mean for key in m.states))
-        # self.assertDictEqual(filt_ukf_scalar.x.mean, x_scalar.mean)
 
         # Run filter
         x = m.next_state(x, m.InputContainer({}), 0.1)

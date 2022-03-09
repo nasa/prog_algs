@@ -91,7 +91,12 @@ class TestStateEstimators(unittest.TestCase):
         from prog_models.models import ThrownObject
         from prog_algs.state_estimators import UnscentedKalmanFilter
         self.__test_state_est(UnscentedKalmanFilter, ThrownObject)
-        
+
+        m = ThrownObject(process_noise=5e-2, measurement_noise=5e-2)
+        x = m.initialize()
+        x_scalar = ScalarData({'x': 1.75, 'v': 35})
+        filt_scalar = UnscentedKalmanFilter(m, x_scalar)
+   
     def __incorrect_input_tests(self, filter):
         class IncompleteModel:
             outputs = []

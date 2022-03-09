@@ -4,7 +4,7 @@ import warnings
 from . import state_estimator
 from filterpy import kalman
 from numpy import diag, array
-from ..uncertain_data import MultivariateNormalDist, UncertainData, UnweightedSamples, ScalarData
+from ..uncertain_data import MultivariateNormalDist, UncertainData
 
 class UnscentedKalmanFilter(state_estimator.StateEstimator):
     """

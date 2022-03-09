@@ -4,7 +4,6 @@ import numpy as np
 
 from prog_models import PrognosticsModel
 from prog_algs.exceptions import ProgAlgTypeError
-from prog_algs.state_estimators import KalmanFilter, UnscentedKalmanFilter
 from prog_algs.uncertain_data.scalar_data import ScalarData
 
 
@@ -56,7 +55,7 @@ class TestStateEstimators(unittest.TestCase):
 
         filt = StateEstimatorClass(m, x_guess) # passed into state estimator function, test state estimator in same way
         # filt_kf_scalar = KalmanFilter(m, x_scalar)
-        filt_ukf_scalar = UnscentedKalmanFilter(m, x_scalar)
+        # filt_ukf_scalar = UnscentedKalmanFilter(m, x_scalar)
         x_guess = m.StateContainer(filt.x.mean)  # Might be new, distritbution should be the same
 
         # check to see if set correctly
@@ -95,6 +94,7 @@ class TestStateEstimators(unittest.TestCase):
 
     def test_UKF(self):
         from prog_models.models import ThrownObject
+        from prog_algs.state_estimators import UnscentedKalmanFilter
         self.__test_state_est(UnscentedKalmanFilter, ThrownObject)
         
     def __incorrect_input_tests(self, filter):
@@ -152,6 +152,7 @@ class TestStateEstimators(unittest.TestCase):
             filter(m, x0)
 
     def test_UKF_incorrect_input(self):
+        from prog_algs.state_estimators import UnscentedKalmanFilter
         self.__incorrect_input_tests(UnscentedKalmanFilter)
 
     @unittest.skip
@@ -199,6 +200,7 @@ class TestStateEstimators(unittest.TestCase):
         x0 = m.initialize()
 
         # Setup
+        from prog_algs.state_estimators import UnscentedKalmanFilter
         filt = UnscentedKalmanFilter(m, x0)
         
         # Try using
@@ -280,7 +282,7 @@ class TestStateEstimators(unittest.TestCase):
                     'falling': np.maximum(x['v']/self.parameters['throwing_speed'],0),  # Throwing speed is max speed
                     'impact': np.maximum(x['x']/x_max,0) if x['v'] < 0 else 1  # 1 until falling begins, then it's fraction of height
                 }
-
+        from prog_algs.state_estimators import KalmanFilter
         self.__test_state_est(KalmanFilter, ThrownObject)
 
         from prog_models.models import BatteryElectroChem

@@ -57,19 +57,19 @@ class TestStateEstimators(unittest.TestCase):
         filt = StateEstimatorClass(m, x_guess) # passed into state estimator function, test state estimator in same way
         # filt_kf_scalar = KalmanFilter(m, x_scalar)
         filt_ukf_scalar = UnscentedKalmanFilter(m, x_scalar)
+        x_guess = m.StateContainer(filt.x.mean)  # Might be new, distritbution should be the same
 
-        x_guess = filt.x.mean  # Might be new, distritbution should be the same
         # check to see if set correctly
         self.assertTrue(all(key in filt.x.mean for key in m.states))
         # self.assertDictEqual(filt_ukf_scalar.x.mean, x_scalar.mean)
 
         # Run filter
-        x = m.next_state(x, {}, 0.1)
-        x = m.next_state(x, {}, 0.1)
-        x_guess = m.next_state(x_guess, {}, 0.1)
-        x_guess = m.next_state(x_guess, {}, 0.1)
+        x = m.next_state(x, m.InputContainer({}), 0.1)
+        x = m.next_state(x, m.InputContainer({}), 0.1)
+        x_guess = m.next_state(x_guess, m.InputContainer({}), 0.1)
+        x_guess = m.next_state(x_guess, m.InputContainer({}), 0.1)
         z = m.output(x)
-        filt.estimate(0.2, {}, z)
+        filt.estimate(0.2, m.InputContainer({}), z)
         for key in m.states:
             # should be between guess and real (i.e., improved)
             mean = filt.x.mean
@@ -80,12 +80,12 @@ class TestStateEstimators(unittest.TestCase):
         dt = 0.05
         for i in range(500):
             # Get simulated output (would be measured in a real application)
-            x = m.next_state(x, {}, dt)
-            x_guess = m.next_state(x_guess, {}, dt)
+            x = m.next_state(x, m.InputContainer({}), dt)
+            x_guess = m.next_state(x_guess, m.InputContainer({}), dt)
             z = m.output(x)
 
             # Estimate New State
-            filt.estimate(0.2 + dt + i*dt, {}, z)
+            filt.estimate(0.2 + dt + i*dt, m.InputContainer({}), z)
 
         # Check results - make sure it converged
         x_est = filt.x.mean

@@ -63,6 +63,9 @@ class UncertainData(ABC):
             [string]: keys
         """
 
+    def __contains__(self, key):
+        return key in self.keys()
+
     def percentage_in_bounds(self, bounds, keys = None):
         """Calculate percentage of dist is within specified bounds
 

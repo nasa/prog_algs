@@ -50,7 +50,7 @@ class TestStateEstimators(unittest.TestCase):
         # dict initial state is x_guess
 
         filt = StateEstimatorClass(m, x_guess) # passed into state estimator function, test state estimator in same way
-        x_guess = m.StateContainer(filt.x.mean)  # Might be new, distritbution should be the same
+        x_guess = m.StateContainer(filt.x.mean)  # Might be new, distribution should be the same
 
         # check to see if set correctly
         self.assertTrue(all(key in filt.x.mean for key in m.states))

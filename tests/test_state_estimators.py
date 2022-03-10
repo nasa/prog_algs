@@ -102,7 +102,10 @@ class TestStateEstimators(unittest.TestCase):
 
         # Test UnscentedKalmanFilter MultivariateNormalDist
         from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
-
+        x_mvnd = MultivariateNormalDist({'x': 1.75, 'v': 35})
+        filt_mvnd = MultivariateNormalDist(m, x_mvnd)
+        self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
+        self.assertTrue((filt_mvnd.x.cov == x_mvnd.cov).all())
    
     def __incorrect_input_tests(self, filter):
         class IncompleteModel:

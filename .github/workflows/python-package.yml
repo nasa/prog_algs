@@ -62,9 +62,6 @@ jobs:
         python -m pip install -e .
         python -m pip install notebook
         python -m pip install testbook
-    - name : Create Python kernel alias
-      run: 
-        alias python3="python"
     - name: Run tests
       run: python -m tests
   test-prog_models-released:
@@ -84,9 +81,6 @@ jobs:
         python -m pip install -e .
         python -m pip install notebook
         python -m pip install testbook
-    - name : Create Python kernel alias
-      run: 
-        alias python3="python"
     - name: Run tests
       run: python -m tests
 

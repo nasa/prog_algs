@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 
-from prog_models import PrognosticsModel
+from prog_models import PrognosticsModel, LinearModel
 from prog_algs.exceptions import ProgAlgTypeError
 
 class MockProgModel(PrognosticsModel):
@@ -262,7 +262,6 @@ class TestStateEstimators(unittest.TestCase):
         self.__incorrect_input_tests(ParticleFilter)
 
     def test_KF(self):
-        from prog_models import LinearModel
         class ThrownObject(LinearModel):
             inputs = []  # no inputs, no way to control
             states = ['x', 'v']

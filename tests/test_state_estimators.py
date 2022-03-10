@@ -92,7 +92,6 @@ class TestStateEstimators(unittest.TestCase):
 
         m = ThrownObject(process_noise=5e-2, measurement_noise=5e-2)
         x = m.initialize()
-
         # Test UnscentedKalmanFilter ScalarData
         from prog_algs.uncertain_data.scalar_data import ScalarData
         x_scalar = ScalarData({'x': 1.75, 'v': 35})
@@ -301,6 +300,29 @@ class TestStateEstimators(unittest.TestCase):
                 }
         from prog_algs.state_estimators import KalmanFilter
         self.__test_state_est(KalmanFilter, ThrownObject)
+
+        m = ThrownObject(process_noise=5e-2, measurement_noise=5e-2)
+        x = m.initialize()
+         # Test UnscentedKalmanFilter ScalarData
+        from prog_algs.uncertain_data.scalar_data import ScalarData
+        x_scalar = ScalarData({'x': 1.75, 'v': 35})
+        filt_scalar = KalmanFilter(m, x_scalar)
+        self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
+        self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
+
+        # Test UnscentedKalmanFilter MultivariateNormalDist
+        # from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
+        # x_mvnd = MultivariateNormalDist({'x': 1.75, 'v': 35}) # NEED ARGUMENTS
+        # filt_mvnd = MultivariateNormalDist(m, x_mvnd)
+        # self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
+        # self.assertTrue((filt_mvnd.x.cov == x_mvnd.cov).all())
+
+        # Test UnscentedKalmanFilter UnweightedSamples
+        # from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
+        # x_us = UnweightedSamples({'x': 1.75, 'v': 35}) # NEED ARGUMENTS
+        # filt_us = UnweightedSamples(m, x_us)
+        # self.assertDictEqual(filt_us.x.mean, x_us.mean)
+        # self.assertTrue((filt_us.x.cov == x_us.cov).all())
 
         from prog_models.models import BatteryElectroChem
 

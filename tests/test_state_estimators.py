@@ -96,6 +96,7 @@ class TestStateEstimators(unittest.TestCase):
         x = m.initialize()
         x_scalar = ScalarData({'x': 1.75, 'v': 35})
         filt_scalar = UnscentedKalmanFilter(m, x_scalar)
+        self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
    
     def __incorrect_input_tests(self, filter):
         class IncompleteModel:

@@ -97,6 +97,7 @@ class TestStateEstimators(unittest.TestCase):
         x_scalar = ScalarData({'x': 1.75, 'v': 35})
         filt_scalar = UnscentedKalmanFilter(m, x_scalar)
         self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
+        self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
    
     def __incorrect_input_tests(self, filter):
         class IncompleteModel:
@@ -247,6 +248,7 @@ class TestStateEstimators(unittest.TestCase):
         self.__incorrect_input_tests(ParticleFilter)
 
     def test_KF(self):
+        from prog_models import LinearModel
         class ThrownObject(LinearModel):
             inputs = []  # no inputs, no way to control
             states = ['x', 'v']

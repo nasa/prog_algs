@@ -4,8 +4,6 @@ import numpy as np
 
 from prog_models import PrognosticsModel
 from prog_algs.exceptions import ProgAlgTypeError
-from prog_algs.uncertain_data.scalar_data import ScalarData
-
 
 class MockProgModel(PrognosticsModel):
     states = ['a', 'b', 'c', 't']
@@ -94,10 +92,17 @@ class TestStateEstimators(unittest.TestCase):
 
         m = ThrownObject(process_noise=5e-2, measurement_noise=5e-2)
         x = m.initialize()
+
+        # Test UnscentedKalmanFilter ScalarData
+        from prog_algs.uncertain_data.scalar_data import ScalarData
         x_scalar = ScalarData({'x': 1.75, 'v': 35})
         filt_scalar = UnscentedKalmanFilter(m, x_scalar)
         self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
         self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
+
+        # Test UnscentedKalmanFilter MultivariateNormalDist
+        from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
+
    
     def __incorrect_input_tests(self, filter):
         class IncompleteModel:

@@ -247,7 +247,6 @@ class TestStateEstimators(unittest.TestCase):
         self.__incorrect_input_tests(ParticleFilter)
 
     def test_KF(self):
-        from prog_models import LinearModel
         class ThrownObject(LinearModel):
             inputs = []  # no inputs, no way to control
             states = ['x', 'v']

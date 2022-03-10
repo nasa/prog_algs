@@ -74,7 +74,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         elif isinstance(x0, UncertainData):
             x_mean = x0.mean
             self.filter.x = np.array([[x_mean[key]] for key in model.states])
-            self.filter.P = x0.cov()
+            self.filter.P = x0.cov
         else:
             raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
 

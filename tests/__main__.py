@@ -6,6 +6,7 @@ from .test_uncertain_data import run_tests as udata_main
 from .test_examples import main as examples_main
 from .test_metrics import run_tests as metrics_main
 from .test_visualize import run_tests as visualize_main
+from .test_tutorials import run_tests as tutorials_main
 
 import unittest
 import sys
@@ -60,6 +61,11 @@ if __name__ == '__main__':
 
     try:
         metrics_main()
+    except Exception:
+        was_successful = False
+
+    try:
+        tutorials_main()
     except Exception:
         was_successful = False
 

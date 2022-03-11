@@ -1,6 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-import warnings
+from warnings import warn
 from . import state_estimator
 from filterpy import kalman
 from numpy import diag, array
@@ -73,7 +73,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         
         parameter_R_bool = 'R' not in self.parameters
         if isinstance(x0, dict):
-            warnings.warn(f"Warning: Use UncertainData type if estimating filtering with uncertain data.")
+            warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
             self.filter.x = array(list(x0.values())).ravel()
             self.filter.P = self.parameters['Q'] / 10
             if parameter_R_bool:

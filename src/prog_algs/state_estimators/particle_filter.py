@@ -1,5 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
+from prog_algs.uncertain_data.uncertain_data import UncertainData
 from . import state_estimator
 from numpy import array, empty, random, take, exp, max, take
 from filterpy.monte_carlo import residual_resample
@@ -55,14 +56,19 @@ class ParticleFilter(state_estimator.StateEstimator):
             self.__measure = model.output
 
         # Build array inplace
-        x = array(list(x0.values()))
-
-        if isinstance(self.parameters['x0_uncertainty'], dict):
-            sd = array([self.parameters['x0_uncertainty'][key] for key in x0.keys()])
-        elif isinstance(self.parameters['x0_uncertainty'], Number):
-            sd = array([self.parameters['x0_uncertainty']] * len(x0))
+        # x = array(list(x0.values()))
+        if self.parameters['x0_uncertainty']:
+            warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
+            x = array(list(x0.values()))
+            if isinstance(self.parameters['x0_uncertainty'], dict):
+                sd = array([self.parameters['x0_uncertainty'][key] for key in x0.keys()])
+            elif isinstance(self.parameters['x0_uncertainty'], Number):
+                sd = array([self.parameters['x0_uncertainty']] * len(x0))
+        elif isinstance(x0, UncertainData):
+            x = array(list(x0.mean.values()))
+            # sd = array()
         else:
-            raise ProgAlgTypeError
+            raise ProgAlgTypeError("ProgAlgTypeError: x0 must be of type {{UncertainData}} or x0_uncertainty must be of type {{dict, Number}}.")
 
         if 'R' in self.parameters:
             # For backwards compatibility

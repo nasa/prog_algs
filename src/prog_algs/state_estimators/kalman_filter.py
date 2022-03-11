@@ -2,7 +2,7 @@
 
 from copy import deepcopy
 import numpy as np
-import warnings
+from warnings import warn
 from filterpy import kalman
 from prog_models import LinearModel
 from . import state_estimator
@@ -68,7 +68,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         self.filter = kalman.KalmanFilter(num_states, num_measurements, num_inputs)
 
         if isinstance(x0, dict):
-            warnings.warn(f"Warning: Use UncertainData type if estimating filtering with uncertain data.")
+            warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
             self.filter.x = np.array([[x0[key]] for key in model.states])
             self.filter.P = self.parameters['Q'] / 10
         elif isinstance(x0, UncertainData):

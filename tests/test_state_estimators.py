@@ -100,11 +100,12 @@ class TestStateEstimators(unittest.TestCase):
         self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
 
         # Test UnscentedKalmanFilter MultivariateNormalDist
-        # from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
-        # x_mvnd = MultivariateNormalDist({'x': 1.75, 'v': 35}) # NEED ARGUMENTS
-        # filt_mvnd = UnscentedKalmanFilter(m, x_mvnd)
-        # self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
-        # self.assertTrue((filt_mvnd.x.cov == x_mvnd.cov).all())
+        from numpy import array
+        from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
+        x_mvnd = MultivariateNormalDist(['x', 'v'], array([2, 10]), array([[1, 0], [0, 1]]))
+        filt_mvnd = UnscentedKalmanFilter(m, x_mvnd)
+        self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
+        self.assertTrue((filt_mvnd.x.cov == x_mvnd.cov).all())
 
         # Test UnscentedKalmanFilter UnweightedSamples
         from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
@@ -302,21 +303,22 @@ class TestStateEstimators(unittest.TestCase):
 
         m = ThrownObject(process_noise=5e-2, measurement_noise=5e-2)
         x = m.initialize()
-         # Test UnscentedKalmanFilter ScalarData
+         # Test KalmanFilter ScalarData
         from prog_algs.uncertain_data.scalar_data import ScalarData
         x_scalar = ScalarData({'x': 1.75, 'v': 35})
         filt_scalar = KalmanFilter(m, x_scalar)
         self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
         self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
 
-        # Test UnscentedKalmanFilter MultivariateNormalDist
-        # from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
-        # x_mvnd = MultivariateNormalDist({'x': 1.75, 'v': 35}) # NEED ARGUMENTS
-        # filt_mvnd = MultivariateNormalDist(m, x_mvnd)
-        # self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
-        # self.assertTrue((filt_mvnd.x.cov == x_mvnd.cov).all())
+        # Test KalmanFilter MultivariateNormalDist
+        from numpy import array
+        from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
+        x_mvnd = MultivariateNormalDist(['x', 'v'], array([2, 10]), array([[1, 0], [0, 1]]))
+        filt_mvnd = KalmanFilter(m, x_mvnd)
+        self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
+        self.assertTrue((filt_mvnd.x.cov == x_mvnd.cov).all())
 
-        # Test UnscentedKalmanFilter UnweightedSamples
+        # Test KalmanFilter UnweightedSamples
         from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
         x_us = UnweightedSamples([{'x': 1, 'v':2}, {'x': 3, 'v':-2}])
         filt_us = KalmanFilter(m, x_us)

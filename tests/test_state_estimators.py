@@ -109,7 +109,7 @@ class TestStateEstimators(unittest.TestCase):
         # Test UnscentedKalmanFilter UnweightedSamples
         from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
         x_us = UnweightedSamples([{'x': 1, 'v':2}, {'x': 3, 'v':-2}])
-        filt_us = UnscentedKalmanFilter(m, x_us) # x_us UnweightedSamples does not contain x key of model m
+        filt_us = UnscentedKalmanFilter(m, x_us)
         self.assertDictEqual(filt_us.x.mean, x_us.mean)
         self.assertTrue((filt_us.x.cov == x_us.cov).all())
    
@@ -319,7 +319,7 @@ class TestStateEstimators(unittest.TestCase):
         # Test UnscentedKalmanFilter UnweightedSamples
         from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
         x_us = UnweightedSamples([{'x': 1, 'v':2}, {'x': 3, 'v':-2}])
-        filt_us = KalmanFilter(m, x_us) # x_us UnweightedSamples does not contain x key of model m
+        filt_us = KalmanFilter(m, x_us)
         self.assertDictEqual(filt_us.x.mean, x_us.mean)
         self.assertTrue((filt_us.x.cov == x_us.cov).all())
 

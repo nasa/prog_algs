@@ -28,7 +28,7 @@ class UncertainData(ABC):
         """The median of the UncertainData distribution or samples 
 
         Returns:
-            Dict[str, float]: Mean value. e.g., {'key1': 23.2, ...}
+            Dict[str, float]: Median value. e.g., {'key1': 23.2, ...}
 
         Example:
             median_value = data.median

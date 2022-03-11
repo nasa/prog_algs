@@ -56,7 +56,6 @@ class ParticleFilter(state_estimator.StateEstimator):
             self.__measure = model.output
 
         # Build array inplace
-        # x = array(list(x0.values()))
         if self.parameters['x0_uncertainty']:
             warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
             x = array(list(x0.values()))
@@ -66,7 +65,7 @@ class ParticleFilter(state_estimator.StateEstimator):
                 sd = array([self.parameters['x0_uncertainty']] * len(x0))
         elif isinstance(x0, UncertainData):
             x = array(list(x0.mean.values()))
-            # sd = array()
+            sd = array(d for d in x0.data) # want self.data here? or .cov? 
         else:
             raise ProgAlgTypeError("ProgAlgTypeError: x0 must be of type {{UncertainData}} or x0_uncertainty must be of type {{dict, Number}}.")
 

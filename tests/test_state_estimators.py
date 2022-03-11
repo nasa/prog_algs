@@ -48,8 +48,8 @@ class TestStateEstimators(unittest.TestCase):
         x_guess = {'x': 1.75, 'v': 35} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
         x = m.initialize()
         # dict initial state is x_guess
-
-        filt = StateEstimatorClass(m, x_guess) # passed into state estimator function, test state estimator in same way
+        with self.assertWarns(Warning):
+            filt = StateEstimatorClass(m, x_guess) # passed into state estimator function, test state estimator in same way
         x_guess = m.StateContainer(filt.x.mean)  # Might be new, distribution should be the same
 
         # check to see if set correctly

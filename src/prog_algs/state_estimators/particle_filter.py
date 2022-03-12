@@ -63,9 +63,12 @@ class ParticleFilter(state_estimator.StateEstimator):
                 sd = array([self.parameters['x0_uncertainty'][key] for key in x0.keys()])
             elif isinstance(self.parameters['x0_uncertainty'], Number):
                 sd = array([self.parameters['x0_uncertainty']] * len(x0))
+            samples = [random.normal(x[i], sd[i], self.parameters['num_particles']) for i in range(len(x))]
+            self.particles = dict(zip(x0.keys(), samples))
         elif isinstance(x0, UncertainData):
             x = array(list(x0.mean.values()))
-            sd = array(d for d in x0.data) # want self.data here? or .cov? 
+            sd = None # Using sampling method of UncertainData
+            # samples = 
         else:
             raise ProgAlgTypeError("ProgAlgTypeError: x0 must be of type {{UncertainData}} or x0_uncertainty must be of type {{dict, Number}}.")
 
@@ -75,10 +78,6 @@ class ParticleFilter(state_estimator.StateEstimator):
             self.parameters['measurement_noise'] = self.parameters['R']
         elif 'measurement_noise' not in self.parameters:
             self.parameters['measurement_noise'] = {key: 0.0 for key in x0.keys()}
-
-        samples = [random.normal(
-            x[i], sd[i], self.parameters['num_particles']) for i in range(len(x))]
-        self.particles = dict(zip(x0.keys(), samples))
     
     def __str__(self):
         return "{} State Estimator".format(self.__class__)

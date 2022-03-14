@@ -38,7 +38,7 @@ class MonteCarlo(Predictor):
     }
 
     def predict(self, state : UncertainData, future_loading_eqn, **kwargs):
-        if isinstance(state, dict):
+        if isinstance(state, dict) or isinstance(state, self.model.StateContainer):
             # Convert to UnweightedSamples
             from prog_algs.uncertain_data import ScalarData
             state = ScalarData(state)

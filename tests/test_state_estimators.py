@@ -172,6 +172,15 @@ class TestStateEstimators(unittest.TestCase):
         from prog_algs.state_estimators import UnscentedKalmanFilter
         self.__incorrect_input_tests(UnscentedKalmanFilter)
 
+    def test_simple_PF(self):
+        # no asserts, testing data passing
+        from prog_algs.state_estimators import ParticleFilter
+        from prog_models.models import ThrownObject
+        
+        m = MockProgModel(process_noise=5e-2, measurement_noise=0)
+        x0 = m.initialize()
+        filt = ParticleFilter(m, x0, n_samples=200, x0_uncertainty=0.1)
+
     @unittest.skip
     def test_PF(self):
         from prog_algs.state_estimators import ParticleFilter

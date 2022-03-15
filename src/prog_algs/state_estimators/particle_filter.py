@@ -66,7 +66,7 @@ class ParticleFilter(state_estimator.StateEstimator):
             samples = [random.normal(x[i], sd[i], self.parameters['num_particles']) for i in range(len(x))]
         elif isinstance(x0, UncertainData):
             x = array(list(x0.mean.values()))
-            sd = None # Using sampling method of UncertainData
+            sd = None # Using sampling method of UncertainData # dict of arrays
             samples = x0.sample()
         else:
             raise ProgAlgTypeError("ProgAlgTypeError: x0 must be of type {{UncertainData}} or x0_uncertainty must be of type {{dict, Number}}.")

@@ -176,10 +176,17 @@ class TestStateEstimators(unittest.TestCase):
         # no asserts, testing data passing
         from prog_algs.state_estimators import ParticleFilter
         from prog_models.models import ThrownObject
-        
+
+        # Default
+        # m = MockProgModel(process_noise=5e-2, measurement_noise=0)
+        # x0 = m.initialize()
+        # filt = ParticleFilter(m, x0, n_samples=200, x0_uncertainty=0.1)
+
+        # Using UncertainData
+        from prog_algs.uncertain_data.scalar_data import ScalarData
         m = MockProgModel(process_noise=5e-2, measurement_noise=0)
-        x0 = m.initialize()
-        filt = ParticleFilter(m, x0, n_samples=200, x0_uncertainty=0.1)
+        x0 = ScalarData({'a': 1, 'b': 5, 'c': -3.2, 't': 0})
+        filt = ParticleFilter(m, x0, n_samples=200)
 
     @unittest.skip
     def test_PF(self):

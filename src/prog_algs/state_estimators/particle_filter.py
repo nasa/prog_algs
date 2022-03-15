@@ -36,7 +36,7 @@ class ParticleFilter(state_estimator.StateEstimator):
             't0': -1e-99,  # practically 0, but allowing for a 0 first estimate
             'num_particles': 20, 
             'resample_fcn': residual_resample,
-            'x0_uncertainty': 0.5
+            # 'x0_uncertainty': 0.5
         }
 
     def __init__(self, model, x0, measurement_eqn = None, **kwargs):
@@ -57,6 +57,7 @@ class ParticleFilter(state_estimator.StateEstimator):
 
         # Build array inplace
         if self.parameters['x0_uncertainty']:
+            print(self.parameters['x0_uncertainty'])
             warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
             x = array(list(x0.values()))
             if isinstance(self.parameters['x0_uncertainty'], dict):
@@ -64,10 +65,12 @@ class ParticleFilter(state_estimator.StateEstimator):
             elif isinstance(self.parameters['x0_uncertainty'], Number):
                 sd = array([self.parameters['x0_uncertainty']] * len(x0))
             samples = [random.normal(x[i], sd[i], self.parameters['num_particles']) for i in range(len(x))]
+            print("samples:",samples)
         elif isinstance(x0, UncertainData):
             x = array(list(x0.mean.values()))
             sd = None # Using sampling method of UncertainData # dict of arrays
             samples = x0.sample()
+            print(samples)
         else:
             raise ProgAlgTypeError("ProgAlgTypeError: x0 must be of type {{UncertainData}} or x0_uncertainty must be of type {{dict, Number}}.")
         self.particles = dict(zip(x0.keys(), samples))

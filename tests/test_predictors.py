@@ -237,6 +237,15 @@ class TestPredictors(unittest.TestCase):
         except Exception:
             pass
 
+    def test_pickle_pred_template(self):
+        from predictor_template import TemplatePredictor
+        m = MockProgModel()
+        pred = TemplatePredictor(m)
+        import pickle # try pickle'ing
+        pickle.dump(pred, open('predictor_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
+        self.assertEqual(pred, pickle_converted_result)
+
 # This allows the module to be executed directly    
 def run_tests():
     l = unittest.TestLoader()

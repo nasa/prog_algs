@@ -97,7 +97,7 @@ class ParticleFilter(state_estimator.StateEstimator):
 
         if self.model.is_vectorized:
             # Propagate particles state
-            self.particles = apply_process_noise(next_state(particles, u, dt))
+            self.particles = apply_process_noise(next_state(particles, u, dt), dt)
 
             # Get particle measurements
             zPredicted = apply_measurement_noise(output(self.particles))
@@ -133,7 +133,7 @@ class ParticleFilter(state_estimator.StateEstimator):
 
         # Convert to weights
         unnorm_weights = exp(scaled_weights)
-
+        
         # Normalize
         total_weight = sum(unnorm_weights)
         self.weights = unnorm_weights / total_weight

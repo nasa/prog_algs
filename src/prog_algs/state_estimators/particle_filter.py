@@ -57,7 +57,6 @@ class ParticleFilter(state_estimator.StateEstimator):
 
         # Build array inplace
         if isinstance(x0, UncertainData):
-            x = array(list(x0.mean.values()))
             sample_gen = x0.sample(self.parameters['num_particles'])
             samples = [array(sample_gen.key(k)) for k in x0.keys()]
         elif 'x0_uncertainty' in self.parameters: # allows for x0 as UnweightedSamples

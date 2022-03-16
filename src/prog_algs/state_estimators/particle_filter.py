@@ -59,8 +59,12 @@ class ParticleFilter(state_estimator.StateEstimator):
         if isinstance(x0, UncertainData):
             x = array(list(x0.mean.values()))
             sd = None # Using sampling method of UncertainData # dict of arrays
-            samples = x0.sample()
+            # no sd for scale
+            samples = x0.sample() # returns as unweightedsamples
+            
+            print("A type:",type(samples))
             print(samples)
+
         elif 'x0_uncertainty' in self.parameters: # allows for x0 as UnweightedSamples
             warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
             x = array(list(x0.values()))
@@ -69,6 +73,10 @@ class ParticleFilter(state_estimator.StateEstimator):
             elif isinstance(self.parameters['x0_uncertainty'], Number):
                 sd = array([self.parameters['x0_uncertainty']] * len(x0))
             samples = [random.normal(x[i], sd[i], self.parameters['num_particles']) for i in range(len(x))]
+            # loc, scale, size=None
+            print("B type:",type(samples))
+            print(samples)
+            
         else:
             raise ProgAlgTypeError("ProgAlgTypeError: x0 must be of type {{UncertainData}} or x0_uncertainty must be of type {{dict, Number}}.")
         self.particles = dict(zip(x0.keys(), samples))

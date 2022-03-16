@@ -108,6 +108,13 @@ class TestUncertainData(unittest.TestCase):
         pickle_converted_result = pickle.load(open('data_test.pkl', 'rb'))
         self.assertEqual(s, pickle_converted_result)
 
+    def test_pickle_multivariatenormaldist(self):
+        dist = MultivariateNormalDist(['a', 'b'], array([2, 10]), array([[1, 0], [0, 1]]))
+        import pickle # try pickle'ing
+        pickle.dump(dist, open('data_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('data_test.pkl', 'rb'))
+        self.assertEqual(dist, pickle_converted_result)
+
 # This allows the module to be executed directly    
 def run_tests():
     l = unittest.TestLoader()

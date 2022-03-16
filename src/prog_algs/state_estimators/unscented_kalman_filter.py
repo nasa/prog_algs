@@ -53,30 +53,71 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
                 z = measurement_eqn(x)
                 return array(list(z.values())).ravel()
 
-        if 'Q' not in self.parameters:
-            self.parameters['Q'] = diag([1.0e-3 for i in x0.keys()])
-        if 'R' not in self.parameters:
-            # Size of what's being measured (not output) 
-            # This is determined by running the measure function on the first state
-            self.parameters['R'] = diag([1.0e-3 for i in range(len(measure(x0.values())))])
+        num_states = model.n_states
+
+        # Process Noise (Q)
+        # Users can use process_noise (like in prog_models) or Q (like in filterpy). They're synced.
+        if 'Q' in self.parameters:
+            self.parameters['process_noise'] = self.parameters['Q']
+
+        if 'process_noise' not in self.parameters:
+            # Not provided
+            if 'process_noise' in model.parameters:
+                # If model has process noise, use it
+                self.parameters['process_noise'] = diag([model.parameters['process_noise'][key] for key in x0.keys()])
+            else:
+                self.parameters['process_noise'] = diag([1.0e-3 for _ in range(num_states)])
+        else:
+            # If process noise is provided
+
+            # Manage type
+            if isinstance(self.parameters['process_noise'], list):
+                self.parameters['process_noise'] = array(self.parameters['process_noise'])
+            
+            # Check dims
+            if self.parameters['process_noise'].shape != (num_states, num_states):
+                raise Exception('process_noise must be a square matrix with size equal to the number of states')
+
+        # Measurement Noise (R)
+        # Users can use measurement_noise (like in prog_models) or R (like in filterpy). They're synced.
+        if 'R' in self.parameters:
+            self.parameters['measurement_noise'] = self.parameters['R']
+        if 'measurement_noise' not in self.parameters:
+            # Not provided
+            if 'measurement_noise' in model.parameters and measurement_eqn is None:
+                # Pull from model noise (doesn't work when measurement equation is provided)
+                self.parameters['measurement_noise'] = diag([model.parameters['measurement_noise'][key] for key in model.outputs])
+            else:
+                # Default to 1.0e-3 standard deviation on every output
+                model.parameters['measurement_noise'] = 0
+                num_measurements = len(measure(x0.values()))
+                self.parameters['measurement_noise'] = diag([1.0e-3 for _ in range(num_measurements)])
+        else:
+            # Manage type
+            if isinstance(self.parameters['measurement_noise'], list):
+                self.parameters['measurement_noise'] = array(self.parameters['measurement_noise'])
+            
+            # Check dims
+            num_measurements = len(measure(x0.values()))
+            if self.parameters['measurement_noise'].shape != (num_measurements, num_measurements):
+                raise Exception('measurement_noise must be a square matrix with size equal to the number of outputs')
+        
+        num_measurements = model.n_outputs
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(x0.keys(), x)}
             Q_err = model.parameters['process_noise'].copy()
             model.parameters['process_noise'] = dict.fromkeys(Q_err, 0)
-            z = model.output(x)
-            model.parameters['process_noise'] = Q_err
             x = model.next_state(x, self.__input, dt)
+            model.parameters['process_noise'] = Q_err
             return array(list(x.values())).ravel()
 
-        num_states = len(x0.keys())
-        num_measurements = model.n_outputs
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measure, state_transition, points)
         self.filter.x = array(list(x0.values())).ravel()
-        self.filter.P = self.parameters['Q'] / 10
-        self.filter.Q = self.parameters['Q']
-        self.filter.R = self.parameters['R']
+        self.filter.P = self.parameters['process_noise'] / 10
+        self.filter.Q = self.parameters['process_noise']
+        self.filter.R = self.parameters['measurement_noise']
 
     def estimate(self, t, u, z):
         """

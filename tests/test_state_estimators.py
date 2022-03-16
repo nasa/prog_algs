@@ -87,6 +87,45 @@ class TestStateEstimators(unittest.TestCase):
         from prog_algs.state_estimators import UnscentedKalmanFilter
         from prog_models.models import ThrownObject
         self.__test_state_est(UnscentedKalmanFilter, ThrownObject)
+
+        # Check default
+        m = ThrownObject()
+        kf = UnscentedKalmanFilter(m, m.initialize())
+        self.assertTrue((kf.filter.Q == np.diag([m.parameters['process_noise'][key] for key in m.states])).all())
+        self.assertTrue((kf.filter.R == np.diag([m.parameters['measurement_noise'][key] for key in m.outputs])).all())
+
+        # Without model parameters
+        del m.parameters['process_noise']
+        del m.parameters['measurement_noise']
+        kf = UnscentedKalmanFilter(m, m.initialize())
+        self.assertTrue((kf.filter.Q == np.diag([0.001 for _ in m.states])).all())
+        self.assertTrue((kf.filter.R == np.diag([0.001 for _ in m.outputs])).all())
+
+        # Specifying Explicitly
+        Q = np.array([[0.1, 1e-3], [1e-3, 0.1]])
+        R = np.array([[0.2]])
+        kf = UnscentedKalmanFilter(m, m.initialize(), Q = Q, R = R)
+        self.assertTrue((kf.filter.Q == Q).all())
+        self.assertTrue((kf.filter.R == R).all())
+
+        # Using Lists
+        Q = [[0.1, 1e-3], [1e-3, 0.1]]
+        R = [[0.2]]
+        kf = UnscentedKalmanFilter(m, m.initialize(), Q = Q, R = R)
+        self.assertTrue((kf.filter.Q == Q).all())
+        self.assertTrue((kf.filter.R == R).all())
+
+        # Wrong size - Q
+        Q = [[0.1, 1e-3, 1e-4], [1e-3, 0.1, 1e-4], [1e-4, 1e-3, 0.1]]
+        R = [[0.2]]
+        with self.assertRaises(Exception):
+            kf = UnscentedKalmanFilter(m, m.initialize(), Q = Q, R = R)
+
+        # Wrong size - R
+        Q = [[0.1, 1e-3], [1e-3, 0.1]]
+        R = [[0.2, 0.3]]
+        with self.assertRaises(Exception):
+            kf = UnscentedKalmanFilter(m, m.initialize(), Q = Q, R = R)
         
     def __incorrect_input_tests(self, filter):
         class IncompleteModel:
@@ -286,6 +325,45 @@ class TestStateEstimators(unittest.TestCase):
         with self.assertRaises(Exception):
             # Missing states
             KalmanFilter(ThrownObject, {})
+
+        # Check default
+        m = ThrownObject()
+        kf = KalmanFilter(m, m.initialize())
+        self.assertTrue((kf.filter.Q == np.diag([m.parameters['process_noise'][key] for key in m.states])).all())
+        self.assertTrue((kf.filter.R == np.diag([m.parameters['measurement_noise'][key] for key in m.outputs])).all())
+
+        # Without model parameters
+        del m.parameters['process_noise']
+        del m.parameters['measurement_noise']
+        kf = KalmanFilter(m, m.initialize())
+        self.assertTrue((kf.filter.Q == np.diag([0.001 for _ in m.states])).all())
+        self.assertTrue((kf.filter.R == np.diag([0.001 for _ in m.outputs])).all())
+
+        # Specifying Explicitly
+        Q = np.array([[0.1, 1e-3], [1e-3, 0.1]])
+        R = np.array([[0.2]])
+        kf = KalmanFilter(m, m.initialize(), Q = Q, R = R)
+        self.assertTrue((kf.filter.Q == Q).all())
+        self.assertTrue((kf.filter.R == R).all())
+
+        # Using Lists
+        Q = [[0.1, 1e-3], [1e-3, 0.1]]
+        R = [[0.2]]
+        kf = KalmanFilter(m, m.initialize(), Q = Q, R = R)
+        self.assertTrue((kf.filter.Q == Q).all())
+        self.assertTrue((kf.filter.R == R).all())
+
+        # Wrong size - Q
+        Q = [[0.1, 1e-3, 1e-4], [1e-3, 0.1, 1e-4], [1e-4, 1e-3, 0.1]]
+        R = [[0.2]]
+        with self.assertRaises(Exception):
+            kf = KalmanFilter(m, m.initialize(), Q = Q, R = R)
+
+        # Wrong size - R
+        Q = [[0.1, 1e-3], [1e-3, 0.1]]
+        R = [[0.2, 0.3]]
+        with self.assertRaises(Exception):
+            kf = KalmanFilter(m, m.initialize(), Q = Q, R = R)
 
 # This allows the module to be executed directly    
 def run_tests():

@@ -22,10 +22,10 @@ class KalmanFilter(state_estimator.StateEstimator):
             Starting time (s)
         dt : float 
             time step (s)
-        Q : List[List[float]]
-            Process Noise Matrix 
-        R : List[List[float]]
-            Measurement Noise Matrix 
+        process_noise : 2darray[float]
+            Process Noise Matrix (n_states, n_states) - default model.process_noise
+        measurement_noise : 2darray[float]
+            Measurement Noise Matrix (n_measurements x n_measurements) - default model.measurement_noise
 
     Note:
         The Kalman Filter does not support a custom measurement function
@@ -72,7 +72,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         # Users can use measurement_noise (like in prog_models) or R (like in filterpy). They're synced.
         if 'R' in self.parameters:
             self.parameters['measurement_noise'] = self.parameters['R']
-        if 'measurement_noise' not in self.parameters:
+        elif 'measurement_noise' not in self.parameters:
             if 'measurement_noise' in model.parameters:
                 self.parameters['measurement_noise'] = np.diag([model.parameters['measurement_noise'][key] for key in model.outputs])
             else:

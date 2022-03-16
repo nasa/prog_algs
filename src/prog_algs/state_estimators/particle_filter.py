@@ -9,8 +9,6 @@ from ..uncertain_data import UnweightedSamples
 from ..exceptions import ProgAlgTypeError
 from warnings import warn
 
-import matplotlib.pyplot as plt
-import numpy as np
 
 class ParticleFilter(state_estimator.StateEstimator):
     """

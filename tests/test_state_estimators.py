@@ -287,15 +287,16 @@ class TestStateEstimators(unittest.TestCase):
             # Missing states
             KalmanFilter(ThrownObject, {})
 
-    @unittest.skip
+    # @unittest.skip
     def test_pickle_state_est_template(self):
         from state_estimator_template import TemplateStateEstimator
         m = MockProgModel()
-        se = TemplateStateEstimator(m, {'a': 0.0, 'b': 0.0, 'c': 0.0, 't':0.0})
+        se_temp = TemplateStateEstimator(m, {'a': 0.0, 'b': 0.0, 'c': 0.0, 't':0.0})
         import pickle # try pickle'ing
-        pickle.dump(se, open('se_test.pkl', 'wb'))
+        pickle.dump(se_temp, open('se_test.pkl', 'wb'))
         pickle_converted_result = pickle.load(open('se_test.pkl', 'rb'))
-        self.assertEqual(se, pickle_converted_result)
+        # self.assertEqual(se, pickle_converted_result)
+        self.assertEqual(se_temp.x, pickle_converted_result.x)
 
     @unittest.skip
     def test_pickle_PF(self):

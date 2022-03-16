@@ -93,6 +93,14 @@ class TestUncertainData(unittest.TestCase):
         data2 = pickle.load(open('test.pkl', 'rb'))
         self.assertEqual(d, data2)
 
+    def test_pickle_scalar(self):
+        data = {'a': 12, 'b': 14}
+        d = ScalarData(data)
+        import pickle # try pickle'ing
+        pickle.dump(d, open('data_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('data_test.pkl', 'rb'))
+        self.assertEqual(d, pickle_converted_result)
+
 # This allows the module to be executed directly    
 def run_tests():
     l = unittest.TestLoader()

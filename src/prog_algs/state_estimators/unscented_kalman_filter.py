@@ -3,6 +3,7 @@
 from . import state_estimator
 from filterpy import kalman
 from numpy import diag, array
+from warnings import warn
 from ..uncertain_data import MultivariateNormalDist
 
 class UnscentedKalmanFilter(state_estimator.StateEstimator):
@@ -10,6 +11,11 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
     An Unscented Kalman Filter (UKF) for state estimation
 
     This class defines logic for performing an unscented kalman filter with a Prognostics Model (see Prognostics Model Package). This filter uses measurement data with noise to generate a state estimate and covariance matrix. 
+
+    Arguments:
+        model: A Prognostics Model object
+        x0: A dictionary of initial state values
+        measurement_eqn (optional): A function that takes a dictionary of state values and returns a dictionary of measurement values. If not specified, the model's output function is used.
 
     The supported configuration parameters (keyword arguments) for UKF construction are described below:
 
@@ -20,10 +26,8 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
             Starting time (s)
         dt : float 
             time step (s)
-        Q : List[List[float]]
-            Process Noise Matrix 
-        R : List[List[float]]
-            Measurement Noise Matrix 
+        R : numpy.ndarray
+            Measurement noise covariance matrix (n_measurements x n_measurements). Only applicable if using measurement_eqn
     """
     default_parameters = {
         'alpha': 1, 
@@ -53,20 +57,17 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
                 z = measurement_eqn(x)
                 return array(list(z.values())).ravel()
 
-        if 'Q' not in self.parameters:
-            self.parameters['Q'] = diag([1.0e-3 for i in x0.keys()])
-        if 'R' not in self.parameters:
-            # Size of what's being measured (not output) 
-            # This is determined by running the measure function on the first state
-            self.parameters['R'] = diag([1.0e-3 for i in range(len(measure(x0.values())))])
+        if 'Q' in self.parameters:
+            warn("UKF does not support Q parameter. Instead, set process noise, model.parameters['process_noise']")
+        if 'R' in self.parameters:
+            warn("UKF does not support R parameter. Instead, set measurement noise, model.parameters['measurement_noise']")
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(x0.keys(), x)}
             Q_err = model.parameters['process_noise'].copy()
             model.parameters['process_noise'] = dict.fromkeys(Q_err, 0)
-            z = model.output(x)
-            model.parameters['process_noise'] = Q_err
             x = model.next_state(x, self.__input, dt)
+            model.parameters['process_noise'] = Q_err
             return array(list(x.values())).ravel()
 
         num_states = len(x0.keys())
@@ -74,9 +75,21 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measure, state_transition, points)
         self.filter.x = array(list(x0.values())).ravel()
-        self.filter.P = self.parameters['Q'] / 10
-        self.filter.Q = self.parameters['Q']
-        self.filter.R = self.parameters['R']
+        self.filter.Q = diag([model.parameters['process_noise'][key] for key in x0.keys()])
+
+        if measurement_eqn is not None:
+            if 'R' in self.parameters:
+                # If specified, use
+                self.filter.R = self.parameters['R']
+            else:
+                z = measurement_eqn(x0)
+                if all((key in model.outputs for key in z.keys())):
+                    # Subset of measurements
+                    self.filter.R = diag([model.parameters['measurement_noise'][key] for key in z.keys()])                
+                # Otherwise use default
+        else:
+            # Not using measurement_eqn - then use model noise
+            self.filter.R = diag([model.parameters['measurement_noise'][key] for key in model.outputs])
 
     def estimate(self, t, u, z):
         """

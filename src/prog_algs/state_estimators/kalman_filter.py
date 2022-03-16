@@ -22,10 +22,6 @@ class KalmanFilter(state_estimator.StateEstimator):
             Starting time (s)
         dt : float 
             time step (s)
-        Q : List[List[float]]
-            Process Noise Matrix 
-        R : List[List[float]]
-            Measurement Noise Matrix 
 
     Note:
         The Kalman Filter does not support a custom measurement function
@@ -45,12 +41,10 @@ class KalmanFilter(state_estimator.StateEstimator):
 
         self.x0 = x0
 
-        if 'Q' not in self.parameters:
-            self.parameters['Q'] = np.diag([1.0e-3 for i in x0.keys()])
-        if 'R' not in self.parameters:
-            # Size of what's being measured (not output) 
-            # This is determined by running the measure function on the first state
-            self.parameters['R'] = np.diag([1.0e-3 for i in range(model.n_outputs)])
+        if 'Q' in self.parameters:
+            warn("UKF does not support Q parameter. Instead, set process noise, model.parameters['process_noise']")
+        if 'R' in self.parameters:
+            warn("UKF does not support R parameter. Instead, set measurement noise, model.parameters['measurement_noise']")
 
         num_states = len(x0.keys())
         num_inputs = model.n_inputs + 1
@@ -67,9 +61,8 @@ class KalmanFilter(state_estimator.StateEstimator):
         self.filter = kalman.KalmanFilter(num_states, num_measurements, num_inputs)
 
         self.filter.x = np.array([[x0[key]] for key in model.states])
-        self.filter.P = self.parameters['Q'] / 10
-        self.filter.Q = self.parameters['Q']
-        self.filter.R = self.parameters['R']
+        self.filter.Q = np.diag([model.parameters['process_noise'][key] for key in x0.keys()])
+        self.filter.R = np.diag([model.parameters['measurement_noise'][key] for key in model.outputs])
         self.filter.F = F
         self.filter.B = B
 

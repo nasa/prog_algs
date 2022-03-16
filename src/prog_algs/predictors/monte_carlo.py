@@ -76,13 +76,22 @@ class MonteCarlo(Predictor):
             event_states = LazySimResult(fcn = es_eqn)
 
             t0 = params.get('t0', 0)
+            if 'save_freq' in params and not isinstance(params['save_freq'], tuple):
+                params['save_freq'] = (t0, params['save_freq'])
+            
 
             # Non-vectorized prediction
             while len(events_remaining) > 0:  # Still events to predict
                 (t, u, xi, z, es) = simulate_to_threshold(future_loading_eqn, first_output, 
                     **{**params, 'threshold_keys': events_remaining, 'print': False, 'progress': False, 't0': t0, 'x': x}  # Merge then separate
                 )
-                
+                if len(times) != 0:
+                    # is not the first iteration, therefore the first saved state is when the last event 
+                    t.pop(0)
+                    u.pop(0)
+                    xi.pop(0)
+                    z.pop(0)
+                    es.pop(0)
 
                 # Add results
                 times.extend(t)

@@ -237,6 +237,7 @@ class TestPredictors(unittest.TestCase):
         except Exception:
             pass
 
+    @unittest.skip
     def test_pickle_pred_template(self):
         from predictor_template import TemplatePredictor
         m = MockProgModel()

@@ -59,8 +59,6 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
 
         if 'Q' in self.parameters:
             warn("UKF does not support Q parameter. Instead, set process noise, model.parameters['process_noise']")
-        if 'R' in self.parameters:
-            warn("UKF does not support R parameter. Instead, set measurement noise, model.parameters['measurement_noise']")
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(x0.keys(), x)}
@@ -88,6 +86,8 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
                     self.filter.R = diag([model.parameters['measurement_noise'][key] for key in z.keys()])                
                 # Otherwise use default
         else:
+            if 'R' in self.parameters:
+                warn("UKF does not support R parameter when not using a measurement_eqn. Instead, set measurement noise, model.parameters['measurement_noise']")
             # Not using measurement_eqn - then use model noise
             self.filter.R = diag([model.parameters['measurement_noise'][key] for key in model.outputs])
 

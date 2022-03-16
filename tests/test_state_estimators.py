@@ -322,6 +322,7 @@ class TestStateEstimators(unittest.TestCase):
         pickle.dump(filt, open('se_test.pkl', 'wb'))
         pickle_converted_result = pickle.load(open('se_test.pkl', 'rb'))
         self.assertEqual(filt, pickle_converted_result)
+        # self.assertEqual(filt.x, pickle_converted_result.x)
 
     @unittest.skip
     def test_pickle_KF(self):

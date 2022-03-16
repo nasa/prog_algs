@@ -323,18 +323,56 @@ class TestStateEstimators(unittest.TestCase):
         pickle_converted_result = pickle.load(open('se_test.pkl', 'rb'))
         self.assertEqual(filt, pickle_converted_result)
         # self.assertEqual(filt.x, pickle_converted_result.x)
+        # Should we implement changes to make pickleable?
 
     @unittest.skip
     def test_pickle_KF(self):
-        m = MockProgModel()
-        x0 = m.initialize()
         from prog_algs.state_estimators import KalmanFilter
-        filt = KalmanFilter(m, x0)
+        from prog_models import LinearModel
+        class ThrownObject(LinearModel):
+            inputs = []  # no inputs, no way to control
+            states = ['x', 'v']
+            outputs = ['x']
+            events = ['falling', 'impact']
+
+            A = np.array([[0, 1], [0, 0]])
+            E = np.array([[0], [-9.81]])
+            C = np.array([[1, 0]])
+            F = None # Will override method
+
+            default_parameters = {
+                'thrower_height': 1.83, 
+                'throwing_speed': 40, 
+                'g': -9.81 
+            }
+
+            def initialize(self, u=None, z=None):
+                return self.StateContainer({
+                    'x': self.parameters['thrower_height'], 
+                    'v': self.parameters['throwing_speed'] 
+                    })
+            
+            def threshold_met(self, x):
+                return {
+                    'falling': x['v'] < 0,
+                    'impact': x['x'] <= 0
+                }
+
+            def event_state(self, x): 
+                x_max = x['x'] + np.square(x['v'])/(-self.parameters['g']*2) # Use speed and position to estimate maximum height
+                return {
+                    'falling': np.maximum(x['v']/self.parameters['throwing_speed'],0),  # Throwing speed is max speed
+                    'impact': np.maximum(x['x']/x_max,0) if x['v'] < 0 else 1  # 1 until falling begins, then it's fraction of height
+                }
+        m = ThrownObject(process_noise=5e-2, measurement_noise=5e-2)
+        x = m.initialize()
+        filt = KalmanFilter(m, {'x': 1.75, 'v': 35})
 
         import pickle # try pickle'ing
         pickle.dump(filt, open('se_test.pkl', 'wb'))
         pickle_converted_result = pickle.load(open('se_test.pkl', 'rb'))
-        self.assertEqual(filt, pickle_converted_result)
+        # self.assertEqual(filt, pickle_converted_result)
+        self.assertEqual(filt.x, pickle_converted_result.x)
 
 # This allows the module to be executed directly    
 def run_tests():

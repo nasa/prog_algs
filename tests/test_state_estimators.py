@@ -287,6 +287,52 @@ class TestStateEstimators(unittest.TestCase):
             # Missing states
             KalmanFilter(ThrownObject, {})
 
+    @unittest.skip
+    def test_pickle_state_est_template(self):
+        from state_estimator_template import TemplateStateEstimator
+        m = MockProgModel()
+        se = TemplateStateEstimator(m, {'a': 0.0, 'b': 0.0, 'c': 0.0, 't':0.0})
+        import pickle # try pickle'ing
+        pickle.dump(se, open('se_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('se_test.pkl', 'rb'))
+        self.assertEqual(se, pickle_converted_result)
+
+    @unittest.skip
+    def test_pickle_PF(self):
+        from prog_algs.state_estimators import ParticleFilter
+        m = MockProgModel(process_noise=5e-2, measurement_noise=0)
+        x0 = m.initialize()
+        filt = ParticleFilter(m, x0, n_samples=200, x0_uncertainty=0.1)
+
+        import pickle # try pickle'ing
+        pickle.dump(filt, open('se_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('se_test.pkl', 'rb'))
+        self.assertEqual(filt, pickle_converted_result)
+
+    @unittest.skip
+    def test_pickle_UKF(self):
+        m = MockProgModel()
+        x0 = m.initialize()
+        from prog_algs.state_estimators import UnscentedKalmanFilter
+        filt = UnscentedKalmanFilter(m, x0)
+
+        import pickle # try pickle'ing
+        pickle.dump(filt, open('se_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('se_test.pkl', 'rb'))
+        self.assertEqual(filt, pickle_converted_result)
+
+    @unittest.skip
+    def test_pickle_KF(self):
+        m = MockProgModel()
+        x0 = m.initialize()
+        from prog_algs.state_estimators import KalmanFilter
+        filt = KalmanFilter(m, x0)
+
+        import pickle # try pickle'ing
+        pickle.dump(filt, open('se_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('se_test.pkl', 'rb'))
+        self.assertEqual(filt, pickle_converted_result)
+
 # This allows the module to be executed directly    
 def run_tests():
      # This ensures that the directory containing StateEstimatorTemplate is in the python search directory

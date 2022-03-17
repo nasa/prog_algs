@@ -315,6 +315,8 @@ class TestStateEstimators(unittest.TestCase):
         self.assertDictEqual(filt.parameters, pickle_converted_result.parameters)
         # Test equivalent model
         self.assertEqual(filt.model, pickle_converted_result.model)
+        # Test equivalent measure equation
+        self.assertEqual(filt._measure(filt.x.mean), pickle_converted_result._measure(pickle_converted_result.x.mean))
 
     @unittest.skip
     def test_pickle_UKF(self):

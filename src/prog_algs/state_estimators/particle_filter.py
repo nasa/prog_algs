@@ -106,7 +106,7 @@ class ParticleFilter(state_estimator.StateEstimator):
             for i in range(num_particles):
                 x = {key: particles[key][i] for key in particles.keys()}
                 x = next_state(x, u, dt) 
-                x = apply_process_noise(x)
+                x = apply_process_noise(x, dt)
                 for key in particles.keys():
                     self.particles[key][i] = x[key]
                 z = output(x)

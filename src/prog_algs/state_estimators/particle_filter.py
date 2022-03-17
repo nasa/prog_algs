@@ -42,7 +42,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         super().__init__(model, x0, measurement_eqn = measurement_eqn, **kwargs)
         
         if measurement_eqn:
-            self.__measure = measurement_eqn
+            self._measure = measurement_eqn
             
             # update output_container
             z0 = measurement_eqn(x0)
@@ -52,7 +52,7 @@ class ParticleFilter(state_estimator.StateEstimator):
                     super().__init__(list(z0.keys()), z)
             self.model.OutputContainer = MeasureContainer
         else:
-            self.__measure = model.output
+            self._measure = model.output
 
         # Build array inplace
         x = array(list(x0.values()))
@@ -87,7 +87,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         particles = self.particles
         next_state = self.model.next_state
         apply_process_noise = self.model.apply_process_noise
-        output = self.__measure
+        output = self._measure
         apply_measurement_noise = self.model.apply_measurement_noise
         noise_params = self.model.parameters['measurement_noise']
         num_particles = self.parameters['num_particles']

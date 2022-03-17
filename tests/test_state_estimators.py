@@ -135,7 +135,7 @@ class TestStateEstimators(unittest.TestCase):
         from prog_algs.state_estimators import UnscentedKalmanFilter
         self.__incorrect_input_tests(UnscentedKalmanFilter)
 
-    @unittest.skip
+    # @unittest.skip
     def test_PF(self):
         from prog_algs.state_estimators import ParticleFilter
         from prog_models.models import ThrownObject

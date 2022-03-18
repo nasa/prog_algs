@@ -52,7 +52,7 @@ class ParticleFilter(state_estimator.StateEstimator):
             def __measure(x):
                 return MeasureContainer(measurement_eqn(x))
                 
-            self.__measure = __measure
+            self._measure = __measure
         else:
             self._measure = model.output
 

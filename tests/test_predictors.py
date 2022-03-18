@@ -118,7 +118,6 @@ class TestPredictors(unittest.TestCase):
         s = mc_results.time_of_event.sample(100).key('EOD')
         samples.eol_metrics(s)  # Kept for backwards compatibility
 
-    @unittest.skip
     def test_MC(self):
         from prog_models.models import ThrownObject
         from prog_algs.predictors import MonteCarlo
@@ -266,7 +265,7 @@ class TestPredictors(unittest.TestCase):
         pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
         self.assertEqual(pred, pickle_converted_result)
 
-    def test_pickle_UKP_ThrownObject_result(self): # PREDICTION TEST
+    def test_pickle_UKP_ThrownObject_pickle_result(self): # PREDICTION TEST
         from prog_algs.predictors import UnscentedTransformPredictor
         from prog_algs.uncertain_data import MultivariateNormalDist
         from prog_models.models.thrown_object import ThrownObject
@@ -282,7 +281,7 @@ class TestPredictors(unittest.TestCase):
         pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
         self.assertEqual(mc_results, pickle_converted_result)
 
-    def test_UKP_ThrownObject_One_Event_result(self): # PREDICTION TEST
+    def test_UKP_ThrownObject_One_Event_pickle_result(self): # PREDICTION TEST
         # Test thrown object, similar to test_UKP_ThrownObject, but with only the 'falling' event
         from prog_algs.predictors import UnscentedTransformPredictor
         from prog_algs.uncertain_data import MultivariateNormalDist
@@ -299,7 +298,7 @@ class TestPredictors(unittest.TestCase):
         pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
         self.assertEqual(mc_results, pickle_converted_result)
 
-    def test_UKP_Battery_result(self):
+    def test_UKP_Battery_pickle_result(self):
         from prog_algs.predictors import UnscentedTransformPredictor
         from prog_algs.uncertain_data import MultivariateNormalDist
         from prog_models.models import BatteryCircuit
@@ -334,6 +333,20 @@ class TestPredictors(unittest.TestCase):
 
         # Predict with a step size of 0.1
         mc_results = ut.predict(filt.x, future_loading, dt=0.1)
+        import pickle # try pickle'ing
+        pickle.dump(mc_results, open('predictor_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
+        self.assertEqual(mc_results, pickle_converted_result)
+
+    def test_MC_pickle_result(self):
+        from prog_models.models import ThrownObject
+        from prog_algs.predictors import MonteCarlo
+        m = ThrownObject()
+        mc = MonteCarlo(m)
+        def future_loading(t = None, x = None):
+            return {}
+            
+        mc_results = mc.predict(m.initialize(), future_loading, dt=0.2, num_samples=3, save_freq=1)
         import pickle # try pickle'ing
         pickle.dump(mc_results, open('predictor_test.pkl', 'wb'))
         pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))

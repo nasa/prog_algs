@@ -50,12 +50,6 @@ class TestUncertainData(unittest.TestCase):
         self.assertEqual(data.percentage_in_bounds({'a': [0, 2.5], 'b': [0, 1.5]}), 
             {'a':0.6, 'b': 0.2})
 
-        # Pickle test
-        import pickle
-        pickle.dump(data, open('test.pkl', 'wb'))
-        data2 = pickle.load(open('test.pkl', 'rb'))
-        self.assertEqual(data, data2)
-
     def test_multivariatenormaldist(self):
         try: 
             dist = MultivariateNormalDist()
@@ -71,12 +65,6 @@ class TestUncertainData(unittest.TestCase):
         self.assertTrue((dist.cov == array([[1, 0], [0, 1]])).all())
         dist.percentage_in_bounds([0, 10])
 
-        # Pickle test
-        import pickle
-        pickle.dump(dist, open('test.pkl', 'wb'))
-        data2 = pickle.load(open('test.pkl', 'rb'))
-        self.assertEqual(dist, data2)
-
     def test_scalardist(self):
         data = {'a': 12, 'b': 14}
         d = ScalarData(data)
@@ -86,12 +74,6 @@ class TestUncertainData(unittest.TestCase):
         self.assertEqual(d.percentage_in_bounds([13, 20]), {'a': 0, 'b': 1})
         self.assertEqual(d.percentage_in_bounds([0, 10]), {'a': 0, 'b': 0})
         self.assertEqual(d.percentage_in_bounds([0, 20]), {'a': 1, 'b': 1})
-
-        # Pickle test
-        import pickle
-        pickle.dump(d, open('test.pkl', 'wb'))
-        data2 = pickle.load(open('test.pkl', 'rb'))
-        self.assertEqual(d, data2)
 
     def test_pickle_unweightedsamples(self):
         data = {'a': 12, 'b': 14}

@@ -242,7 +242,7 @@ class TestPredictors(unittest.TestCase):
         self.assertEqual(pred.predict(samples, future_loading, dt=0.2, num_samples=3, save_freq=1), pickle_converted_result.predict(samples, future_loading, dt=0.2, num_samples=3, save_freq=1))
 
     # TESTING PREDICTIONS todo:testing predictors pickle
-    @unittest.skip
+    @unittest.skip # UTP doesn't pickle
     def test_pickle_UTP_ThrownObject(self):
         from prog_algs.predictors import UnscentedTransformPredictor
         from prog_algs.uncertain_data import MultivariateNormalDist
@@ -397,6 +397,30 @@ class TestPredictors(unittest.TestCase):
         import pickle
         p2 = pickle.loads(pickle.dumps(profile))
         self.assertEqual(p2, profile)
+
+    # Testing LazyUTPrediction
+    def test_pickle_UTP_ThrownObject(self):
+        from prog_algs.predictors import UnscentedTransformPredictor
+        from prog_algs.uncertain_data import MultivariateNormalDist
+        from prog_models.models.thrown_object import ThrownObject
+        m = ThrownObject()
+        pred = UnscentedTransformPredictor(m)
+        samples = MultivariateNormalDist(['x', 'v'], [1.83, 40], [[0.1, 0.01], [0.01, 0.1]])
+        def future_loading(t, x={}):
+            return {}
+        mc_results = pred.predict(samples, future_loading, dt=0.01, save_freq=1)
+        # LazyUTPrediction objects from pre
+        pred_op = mc_results.outputs
+        pred_es = mc_results.event_states
+
+        import pickle # try pickle'ing
+        pickle.dump(pred_op, open('predictor_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
+        self.assertEqual(pred_op, pickle_converted_result)
+        
+        pickle.dump(pred_es, open('predictor_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
+        self.assertEqual(pred_es, pickle_converted_result)
 
 # This allows the module to be executed directly    
 def run_tests():

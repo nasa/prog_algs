@@ -252,7 +252,7 @@ class TestPredictors(unittest.TestCase):
             return {}
         self.assertEqual(pred.predict(samples, future_loading, dt=0.2, num_samples=3, save_freq=1), pickle_converted_result.predict(samples, future_loading, dt=0.2, num_samples=3, save_freq=1))
 
-    # TESTING CONTAINERS todo:testing predictors pickle
+    # TESTING PREDICTIONS todo:testing predictors pickle
     @unittest.skip
     def test_pickle_UKP_ThrownObject(self):
         from prog_algs.predictors import UnscentedTransformPredictor
@@ -266,7 +266,7 @@ class TestPredictors(unittest.TestCase):
         pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
         self.assertEqual(pred, pickle_converted_result)
 
-    def test_pickle_UKP_ThrownObject_result(self): # CONTAINER TEST
+    def test_pickle_UKP_ThrownObject_result(self): # PREDICTION TEST
         from prog_algs.predictors import UnscentedTransformPredictor
         from prog_algs.uncertain_data import MultivariateNormalDist
         from prog_models.models.thrown_object import ThrownObject
@@ -282,7 +282,7 @@ class TestPredictors(unittest.TestCase):
         pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
         self.assertEqual(mc_results, pickle_converted_result)
 
-    def test_UKP_ThrownObject_One_Event_result(self): # CONTAINER TEST
+    def test_UKP_ThrownObject_One_Event_result(self): # PREDICTION TEST
         # Test thrown object, similar to test_UKP_ThrownObject, but with only the 'falling' event
         from prog_algs.predictors import UnscentedTransformPredictor
         from prog_algs.uncertain_data import MultivariateNormalDist

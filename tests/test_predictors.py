@@ -252,6 +252,36 @@ class TestPredictors(unittest.TestCase):
             return {}
         self.assertEqual(pred.predict(samples, future_loading, dt=0.2, num_samples=3, save_freq=1), pickle_converted_result.predict(samples, future_loading, dt=0.2, num_samples=3, save_freq=1))
 
+    # TESTING CONTAINERS todo:testing predictors pickle
+    def test_pickle_UKP_ThrownObject(self): # Container
+        from prog_algs.predictors import UnscentedTransformPredictor
+        from prog_algs.uncertain_data import MultivariateNormalDist
+        from prog_models.models.thrown_object import ThrownObject
+        m = ThrownObject()
+        pred = UnscentedTransformPredictor(m)
+
+        import pickle # try pickle'ing
+        pickle.dump(pred, open('predictor_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
+        self.assertEqual(pred, pickle_converted_result)
+
+    def test_pickle_UKP_ThrownObject_result(self):
+        from prog_algs.predictors import UnscentedTransformPredictor
+        from prog_algs.uncertain_data import MultivariateNormalDist
+        from prog_models.models.thrown_object import ThrownObject
+        m = ThrownObject()
+        pred = UnscentedTransformPredictor(m)
+        samples = MultivariateNormalDist(['x', 'v'], [1.83, 40], [[0.1, 0.01], [0.01, 0.1]])
+        def future_loading(t, x={}):
+            return {}
+
+        mc_results = pred.predict(samples, future_loading, dt=0.01, save_freq=1)
+        import pickle # try pickle'ing
+        pickle.dump(mc_results, open('predictor_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
+        self.assertEqual(mc_results, pickle_converted_result)
+
+
 # This allows the module to be executed directly    
 def run_tests():
     l = unittest.TestLoader()

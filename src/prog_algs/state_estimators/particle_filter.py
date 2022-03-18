@@ -42,15 +42,17 @@ class ParticleFilter(state_estimator.StateEstimator):
         super().__init__(model, x0, measurement_eqn = measurement_eqn, **kwargs)
         
         if measurement_eqn:
-            self._measure = measurement_eqn
-            
             # update output_container
-            z0 = measurement_eqn(x0)
             from prog_models.utils.containers import DictLikeMatrixWrapper
+            z0 = measurement_eqn(x0)
             class MeasureContainer(DictLikeMatrixWrapper):
                 def __init__(self, z):
                     super().__init__(list(z0.keys()), z)
-            self.model.OutputContainer = MeasureContainer
+
+            def __measure(x):
+                return MeasureContainer(measurement_eqn(x))
+                
+            self.__measure = __measure
         else:
             self._measure = model.output
 
@@ -97,20 +99,19 @@ class ParticleFilter(state_estimator.StateEstimator):
 
         if self.model.is_vectorized:
             # Propagate particles state
-            self.particles = apply_process_noise(next_state(particles, u, dt))
+            self.particles = apply_process_noise(next_state(particles, u, dt), dt)
 
             # Get particle measurements
-            zPredicted = apply_measurement_noise(output(self.particles))
+            zPredicted = output(self.particles)
         else:
             # Propogate and calculate weights
             for i in range(num_particles):
                 x = {key: particles[key][i] for key in particles.keys()}
                 x = next_state(x, u, dt) 
-                x = apply_process_noise(x)
+                x = apply_process_noise(x, dt)
                 for key in particles.keys():
                     self.particles[key][i] = x[key]
                 z = output(x)
-                z = apply_measurement_noise(z)
                 for key in measurement_keys:
                     zPredicted[key][i] = z[key]
 
@@ -133,7 +134,7 @@ class ParticleFilter(state_estimator.StateEstimator):
 
         # Convert to weights
         unnorm_weights = exp(scaled_weights)
-
+        
         # Normalize
         total_weight = sum(unnorm_weights)
         self.weights = unnorm_weights / total_weight

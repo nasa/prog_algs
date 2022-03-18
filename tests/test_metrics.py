@@ -359,6 +359,33 @@ class TestMetrics(unittest.TestCase):
         self.assertIn('b', metrics)
         self.assertNotIn('c', metrics)
 
+    def test_toe_profile_metrics(self):
+        from prog_algs.predictors import ToEPredictionProfile
+        profile = ToEPredictionProfile()  # Empty profile
+        for i in range(10):
+            # a will shift upward from 0-19 to 9-28
+            # b is always a-1
+            # c is always a * 2, and will therefore always have twice the spread
+            data = [{'a': j, 'b': j -1 , 'c': (j-4.5) * 2 + 4.5} for j in range(i, i+20)]
+            profile.add_prediction(
+                10-i,  # Time (reverse so data is decreasing)
+                UnweightedSamples(data)  # ToE Prediction
+            )
+
+        from prog_algs.metrics import alpha_lambda
+
+        # Test 1: Ground truth at median
+        ground_truth = {'a': 9.0, 'b': 8.0, 'c': 18.0}
+        lambda_value = 8  # Almost at prediction 
+        alpha = 0.5
+        beta = 0.05  # 5% is really bad
+        metrics = alpha_lambda(profile, ground_truth, lambda_value, alpha, beta)
+        
+        import pickle # try pickle'ing
+        pickle.dump(profile, open('predictor_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
+        self.assertEqual(profile, pickle_converted_result)
+
 # This allows the module to be executed directly    
 def run_tests():
     l = unittest.TestLoader()

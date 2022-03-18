@@ -253,7 +253,8 @@ class TestPredictors(unittest.TestCase):
         self.assertEqual(pred.predict(samples, future_loading, dt=0.2, num_samples=3, save_freq=1), pickle_converted_result.predict(samples, future_loading, dt=0.2, num_samples=3, save_freq=1))
 
     # TESTING CONTAINERS todo:testing predictors pickle
-    def test_pickle_UKP_ThrownObject(self): # Container
+    @unittest.skip
+    def test_pickle_UKP_ThrownObject(self):
         from prog_algs.predictors import UnscentedTransformPredictor
         from prog_algs.uncertain_data import MultivariateNormalDist
         from prog_models.models.thrown_object import ThrownObject
@@ -265,7 +266,7 @@ class TestPredictors(unittest.TestCase):
         pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
         self.assertEqual(pred, pickle_converted_result)
 
-    def test_pickle_UKP_ThrownObject_result(self):
+    def test_pickle_UKP_ThrownObject_result(self): # CONTAINER TEST
         from prog_algs.predictors import UnscentedTransformPredictor
         from prog_algs.uncertain_data import MultivariateNormalDist
         from prog_models.models.thrown_object import ThrownObject
@@ -281,6 +282,62 @@ class TestPredictors(unittest.TestCase):
         pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
         self.assertEqual(mc_results, pickle_converted_result)
 
+    def test_UKP_ThrownObject_One_Event_result(self): # CONTAINER TEST
+        # Test thrown object, similar to test_UKP_ThrownObject, but with only the 'falling' event
+        from prog_algs.predictors import UnscentedTransformPredictor
+        from prog_algs.uncertain_data import MultivariateNormalDist
+        from prog_models.models.thrown_object import ThrownObject
+        m = ThrownObject()
+        pred = UnscentedTransformPredictor(m)
+        samples = MultivariateNormalDist(['x', 'v'], [1.83, 40], [[0.1, 0.01], [0.01, 0.1]])
+        def future_loading(t, x={}):
+            return {}
+
+        mc_results = pred.predict(samples, future_loading, dt=0.01, events=['falling'], save_freq=1)
+        import pickle # try pickle'ing
+        pickle.dump(mc_results, open('predictor_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
+        self.assertEqual(mc_results, pickle_converted_result)
+
+    def test_UKP_Battery_result(self):
+        from prog_algs.predictors import UnscentedTransformPredictor
+        from prog_algs.uncertain_data import MultivariateNormalDist
+        from prog_models.models import BatteryCircuit
+        from prog_algs.state_estimators import UnscentedKalmanFilter
+
+        def future_loading(t, x = None):
+            # Variable (piece-wise) future loading scheme 
+            if (t < 600):
+                i = 2
+            elif (t < 900):
+                i = 1
+            elif (t < 1800):
+                i = 4
+            elif (t < 3000):
+                i = 2
+            else:
+                i = 3
+            return {'i': i}
+
+        batt = BatteryCircuit()
+
+        ## State Estimation - perform a single ukf state estimate step
+        filt = UnscentedKalmanFilter(batt, batt.parameters['x0'])
+
+        example_measurements = {'t': 32.2, 'v': 3.915}
+        t = 0.1
+        filt.estimate(t, future_loading(t), example_measurements)
+
+        ## Prediction - Predict EOD given current state
+        # Setup prediction
+        ut = UnscentedTransformPredictor(batt)
+
+        # Predict with a step size of 0.1
+        mc_results = ut.predict(filt.x, future_loading, dt=0.1)
+        import pickle # try pickle'ing
+        pickle.dump(mc_results, open('predictor_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
+        self.assertEqual(mc_results, pickle_converted_result)
 
 # This allows the module to be executed directly    
 def run_tests():

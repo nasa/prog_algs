@@ -102,7 +102,7 @@ class ParticleFilter(state_estimator.StateEstimator):
             self.particles = apply_process_noise(next_state(particles, u, dt), dt)
 
             # Get particle measurements
-            zPredicted = apply_measurement_noise(output(self.particles))
+            zPredicted = output(self.particles)
         else:
             # Propogate and calculate weights
             for i in range(num_particles):
@@ -112,7 +112,6 @@ class ParticleFilter(state_estimator.StateEstimator):
                 for key in particles.keys():
                     self.particles[key][i] = x[key]
                 z = output(x)
-                z = apply_measurement_noise(z)
                 for key in measurement_keys:
                     zPredicted[key][i] = z[key]
 

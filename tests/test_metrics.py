@@ -381,10 +381,15 @@ class TestMetrics(unittest.TestCase):
         beta = 0.05  # 5% is really bad
         metrics = alpha_lambda(profile, ground_truth, lambda_value, alpha, beta)
         
-        import pickle # try pickle'ing
+        # Test pickling ToEPredictionProfile
+        import pickle
         pickle.dump(profile, open('predictor_test.pkl', 'wb'))
         pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
         self.assertEqual(profile, pickle_converted_result)
+        # Test pickling alpha_lambda result
+        pickle.dump(metrics, open('predictor_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
+        self.assertEqual(metrics, pickle_converted_result)
 
 # This allows the module to be executed directly    
 def run_tests():

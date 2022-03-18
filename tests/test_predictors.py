@@ -152,11 +152,6 @@ class TestPredictors(unittest.TestCase):
         except Exception:
             pass
 
-        # Test pickle
-        import pickle
-        p2 = pickle.loads(pickle.dumps(p))
-        self.assertEqual(p2, p)
-
     def test_prediction_uwsamples(self):
         from prog_algs.predictors.prediction import UnweightedSamplesPrediction
         from prog_algs.uncertain_data import UnweightedSamples
@@ -200,11 +195,6 @@ class TestPredictors(unittest.TestCase):
             self.fail()
         except Exception:
             pass
-
-        # Test pickle
-        import pickle
-        p2 = pickle.loads(pickle.dumps(p))
-        self.assertEqual(p2, p)
     
     def test_prediction_profile(self):
         from prog_algs.predictors import ToEPredictionProfile
@@ -366,6 +356,47 @@ class TestPredictors(unittest.TestCase):
         pickle.dump(mc, open('predictor_test.pkl', 'wb'))
         pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
         self.assertEqual(mc, pickle_converted_result)
+
+    def test_pickle_prediction_mvnormaldist(self):
+        from prog_algs.predictors import Prediction as MultivariateNormalDistPrediction
+        from prog_algs.uncertain_data import MultivariateNormalDist
+        times = list(range(10))
+        covar = [[0.1, 0.01], [0.01, 0.1]]
+        means = [{'a': 1+i/10, 'b': 2-i/5} for i in range(10)]
+        states = [MultivariateNormalDist(means[i].keys(), means[i].values(), covar) for i in range(10)]
+        p = MultivariateNormalDistPrediction(times, states)
+
+        import pickle
+        p2 = pickle.loads(pickle.dumps(p))
+        self.assertEqual(p2, p)
+
+    def test_pickle_prediction_uwsamples(self):
+        from prog_algs.predictors.prediction import UnweightedSamplesPrediction
+        from prog_algs.uncertain_data import UnweightedSamples
+        times = list(range(10))
+        states = [UnweightedSamples(list(range(10))), 
+            UnweightedSamples(list(range(1, 11))), 
+            UnweightedSamples(list(range(-1, 9)))]
+        p = UnweightedSamplesPrediction(times, states)
+
+        import pickle
+        p2 = pickle.loads(pickle.dumps(p))
+        self.assertEqual(p2, p)
+    
+    def test_pickle_prediction_profile(self):
+        from prog_algs.predictors import ToEPredictionProfile
+        from prog_algs.uncertain_data import ScalarData
+        profile = ToEPredictionProfile()
+        self.assertEqual(len(profile), 0)
+
+        profile.add_prediction(0, ScalarData({'a': 1, 'b': 2, 'c': -3.2}))
+        profile.add_prediction(1, ScalarData({'a': 1.1, 'b': 2.2, 'c': -3.1}))
+        profile.add_prediction(0.5, ScalarData({'a': 1.05, 'b': 2.1, 'c': -3.15}))
+        self.assertEqual(len(profile), 3)
+        
+        import pickle
+        p2 = pickle.loads(pickle.dumps(profile))
+        self.assertEqual(p2, profile)
 
 # This allows the module to be executed directly    
 def run_tests():

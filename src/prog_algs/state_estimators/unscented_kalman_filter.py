@@ -38,6 +38,12 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
 
         self.__input = None
         self.x0 = x0
+        # Saving for reduce pickling
+        self.model = model
+        self.measurement_eqn = measurement_eqn
+        self.saved_kwargs = {}
+        for k, v in kwargs.items():
+            self.saved_kwargs[k] = v
 
         if measurement_eqn is None: 
             def measure(x):
@@ -78,6 +84,9 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
 
+    def __reduce__(self):
+        return (self.__class__.__base__, (self.model, self.x0, self.measurement_eqn, self.saved_kwargs))
+    
     def estimate(self, t, u, z):
         """
         Perform one state estimation step (i.e., update the state estimate)

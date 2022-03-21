@@ -227,20 +227,6 @@ class TestPredictors(unittest.TestCase):
         except Exception:
             pass
 
-    def test_pickle_pred_template(self):
-        from predictor_template import TemplatePredictor 
-        m = MockProgModel()
-        pred = TemplatePredictor(m)
-        import pickle # try pickle'ing
-        pickle.dump(pred, open('predictor_test.pkl', 'wb'))
-        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
-        # self.assertEqual(pred, pickle_converted_result)
-        from prog_algs.uncertain_data import MultivariateNormalDist
-        samples = MultivariateNormalDist(['x', 'v'], [1.83, 40], [[0.1, 0.01], [0.01, 0.1]])
-        def future_loading(t, x={}):
-            return {}
-        self.assertEqual(pred.predict(samples, future_loading, dt=0.2, num_samples=3, save_freq=1), pickle_converted_result.predict(samples, future_loading, dt=0.2, num_samples=3, save_freq=1))
-
     # TESTING PREDICTIONS todo:testing predictors pickle
     @unittest.skip # UTP doesn't pickle
     def test_pickle_UTP_ThrownObject(self):

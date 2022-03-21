@@ -39,6 +39,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
 
         self.__input = None
         self.x0 = x0
+        # Saving for reduce pickling
 
         if measurement_eqn is None: 
             def measure(x):

@@ -45,7 +45,7 @@ class TestPredictors(unittest.TestCase):
         m = MockProgModel()
         pred = TemplatePredictor(m)
 
-    def test_UKP_ThrownObject(self):
+    def test_UTP_ThrownObject(self):
         from prog_algs.predictors import UnscentedTransformPredictor
         from prog_algs.uncertain_data import MultivariateNormalDist
         from prog_models.models.thrown_object import ThrownObject
@@ -60,7 +60,7 @@ class TestPredictors(unittest.TestCase):
         self.assertAlmostEqual(mc_results.time_of_event.mean['falling'], 4.15, 0)
         self.assertAlmostEqual(mc_results.times[-1], 9, 1)  # Saving every second, last time should be around the 1s after impact event (because one of the sigma points fails afterwards)
 
-    def test_UKP_ThrownObject_One_Event(self):
+    def test_UTP_ThrownObject_One_Event(self):
         # Test thrown object, similar to test_UKP_ThrownObject, but with only the 'falling' event
         from prog_algs.predictors import UnscentedTransformPredictor
         from prog_algs.uncertain_data import MultivariateNormalDist
@@ -152,11 +152,6 @@ class TestPredictors(unittest.TestCase):
         except Exception:
             pass
 
-        # Test pickle
-        import pickle
-        p2 = pickle.loads(pickle.dumps(p))
-        self.assertEqual(p2, p)
-
     def test_prediction_uwsamples(self):
         from prog_algs.predictors.prediction import UnweightedSamplesPrediction
         from prog_algs.uncertain_data import UnweightedSamples
@@ -200,11 +195,6 @@ class TestPredictors(unittest.TestCase):
             self.fail()
         except Exception:
             pass
-
-        # Test pickle
-        import pickle
-        p2 = pickle.loads(pickle.dumps(p))
-        self.assertEqual(p2, p)
     
     def test_prediction_profile(self):
         from prog_algs.predictors import ToEPredictionProfile
@@ -236,6 +226,144 @@ class TestPredictors(unittest.TestCase):
             # 0.5 doesn't exist anymore
         except Exception:
             pass
+
+    def test_pickle_UTP_ThrownObject_pickle_result(self): # PREDICTION TEST
+        from prog_algs.predictors import UnscentedTransformPredictor
+        from prog_algs.uncertain_data import MultivariateNormalDist
+        from prog_models.models.thrown_object import ThrownObject
+        m = ThrownObject()
+        pred = UnscentedTransformPredictor(m)
+        samples = MultivariateNormalDist(['x', 'v'], [1.83, 40], [[0.1, 0.01], [0.01, 0.1]])
+        def future_loading(t, x={}):
+            return {}
+
+        mc_results = pred.predict(samples, future_loading, dt=0.01, save_freq=1)
+        import pickle # try pickle'ing
+        pickle.dump(mc_results, open('predictor_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
+        self.assertEqual(mc_results, pickle_converted_result)
+
+    def test_UTP_ThrownObject_One_Event_pickle_result(self): # PREDICTION TEST
+        # Test thrown object, similar to test_UKP_ThrownObject, but with only the 'falling' event
+        from prog_algs.predictors import UnscentedTransformPredictor
+        from prog_algs.uncertain_data import MultivariateNormalDist
+        from prog_models.models.thrown_object import ThrownObject
+        m = ThrownObject()
+        pred = UnscentedTransformPredictor(m)
+        samples = MultivariateNormalDist(['x', 'v'], [1.83, 40], [[0.1, 0.01], [0.01, 0.1]])
+        def future_loading(t, x={}):
+            return {}
+
+        mc_results = pred.predict(samples, future_loading, dt=0.01, events=['falling'], save_freq=1)
+        import pickle # try pickle'ing
+        pickle.dump(mc_results, open('predictor_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
+        self.assertEqual(mc_results, pickle_converted_result)
+
+    def test_UKP_Battery_pickle_result(self):
+        from prog_algs.predictors import UnscentedTransformPredictor
+        from prog_algs.uncertain_data import MultivariateNormalDist
+        from prog_models.models import BatteryCircuit
+        from prog_algs.state_estimators import UnscentedKalmanFilter
+
+        def future_loading(t, x = None):
+            # Variable (piece-wise) future loading scheme 
+            if (t < 600):
+                i = 2
+            elif (t < 900):
+                i = 1
+            elif (t < 1800):
+                i = 4
+            elif (t < 3000):
+                i = 2
+            else:
+                i = 3
+            return {'i': i}
+
+        batt = BatteryCircuit()
+
+        ## State Estimation - perform a single ukf state estimate step
+        filt = UnscentedKalmanFilter(batt, batt.parameters['x0'])
+
+        example_measurements = {'t': 32.2, 'v': 3.915}
+        t = 0.1
+        filt.estimate(t, future_loading(t), example_measurements)
+
+        ## Prediction - Predict EOD given current state
+        # Setup prediction
+        ut = UnscentedTransformPredictor(batt)
+
+        # Predict with a step size of 0.1
+        mc_results = ut.predict(filt.x, future_loading, dt=0.1)
+        import pickle # try pickle'ing
+        pickle.dump(mc_results, open('predictor_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
+        self.assertEqual(mc_results, pickle_converted_result)
+
+    def test_pickle_prediction_mvnormaldist(self):
+        from prog_algs.predictors import Prediction as MultivariateNormalDistPrediction
+        from prog_algs.uncertain_data import MultivariateNormalDist
+        times = list(range(10))
+        covar = [[0.1, 0.01], [0.01, 0.1]]
+        means = [{'a': 1+i/10, 'b': 2-i/5} for i in range(10)]
+        states = [MultivariateNormalDist(means[i].keys(), means[i].values(), covar) for i in range(10)]
+        p = MultivariateNormalDistPrediction(times, states)
+
+        import pickle
+        p2 = pickle.loads(pickle.dumps(p))
+        self.assertEqual(p2, p)
+
+    def test_pickle_prediction_uwsamples(self):
+        from prog_algs.predictors.prediction import UnweightedSamplesPrediction
+        from prog_algs.uncertain_data import UnweightedSamples
+        times = list(range(10))
+        states = [UnweightedSamples(list(range(10))), 
+            UnweightedSamples(list(range(1, 11))), 
+            UnweightedSamples(list(range(-1, 9)))]
+        p = UnweightedSamplesPrediction(times, states)
+
+        import pickle
+        p2 = pickle.loads(pickle.dumps(p))
+        self.assertEqual(p2, p)
+    
+    def test_pickle_prediction_profile(self):
+        from prog_algs.predictors import ToEPredictionProfile
+        from prog_algs.uncertain_data import ScalarData
+        profile = ToEPredictionProfile()
+        self.assertEqual(len(profile), 0)
+
+        profile.add_prediction(0, ScalarData({'a': 1, 'b': 2, 'c': -3.2}))
+        profile.add_prediction(1, ScalarData({'a': 1.1, 'b': 2.2, 'c': -3.1}))
+        profile.add_prediction(0.5, ScalarData({'a': 1.05, 'b': 2.1, 'c': -3.15}))
+        self.assertEqual(len(profile), 3)
+        
+        import pickle
+        p2 = pickle.loads(pickle.dumps(profile))
+        self.assertEqual(p2, profile)
+
+    # Testing LazyUTPrediction
+    def test_pickle_UTP_ThrownObject(self):
+        from prog_algs.predictors import UnscentedTransformPredictor
+        from prog_algs.uncertain_data import MultivariateNormalDist
+        from prog_models.models.thrown_object import ThrownObject
+        m = ThrownObject()
+        pred = UnscentedTransformPredictor(m)
+        samples = MultivariateNormalDist(['x', 'v'], [1.83, 40], [[0.1, 0.01], [0.01, 0.1]])
+        def future_loading(t, x={}):
+            return {}
+        mc_results = pred.predict(samples, future_loading, dt=0.01, save_freq=1)
+        # LazyUTPrediction objects from pre
+        pred_op = mc_results.outputs
+        pred_es = mc_results.event_states
+
+        import pickle # try pickle'ing
+        pickle.dump(pred_op, open('predictor_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
+        self.assertEqual(pred_op, pickle_converted_result)
+        
+        pickle.dump(pred_es, open('predictor_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
+        self.assertEqual(pred_es, pickle_converted_result)
 
 # This allows the module to be executed directly    
 def run_tests():

@@ -50,12 +50,6 @@ class TestUncertainData(unittest.TestCase):
         self.assertEqual(data.percentage_in_bounds({'a': [0, 2.5], 'b': [0, 1.5]}), 
             {'a':0.6, 'b': 0.2})
 
-        # Pickle test
-        import pickle
-        pickle.dump(data, open('test.pkl', 'wb'))
-        data2 = pickle.load(open('test.pkl', 'rb'))
-        self.assertEqual(data, data2)
-
     def test_multivariatenormaldist(self):
         try: 
             dist = MultivariateNormalDist()
@@ -71,12 +65,6 @@ class TestUncertainData(unittest.TestCase):
         self.assertTrue((dist.cov == array([[1, 0], [0, 1]])).all())
         dist.percentage_in_bounds([0, 10])
 
-        # Pickle test
-        import pickle
-        pickle.dump(dist, open('test.pkl', 'wb'))
-        data2 = pickle.load(open('test.pkl', 'rb'))
-        self.assertEqual(dist, data2)
-
     def test_scalardist(self):
         data = {'a': 12, 'b': 14}
         d = ScalarData(data)
@@ -87,11 +75,27 @@ class TestUncertainData(unittest.TestCase):
         self.assertEqual(d.percentage_in_bounds([0, 10]), {'a': 0, 'b': 0})
         self.assertEqual(d.percentage_in_bounds([0, 20]), {'a': 1, 'b': 1})
 
-        # Pickle test
-        import pickle
-        pickle.dump(d, open('test.pkl', 'wb'))
-        data2 = pickle.load(open('test.pkl', 'rb'))
-        self.assertEqual(d, data2)
+    def test_pickle_unweightedsamples(self):
+        data = {'a': 12, 'b': 14}
+        d = ScalarData(data)
+        import pickle # try pickle'ing
+        pickle.dump(d, open('data_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('data_test.pkl', 'rb'))
+        self.assertEqual(d, pickle_converted_result)
+
+    def test_pickle_unweightedsamples(self):
+        s = UnweightedSamples([{'a': 1, 'b':2}, {'a': 3, 'b':-2}])
+        import pickle # try pickle'ing
+        pickle.dump(s, open('data_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('data_test.pkl', 'rb'))
+        self.assertEqual(s, pickle_converted_result)
+
+    def test_pickle_multivariatenormaldist(self):
+        dist = MultivariateNormalDist(['a', 'b'], array([2, 10]), array([[1, 0], [0, 1]]))
+        import pickle # try pickle'ing
+        pickle.dump(dist, open('data_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('data_test.pkl', 'rb'))
+        self.assertEqual(dist, pickle_converted_result)
 
 # This allows the module to be executed directly    
 def run_tests():

@@ -227,20 +227,6 @@ class TestPredictors(unittest.TestCase):
         except Exception:
             pass
 
-    # TESTING PREDICTIONS todo:testing predictors pickle
-    @unittest.skip # UTP doesn't pickle
-    def test_pickle_UTP_ThrownObject(self):
-        from prog_algs.predictors import UnscentedTransformPredictor
-        from prog_algs.uncertain_data import MultivariateNormalDist
-        from prog_models.models.thrown_object import ThrownObject
-        m = ThrownObject()
-        pred = UnscentedTransformPredictor(m)
-
-        import pickle # try pickle'ing
-        pickle.dump(pred, open('predictor_test.pkl', 'wb'))
-        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
-        self.assertEqual(pred, pickle_converted_result)
-
     def test_pickle_UTP_ThrownObject_pickle_result(self): # PREDICTION TEST
         from prog_algs.predictors import UnscentedTransformPredictor
         from prog_algs.uncertain_data import MultivariateNormalDist

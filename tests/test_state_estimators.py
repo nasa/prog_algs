@@ -143,6 +143,36 @@ class TestStateEstimators(unittest.TestCase):
 
         filt = ParticleFilter(m, x_guess)
         self.__test_state_est(filt, m)
+
+        # Test ParticleFilter ScalarData
+        from prog_algs.uncertain_data.scalar_data import ScalarData
+        x_scalar = ScalarData({'x': 1.75, 'v': 38.5})
+        filt_scalar = ParticleFilter(m, x_scalar, n_samples=200, x0_uncertainty=0.1)
+        self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
+        self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
+
+        # Test ParticleFilter ScalarData
+        from prog_algs.uncertain_data.scalar_data import ScalarData
+        x_scalar = ScalarData({'x': 1.75, 'v': 38.5})
+        filt_scalar = ParticleFilter(m, x_scalar, n_samples=200, x0_uncertainty=0.1)
+        self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
+        self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
+
+        # Test ParticleFilter MultivariateNormalDist
+        from numpy import array
+        from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
+        x_mvnd = MultivariateNormalDist(['x', 'v'], array([2, 10]), array([[1, 0], [0, 1]]))
+        filt_mvnd = ParticleFilter(m, x_mvnd)
+        self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
+        self.assertTrue((filt_mvnd.x.cov == x_mvnd.cov).all())
+
+        # Test KalmanFilter UnweightedSamples
+        from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
+        x_us = UnweightedSamples([{'x': 1, 'v':2}, {'x': 3, 'v':-2}])
+        filt_us = ParticleFilter(m, x_us)
+        self.assertDictEqual(filt_us.x.mean, x_us.mean)
+        self.assertTrue((filt_us.x.cov == x_us.cov).all())
+
         m = MockProgModel(process_noise=5e-2, measurement_noise=0)
         x0 = m.initialize()
         filt = ParticleFilter(m, x0, n_samples=200, x0_uncertainty=0.1)

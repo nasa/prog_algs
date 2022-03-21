@@ -41,3 +41,7 @@ def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda
                     print('\ttoe:', toe.key(key))
                     print('\tBounds: [{} - {}]({}%)'.format(lower_bound, upper_bound, toe.percentage_in_bounds([lower_bound, upper_bound])[key]))
             return result
+
+def prognostics_horizon():
+    pass
+

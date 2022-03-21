@@ -300,20 +300,6 @@ class TestPredictors(unittest.TestCase):
         pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
         self.assertEqual(mc_results, pickle_converted_result)
 
-    @unittest.skip
-    def test_pickle_MC(self):
-        from prog_models.models import ThrownObject
-        from prog_algs.predictors import MonteCarlo
-        m = ThrownObject()
-        mc = MonteCarlo(m)
-        def future_loading(t = None, x = None):
-            return {}
-        
-        import pickle # try pickle'ing
-        pickle.dump(mc, open('predictor_test.pkl', 'wb'))
-        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
-        self.assertEqual(mc, pickle_converted_result)
-
     def test_pickle_prediction_mvnormaldist(self):
         from prog_algs.predictors import Prediction as MultivariateNormalDistPrediction
         from prog_algs.uncertain_data import MultivariateNormalDist

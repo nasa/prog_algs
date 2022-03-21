@@ -156,11 +156,11 @@ class TestStateEstimators(unittest.TestCase):
         from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
         x_mvnd = MultivariateNormalDist(['x', 'v'], array([2, 10]), array([[1, 0], [0, 1]]))
         filt_mvnd = ParticleFilter(m, x_mvnd)
-        # self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
         for k, v in filt_mvnd.x.mean.items():
             self.assertAlmostEqual(v, x_mvnd.mean[k], 0)
-        print(filt_mvnd.x)
-        # self.assertTrue((filt_mvnd.x.cov == x_mvnd.cov).all())
+        print(filt_mvnd.x.cov)
+        print(x_mvnd.cov)
+        self.assertTrue((filt_mvnd.x.cov == x_mvnd.cov).all())
 
         # m = MockProgModel(process_noise=5e-2, measurement_noise=0)
         # x0 = m.initialize()

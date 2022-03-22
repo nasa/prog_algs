@@ -147,7 +147,7 @@ class TestStateEstimators(unittest.TestCase):
         # Test ParticleFilter ScalarData
         from prog_algs.uncertain_data.scalar_data import ScalarData
         x_scalar = ScalarData({'x': 1.75, 'v': 38.5})
-        filt_scalar = ParticleFilter(m, x_scalar, num_particles=20) # Sample count does not affect ScalarData testing
+        filt_scalar = ParticleFilter(m, x_scalar, num_particles = 20) # Sample count does not affect ScalarData testing
         self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
         self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
         
@@ -155,7 +155,7 @@ class TestStateEstimators(unittest.TestCase):
         from numpy import array
         from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
         x_mvnd = MultivariateNormalDist(['x', 'v'], array([2, 10]), array([[1, 0], [0, 1]]))
-        filt_mvnd = ParticleFilter(m, x_mvnd, num_particles=100000)
+        filt_mvnd = ParticleFilter(m, x_mvnd, num_particles = 100000)
         for k, v in filt_mvnd.x.mean.items():
             self.assertAlmostEqual(v, x_mvnd.mean[k], 2)
         for i in range(len(filt_mvnd.x.cov)):
@@ -165,12 +165,19 @@ class TestStateEstimators(unittest.TestCase):
         # Test ParticleFilter UnweightedSamples
         from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
         x_us = UnweightedSamples([{'x': 1, 'v':2}, {'x': 3, 'v':-2}])
-        filt_us = ParticleFilter(m, x_us, num_particles=100000)
+        filt_us = ParticleFilter(m, x_us, num_particles = 100000)
         for k, v in filt_mvnd.x.mean.items():
             self.assertAlmostEqual(v, x_mvnd.mean[k], 2)
         for i in range(len(filt_mvnd.x.cov)):
             for j in range(len(filt_mvnd.x.cov[i])):
                 self.assertAlmostEqual(filt_mvnd.x.cov[i][j], x_mvnd.cov[i][j], 1)
+
+        # Test x0 if-else Control
+        # Case: Both isinstance(x0, UncertainData) and x0_uncertainty parameter provided; expect x0_uncertainty to be skipped
+        x_scalar = ScalarData({'x': 1.75, 'v': 38.5}) # Testing with ScalarData
+        filt_scalar = ParticleFilter(m, x_scalar, num_particles = 20, x0_uncertainty = 0.5) # Sample count does not affect ScalarData testing
+        self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
+        self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
 
     def test_measurement_eq_UKF(self):
         class MockProgModel2(MockProgModel):

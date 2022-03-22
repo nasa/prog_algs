@@ -147,10 +147,11 @@ class TestStateEstimators(unittest.TestCase):
         # Test ParticleFilter ScalarData
         from prog_algs.uncertain_data.scalar_data import ScalarData
         x_scalar = ScalarData({'x': 1.75, 'v': 38.5})
-        filt_scalar = ParticleFilter(m, x_scalar, n_samples=200, x0_uncertainty=0.1)
+        filt_scalar = ParticleFilter(m, x_scalar, num_particles=200)
         self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
         self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
-
+        
+        # num_particles, also add check for when both are provided, check for behavior warnings, each part of if statement
         # Test ParticleFilter MultivariateNormalDist
         from numpy import array
         from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist

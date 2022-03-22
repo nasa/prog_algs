@@ -164,13 +164,18 @@ class TestStateEstimators(unittest.TestCase):
 
         # Test ParticleFilter UnweightedSamples
         from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
-        x_us = UnweightedSamples([{'x': 1, 'v':2}, {'x': 3, 'v':-2}])
+        import random
+        uw_input = []
+        x_bounds, v_bounds, x0_samples = 5, 5, 100
+        for i in range(x0_samples):
+            uw_input.append({'x': random.randrange(-x_bounds, x_bounds), 'v': random.randrange(-v_bounds, v_bounds)})
+        x_us = UnweightedSamples(uw_input)
         filt_us = ParticleFilter(m, x_us, num_particles = 100000)
-        # for k, v in filt_us.x.mean.items():
-        #     self.assertAlmostEqual(v, x_us.mean[k], 2)
-        # for i in range(len(filt_us.x.cov)):
-        #     for j in range(len(filt_us.x.cov[i])):
-        #         self.assertAlmostEqual(filt_us.x.cov[i][j], x_us.cov[i][j], 1)
+        for k, v in filt_us.x.mean.items():
+            self.assertAlmostEqual(v, x_us.mean[k], 2)
+        for i in range(len(filt_us.x.cov)):
+            for j in range(len(filt_us.x.cov[i])):
+                self.assertAlmostEqual(filt_us.x.cov[i][j], x_us.cov[i][j], 1)
 
         # Test x0 if-else Control
         # Case 0: Both isinstance(x0, UncertainData) and x0_uncertainty parameter provided; expect x0_uncertainty to be skipped

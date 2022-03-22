@@ -147,7 +147,7 @@ class TestStateEstimators(unittest.TestCase):
         # Test ParticleFilter ScalarData
         from prog_algs.uncertain_data.scalar_data import ScalarData
         x_scalar = ScalarData({'x': 1.75, 'v': 38.5})
-        filt_scalar = ParticleFilter(m, x_scalar, num_particles=200)
+        filt_scalar = ParticleFilter(m, x_scalar, num_particles=20) # Sample count does not affect ScalarData testing
         self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
         self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
         
@@ -156,9 +156,9 @@ class TestStateEstimators(unittest.TestCase):
         from numpy import array
         from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
         x_mvnd = MultivariateNormalDist(['x', 'v'], array([2, 10]), array([[1, 0], [0, 1]]))
-        filt_mvnd = ParticleFilter(m, x_mvnd)
+        filt_mvnd = ParticleFilter(m, x_mvnd, num_particles=100000)
         for k, v in filt_mvnd.x.mean.items():
-            self.assertAlmostEqual(v, x_mvnd.mean[k], 0)
+            self.assertAlmostEqual(v, x_mvnd.mean[k], 2)
         # print(filt_mvnd.x.cov) # [[ 0.45593521 -0.19017238] [-0.19017238  1.75163799]]
         # print(x_mvnd.cov) #[[1 0] [0 1]]
         # self.assertTrue((filt_mvnd.x.cov == x_mvnd.cov).all()) FAILS

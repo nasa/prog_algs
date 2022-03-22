@@ -159,9 +159,9 @@ class TestStateEstimators(unittest.TestCase):
         filt_mvnd = ParticleFilter(m, x_mvnd, num_particles=100000)
         for k, v in filt_mvnd.x.mean.items():
             self.assertAlmostEqual(v, x_mvnd.mean[k], 2)
-        # print(filt_mvnd.x.cov) # [[ 0.45593521 -0.19017238] [-0.19017238  1.75163799]]
-        # print(x_mvnd.cov) #[[1 0] [0 1]]
-        # self.assertTrue((filt_mvnd.x.cov == x_mvnd.cov).all()) FAILS
+        for i in range(len(filt_mvnd.x.cov)):
+            for j in range(len(filt_mvnd.x.cov[i])):
+                self.assertAlmostEqual(filt_mvnd.x.cov[i][j], x_mvnd.cov[i][j], 1)
 
         # Test ParticleFilter UnweightedSamples
         from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples

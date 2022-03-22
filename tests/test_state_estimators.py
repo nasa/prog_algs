@@ -151,7 +151,6 @@ class TestStateEstimators(unittest.TestCase):
         self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
         self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
         
-        # num_particles, also add check for when both are provided, check for behavior warnings, each part of if statement
         # Test ParticleFilter MultivariateNormalDist
         from numpy import array
         from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
@@ -166,10 +165,12 @@ class TestStateEstimators(unittest.TestCase):
         # Test ParticleFilter UnweightedSamples
         from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
         x_us = UnweightedSamples([{'x': 1, 'v':2}, {'x': 3, 'v':-2}])
-        filt_us = ParticleFilter(m, x_us)
+        filt_us = ParticleFilter(m, x_us, num_particles=100000)
         for k, v in filt_mvnd.x.mean.items():
-            self.assertAlmostEqual(v, x_mvnd.mean[k], 0)
-        # self.assertTrue((filt_us.x.cov == x_us.cov).all())
+            self.assertAlmostEqual(v, x_mvnd.mean[k], 2)
+        for i in range(len(filt_mvnd.x.cov)):
+            for j in range(len(filt_mvnd.x.cov[i])):
+                self.assertAlmostEqual(filt_mvnd.x.cov[i][j], x_mvnd.cov[i][j], 1)
 
     def test_measurement_eq_UKF(self):
         class MockProgModel2(MockProgModel):

@@ -15,7 +15,7 @@ def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda
         lambda_value (float): Prediction time at or after which metric is evaluated. Evaluation occurs at this time (if a prediction exists) or the next prediction following.
         alpha (float): percentage bounds around time to event (where 0.2 allows 20% error TtE)
         beta (float): portion of prediction that must be within those bounds
-        kwargs (optional): configuration arguments. Accepted arge include:
+        kwargs (optional): configuration arguments. Accepted args include:
             * keys (list[string], optional): list of keys to use. If not provided, all keys are used.
 
     Returns:
@@ -42,6 +42,16 @@ def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda
                     print('\tBounds: [{} - {}]({}%)'.format(lower_bound, upper_bound, toe.percentage_in_bounds([lower_bound, upper_bound])[key]))
             return result
 
-def prognostics_horizon():
-    pass
+def prognostics_horizon(toe_profile : ToEPredictionProfile):
+    """
+    Compute prognostics horizon metric, given by the difference between a time ti, when the predictions meet specified performance criteria, and the time corresponding to the end of life (EoL).
+
+    Args:
+        toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions
+        kwargs (optional): configuration arguments. Accepted args include:
+            * keys (list[string], optional): list of keys to use. If not provided, all keys are used.
+
+    Returns:
+        float: prognostics horizon value
+    """
 

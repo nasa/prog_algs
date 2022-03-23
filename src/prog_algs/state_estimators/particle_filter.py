@@ -57,16 +57,20 @@ class ParticleFilter(state_estimator.StateEstimator):
         else:
             self._measure = model.output
 
+        # Caching for optimization
+        paramters_x0_exist = 'x0_uncertainty' in self.parameters
+        if paramters_x0_exist:
+            parameters_x0_dict, parameters_x0_num = isinstance(self.parameters['x0_uncertainty'], dict), isinstance(self.parameters['x0_uncertainty'], Number)
         # Build array inplace
         if isinstance(x0, UncertainData):
             sample_gen = x0.sample(self.parameters['num_particles'])
             samples = [array(sample_gen.key(k)) for k in x0.keys()]
-        elif 'x0_uncertainty' in self.parameters and (isinstance(self.parameters['x0_uncertainty'], dict) or isinstance(self.parameters['x0_uncertainty'], Number)): # allows for x0 as UnweightedSamples
+        elif paramters_x0_exist and (parameters_x0_dict or parameters_x0_num):
             warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
             x = array(list(x0.values()))
-            if isinstance(self.parameters['x0_uncertainty'], dict):
+            if parameters_x0_dict:
                 sd = array([self.parameters['x0_uncertainty'][key] for key in x0.keys()])
-            elif isinstance(self.parameters['x0_uncertainty'], Number):
+            elif parameters_x0_num:
                 sd = array([self.parameters['x0_uncertainty']] * len(x0))
             samples = [random.normal(x[i], sd[i], self.parameters['num_particles']) for i in range(len(x))]
         else:

@@ -160,7 +160,7 @@ class TestStateEstimators(unittest.TestCase):
             self.assertAlmostEqual(v, x_mvnd.mean[k], delta = 0.01)
         for i in range(len(filt_mvnd.x.cov)):
             for j in range(len(filt_mvnd.x.cov[i])):
-                self.assertAlmostEqual(filt_mvnd.x.cov[i][j], x_mvnd.cov[i][j], 1)
+                self.assertAlmostEqual(filt_mvnd.x.cov[i][j], x_mvnd.cov[i][j], delta=0.1)
 
         # Test ParticleFilter UnweightedSamples
         from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
@@ -187,9 +187,9 @@ class TestStateEstimators(unittest.TestCase):
         with self.assertWarns(Warning):
             filt_scalar = ParticleFilter(m, {'x': 1.75, 'v': 38.5}, x0_uncertainty = 0.5)
         # Case 2: Raise ProgAlgTypeError if x0 not UncertainData or x0_uncertainty not of type {{dict, Number}}.
-        # from src.prog_algs.exceptions import ProgAlgTypeError
-        # with self.assertRaises(ProgAlgTypeError):
-        #     filt_scalar = ParticleFilter(m, {'x': 1.75, 'v': 38.5}, num_particles = 20, x0_uncertainty = [])
+        from prog_algs.exceptions import ProgAlgTypeError
+        with self.assertRaises(ProgAlgTypeError):
+            filt_scalar = ParticleFilter(m, {'x': 1.75, 'v': 38.5}, num_particles = 20, x0_uncertainty = [])
 
     def test_measurement_eq_UKF(self):
         class MockProgModel2(MockProgModel):

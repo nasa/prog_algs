@@ -63,4 +63,4 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : functi
         if criteria_eqn(toe): # t_prediction or toe?
             # calculate some kind of result here
             pass
-        
+

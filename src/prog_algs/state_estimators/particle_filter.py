@@ -59,7 +59,7 @@ class ParticleFilter(state_estimator.StateEstimator):
 
         # Caching for optimization
         paramters_x0_exist = 'x0_uncertainty' in self.parameters
-        if paramters_x0_exist:
+        if paramters_x0_exist: # Only create these optimizations if x0_uncertainty exists as key in self.parameters
             parameters_x0_dict, parameters_x0_num = isinstance(self.parameters['x0_uncertainty'], dict), isinstance(self.parameters['x0_uncertainty'], Number)
         # Build array inplace
         if isinstance(x0, UncertainData):

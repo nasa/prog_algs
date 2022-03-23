@@ -61,3 +61,19 @@ class ToEPredictionProfile(UserDict):
         """
         from ..metrics import alpha_lambda
         return alpha_lambda(self, ground_truth, lambda_value, alpha, beta, **kwargs)
+
+    def prognostic_horizon(self, toe_profile, criteria_eqn : function, **kwargs):
+        """
+        Compute prognostic horizon metric, given by the difference between a time ti, when the predictions meet specified performance criteria, and the time corresponding to the end of life (EoL).
+        PH = EOL - ti
+        Args:
+            toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions
+            kwargs (optional): configuration arguments. Accepted args include:
+                * keys (list[string], optional): list of keys to use. If not provided, all keys are used.
+
+        Returns:
+            float: prognostics horizon value
+        """
+        from ..metrics import prognostic_horizon
+        return prognostic_horizon(self, toe_profile, criteria_eqn, **kwargs)
+        

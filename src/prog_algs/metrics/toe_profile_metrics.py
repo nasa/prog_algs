@@ -59,6 +59,12 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : functi
     }
     params.update(kwargs)
 
+    # need:
+    #   times, iterate? ti
+    #   EOL, import into function
+    # return
+    #   dictionary of times as keys with PH value
+
     for (t_prediction, toe) in toe_profile.items():
         if criteria_eqn(toe): # t_prediction or toe?
             # calculate some kind of result here

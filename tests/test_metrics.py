@@ -391,6 +391,22 @@ class TestMetrics(unittest.TestCase):
         pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
         self.assertEqual(metrics, pickle_converted_result)
 
+    def test_toe_profile_prognostic_horizon(self):
+        from prog_algs.predictors import ToEPredictionProfile
+        profile = ToEPredictionProfile()  # Empty profile
+        for i in range(10):
+            # a will shift upward from 0-19 to 9-28
+            # b is always a-1
+            # c is always a * 2, and will therefore always have twice the spread
+            data = [{'a': j, 'b': j -1 , 'c': (j-4.5) * 2 + 4.5} for j in range(i, i+20)]
+            profile.add_prediction(
+                10-i,  # Time (reverse so data is decreasing)
+                UnweightedSamples(data)  # ToE Prediction
+            )
+
+        from prog_algs.metrics import prognostic_horizon
+        # Prognostic horizon metric testing
+
 # This allows the module to be executed directly    
 def run_tests():
     l = unittest.TestLoader()

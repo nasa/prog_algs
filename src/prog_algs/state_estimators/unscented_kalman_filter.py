@@ -72,25 +72,21 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measure, state_transition, points)
         
-        parameter_R_bool = 'R' not in self.parameters
         if isinstance(x0, dict):
             warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
-            self.filter.x = array(list(x0.values())).ravel()
+            self.filter.x = array(list(x0.values()))
             self.filter.P = self.parameters['Q'] / 10
-            if parameter_R_bool:
-                # Size of what's being measured (not output) 
-                # This is determined by running the measure function on the first state
-                self.parameters['R'] = diag([1.0e-3 for i in range(len(measure(x0.values())))])
-       
         elif isinstance(x0, UncertainData):
             x_mean = x0.mean
-            self.filter.x = array(list(x_mean.values())).ravel() # what is x0 values equivalent to?
+            self.filter.x = array(list(x_mean.values()))
             self.filter.P = x0.cov
-            if parameter_R_bool:
-                self.parameters['R'] = diag([1.0e-3 for i in range(len(measure(x_mean.values())))])
         else:
             raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
 
+        if 'R' not in self.parameters:
+                # Size of what's being measured (not output) 
+                # This is determined by running the measure function on the first state
+                self.parameters['R'] = diag([1.0e-3 for i in range(len(measure(self.filter.x)))])
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
 

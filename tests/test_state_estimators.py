@@ -5,6 +5,24 @@ import numpy as np
 from prog_models import PrognosticsModel, LinearModel
 from prog_algs.exceptions import ProgAlgTypeError
 
+def equal_cov(pair1, pair2):
+    """
+    Compare 2 covariance matricies, considering the order
+
+    Args:
+        pair1 (tuple[list, array[array[float]]]):
+            keys (list[str]): Labels for keys
+            covar (array[array[float]]): Covariance matrix
+        pair2 (tuple[list, array[array[float]]]):
+            keys (list[str]): Labels for keys
+            covar (array[array[float]]): Covariance matrix
+    """
+    (keys1, cov1) = pair1
+    (keys2, cov2) = pair2
+    mapping = {i: keys2.index(key) for i, key in enumerate(keys1)}
+    return all([cov1[i][j] == cov2[mapping[i]][mapping[j]] for i in range(len(keys1)) for j in range(len(keys1))])
+
+
 class MockProgModel(PrognosticsModel):
     states = ['a', 'b', 'c', 't']
     inputs = ['i1', 'i2']
@@ -295,13 +313,16 @@ class TestStateEstimators(unittest.TestCase):
         self.__test_state_est(filt, m)
 
         m = ThrownObject(process_noise=5e-2, measurement_noise=5e-2)
-        x = m.initialize()
+
         # Test KalmanFilter ScalarData
         from prog_algs.uncertain_data.scalar_data import ScalarData
         x_scalar = ScalarData({'x': 1.75, 'v': 35})
         filt_scalar = KalmanFilter(m, x_scalar)
         self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
-        self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
+        self.assertTrue(
+            equal_cov(
+                (list(x_scalar.keys()), x_scalar.cov), 
+                (list(filt_scalar.x.keys()), filt_scalar.x.cov)))
 
         # Test KalmanFilter MultivariateNormalDist
         from numpy import array
@@ -309,14 +330,29 @@ class TestStateEstimators(unittest.TestCase):
         x_mvnd = MultivariateNormalDist(['x', 'v'], array([2, 10]), array([[1, 0], [0, 1]]))
         filt_mvnd = KalmanFilter(m, x_mvnd)
         self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
-        self.assertTrue((filt_mvnd.x.cov == x_mvnd.cov).all())
+        self.assertTrue(
+            equal_cov(
+                (list(x_mvnd.keys()), x_mvnd.cov), 
+                (list(filt_mvnd.x.keys()), filt_mvnd.x.cov)))
+
+        # Now with a different order
+        x_mvnd = MultivariateNormalDist(['v', 'x'], array([10, 2]), array([[1, 0], [0, 2]]))
+        filt_mvnd = KalmanFilter(m, x_mvnd)
+        self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
+        self.assertTrue(
+            equal_cov(
+                (list(x_mvnd.keys()), x_mvnd.cov), 
+                (list(filt_mvnd.x.keys()), filt_mvnd.x.cov)), "Covs are not equal for multivariate in different order")
 
         # Test KalmanFilter UnweightedSamples
         from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
         x_us = UnweightedSamples([{'x': 1, 'v':2}, {'x': 3, 'v':-2}])
         filt_us = KalmanFilter(m, x_us)
         self.assertDictEqual(filt_us.x.mean, x_us.mean)
-        self.assertTrue((filt_us.x.cov == x_us.cov).all())
+        self.assertTrue(
+            equal_cov(
+                (list(x_us.keys()), x_us.cov), 
+                (list(filt_us.x.keys()), filt_us.x.cov)))
 
         from prog_models.models import BatteryElectroChem
 

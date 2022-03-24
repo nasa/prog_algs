@@ -69,4 +69,14 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : functi
         if criteria_eqn(toe): # t_prediction or toe?
             # calculate some kind of result here
             pass
+            # time of prediction ti; already have time when equation is met
+            # eol is time when failure, toe 
+            # ph is subtracting a scalar from a distribution
+            # t_prediction is ti
 
+            # iterate over each event in criteria eqn, if criteria is true and first time its been true:
+            #     do the logic
+
+# option 1:
+# option 2: metric for that event, in this case, toe is uncertaindata (eol distribution)
+# return none when

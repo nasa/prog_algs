@@ -36,7 +36,8 @@ class KalmanFilter(state_estimator.StateEstimator):
         't0': -1e-10,
         'dt': 1
     } 
-
+    # grab the state, reorder covariance to match the model state; covariane matrix is # need covariance and mean to be ordered
+    # change order of states; use self.__state_keys = x_mean.keys(); use this wherever we call model.states
     def __init__(self, model, x0, measurement_eqn = None, **kwargs):
         # Note: Measurement equation kept in constructor to keep it consistent with other state estimators. This way measurement equation can be provided as an ordered argument, and will just be ignored here
         if not isinstance(model, LinearModel):
@@ -69,7 +70,7 @@ class KalmanFilter(state_estimator.StateEstimator):
 
         if isinstance(x0, dict):
             warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
-            self.filter.x = np.array([[x0[key]] for key in model.states])
+            self.filter.x = np.array([[x0[key]] for key in model.states]) # x0.keys()
             self.filter.P = self.parameters['Q'] / 10
         elif isinstance(x0, UncertainData):
             x_mean = x0.mean
@@ -82,7 +83,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         self.filter.R = self.parameters['R']
         self.filter.F = F
         self.filter.B = B
-
+# CREATE NEW 2D NUMPY ARRAY WITH NEW ORDERING, saved into filter
     def estimate(self, t, u, z):
         """
         Perform one state estimation step (i.e., update the state estimate)

@@ -26,7 +26,7 @@ class ScalarData(UncertainData):
 
     @property
     def cov(self):
-        return [[0]]
+        return [[0 for _ in range(len(self.__state))] for _ in range(len(self.__state))]
 
     def keys(self):
         return self.__state.keys()

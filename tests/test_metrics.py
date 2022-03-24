@@ -404,6 +404,17 @@ class TestMetrics(unittest.TestCase):
                 UnweightedSamples(data)  # ToE Prediction
             )
 
+        # Define test sample ground truth
+        GROUND_TRUTH = {'a': 9.0, 'b': 8.0, 'c': 18.0}
+        # Create rudimentary criteria equation
+        def criteria_eqn(toe : ToEPredictionProfile):
+            result = {}
+            for key, value in GROUND_TRUTH.items():
+                if abs(toe.mean[key] - value < 0.1):
+                    result[key] = True
+                else:
+                    result[key] = False
+            return result
         from prog_algs.metrics import prognostic_horizon
         # Prognostic horizon metric testing
 

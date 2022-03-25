@@ -339,6 +339,8 @@ class TestStateEstimators(unittest.TestCase):
         x_mvnd = MultivariateNormalDist(['v', 'x'], array([10, 2]), array([[1, 0], [0, 2]]))
         filt_mvnd = KalmanFilter(m, x_mvnd)
         self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
+        # First fail
+        
         self.assertTrue(
             equal_cov(
                 (list(x_mvnd.keys()), x_mvnd.cov), 

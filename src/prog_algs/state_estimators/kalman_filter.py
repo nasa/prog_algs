@@ -72,8 +72,12 @@ class KalmanFilter(state_estimator.StateEstimator):
         if isinstance(x0, dict) or isinstance(x0, model.StateContainer):
             warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
             self.filter.x = np.array([[x0[key]] for key in model.states]) # x0.keys()
+            # place a new cov matrix in P
+            # self.filter.P = np.array(2D ARRAY)
             self.filter.P = self.parameters['Q'] / 10
         elif isinstance(x0, UncertainData):
+            print(x0.keys)
+            print(type(model))
             x_mean = x0.mean
             self.filter.x = np.array([[x_mean[key]] for key in model.states])
             self.filter.P = x0.cov

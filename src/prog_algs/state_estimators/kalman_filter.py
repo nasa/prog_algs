@@ -68,6 +68,7 @@ class KalmanFilter(state_estimator.StateEstimator):
 
         self.filter = kalman.KalmanFilter(num_states, num_measurements, num_inputs)
 
+        self.__state_keys = list(x0.keys())
         if isinstance(x0, dict) or isinstance(x0, model.StateContainer):
             warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
             self.filter.x = np.array([[x0[key]] for key in model.states]) # x0.keys()

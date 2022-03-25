@@ -417,6 +417,7 @@ class TestMetrics(unittest.TestCase):
             return result
         from prog_algs.metrics import prognostic_horizon
         # Prognostic horizon metric testing
+        ph_metrics = prognostic_horizon(profile, criteria_eqn)
 
 # This allows the module to be executed directly    
 def run_tests():

@@ -72,7 +72,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measure, state_transition, points)
         
-        if isinstance(x0, dict):
+        if isinstance(x0, dict) or isinstance(x0, model.StateContainer):
             warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
             self.filter.x = array(list(x0.values()))
             self.filter.P = self.parameters['Q'] / 10

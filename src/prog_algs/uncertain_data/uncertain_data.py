@@ -114,7 +114,8 @@ class UncertainData(ABC):
         return plot_scatter(samples, fig=fig, keys=keys, **kwargs)
 
     def plot_hist(self, fig = None, keys = None, num_samples = 100, **kwargs):
-        """Create a histogram
+        """
+        Create a histogram
 
         Args:
             fig (MatPlotLib Figure, optional): Existing histogram figure to be overritten. Defaults to create new figure.
@@ -125,3 +126,12 @@ class UncertainData(ABC):
             keys = self.keys()
         samples = self.sample(num_samples)
         return plot_hist(samples, fig=fig, keys=keys, **kwargs)
+
+    def describe(self):
+        """
+        Print and view basic statistical information about this UncertainData object.
+
+        Args:
+            None
+        """
+        pass

@@ -62,7 +62,7 @@ class ToEPredictionProfile(UserDict):
         from ..metrics import alpha_lambda
         return alpha_lambda(self, ground_truth, lambda_value, alpha, beta, **kwargs)
 
-    def prognostic_horizon(self, toe_profile, criteria_eqn : function, **kwargs) -> Dict[str, float]:
+    def prognostic_horizon(self, toe_profile, criteria_eqn, **kwargs) -> Dict[str, float]:
         """
         Compute prognostic horizon metric, given by the difference between a time ti, when the predictions meet specified performance criteria, and the time corresponding to the end of life (EoL).
         PH = EOL - ti

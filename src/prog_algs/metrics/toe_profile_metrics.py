@@ -42,7 +42,7 @@ def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda
                     print('\tBounds: [{} - {}]({}%)'.format(lower_bound, upper_bound, toe.percentage_in_bounds([lower_bound, upper_bound])[key]))
             return result
 
-def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : function, **kwargs):
+def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn, **kwargs):
     """
     Compute prognostic horizon metric, given by the difference between a time ti, when the predictions meet specified performance criteria, and the time corresponding to the end of life (EoL).
     PH = EOL - ti

@@ -4,6 +4,7 @@
 This file includes functions for calculating metrics given a time of event (ToE) profile (i.e., ToE's calculated at different times of prediction resulting from running prognostics multiple times, e.g., on playback data). The metrics calculated here are specific to multiple ToE estimates (e.g. alpha-lambda metric)
 """
 from ..predictors import ToEPredictionProfile
+from collections import defaultdict
 
 def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda_value : float, alpha : float, beta : float, **kwargs): 
     """
@@ -66,12 +67,13 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn, **kwarg
     #   dictionary of times as keys with PH value
 
     ph_result = {}
-    ph_first_met = {}
+    ph_first_met = defaultdict(bool)
     for (t_prediction, toe) in toe_profile.items():
         criteria_eqn_dict = criteria_eqn(toe) # -> dict[event_names as str, bool]
         for k,v in criteria_eqn_dict.items():
             if v: # eqn dict value is True
                 if not ph_first_met[k]:
+                    # unweightedsamples and int;
                     ph_result[k] = toe - t_prediction # PH = EOL - ti
                     ph_first_met[k] = True
                     if (ph_result.keys() == ph_first_met.keys()) and (all(v for v in ph_first_met.values())):

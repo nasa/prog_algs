@@ -68,10 +68,15 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : functi
     ph_result = {}
     ph_first_met = {}
     for (t_prediction, toe) in toe_profile.items():
-        criteria_eqn_dict = criteria_eqn(toe)
-        if criteria_eqn(toe): # t_prediction or toe?
-            # calculate some kind of result here
-            pass
+        criteria_eqn_dict = criteria_eqn(toe) # -> dict[event_names as str, bool]
+        for k,v in criteria_eqn_dict.items():
+            if v:
+                if not ph_first_met[k]:
+                    ph_result[k] = toe - t_prediction # EOL - ti
+                    ph_first_met[k] = True
+                # if all keys between ph result and ph first met AND all ph first met true
+
+
             # time of prediction ti; already have time when equation is met
             # eol is time when failure, toe 
             # ph is subtracting a scalar from a distribution

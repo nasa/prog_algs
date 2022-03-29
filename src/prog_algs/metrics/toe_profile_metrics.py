@@ -65,7 +65,10 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : functi
     # return
     #   dictionary of times as keys with PH value
 
+    ph_result = {}
+    ph_first_met = {}
     for (t_prediction, toe) in toe_profile.items():
+        criteria_eqn_dict = criteria_eqn(toe)
         if criteria_eqn(toe): # t_prediction or toe?
             # calculate some kind of result here
             pass

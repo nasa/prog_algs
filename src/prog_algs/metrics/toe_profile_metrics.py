@@ -52,7 +52,7 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : functi
             * keys (list[string], optional): list of keys to use. If not provided, all keys are used.
 
     Returns:
-        float: prognostics horizon value
+        dict: Dictionary containing prognostic horizon calculations (value) for each event (key)
     """
     params = {
         'print': False

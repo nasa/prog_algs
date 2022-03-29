@@ -74,6 +74,7 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn, **kwarg
             if v: # eqn dict value is True
                 if not ph_first_met[k]:
                     # unweightedsamples and int;
+                    print(toe.__dict__)
                     ph_result[k] = toe - t_prediction # PH = EOL - ti
                     ph_first_met[k] = True
                     if (ph_result.keys() == ph_first_met.keys()) and (all(v for v in ph_first_met.values())):

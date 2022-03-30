@@ -62,7 +62,7 @@ class Prediction():
         return [dist.mean for dist in self.data]
 
     def time(self, index):
-        warn("Deprecated. Please use prediction.times[index] instead.")
+        warn("Warning: Deprecated. Please use prediction.times[index] instead.")
         return self.times[index]
 
 
@@ -101,7 +101,7 @@ class UnweightedSamplesPrediction(Prediction, UserList):
         return [dist.mean for dist in self.__transform]
 
     def sample(self, sample_id):
-        warn("Deprecated. Please use prediction[sample_id] instead.")
+        warn("Warning: Deprecated. Please use prediction[sample_id] instead.")
         return self[sample_id]
 
     def snapshot(self, time_index):

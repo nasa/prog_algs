@@ -66,7 +66,7 @@ class UnweightedSamples(UncertainData, UserList):
             p1 = array([d for d in datem.values() if d is not None])
             if not none_flag and len(p1) < len(datem):
                 none_flag = True
-                warn("Some samples were None, resulting median is of all non-None samples. Note: in some cases, this will bias the median result.")
+                warn("Warning: Some samples were None, resulting median is of all non-None samples. Note: in some cases, this will bias the median result.")
             total_dist = sum(
                 sum((p1 - array([di for di in d.values() if di is not None]))**2)  # Distance between 2 points
                 for d in self.data if d is not None)  # For each point
@@ -81,7 +81,7 @@ class UnweightedSamples(UncertainData, UserList):
         for key in self.keys():
             values = array([x[key] for x in self.data if x is not None and x[key] is not None])
             if len(values) < len(self.data):
-                warn("Some samples were None, resulting mean is of all non-None samples. Note: in some cases, this will bias the mean result.")
+                warn("Warning: Some samples were None, resulting mean is of all non-None samples. Note: in some cases, this will bias the mean result.")
             mean[key] = values.mean()
         return mean
 
@@ -91,7 +91,7 @@ class UnweightedSamples(UncertainData, UserList):
             return [[]]
         unlabeled_samples = array([[x[key] for x in self.data if x is not None and x[key] is not None] for key in self.keys()])
         if len(unlabeled_samples) < len(self.data):
-            warn("Some samples were None, resulting covariance is of all non-None samples. Note: in some cases, this will bias the covariance result.")
+            warn("Warning: Some samples were None, resulting covariance is of all non-None samples. Note: in some cases, this will bias the covariance result.")
         return cov(unlabeled_samples)
 
     def __str__(self):
@@ -117,5 +117,5 @@ class UnweightedSamples(UncertainData, UserList):
         return {key: sum([x is not None and x < bounds[key][1] and x > bounds[key][0] for x in self.key(key)])/n_elements for key in keys}
 
     def raw_samples(self):
-        warn("raw_samples is deprecated and will be removed in the future")
+        warn("Warning: raw_samples is deprecated and will be removed in the future")
         return self.data

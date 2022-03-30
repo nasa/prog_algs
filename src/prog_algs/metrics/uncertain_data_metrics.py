@@ -75,7 +75,7 @@ def calc_metrics(data, ground_truth = None, **kwargs):
     if len(data_abridged) == 0:
         raise ValueError('All samples were none')
     if len(data_abridged) < len(data):
-        warn("Some samples were None, resulting metrics only consider non-None samples. Note: in some cases, this will bias the metrics.")
+        warn("Warning: Some samples were None, resulting metrics only consider non-None samples. Note: in some cases, this will bias the metrics.")
     data_abridged.sort()
     m = mean(data_abridged)
     median = data_abridged[int(len(data_abridged)/2)]

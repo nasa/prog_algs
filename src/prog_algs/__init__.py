@@ -8,7 +8,7 @@ import warnings
 __version__ = '1.3.0'
 
 def run_prog_playback(obs, pred, future_loading, output_measurements, **kwargs):
-    warnings.warn("Depreciated in 1.2.0, will be removed in a future release.", DeprecationWarning)
+    warnings.warn("Warning: Depreciated in 1.2.0, will be removed in a future release.", DeprecationWarning)
     config = {# Defaults
         'predict_rate': 0, # Default- predict every step
         'num_samples': 10,

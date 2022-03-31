@@ -4,6 +4,7 @@
 from .uncertain_data_metrics import calc_metrics as eol_metrics
 from .toe_metrics import prob_success
 from .toe_profile_metrics import alpha_lambda
+from math import sqrt
 
 from numpy import mean
 from warnings import warn
@@ -17,6 +18,16 @@ def mean_square_error(values, ground_truth):
         float: mean square error of toe predictions
     """
     return sum([(mean(x) - ground_truth)**2 for x in values])/len(values)
+
+def root_mean_square_error(values, ground_truth):
+    """Root Mean Square Error
+    Args:
+        values ([float]): time of event for a single event, output from predictor
+        ground_truth (float): Ground truth ToE
+    Returns:
+        float: root mean square error of toe predictions
+    """
+    return sqrt(sum([(mean(x) - ground_truth)**2 for x in values])/len(values))
 
 def percentage_in_bounds(toe, bounds):
     """Calculate percentage of ToE dist is within specified bounds

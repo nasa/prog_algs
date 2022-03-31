@@ -5,10 +5,10 @@ This file includes functions for calculating metrics specific to time of event (
 """
 
 from typing import Iterable
-from numpy import isscalar
+from numpy import isscalar, array
 from ..uncertain_data import UncertainData, UnweightedSamples
 
-def prob_success(toe, time, **kwargs):
+def prob_success(toe : array, time : float, **kwargs):
     """Calculate probability of success - i.e., probability that event will not occur within a given time (i.e., success)
 
     Args:

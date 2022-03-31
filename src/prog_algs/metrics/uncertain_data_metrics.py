@@ -9,7 +9,7 @@ from scipy import stats
 from warnings import warn
 from ..uncertain_data import UncertainData, UnweightedSamples
 
-def calc_metrics(data, ground_truth = None, **kwargs):
+def calc_metrics(data : array, ground_truth : float = None, **kwargs):
     """Calculate all time of event metrics
 
     Args:

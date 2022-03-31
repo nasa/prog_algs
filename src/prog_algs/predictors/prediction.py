@@ -124,7 +124,7 @@ class UnweightedSamplesPrediction(Prediction, UserList):
         Raises:
             ValueError: 
         """
-        raise ValueError("UnweightedSamplesPrediction is immutable (i.e., read only)")
+        raise ValueError("ValueError: UnweightedSamplesPrediction is immutable (i.e., read only)")
 
     append = __not_implemented
     extend = __not_implemented

@@ -47,7 +47,7 @@ def run_tests():
     result = runner.run(l.loadTestsFromTestCase(TestVisualize)).wasSuccessful()
 
     if not result:
-        raise Exception("Failed test")
+        raise Exception("Exception: Failed test")
 
 if __name__ == '__main__':
     run_tests()

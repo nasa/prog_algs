@@ -32,23 +32,23 @@ class StateEstimator(ABC):
     def __init__(self, model, x0, measurement_eqn = None, **kwargs):
         # Check model
         if not hasattr(model, 'output'):
-            raise ProgAlgTypeError("model must have `output` method")
+            raise ProgAlgTypeError("ProgAlgTypeError: Model must have `output` method")
         if not hasattr(model, 'next_state'):
-            raise ProgAlgTypeError("model must have `next_state` method")
+            raise ProgAlgTypeError("ProgAlgTypeError: Model must have `next_state` method")
         if not hasattr(model, 'outputs'):
-            raise ProgAlgTypeError("model must have `outputs` property")
+            raise ProgAlgTypeError("ProgAlgTypeError: Model must have `outputs` property")
         if not hasattr(model, 'states'):
-            raise ProgAlgTypeError("model must have `states` property")
+            raise ProgAlgTypeError("ProgAlgTypeError: Model must have `states` property")
         self.model = deepcopy(model)
 
         # Check x0
         for key in model.states:
             if key not in x0:
-                raise ProgAlgTypeError("x0 missing state `{}`".format(key))
+                raise ProgAlgTypeError("ProgAlgTypeError: x0 missing state `{}`".format(key))
         
         # Check measurement equation
         if measurement_eqn and not callable(measurement_eqn):
-            raise ProgAlgTypeError("measurement_eqn must be callable")
+            raise ProgAlgTypeError("ProgAlgTypeError: Measurement_eqn must be callable")
         
         # Process kwargs (configuration)
         self.parameters = deepcopy(self.default_parameters)

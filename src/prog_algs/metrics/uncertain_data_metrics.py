@@ -56,7 +56,7 @@ def calc_metrics(data, ground_truth = None, **kwargs):
         return result
     elif isinstance(data, Iterable):
         if len(data) == 0:
-            raise ValueError('Data must not be empty')
+            raise ValueError('ValueError: Data must not be empty')
         # Is list or array
         if isscalar(data[0]) or data[0] is None:
             # list of numbers - this is the case that we can calculate
@@ -66,14 +66,14 @@ def calc_metrics(data, ground_truth = None, **kwargs):
             data = UnweightedSamples(data)
             return calc_metrics(data, ground_truth, **kwargs)
         else:
-            raise TypeError("Data must be type Uncertain Data or array of dicts, was {}".format(type(data)))
+            raise TypeError("TypeError: Data must be type Uncertain Data or array of dicts, was {}".format(type(data)))
     else:
-        raise TypeError("Data must be type Uncertain Data or array of dicts, was {}".format(type(data)))
+        raise TypeError("TypeError: Data must be type Uncertain Data or array of dicts, was {}".format(type(data)))
 
     # If we get here then Data is a list of numbers- calculate metrics for numbers
     data_abridged = array([d for d in data if d is not None]) # Must be array
     if len(data_abridged) == 0:
-        raise ValueError('All samples were none')
+        raise ValueError('ValueError: All samples were none')
     if len(data_abridged) < len(data):
         warn("Warning: Some samples were None, resulting metrics only consider non-None samples. Note: in some cases, this will bias the metrics.")
     data_abridged.sort()

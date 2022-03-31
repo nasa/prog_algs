@@ -23,17 +23,17 @@ class Predictor(ABC):
 
     def __init__(self, model, **kwargs):
         if not hasattr(model, 'output'):
-            raise ProgAlgTypeError("model must have `output` method")
+            raise ProgAlgTypeError("ProgAlgTypeError: Model must have `output` method")
         if not hasattr(model, 'next_state'):
-            raise ProgAlgTypeError("model must have `next_state` method")
+            raise ProgAlgTypeError("ProgAlgTypeError: Model must have `next_state` method")
         if not hasattr(model, 'inputs'):
-            raise ProgAlgTypeError("model must have `inputs` property")
+            raise ProgAlgTypeError("ProgAlgTypeError: Model must have `inputs` property")
         if not hasattr(model, 'outputs'):
-            raise ProgAlgTypeError("model must have `outputs` property")
+            raise ProgAlgTypeError("ProgAlgTypeError: Model must have `outputs` property")
         if not hasattr(model, 'states'):
-            raise ProgAlgTypeError("model must have `states` property")
+            raise ProgAlgTypeError("ProgAlgTypeError: Model must have `states` property")
         if not hasattr(model, 'simulate_to_threshold'):
-            raise ProgAlgTypeError("model must have `simulate_to_threshold` property")
+            raise ProgAlgTypeError("ProgAlgTypeError: Model must have `simulate_to_threshold` property")
         self.model = model
 
         self.parameters = deepcopy(self.default_parameters)

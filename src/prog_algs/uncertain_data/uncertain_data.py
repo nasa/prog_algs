@@ -2,7 +2,6 @@
 
 from abc import ABC, abstractmethod, abstractproperty
 from ..visualize import plot_scatter, plot_hist
-from prettytable import PrettyTable
 
 
 class UncertainData(ABC):
@@ -135,12 +134,13 @@ class UncertainData(ABC):
         Args:
             None
         """
-        column_names = [k for k in self.metrics()[next(iter(self.metrics()))]]
-        column_names.insert(0, "key")
-        t = PrettyTable(column_names)
-        for m in self.metrics():
-            row_list = [v for v in self.metrics()[m].values()]
-            row_list.insert(0, m)
-            t.add_row(row_list)
-        print(t)
+        pass
+        # column_names = [k for k in self.metrics()[next(iter(self.metrics()))]]
+        # column_names.insert(0, "key")
+        # t = PrettyTable(column_names)
+        # for m in self.metrics():
+        #     row_list = [v for v in self.metrics()[m].values()]
+        #     row_list.insert(0, m)
+        #     t.add_row(row_list)
+        # print(t)
         

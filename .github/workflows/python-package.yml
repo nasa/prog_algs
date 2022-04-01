@@ -62,7 +62,6 @@ jobs:
         python -m pip install -e .
         python -m pip install notebook
         python -m pip install testbook
-        python -m pip install prettytable
     - name: Run tests
       run: python -m tests
   test-prog_models-released:
@@ -82,7 +81,6 @@ jobs:
         python -m pip install -e .
         python -m pip install notebook
         python -m pip install testbook
-        python -m pip install prettytable
     - name: Run tests
       run: python -m tests
 
@@ -107,7 +105,6 @@ jobs:
         pip install coverage
         pip install notebook
         pip install testbook
-        pip install prettytable
     - name: Run coverage
       run: |
         coverage run -m tests

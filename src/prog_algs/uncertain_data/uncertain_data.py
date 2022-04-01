@@ -127,20 +127,35 @@ class UncertainData(ABC):
         samples = self.sample(num_samples)
         return plot_hist(samples, fig=fig, keys=keys, **kwargs)
 
-    def describe(self):
+    def describe(self, print_bool : bool = True):
         """
         Print and view basic statistical information about this UncertainData object.
 
         Args:
-            None
+            print_bool (bool, optional): Optional argument specifying whether to print or not; default true.
         """
-        pass
-        # column_names = [k for k in self.metrics()[next(iter(self.metrics()))]]
-        # column_names.insert(0, "key")
-        # t = PrettyTable(column_names)
+        # columns = {k:len(k) for k in self.metrics()[next(iter(self.metrics()))]}
+        column_names = [k for k in self.metrics()[next(iter(self.metrics()))]]
+        column_names.insert(0, "key")
+        print()
+
+        result = ""
+        # Formatting header and columns
+        col_name_row = "| "
+        for k in column_names:
+            name = k+" | "
+            col_name_row += name
+        col_name_row.strip()
+        break_row = "+" + ((len(col_name_row)-3)*'-') + "+"
+        result += (break_row + '\n' + col_name_row + '\n' + break_row)
+
+        for m in
+
+        if print_bool:
+            print(result)
+
         # for m in self.metrics():
         #     row_list = [v for v in self.metrics()[m].values()]
         #     row_list.insert(0, m)
         #     t.add_row(row_list)
-        # print(t)
         

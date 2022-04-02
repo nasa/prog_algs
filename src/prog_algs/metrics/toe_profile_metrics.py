@@ -5,7 +5,7 @@ This file includes functions for calculating metrics given a time of event (ToE)
 """
 from ..predictors import ToEPredictionProfile
 
-def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda_value : float, alpha : float, beta : float, **kwargs): 
+def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda_value : float, alpha : float, beta : float, **kwargs) -> dict: 
     """
     Compute alpha lambda metric, a common metric in prognostics. Alpha-Lambda is met if alpha % of the Time to Event (TtE) distribution is within beta % of the ground truth at prediction time lambda.
 

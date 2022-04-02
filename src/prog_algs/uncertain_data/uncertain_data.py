@@ -136,11 +136,11 @@ class UncertainData(ABC):
             print_bool (bool, optional): Optional argument specifying whether to print or not; default true.
         """
         # Setting each column's width; find max metric and make that the length
-        col_lens = defaultdict(int)
+        column_lens = defaultdict(int)
         for m in self.metrics():
             for k,v in self.metrics()[m].items():
-                if col_lens[k] < len(str(v)):
-                    col_lens[k] = len(str(v))
+                if column_lens[k] < len(str(v)):
+                    column_lens[k] = len(str(v))
 
         column_names = [k for k in self.metrics()[next(iter(self.metrics()))]]
         column_names.insert(0, "key")
@@ -149,12 +149,11 @@ class UncertainData(ABC):
         # Formatting header and columns
         col_name_row = "|"
         for k in column_names:
-            spacing = (col_lens[k] // 2 if col_lens[k] > 1 else 1) * ' '
+            spacing = (column_lens[k] // 2 if column_lens[k] > 1 else 1) * ' '
             name = spacing + k + spacing + '|' # ADD TO ROW SPACING HERE
             col_name_row += name
-            col_lens[k] = len(name)
+            column_lens[k] = len(name)
         col_name_row.rstrip()
-
         break_row = "+" + ((len(col_name_row)-2)*'-') + "+"
         result.append(break_row)
         result.append(col_name_row)
@@ -162,9 +161,9 @@ class UncertainData(ABC):
 
         # Formatting actual metric values
         for m in self.metrics():
-            metric_row = "| " + m + " "*(col_lens["key"]-len(m)-2) + '|'
+            metric_row = "| " + m + " "*(column_lens["key"]-len(m)-2) + '|'
             for k,v in self.metrics()[m].items():
-                metric_row += " " + str(v) + " "*(col_lens[k]-len(str(v))-2) + '|'
+                metric_row += " " + str(v) + " "*(column_lens[k]-len(str(v))-2) + '|'
             result.append(metric_row)
         result.append(break_row)
 

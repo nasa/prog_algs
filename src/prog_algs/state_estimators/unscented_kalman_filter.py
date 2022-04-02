@@ -1,5 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
+from typing import Callable
 from . import state_estimator
 from filterpy import kalman
 from numpy import diag, array
@@ -33,7 +34,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         'dt': 1
     } 
 
-    def __init__(self, model, x0, measurement_eqn = None, **kwargs):
+    def __init__(self, model, x0, measurement_eqn : Callable = None, **kwargs):
         super().__init__(model, x0, measurement_eqn, **kwargs)
 
         self.__input = None
@@ -79,7 +80,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
 
-    def estimate(self, t, u, z):
+    def estimate(self, t : float, u : dict, z : dict):
         """
         Perform one state estimation step (i.e., update the state estimate)
 
@@ -103,7 +104,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         self.filter.update(array(list(z.values())))
     
     @property
-    def x(self):
+    def x(self) -> MultivariateNormalDist:
         """
         Getter for property 'x', the current estimated state. 
 

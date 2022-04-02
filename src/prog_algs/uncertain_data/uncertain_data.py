@@ -135,15 +135,15 @@ class UncertainData(ABC):
         Args:
             print_bool (bool, optional): Optional argument specifying whether to print or not; default true.
         """
-        # Setting each column's width; find max metric and make that the length
+        # Setting each column's width; find max metric and make that the length. Also create list of column headers
         column_lens = defaultdict(int)
+        column_names = ["key"]
         for m in self.metrics():
             for k,v in self.metrics()[m].items():
                 if column_lens[k] < len(str(v)):
                     column_lens[k] = len(str(v))
-
-        column_names = [k for k in self.metrics()[next(iter(self.metrics()))]]
-        column_names.insert(0, "key")
+                if k not in column_names:
+                    column_names.append(k) 
 
         result = []
         # Formatting header and columns

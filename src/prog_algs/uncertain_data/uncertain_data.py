@@ -130,7 +130,7 @@ class UncertainData(ABC):
 
     def describe(self, print_bool : bool = True):
         """
-        Print and view basic statistical information about this UncertainData object.
+        Print and view basic statistical information about this UncertainData object in a text-based printed table.
 
         Args:
             print_bool (bool, optional): Optional argument specifying whether to print or not; default true.
@@ -172,4 +172,5 @@ class UncertainData(ABC):
         if print_bool:
             for row in result:
                 print(row)
+        return result
         

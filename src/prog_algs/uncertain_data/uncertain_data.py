@@ -163,7 +163,7 @@ class UncertainData(ABC):
             for k,v in self.metrics()[m].items():
                 metric_row += " " + str(v) + " "*(column_lens[k]-len(str(v))-2) + '|'
             result.append(metric_row)
-            result.append(break_row)
+            result.append(break_row) # Move into or out of outer for loop for break lines between metric rows
 
         # Printing list of rows; result
         if print_bool:

@@ -3,7 +3,7 @@
 from collections import UserList, namedtuple
 from warnings import warn
 
-from ..uncertain_data import UnweightedSamples
+from ..uncertain_data import UnweightedSamples, UncertainData
 
 
 PredictionResults = namedtuple('PredictionResults', ["times", "inputs", "states", "outputs", "event_states", "time_of_event"])
@@ -19,11 +19,11 @@ class Prediction():
             Data points for each time in times 
     """
 
-    def __init__(self, times, data):
+    def __init__(self, times : list, data : UncertainData):
         self.times = times
         self.data = data
 
-    def __eq__(self, other):
+    def __eq__(self, other : "Prediction"):
         """Compare 2 Predictions
 
         Args:
@@ -34,7 +34,7 @@ class Prediction():
         """
         return self.times == other.times and self.data == other.data
 
-    def snapshot(self, time_index):
+    def snapshot(self, time_index : int):
         """Get all samples from a specific timestep
 
         Args:
@@ -61,7 +61,7 @@ class Prediction():
         """
         return [dist.mean for dist in self.data]
 
-    def time(self, index):
+    def time(self, index : int):
         warn("Deprecated. Please use prediction.times[index] instead.")
         return self.times[index]
 
@@ -77,7 +77,7 @@ class UnweightedSamplesPrediction(Prediction, UserList):
             Data points where data[n] is a SimResult for sample n
     """
 
-    def __init__(self, times, data):
+    def __init__(self, times : list, data : UncertainData):
         super(UnweightedSamplesPrediction, self).__init__(times, data)
         self.__transformed = False  # If transform has been calculated
 
@@ -100,11 +100,11 @@ class UnweightedSamplesPrediction(Prediction, UserList):
             self.__calculate_tranform()
         return [dist.mean for dist in self.__transform]
 
-    def sample(self, sample_id):
+    def sample(self, sample_id : int):
         warn("Deprecated. Please use prediction[sample_id] instead.")
         return self[sample_id]
 
-    def snapshot(self, time_index):
+    def snapshot(self, time_index : int):
         """Get all samples from a specific timestep
 
         Args:

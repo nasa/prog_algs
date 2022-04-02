@@ -38,7 +38,7 @@ class MonteCarlo(Predictor):
         'n_samples': 100  # Default number of samples to use, if none specified
     }
 
-    def predict(self, state : UncertainData, future_loading_eqn : Callable, **kwargs):
+    def predict(self, state : UncertainData, future_loading_eqn : Callable, **kwargs) -> PredictionResults:
         if isinstance(state, dict) or isinstance(state, self.model.StateContainer):
             # Convert to UnweightedSamples
             from prog_algs.uncertain_data import ScalarData

@@ -1,5 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
+from collections import defaultdict
 from abc import ABC, abstractmethod, abstractproperty
 from ..visualize import plot_scatter, plot_hist
 
@@ -134,28 +135,41 @@ class UncertainData(ABC):
         Args:
             print_bool (bool, optional): Optional argument specifying whether to print or not; default true.
         """
-        # columns = {k:len(k) for k in self.metrics()[next(iter(self.metrics()))]}
+        # Setting each column's width; find max metric and make that the length
+        col_lens = defaultdict(int)
+        for m in self.metrics():
+            for k,v in self.metrics()[m].items():
+                if col_lens[k] < len(str(v)):
+                    col_lens[k] = len(str(v))
+
         column_names = [k for k in self.metrics()[next(iter(self.metrics()))]]
         column_names.insert(0, "key")
-        print()
 
-        result = ""
+        result = []
         # Formatting header and columns
-        col_name_row = "| "
+        col_name_row = "|"
         for k in column_names:
-            name = k+" | "
+            spacing = (col_lens[k] // 2 if col_lens[k] > 1 else 1) * ' '
+            name = spacing + k + spacing + '|' # ADD TO ROW SPACING HERE
             col_name_row += name
-        col_name_row.strip()
-        break_row = "+" + ((len(col_name_row)-3)*'-') + "+"
-        result += (break_row + '\n' + col_name_row + '\n' + break_row)
+            col_lens[k] = len(name)
+        col_name_row.rstrip()
 
-        for m in
+        break_row = "+" + ((len(col_name_row)-2)*'-') + "+"
+        result.append(break_row)
+        result.append(col_name_row)
+        result.append(break_row)
 
+        # Formatting actual metric values
+        for m in self.metrics():
+            metric_row = "| " + m + " "*(col_lens["key"]-len(str(v))-2) + '|'
+            for k,v in self.metrics()[m].items():
+                metric_row += " " + str(v) + " "*(col_lens[k]-len(str(v))-2) + '|'
+            result.append(metric_row)
+        result.append(break_row)
+
+        # Printing list of rows; result
         if print_bool:
-            print(result)
-
-        # for m in self.metrics():
-        #     row_list = [v for v in self.metrics()[m].values()]
-        #     row_list.insert(0, m)
-        #     t.add_row(row_list)
+            for row in result:
+                print(row)
         

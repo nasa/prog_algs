@@ -19,10 +19,10 @@ class MultivariateNormalDist(UncertainData):
         self.__mean = array(list(mean))
         self.__covar = array(list(covar))
 
-    def __eq__(self, other):
+    def __eq__(self, other : "MultivariateNormalDist") -> bool:
         return self.keys() == other.keys() and self.mean == other.mean and (self.cov == other.cov).all()
 
-    def sample(self, num_samples = 1):
+    def sample(self, num_samples : int = 1) -> UnweightedSamples:
         if len(self.__mean) != len(self.__labels):
             raise Exception("labels must be provided for each value")
     
@@ -30,21 +30,21 @@ class MultivariateNormalDist(UncertainData):
         samples = [{key: value for (key, value) in zip(self.__labels, x)} for x in samples]
         return UnweightedSamples(samples)
 
-    def keys(self):
+    def keys(self) -> array:
         return self.__labels
 
     @property
-    def median(self):
+    def median(self) -> float:
         # For normal distribution medain = mean
         return self.mean
 
     @property
-    def mean(self):
+    def mean(self) -> array:
         return {key: value for (key, value) in zip(self.__labels, self.__mean)}
 
-    def __str__(self):
+    def __str__(self) -> str:
         return 'MultivariateNormalDist(mean: {}, covar: {})'.format(self.__mean, self.__covar)     
 
     @property
-    def cov(self):
+    def cov(self) -> array:
         return self.__covar

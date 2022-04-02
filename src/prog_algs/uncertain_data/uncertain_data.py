@@ -162,7 +162,7 @@ class UncertainData(ABC):
 
         # Formatting actual metric values
         for m in self.metrics():
-            metric_row = "| " + m + " "*(col_lens["key"]-len(str(v))-2) + '|'
+            metric_row = "| " + m + " "*(col_lens["key"]-len(m)-2) + '|'
             for k,v in self.metrics()[m].items():
                 metric_row += " " + str(v) + " "*(col_lens[k]-len(str(v))-2) + '|'
             result.append(metric_row)

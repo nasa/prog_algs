@@ -1,6 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
-from . import UncertainData
+from . import UncertainData, UnweightedSamples
 from collections import UserList
 from collections.abc import Iterable
 from numpy import array, cov, random
@@ -16,7 +16,7 @@ class UnweightedSamples(UncertainData, UserList):
             If dict, must be of the form of {key: [value, ...], ...}\n
             If list, must be of the form of [{key: value, ...}, ...]
     """
-    def __init__(self, samples = []):
+    def __init__(self, samples : list = []):
         if isinstance(samples, dict):
             # Is in form of {key: [value, ...], ...}
             # Convert to array of samples
@@ -31,12 +31,12 @@ class UnweightedSamples(UncertainData, UserList):
         else:
             raise ValueError('Invalid input. Must be list or dict, was {}'.format(type(samples)))
 
-    def sample(self, num_samples = 1, replace = True):
+    def sample(self, num_samples : int = 1, replace = True) -> UnweightedSamples:
         # Completely random resample
         indices = random.choice(len(self.data), num_samples, replace = replace)
         return UnweightedSamples([self.data[i] for i in indices])
 
-    def keys(self):
+    def keys(self) -> list:
         if len(self.data) == 0:
             return []  # is empty
         for sample in self:
@@ -44,7 +44,7 @@ class UnweightedSamples(UncertainData, UserList):
                 return sample.keys()
         return []  # Every element is none
 
-    def key(self, key):
+    def key(self, key) -> list:
         """Return samples for given key
 
         Args:
@@ -56,7 +56,7 @@ class UnweightedSamples(UncertainData, UserList):
         return [sample[key] for sample in self.data if sample is not None]
 
     @property
-    def median(self):
+    def median(self) -> array:
         # Calculate Geometric median of all samples
         min_value = float('inf')
         none_flag = False
@@ -76,7 +76,7 @@ class UnweightedSamples(UncertainData, UserList):
         return self[min_index]
 
     @property
-    def mean(self):
+    def mean(self) -> array:
         mean = {}
         for key in self.keys():
             values = array([x[key] for x in self.data if x is not None and x[key] is not None])
@@ -86,7 +86,7 @@ class UnweightedSamples(UncertainData, UserList):
         return mean
 
     @property
-    def cov(self):
+    def cov(self) -> array:
         if len(self.data) == 0:
             return [[]]
         unlabeled_samples = array([[x[key] for x in self.data if x is not None and x[key] is not None] for key in self.keys()])
@@ -98,7 +98,7 @@ class UnweightedSamples(UncertainData, UserList):
         return 'UnweightedSamples({})'.format(self.data)
 
     @property
-    def size(self):
+    def size(self) -> int:
         """Get the number of samples. Note: kept for backwards compatibility, prefer using len() instead.
 
         Returns:
@@ -106,7 +106,7 @@ class UnweightedSamples(UncertainData, UserList):
         """
         return len(self)
 
-    def percentage_in_bounds(self, bounds, keys = None):
+    def percentage_in_bounds(self, bounds, keys : list = None) -> dict:
         if not keys:
             keys = self.keys()
         if isinstance(bounds, list):

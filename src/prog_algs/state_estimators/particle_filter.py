@@ -151,7 +151,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         self.particles = dict(zip(self.particles.keys(), samples))
 
     @property
-    def x(self):
+    def x(self) -> UnweightedSamples:
         """
         Getter for property 'x', the current estimated state. 
 

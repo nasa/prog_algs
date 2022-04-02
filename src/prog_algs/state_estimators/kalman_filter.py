@@ -128,7 +128,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         self.filter.update(outputs, H=self.model.C)
     
     @property
-    def x(self):
+    def x(self) -> MultivariateNormalDist:
         """
         Getter for property 'x', the current estimated state. 
 

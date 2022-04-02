@@ -2,6 +2,7 @@
 
 from abc import ABC, abstractmethod
 from copy import deepcopy
+from typing import Callable
 from ..exceptions import ProgAlgTypeError
 from ..uncertain_data import UncertainData
 
@@ -41,7 +42,7 @@ class Predictor(ABC):
         self.parameters.update(kwargs)
 
     @abstractmethod
-    def predict(self, state : UncertainData, future_loading_eqn, **kwargs):
+    def predict(self, state : UncertainData, future_loading_eqn : Callable, **kwargs):
         """
         Perform a single prediction
 

@@ -23,7 +23,7 @@ class Prediction():
         self.times = times
         self.data = data
 
-    def __eq__(self, other : "Prediction"):
+    def __eq__(self, other : "Prediction") -> bool:
         """Compare 2 Predictions
 
         Args:
@@ -34,7 +34,7 @@ class Prediction():
         """
         return self.times == other.times and self.data == other.data
 
-    def snapshot(self, time_index : int):
+    def snapshot(self, time_index : int) -> UncertainData:
         """Get all samples from a specific timestep
 
         Args:
@@ -47,7 +47,7 @@ class Prediction():
         return self.data[time_index]
 
     @property
-    def mean(self):
+    def mean(self) -> list:
         """Estimate of the mean value of the prediction at each time
 
         Returns:
@@ -91,11 +91,11 @@ class UnweightedSamplesPrediction(Prediction, UserList):
         self.__transform = [UnweightedSamples([sample[time_index] if len(sample) > time_index else None for sample in self.data]) for time_index in range(len(self.times))]
         self.__transformed = True
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "UnweightedSamplesPrediction with {} savepoints".format(len(self.times))
 
     @property
-    def mean(self):
+    def mean(self) -> list:
         if not self.__transformed:
             self.__calculate_tranform()
         return [dist.mean for dist in self.__transform]
@@ -104,7 +104,7 @@ class UnweightedSamplesPrediction(Prediction, UserList):
         warn("Deprecated. Please use prediction[sample_id] instead.")
         return self[sample_id]
 
-    def snapshot(self, time_index : int):
+    def snapshot(self, time_index : int) -> UnweightedSamples:
         """Get all samples from a specific timestep
 
         Args:

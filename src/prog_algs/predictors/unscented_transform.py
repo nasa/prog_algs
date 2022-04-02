@@ -124,7 +124,7 @@ class UnscentedTransformPredictor(Predictor):
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
 
-    def predict(self, state, future_loading_eqn : Callable, **kwargs):
+    def predict(self, state, future_loading_eqn : Callable, **kwargs) -> PredictionResults:
         """
         Perform a single prediction
 
@@ -141,7 +141,7 @@ class UnscentedTransformPredictor(Predictor):
             * horizon : Prediction horizon (s)
             * events : List of events to be predicted (subset of model.events, default is all events)
 
-        Returns (tuple)
+        Returns (PredictionResults)
         -------
         times: [number]
             Times for each simulated point in format times[index]

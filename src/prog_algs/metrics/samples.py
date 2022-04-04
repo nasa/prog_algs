@@ -28,5 +28,5 @@ def percentage_in_bounds(toe, bounds):
     Returns:
         float: Percentage within bounds (where 1 = 100%)
     """
-    warn('Warning: Percentage_in_bounds has been deprecated in favor of UncertainData.percentage_in_bounds(bounds). This function will be removed in a future release')
+    warn('Percentage_in_bounds has been deprecated in favor of UncertainData.percentage_in_bounds(bounds). This function will be removed in a future release')
     return sum([x < bounds[1] and x > bounds[0] for x in toe])/ len(toe)

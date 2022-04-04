@@ -68,7 +68,7 @@ class ParticleFilter(state_estimator.StateEstimator):
 
         if 'R' in self.parameters:
             # For backwards compatibility
-            warn("Warning: 'R' is deprecated. Use 'measurement_noise' instead.", DeprecationWarning)
+            warn("'R' is deprecated. Use 'measurement_noise' instead.", DeprecationWarning)
             self.parameters['measurement_noise'] = self.parameters['R']
         elif 'measurement_noise' not in self.parameters:
             self.parameters['measurement_noise'] = {key: 0.0 for key in x0.keys()}

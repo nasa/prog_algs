@@ -66,7 +66,7 @@ class UncertainData(ABC):
             [string]: keys
         """
 
-    def percentage_in_bounds(self, bounds : list, keys = None) -> float:
+    def percentage_in_bounds(self, bounds : tuple, keys : list = None) -> float:
         """Calculate percentage of dist is within specified bounds
 
         Args:

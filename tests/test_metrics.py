@@ -397,34 +397,36 @@ class TestMetrics(unittest.TestCase):
         from prog_algs import predictors, state_estimators
         from prog_algs.metrics import samples as metrics 
         # Testing code from benchmarking example
-        def future_loading(t, x={}):
-            if (t < 600):
-                i = 2
-            elif (t < 900):
-                i = 1
-            elif (t < 1800):
-                i = 4
-            elif (t < 3000):
-                i = 2
-            else:
-                i = 3
-            return {'i': i}
-        batt = Battery()   
-        pred = predictors.MonteCarlo(batt, dt= 0.05)
-        x0 = batt.initialize()
-        state_estimator = state_estimators.ParticleFilter(batt, x0)
-        state_estimator.estimate(0.1, future_loading(0.1), {'t': 32.2, 'v': 3.915})
-        state_estimator.estimate(0.2, future_loading(0.2), {'t': 32.3, 'v': 3.91})
+        # def future_loading(t, x={}):
+        #     if (t < 600):
+        #         i = 2
+        #     elif (t < 900):
+        #         i = 1
+        #     elif (t < 1800):
+        #         i = 4
+        #     elif (t < 3000):
+        #         i = 2
+        #     else:
+        #         i = 3
+        #     return {'i': i}
+        # batt = Battery()   
+        # pred = predictors.MonteCarlo(batt, dt= 0.05)
+        # x0 = batt.initialize()
+        # state_estimator = state_estimators.ParticleFilter(batt, x0)
+        # state_estimator.estimate(0.1, future_loading(0.1), {'t': 32.2, 'v': 3.915})
+        # state_estimator.estimate(0.2, future_loading(0.2), {'t': 32.3, 'v': 3.91})
         
-        # sample_counts = [1, 2, 5, 10]
-        # for sample_count in sample_counts:
-        #     pred_results = pred.predict(state_estimator.x, future_loading, n_samples = sample_count)
-        #     toe = pred_results.time_of_event.key("EOD")  # Looking at EOD event
-        #     print('\tMSE:     {:4.2f}s'.format(metrics.mean_square_error(toe, 3005.4)))
-        #     print('\tRMSE:     {:4.2f}s'.format(metrics.root_mean_square_error(toe, 3005.4)))
+        # # sample_counts = [1, 2, 5, 10]
+        # # for sample_count in sample_counts:
+        # #     pred_results = pred.predict(state_estimator.x, future_loading, n_samples = sample_count)
+        # #     toe = pred_results.time_of_event.key("EOD")  # Looking at EOD event
+        # #     print('\tMSE:     {:4.2f}s'.format(metrics.mean_square_error(toe, 3005.4)))
+        # #     print('\tRMSE:     {:4.2f}s'.format(metrics.root_mean_square_error(toe, 3005.4)))
 
-        pred_results = pred.predict(state_estimator.x, future_loading, n_samples = 1)
-        toe = pred_results.time_of_event.key("EOD")  # Looking at EOD event
+        # pred_results = pred.predict(state_estimator.x, future_loading, n_samples = 1)
+        # toe = pred_results.time_of_event.key("EOD")  # Looking at EOD event
+        
+        # MANUALLY ASSIGN TOE like toe = [3004, 3006, 3009, 3010] large, small, 0/1 samples, 
         self.assertEqual(metrics.mean_square_error(toe, 3005.4), 0.02)
         self.assertEqual(metrics.root_mean_square_error(toe, 3005.4), 0.15)
 

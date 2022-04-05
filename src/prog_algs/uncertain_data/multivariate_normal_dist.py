@@ -24,7 +24,7 @@ class MultivariateNormalDist(UncertainData):
 
     def sample(self, num_samples = 1):
         if len(self.__mean) != len(self.__labels):
-            raise Exception("Labels must be provided for each value")
+            raise Exception("labels must be provided for each value")
     
         samples = multivariate_normal(self.__mean, self.__covar, num_samples)
         samples = [{key: value for (key, value) in zip(self.__labels, x)} for x in samples]

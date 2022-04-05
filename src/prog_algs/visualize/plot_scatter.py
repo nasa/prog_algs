@@ -6,7 +6,7 @@ from math import sqrt
 
 from numpy import array
 
-def plot_scatter(samples : array(dict), fig : Figure = None, keys : list(str) = None, legend : str = 'auto', **kwargs) -> Figure:
+def plot_scatter(samples : list[dict], fig : Figure = None, keys : list[str] = None, legend : str = 'auto', **kwargs) -> Figure:
     """
     Produce a scatter plot for a given list of states
 

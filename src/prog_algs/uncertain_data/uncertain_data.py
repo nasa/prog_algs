@@ -161,7 +161,6 @@ class UncertainData(ABC):
 
         # Printing list of rows; result
         if print_bool:
-            for row in result:
-                print(row)
+            print(*result, sep = "\n")
         return result
         

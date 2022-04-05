@@ -18,7 +18,7 @@ def mean_square_error(values : list, ground_truth : float) -> float:
     """
     return sum([(mean(x) - ground_truth)**2 for x in values])/len(values)
 
-def percentage_in_bounds(toe : list, bounds : list) -> float:
+def percentage_in_bounds(toe : list, bounds : tuple) -> float:
     """Calculate percentage of ToE dist is within specified bounds
 
     Args:

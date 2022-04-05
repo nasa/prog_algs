@@ -77,7 +77,7 @@ class UnweightedSamplesPrediction(Prediction, UserList):
             Data points where data[n] is a SimResult for sample n
     """
 
-    def __init__(self, times : list, data : UncertainData):
+    def __init__(self, times : list, data : list):
         super(UnweightedSamplesPrediction, self).__init__(times, data)
         self.__transformed = False  # If transform has been calculated
 

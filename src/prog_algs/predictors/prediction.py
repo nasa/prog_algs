@@ -13,7 +13,7 @@ class Prediction():
     Class for the result of a prediction. Is returned by the predict method of a predictor.
 
     Args:
-        times (array(float)):
+        times (list[float]):
             Times for each data point where times[n] corresponds to data[n]
         data (list[UncertainData]):
             Data points for each time in times 

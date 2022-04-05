@@ -27,7 +27,7 @@ class Prediction():
         """Compare 2 Predictions
 
         Args:
-            other (Precition):
+            other (Prediction):
 
         Returns:
             bool: If the two Predictions are equal

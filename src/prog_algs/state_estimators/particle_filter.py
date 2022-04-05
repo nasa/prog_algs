@@ -81,7 +81,7 @@ class ParticleFilter(state_estimator.StateEstimator):
     def __str__(self):
         return "{} State Estimator".format(self.__class__)
         
-    def estimate(self, t : float, u : dict, z : dict):
+    def estimate(self, t : float, u, z):
         assert t > self.t, "New time must be greater than previous"
         dt = t - self.t
         self.t = t

@@ -80,7 +80,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
 
-    def estimate(self, t : float, u : dict, z : dict):
+    def estimate(self, t : float, u, z):
         """
         Perform one state estimation step (i.e., update the state estimate)
 

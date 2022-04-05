@@ -399,7 +399,7 @@ def run_tests():
     result = runner.run(l.loadTestsFromTestCase(TestMetrics)).wasSuccessful()
 
     if not result:
-        raise Exception("Exception: Failed test")
+        raise Exception("Failed test")
 
 if __name__ == '__main__':
     run_tests()

@@ -52,7 +52,7 @@ def main():
     result = runner.run(l.loadTestsFromTestCase(TestExamples)).wasSuccessful()
 
     if not result:
-        raise Exception("Exception: Failed test")
+        raise Exception("Failed test")
 
 if __name__ == '__main__':
     main()

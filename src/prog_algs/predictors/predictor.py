@@ -5,6 +5,7 @@ from copy import deepcopy
 from typing import Callable
 from ..exceptions import ProgAlgTypeError
 from ..uncertain_data import UncertainData
+from prog_algs.predictors import PredictionResults
 
 
 class Predictor(ABC):
@@ -60,7 +61,7 @@ class Predictor(ABC):
             * save_freq (float): Frequency at which results are saved (s)
             * save_pts (list[float]): Any additional savepoints (s) e.g., [10.1, 22.5]
 
-        Return
+        Return PredictionResults namedtuple
         ----------
         times : List[float]
             Times for each savepoint such that inputs.snapshot(i), states.snapshot(i), outputs.snapshot(i), and event_states.snapshot(i) are all at times[i]            

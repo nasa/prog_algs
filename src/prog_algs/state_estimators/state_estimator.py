@@ -48,7 +48,7 @@ class StateEstimator(ABC):
         
         # Check measurement equation
         if measurement_eqn and not callable(measurement_eqn):
-            raise ProgAlgTypeError("Measurement_eqn must be callable")
+            raise ProgAlgTypeError("measurement_eqn must be callable")
         
         # Process kwargs (configuration)
         self.parameters = deepcopy(self.default_parameters)

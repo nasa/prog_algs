@@ -65,7 +65,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         elif isinstance(self.parameters['x0_uncertainty'], Number):
             sd = array([self.parameters['x0_uncertainty']] * len(x0))
         else:
-            raise ProgAlgTypeError
+            raise ProgAlgTypeError("x0_uncertainty must be of type {dict, Number}.")
 
         if 'R' in self.parameters:
             # For backwards compatibility

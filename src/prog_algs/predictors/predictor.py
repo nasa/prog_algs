@@ -42,7 +42,7 @@ class Predictor(ABC):
         self.parameters.update(kwargs)
 
     @abstractmethod
-    def predict(self, state : UncertainData, future_loading_eqn : Callable, **kwargs):
+    def predict(self, state : UncertainData, future_loading_eqn : Callable, **kwargs) -> PredictionResults:
         """
         Perform a single prediction
 

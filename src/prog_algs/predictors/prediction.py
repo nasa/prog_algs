@@ -19,7 +19,7 @@ class Prediction():
             Data points for each time in times 
     """
 
-    def __init__(self, times : list, data : UncertainData):
+    def __init__(self, times : list, data : list):
         self.times = times
         self.data = data
 

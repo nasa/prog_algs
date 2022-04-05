@@ -43,7 +43,7 @@ def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda
                     print('\tBounds: [{} - {}]({}%)'.format(lower_bound, upper_bound, toe.percentage_in_bounds([lower_bound, upper_bound])[key]))
             return result
 
-def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn, **kwargs):
+def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn, ground_truth, **kwargs):
     """
     Compute prognostic horizon metric, given by the difference between a time ti, when the predictions meet specified performance criteria, and the time corresponding to the end of life (EoL).
     PH = EOL - ti
@@ -69,12 +69,12 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn, **kwarg
     ph_result = {}
     ph_first_met = defaultdict(bool)
     for (t_prediction, toe) in toe_profile.items():
-        criteria_eqn_dict = criteria_eqn(toe) # -> dict[event_names as str, bool]
+        criteria_eqn_dict = criteria_eqn(toe, ground_truth) # -> dict[event_names as str, bool]
         for k,v in criteria_eqn_dict.items():
             if v: # eqn dict value is True
                 if not ph_first_met[k]:
                     # unweightedsamples and int;
-                    ph_result[k] = toe - t_prediction # PH = EOL - ti # ground truth is a dictionary {'EOD': 3005.2} should be ph_result[k] = g_truth[key] - t_prediction
+                    ph_result[k] = ground_truth[k] - t_prediction # PH = EOL - ti # ground truth is a dictionary {'EOD': 3005.2} should be ph_result[k] = g_truth[key] - t_prediction
                     ph_first_met[k] = True
                     if (ph_result.keys() == ph_first_met.keys()) and (all(v for v in ph_first_met.values())):
                         # if all keys between ph result and ph first met AND all ph first met true

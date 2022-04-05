@@ -407,9 +407,9 @@ class TestMetrics(unittest.TestCase):
         # Define test sample ground truth
         GROUND_TRUTH = {'a': 9.0, 'b': 8.0, 'c': 18.0}
         # Create rudimentary criteria equation
-        def criteria_eqn(toe : ToEPredictionProfile):
+        def criteria_eqn(toe : ToEPredictionProfile, ground_truth : dict):
             result = {}
-            for key, value in GROUND_TRUTH.items():
+            for key, value in ground_truth.items():
                 if abs(toe.mean[key] - value < 0.1):
                     result[key] = True
                 else:
@@ -417,7 +417,7 @@ class TestMetrics(unittest.TestCase):
             return result
         from prog_algs.metrics import prognostic_horizon
         # Prognostic horizon metric testing
-        ph_metrics = prognostic_horizon(profile, criteria_eqn)
+        ph_metrics = prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH)
         print(ph_metrics)
 
 # This allows the module to be executed directly    

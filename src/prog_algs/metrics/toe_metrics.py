@@ -43,7 +43,7 @@ def prob_success(toe, time, **kwargs):
                 **kwargs) for key in keys}
     elif isinstance(toe, Iterable):
         if len(toe) == 0:
-            raise ValueError('ValueError: Time of Event must not be empty')
+            raise ValueError('Time of Event must not be empty')
         # Is list or array
         if isscalar(toe[0]) or toe[0] is None:
             # list of numbers - this is the case that we can calculate
@@ -53,8 +53,8 @@ def prob_success(toe, time, **kwargs):
             toe = UnweightedSamples(toe)
             return prob_success(toe, time, **kwargs)
         else:
-            raise TypeError("TypeError: ToE must be type Uncertain Data or array of dicts, was {}".format(type(toe)))
+            raise TypeError("ToE must be type Uncertain Data or array of dicts, was {}".format(type(toe)))
     else:
-        raise TypeError("TypeError: ToE must be type Uncertain Data or array of dicts, was {}".format(type(toe)))
+        raise TypeError("ToE must be type Uncertain Data or array of dicts, was {}".format(type(toe)))
 
     return sum([e is None or e > time for e in toe])/len(toe)

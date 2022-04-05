@@ -74,7 +74,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         self.filter.F = F
         self.filter.B = B
 
-    def estimate(self, t : float, u : "InputContainer", z : "OutputContainer"):
+    def estimate(self, t : float, u : dict, z : dict):
         """
         Perform one state estimation step (i.e., update the state estimate)
 

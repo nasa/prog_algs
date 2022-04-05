@@ -32,13 +32,13 @@ class StateEstimator(ABC):
     def __init__(self, model, x0, measurement_eqn = None, **kwargs):
         # Check model
         if not hasattr(model, 'output'):
-            raise ProgAlgTypeError("Model must have `output` method")
+            raise ProgAlgTypeError("model must have `output` method")
         if not hasattr(model, 'next_state'):
-            raise ProgAlgTypeError("Model must have `next_state` method")
+            raise ProgAlgTypeError("model must have `next_state` method")
         if not hasattr(model, 'outputs'):
-            raise ProgAlgTypeError("Model must have `outputs` property")
+            raise ProgAlgTypeError("model must have `outputs` property")
         if not hasattr(model, 'states'):
-            raise ProgAlgTypeError("Model must have `states` property")
+            raise ProgAlgTypeError("model must have `states` property")
         self.model = deepcopy(model)
 
         # Check x0

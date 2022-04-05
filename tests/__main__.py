@@ -70,4 +70,4 @@ if __name__ == '__main__':
         was_successful = False
 
     if not was_successful:
-        raise Exception('Exception: Tests Failed')
+        raise Exception('Tests Failed')

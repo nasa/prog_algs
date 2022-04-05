@@ -13,7 +13,7 @@ def plot_hist(samples, fig = None, keys = None, **kwargs):
 
     # Input checks
     if len(samples) <= 0:
-        raise Exception('Exception: Must include atleast one sample to plot')
+        raise Exception('Must include atleast one sample to plot')
     
     if keys is not None:
         if isinstance(keys, str):
@@ -21,11 +21,11 @@ def plot_hist(samples, fig = None, keys = None, **kwargs):
         try:
             iter(keys)
         except TypeError:
-            raise TypeError("TypeError: Keys should be a list of strings (e.g., ['state1', 'state2'], was {}".format(type(keys)))
+            raise TypeError("Keys should be a list of strings (e.g., ['state1', 'state2'], was {}".format(type(keys)))
         
         for key in keys:
             if key not in samples[0].keys():
-                raise TypeError("TypeError: Key {} was not present in samples (keys: {})".format(key, list(samples[0].keys())))
+                raise TypeError("Key {} was not present in samples (keys: {})".format(key, list(samples[0].keys())))
     else:
         keys = samples[0].keys()
     keys = list(keys)

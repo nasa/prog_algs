@@ -4,7 +4,7 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 from numpy import array
 
-def plot_hist(samples : array(dict), fig : Figure = None, keys : list(str) = None, **kwargs) -> Figure:
+def plot_hist(samples : array, fig : Figure = None, keys : list = None, **kwargs) -> Figure:
     """Create a histogram
 
     Args:

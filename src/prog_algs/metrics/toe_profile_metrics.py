@@ -19,7 +19,7 @@ def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda
             * keys (list[string], optional): list of keys to use. If not provided, all keys are used.
 
     Returns:
-        dict: dictionary containing key value pairs for each key and whether the alpha-lambda was met
+        dict: dictionary containing key value pairs for each key and whether the alpha-lambda was met.
     """
     params = {
         'print': False

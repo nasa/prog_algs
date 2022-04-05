@@ -139,31 +139,25 @@ class UncertainData(ABC):
         column_lens = defaultdict(int)
         for m in self.metrics():
             if column_lens["key"] < len(m):
-                column_lens["key"] = len(m)
+                column_lens["key"] = max(len(m), len("key")+2) # +2 for header name spacing; less cramped view
             for k,v in self.metrics()[m].items():
-                if column_lens[k] < len(str(v)):
-                    column_lens[k] = len(str(v))
-
-        result = []
+                update_len = max(len(str(v)),len(k)+2)
+                if column_lens[k] < update_len:
+                    column_lens[k] = update_len
+        
         # Formatting header and columns
         col_name_row = "|"
         for k in column_lens.keys(): # Using key order because they shouldn't change while printing
-            spacing = (column_lens[k] // 2 if column_lens[k] > 1 else 1) * ' '
-            name = spacing + k + spacing + '|' # ADD TO ROW SPACING HERE
-            col_name_row += name
-            column_lens[k] = len(name)
-        break_row = "+" + ((len(col_name_row)-2)*'-') + "+"
-        result.append(break_row)
-        result.append(col_name_row)
-        result.append(break_row)
+            col_name_row += f"{k:^{column_lens[k]}}|"
+        break_row = "+{}+".format((len(col_name_row)-2)*'-')
+        result = [break_row, col_name_row, break_row]
 
         # Formatting actual metric values
         for m in self.metrics():
-            metric_row = "| " + m + " "*(column_lens["key"]-len(m)-2) + '|'
+            metric_row = f"|{m:^{column_lens['key']}}|" 
             for k,v in self.metrics()[m].items():
-                metric_row += " " + str(v) + " "*(column_lens[k]-len(str(v))-2) + '|'
-            result.append(metric_row)
-            result.append(break_row) # Move into or out of outer for loop for break lines between metric rows
+                metric_row += f"{str(v):^{column_lens[k]}}|"
+            result.extend([metric_row, break_row])
 
         # Printing list of rows; result
         if print_bool:

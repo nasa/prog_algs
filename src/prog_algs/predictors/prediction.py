@@ -15,7 +15,7 @@ class Prediction():
     Args:
         times (array(float)):
             Times for each data point where times[n] corresponds to data[n]
-        data (array(UncertainData)):
+        data (list[UncertainData]):
             Data points for each time in times 
     """
 

@@ -391,15 +391,64 @@ class TestMetrics(unittest.TestCase):
         pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
         self.assertEqual(metrics, pickle_converted_result)
 
-    @unittest.skip
-    def test_sample_metrics(self):
-        from prog_models.models import BatteryCircuit as Battery
-        from prog_algs import predictors, state_estimators
-        from prog_algs.metrics import samples as metrics 
-        
-        # MANUALLY ASSIGN TOE like toe = [3004, 3006, 3009, 3010] large, small, 0/1 samples, 
-        self.assertEqual(metrics.mean_square_error(toe, 3005.4), 0.02)
-        self.assertEqual(metrics.root_mean_square_error(toe, 3005.4), 0.15)
+    def test_sample_metrics_square_error(self):
+        from prog_algs.metrics import samples as metrics
+        # Standard values
+        toe = [3004, 3006, 3009, 3010]
+        ground_truth = 3005.4
+        self.assertEqual(metrics.mean_square_error(toe, ground_truth), 9.109999999999664)
+        self.assertEqual(metrics.root_mean_square_error(toe, ground_truth), 3.018277654557258)
+        # One value
+        toe = [3006]
+        ground_truth = 3005.4
+        self.assertEqual(metrics.mean_square_error(toe, ground_truth), 0.35999999999989085)
+        self.assertEqual(metrics.root_mean_square_error(toe, ground_truth), 0.599999999999909)
+        # No values
+        toe = []
+        ground_truth = 1
+        with self.assertRaises(ZeroDivisionError):
+            metrics.mean_square_error(toe, ground_truth)
+            metrics.root_mean_square_error(toe, ground_truth)
+        # Small values
+        toe = [1, 2, 3, 4]
+        ground_truth = 2.2
+        self.assertEqual(metrics.mean_square_error(toe, ground_truth), 1.3399999999999999)
+        self.assertEqual(metrics.root_mean_square_error(toe, ground_truth), 1.1575836902790224)
+        # Large values
+        toe = [1000995, 1000996, 1000997, 1000998]
+        ground_truth = 1000996.7
+        self.assertEqual(metrics.mean_square_error(toe, ground_truth), 1.2899999999813736)
+        self.assertEqual(metrics.root_mean_square_error(toe, ground_truth), 1.135781669151855)
+        # Negative values
+        toe = [-3004, -3006, -3009, -3010]
+        ground_truth = -3005.4
+        self.assertEqual(metrics.mean_square_error(toe, ground_truth), 9.109999999999664)
+        self.assertEqual(metrics.root_mean_square_error(toe, ground_truth), 3.018277654557258)
+        # Negative values mixed; positive ground_truth
+        toe = [3004, -3006, 3009, -3010]
+        ground_truth = 3005.4
+        self.assertEqual(metrics.mean_square_error(toe, ground_truth), 18080495.509999998)
+        self.assertEqual(metrics.root_mean_square_error(toe, ground_truth), 4252.116591769327)
+        # Negative values mixed; negative ground_truth
+        toe = [-3004, 3006, -3009, 3010]
+        ground_truth = -3005.4
+        self.assertEqual(metrics.mean_square_error(toe, ground_truth), 18080495.509999998)
+        self.assertEqual(metrics.root_mean_square_error(toe, ground_truth), 4252.116591769327)
+        # Zeroes in toe; positive ground_truth
+        toe = [0, 0, 0, 0]
+        ground_truth = 1
+        self.assertEqual(metrics.mean_square_error(toe, ground_truth), 1)
+        self.assertEqual(metrics.root_mean_square_error(toe, ground_truth), 1)
+        # Zeroes in toe; 0 ground_truth
+        toe = [0, 0, 0, 0]
+        ground_truth = 0
+        self.assertEqual(metrics.mean_square_error(toe, ground_truth), 0)
+        self.assertEqual(metrics.root_mean_square_error(toe, ground_truth), 0)
+        # Decimal toe's
+        toe = [0.012, 0.014, 0.016, 0.018]
+        ground_truth = 0.0156
+        self.assertEqual(metrics.mean_square_error(toe, ground_truth), 5.359999999999997e-06)
+        self.assertEqual(metrics.root_mean_square_error(toe, ground_truth), 0.0023151673805580446)
 
 # This allows the module to be executed directly    
 def run_tests():

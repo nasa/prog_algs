@@ -27,13 +27,13 @@ def plot_scatter(samples, fig = None, keys = None, legend = 'auto', **kwargs):
     """
     # Input checks
     if len(samples) <= 0:
-        raise Exception('Exception: Must include atleast one sample to plot')
+        raise Exception('Must include atleast one sample to plot')
     
     if keys is not None:
         try:
             iter(keys)
         except TypeError:
-            raise TypeError("TypeError: Keys should be a list of strings (e.g., ['state1', 'state2'], was {}".format(type(keys)))
+            raise TypeError("Keys should be a list of strings (e.g., ['state1', 'state2'], was {}".format(type(keys)))
 
     # Handle input
     parameters = {  # defaults
@@ -47,7 +47,7 @@ def plot_scatter(samples, fig = None, keys = None, legend = 'auto', **kwargs):
 
     n = len(keys)
     if n < 2:
-        raise Exception("Exception: At least 2 states required for scatter, got {}".format(n))
+        raise Exception("At least 2 states required for scatter, got {}".format(n))
 
     if fig is None:
         # If no figure provided, create one
@@ -56,7 +56,7 @@ def plot_scatter(samples, fig = None, keys = None, legend = 'auto', **kwargs):
     else:
         # Check size of axes
         if len(fig.axes) != (n-1)*(n-1):
-            raise Exception("Exception: Cannot use existing figure - Existing figure graphs {} states, data includes {} states".format(sqrt(len(fig.axes))+1, n))
+            raise Exception("Cannot use existing figure - Existing figure graphs {} states, data includes {} states".format(sqrt(len(fig.axes))+1, n))
 
         # Unpack axes
         axes = [[fig.axes[i + j*(n-1)] for i in range(n-1)] for j in range(n-1)]

@@ -51,7 +51,7 @@ class Prediction():
         """Estimate of the mean value of the prediction at each time
 
         Returns:
-            array(dict): 
+            list[dict]: 
                 Mean value of the prediction at each time where mean[n] corresponds to the mean value of the prediction at time times[n].\n
                 The mean value at each time is a dictionary. \n
                 e.g., [{'state1': 1.2, 'state2': 1.3, ...}, ...]

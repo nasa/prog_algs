@@ -23,7 +23,7 @@ def percentage_in_bounds(toe : list, bounds : tuple) -> float:
 
     Args:
         toe ([float]): Times of event for a single event, output from predictor
-        bounds ([float, float]): Lower and upper bounds
+        bounds ((float, float)): Lower and upper bounds
 
     Returns:
         float: Percentage within bounds (where 1 = 100%)

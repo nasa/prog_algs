@@ -5,7 +5,7 @@ This file includes functions for calculating metrics specific to time of event (
 """
 
 from typing import Iterable
-from numpy import isscalar, array
+from numpy import isscalar
 from ..uncertain_data import UncertainData, UnweightedSamples
 
 def prob_success(toe : UncertainData, time : float, **kwargs) -> float:

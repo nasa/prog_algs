@@ -62,6 +62,7 @@ def run_example():
         toe = pred_results.time_of_event.key("EOD")  # Looking at EOD event
         end = time.perf_counter()
         print('\tMSE:     {:4.2f}s'.format(metrics.mean_square_error(toe, 3005.4)))
+        print('\tRMSE:     {:4.2f}s'.format(metrics.root_mean_square_error(toe, 3005.4)))
         print('\tRuntime: {:4.2f}s'.format(end - start))
 
     # This same approach can be applied for benchmarking and comparing other changes 

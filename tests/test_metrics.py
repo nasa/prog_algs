@@ -422,7 +422,6 @@ class TestMetrics(unittest.TestCase):
                 UnweightedSamples(data)  # ToE Prediction
             )
         ph_metrics = prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH)
-        # print(ph_metrics)
         self.assertDictEqual(ph_metrics, {'c': 10.0, 'a': None, 'b': None})
 
 # This allows the module to be executed directly    

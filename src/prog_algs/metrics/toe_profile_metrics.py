@@ -72,5 +72,8 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callab
                 ph_result[k] = ground_truth[k] - t_prediction # PH = EOL - ti # ground truth is a dictionary {'EOD': 3005.2} should be ph_result[k] = g_truth[key] - t_prediction
                 ph_first_met[k] = True
                 if (ph_result.keys() == ph_first_met.keys()) and (all(v for v in ph_first_met.values())):
+                    for key in criteria_eqn_dict:
+                        if key not in ph_result:
+                            ph_result[key] = None
                     return ph_result
 

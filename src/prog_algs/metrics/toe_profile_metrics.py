@@ -60,12 +60,6 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn, ground_
     }
     params.update(kwargs)
 
-    # need:
-    #   times, iterate? ti
-    #   EOL, import into function
-    # return
-    #   dictionary of times as keys with PH value
-
     ph_result = {}
     ph_first_met = defaultdict(bool)
     for (t_prediction, toe) in toe_profile.items():
@@ -73,17 +67,8 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn, ground_
         for k,v in criteria_eqn_dict.items():
             if v: # eqn dict value is True
                 if not ph_first_met[k]:
-                    # unweightedsamples and int;
                     ph_result[k] = ground_truth[k] - t_prediction # PH = EOL - ti # ground truth is a dictionary {'EOD': 3005.2} should be ph_result[k] = g_truth[key] - t_prediction
                     ph_first_met[k] = True
                     if (ph_result.keys() == ph_first_met.keys()) and (all(v for v in ph_first_met.values())):
-                        # if all keys between ph result and ph first met AND all ph first met true
                         return ph_result
-
-            # time of prediction, t_prediction, ti; already have time when equation is met
-            # eol is time when failure, toe 
-            # ph is subtracting a scalar from a distribution
-
-            # iterate over each event in criteria eqn, if criteria is true and first time its been true:
-            #     do the logic
 

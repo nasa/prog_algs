@@ -418,7 +418,7 @@ class TestMetrics(unittest.TestCase):
         from prog_algs.metrics import prognostic_horizon
         # Prognostic horizon metric testing
         ph_metrics = prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH)
-        print(ph_metrics)
+        self.assertDictEqual(ph_metrics, {'c':9.0})
 
 # This allows the module to be executed directly    
 def run_tests():

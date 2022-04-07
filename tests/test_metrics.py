@@ -400,16 +400,16 @@ class TestMetrics(unittest.TestCase):
         def criteria_eqn(toe : ToEPredictionProfile, ground_truth : dict):
             result = {}
             for key, value in ground_truth.items():
-                if abs(toe.mean[key] - value) < 0.1:
+                if abs(toe.mean[key] - value) < 0.6:
                     result[key] = True
                 else:
                     result[key] = False
             return result
         from prog_algs.metrics import prognostic_horizon
         # Prognostic horizon metric testing
-        ph_metrics = prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH)
+        # ph_metrics = prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH)
         # self.assertDictEqual(ph_metrics, {'c':9.0})
-        print(ph_metrics)
+        # print(ph_metrics)
 
         # Loading profile
         for i in range(10):
@@ -421,6 +421,8 @@ class TestMetrics(unittest.TestCase):
                 10-i,  # Time (reverse so data is decreasing)
                 UnweightedSamples(data)  # ToE Prediction
             )
+        ph_metrics = prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH)
+        self.assertDictEqual(ph_metrics, {'c':10.0})
 
 # This allows the module to be executed directly    
 def run_tests():

@@ -398,7 +398,6 @@ class TestMetrics(unittest.TestCase):
         GROUND_TRUTH = {'a': 9.0, 'b': 8.0, 'c': 18.0}
         # Create rudimentary criteria equation
         def criteria_eqn(toe : ToEPredictionProfile, ground_truth : dict):
-            # Equation returns true if 
             result = {}
             for key, value in ground_truth.items():
                 if abs(toe.mean[key] - value) < 0.1:

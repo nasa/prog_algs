@@ -3,6 +3,7 @@
 """
 This file includes functions for calculating metrics given a time of event (ToE) profile (i.e., ToE's calculated at different times of prediction resulting from running prognostics multiple times, e.g., on playback data). The metrics calculated here are specific to multiple ToE estimates (e.g. alpha-lambda metric)
 """
+from typing import Callable
 from ..predictors import ToEPredictionProfile
 from collections import defaultdict
 
@@ -43,12 +44,14 @@ def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda
                     print('\tBounds: [{} - {}]({}%)'.format(lower_bound, upper_bound, toe.percentage_in_bounds([lower_bound, upper_bound])[key]))
             return result
 
-def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn, ground_truth, **kwargs):
+def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callable, ground_truth : dict, **kwargs):
     """
     Compute prognostic horizon metric, given by the difference between a time ti, when the predictions meet specified performance criteria, and the time corresponding to the end of life (EoL).
     PH = EOL - ti
     Args:
         toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions
+        criteria_eqn (Callable function): A function calculating whether ground truth meets some criteria for corresponding key in ToEPredictionProfile
+        ground_truth (dict): Dictionary containing ground truth; specified as key, value pairs for event and its value
         kwargs (optional): configuration arguments. Accepted args include:
             * keys (list[string], optional): list of keys to use. If not provided, all keys are used.
 

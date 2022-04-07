@@ -401,7 +401,7 @@ class TestMetrics(unittest.TestCase):
             # Equation returns true if 
             result = {}
             for key, value in ground_truth.items():
-                if abs(toe.mean[key] - value < 0.1):
+                if abs(toe.mean[key] - value) < 0.1:
                     result[key] = True
                 else:
                     result[key] = False

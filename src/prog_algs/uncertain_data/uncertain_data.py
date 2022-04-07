@@ -2,6 +2,8 @@
 
 from collections import defaultdict
 from abc import ABC, abstractmethod, abstractproperty
+
+from prog_algs.utils import Table
 from ..visualize import plot_scatter, plot_hist
 
 
@@ -135,32 +137,6 @@ class UncertainData(ABC):
         Args:
             print_bool (bool, optional): Optional argument specifying whether to print or not; default true.
         """
-        # Setting each column's width; find max metric and make that the length. Also create list of column headers
-        column_lens = defaultdict(int)
-        for m in self.metrics():
-            if column_lens["key"] < len(m):
-                column_lens["key"] = max(len(m), len("key")+2) # +2 for header name spacing; less cramped view
-            for k,v in self.metrics()[m].items():
-                update_len = max(len(str(v)),len(k)+2)
-                if column_lens[k] < update_len:
-                    column_lens[k] = update_len
-        
-        # Formatting header and columns
-        col_name_row = "|"
-        for k in column_lens.keys(): # Using key order because they shouldn't change while printing
-            col_name_row += f"{k:^{column_lens[k]}}|"
-        break_row = "+{}+".format((len(col_name_row)-2)*'-')
-        result = [break_row, col_name_row, break_row]
-
-        # Formatting actual metric values
-        for m in self.metrics():
-            metric_row = f"|{m:^{column_lens['key']}}|" 
-            for k,v in self.metrics()[m].items():
-                metric_row += f"{str(v):^{column_lens[k]}}|"
-            result.extend([metric_row, break_row])
-
-        # Printing list of rows; result
-        if print_bool:
-            print(*result, sep = "\n")
-        return result
+        metric_table = Table(self.metrics())
+        metric_table.print()
         

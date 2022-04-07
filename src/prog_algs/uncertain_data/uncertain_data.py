@@ -1,6 +1,9 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
 from abc import ABC, abstractmethod, abstractproperty
+from matplotlib.figure import Figure
+
+from numpy import array
 from ..visualize import plot_scatter, plot_hist
 
 
@@ -24,7 +27,7 @@ class UncertainData(ABC):
 
     @property
     @abstractproperty
-    def median(self):
+    def median(self) -> array:
         """The median of the UncertainData distribution or samples 
 
         Returns:
@@ -36,7 +39,7 @@ class UncertainData(ABC):
 
     @property
     @abstractproperty
-    def mean(self):
+    def mean(self) -> array:
         """The mean of the UncertainData distribution or samples 
 
         Returns:
@@ -48,7 +51,7 @@ class UncertainData(ABC):
 
     @property
     @abstractproperty
-    def cov(self):
+    def cov(self) -> array:
         """The covariance matrix of the UncertiantyData distribution or samples in order of keys (i.e., cov[1][1] is the standard deviation for key keys()[1])
 
         Returns:
@@ -63,11 +66,11 @@ class UncertainData(ABC):
             [string]: keys
         """
 
-    def percentage_in_bounds(self, bounds, keys = None):
+    def percentage_in_bounds(self, bounds : tuple, keys : list = None) -> float:
         """Calculate percentage of dist is within specified bounds
 
         Args:
-            bounds ([float, float]): Lower and upper bounds
+            bounds ((float, float)): Lower and upper bounds
             keys (list of strings, optional): Keys to analyze. Defaults to all keys.
 
         Returns:
@@ -75,7 +78,7 @@ class UncertainData(ABC):
         """
         return self.sample(1000).percentage_in_bounds(bounds)
 
-    def metrics(self, **kwargs):
+    def metrics(self, **kwargs) -> dict:
         """Calculate Metrics for this dist
 
         Keyword Args:
@@ -89,7 +92,7 @@ class UncertainData(ABC):
         from ..metrics import calc_metrics
         return calc_metrics(self, **kwargs)
 
-    def plot_scatter(self, fig = None, keys = None, num_samples = 100, **kwargs):
+    def plot_scatter(self, fig : Figure = None, keys : list = None, num_samples : int = 100, **kwargs) -> Figure:
         """
         Produce a scatter plot
 
@@ -113,7 +116,7 @@ class UncertainData(ABC):
         samples = self.sample(num_samples)
         return plot_scatter(samples, fig=fig, keys=keys, **kwargs)
 
-    def plot_hist(self, fig = None, keys = None, num_samples = 100, **kwargs):
+    def plot_hist(self, fig : Figure = None, keys : list = None, num_samples : int = 100, **kwargs) -> Figure:
         """Create a histogram
 
         Args:

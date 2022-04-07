@@ -8,11 +8,11 @@ from typing import Iterable
 from numpy import isscalar
 from ..uncertain_data import UncertainData, UnweightedSamples
 
-def prob_success(toe, time, **kwargs):
+def prob_success(toe : UncertainData, time : float, **kwargs) -> float:
     """Calculate probability of success - i.e., probability that event will not occur within a given time (i.e., success)
 
     Args:
-        toe (UncertainData or array[float]): Times of event for a single event (array[float]) or multiple events, output from predictor
+        toe (UncertainData or list[float]): Times of event for a single event (array[float]) or multiple events, output from predictor
         time (float): time for calculation
         **kwargs (optional): Configuration parameters. Supported parameters include:
           * n_samples (int): Number of samples to use for calculating metrics (if toe is not UnweightedSamples). Defaults to 10,000.

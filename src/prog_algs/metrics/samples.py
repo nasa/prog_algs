@@ -8,7 +8,7 @@ from .toe_profile_metrics import alpha_lambda
 from numpy import mean, sqrt
 from warnings import warn
 
-def mean_square_error(values, ground_truth):
+def mean_square_error(values : list, ground_truth : float) -> float:
     """Mean Square Error
     Args:
         values ([float]): time of event for a single event, output from predictor
@@ -28,12 +28,12 @@ def root_mean_square_error(values, ground_truth):
     """
     return sqrt(sum([(mean(x) - ground_truth)**2 for x in values])/len(values))
 
-def percentage_in_bounds(toe, bounds):
+def percentage_in_bounds(toe : list, bounds : tuple) -> float:
     """Calculate percentage of ToE dist is within specified bounds
 
     Args:
         toe ([float]): Times of event for a single event, output from predictor
-        bounds ([float, float]): Lower and upper bounds
+        bounds ((float, float)): Lower and upper bounds
 
     Returns:
         float: Percentage within bounds (where 1 = 100%)

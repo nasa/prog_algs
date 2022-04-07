@@ -1,5 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
+from typing import Callable
 from .prediction import Prediction, UnweightedSamplesPrediction, PredictionResults
 from .predictor import Predictor
 from numpy import diag, array, transpose
@@ -10,7 +11,7 @@ from prog_algs.uncertain_data import MultivariateNormalDist
 
 
 class LazyUTPrediction(Prediction):
-    def __init__(self, state_prediction, sigma_fcn, ut_fcn, transform_fcn):
+    def __init__(self, state_prediction, sigma_fcn : Callable, ut_fcn : Callable, transform_fcn : Callable):
         self.times = state_prediction.times
         self.__states = state_prediction
         self.__data = None
@@ -123,7 +124,7 @@ class UnscentedTransformPredictor(Predictor):
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
 
-    def predict(self, state, future_loading_eqn, **kwargs):
+    def predict(self, state, future_loading_eqn : Callable, **kwargs) -> PredictionResults:
         """
         Perform a single prediction
 
@@ -140,7 +141,7 @@ class UnscentedTransformPredictor(Predictor):
             * horizon : Prediction horizon (s)
             * events : List of events to be predicted (subset of model.events, default is all events)
 
-        Returns (tuple)
+        Returns (PredictionResults)
         -------
         times: [number]
             Times for each simulated point in format times[index]

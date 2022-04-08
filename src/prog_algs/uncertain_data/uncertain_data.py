@@ -1,9 +1,8 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
-from collections import defaultdict
 from abc import ABC, abstractmethod, abstractproperty
 
-from prog_algs.utils import Table
+from prog_algs.utils import print_table
 from ..visualize import plot_scatter, plot_hist
 
 
@@ -137,6 +136,8 @@ class UncertainData(ABC):
         Args:
             print_bool (bool, optional): Optional argument specifying whether to print or not; default true.
         """
-        metric_table = Table(self.metrics(), "Metrics")
-        metric_table.print(print_bool)
+        # metric_table = Table(self.metrics(), "Metrics")
+        # metric_table.print(print_bool)
+        metric_table = print_table(self.metrics(), "Metrics")
+
         

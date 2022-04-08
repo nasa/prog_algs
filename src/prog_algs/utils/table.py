@@ -20,8 +20,8 @@ def print_table(input_dict : dict, title : str, print_flag : bool = True) -> lis
     col_name_row = "|"
     value_row = "|"
     for k,v in input_dict.items():
-        if isinstance(v, dict):
-            print_table(v, f"{title} {k}")
+        if isinstance(v, dict): # treat it as separate row
+            print_table(v, f"{title} {k}") # instead of print value, save to a list
         else:
             col_len = len(max(str(k), str(v))) + 2
             col_name_row += f"{str(k):^{col_len}}|"
@@ -32,7 +32,7 @@ def print_table(input_dict : dict, title : str, print_flag : bool = True) -> lis
     result = [break_row, title_row, break_row, col_name_row, break_row, value_row, break_row]
     
     if print_flag:
-        print(*result, sep = "\n")
+        print(*result, sep = "\n") # pass false to innermost tables
     return result
 
 

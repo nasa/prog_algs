@@ -3,6 +3,35 @@
 
 from collections import defaultdict
 
+def print_table(input_dict : dict, title : str, print_flag : bool = True) -> list:
+    """
+    Prints a table where keys are column headers and values are items in a row. 
+    Returns the table formatted as a list of strings.
+
+    Arguments
+    ---------
+    input_dict : dict
+        A dictionary of keys and values to print out in a table. Values can be dictionaries.
+    title : str
+        Title of the table, printed before data rows.
+    print_flag : bool = True
+        An optional boolean value determining whether the generated table is printed.
+    """
+    col_name_row = "|"
+    value_row = "|"
+    for k,v in input_dict.items():
+        col_len = len(max(str(k), str(v))) + 2
+        col_name_row += f"{str(k):^{col_len}}|"
+        value_row += f"{str(v):^{col_len}}|"
+
+    break_row = "+{}+".format((len(col_name_row)-2)*'-')
+    title_row = f"+{title:^{len(break_row)-2}}+"
+    result = [title_row, break_row, col_name_row, break_row, value_row, break_row]
+    
+    if print_flag:
+        print(*result, sep = "\n")
+    return result
+
 
 class Table():
     """

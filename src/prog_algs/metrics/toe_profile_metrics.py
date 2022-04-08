@@ -63,10 +63,9 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callab
     }
     params.update(kwargs)
 
-    ph_result = {}
+    ph_result = {k:None for k in ground_truth.keys()}
     ph_first_met = {k:False for k in ground_truth.keys()} # without setting all keys to false, 
     # defaultdict only adds c to keys and sets true, only checks against C, doesn't ensure other keys are met
-    print(ph_first_met)
     for (t_prediction, toe) in toe_profile.items():
         criteria_eqn_dict = criteria_eqn(toe, ground_truth) # -> dict[event_names as str, bool]
         for k,v in criteria_eqn_dict.items():
@@ -74,8 +73,14 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callab
                 ph_result[k] = ground_truth[k] - t_prediction # PH = EOL - ti # ground truth is a dictionary {'EOD': 3005.2} should be ph_result[k] = g_truth[key] - t_prediction
                 ph_first_met[k] = True
                 if (ph_result.keys() == ph_first_met.keys()) and (all(v for v in ph_first_met.values())): # this doesnt check for all met, only
-                    for key, val in ph_result.items():
-                        if val <= 0: # Can't have a negative time, returned dict {'a': -1.0, 'b': -2.0, 'c': 10.0}
-                            ph_result[key] = None
-                    return ph_result
+                    # do a super break? need to return something if this is never met (test case 0)
+                    # return ph_result
+                    break
+        else: # do this to put returns and negative checks in one place?
+            continue
+        break
+    for key, val in ph_result.items():
+        if val is not None and val <= 0: # Can't have a negative time, returned dict {'a': -1.0, 'b': -2.0, 'c': 10.0}
+            ph_result[key] = None
+    return ph_result
 

@@ -407,9 +407,7 @@ class TestMetrics(unittest.TestCase):
             return result
         from prog_algs.metrics import prognostic_horizon
         # Prognostic horizon metric testing
-        # ph_metrics = prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH)
-        # self.assertDictEqual(ph_metrics, {'c':9.0})
-        # print(ph_metrics)
+        self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': None, 'b': None, 'c': None})
 
         # Loading profile
         for i in range(10):
@@ -421,8 +419,7 @@ class TestMetrics(unittest.TestCase):
                 10-i,  # Time (reverse so data is decreasing)
                 UnweightedSamples(data)  # ToE Prediction
             )
-        ph_metrics = prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH)
-        self.assertDictEqual(ph_metrics, {'c': 10.0, 'a': None, 'b': None})
+        self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'c': 10.0, 'a': None, 'b': None})
 
 # This allows the module to be executed directly    
 def run_tests():

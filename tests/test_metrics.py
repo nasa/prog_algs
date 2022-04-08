@@ -407,6 +407,7 @@ class TestMetrics(unittest.TestCase):
             return result
         from prog_algs.metrics import prognostic_horizon
         # Prognostic horizon metric testing
+        # Test 0: Empty profile (should return None for all)
         self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': None, 'b': None, 'c': None})
 
         # Loading profile
@@ -424,17 +425,15 @@ class TestMetrics(unittest.TestCase):
         # Test 2: all criteria are met at different times
         GROUND_TRUTH = {'a': 10.0, 'b': 10.0, 'c': 18.0} # Adjust ground truth to match 3 criteria
         self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': 1.0, 'b': 2.0, 'c': 10.0})
-        # Test 3: criteria not met for any
+        # Test 3: 2 criteria are met at once (at 10.0)
+        GROUND_TRUTH = {'a': 9.0, 'b': 14.0, 'c': 18.0}
+        self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': None, 'b': 10.0, 'c': 10.0})
+        # Test 4: at least one criteria is met at beginning of the prediction
+        GROUND_TRUTH = {'a': 10, 'b': 8.0, 'c': 10.0}
+        self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': 1.0, 'b': None, 'c': None})
+        # Test 5: criteria not met for any
         GROUND_TRUTH = {'a': 9.0, 'b': 8.0, 'c': 8.0}
         self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': None, 'b': None, 'c': None})
-        
-        # # Test 2: 2 criteria met
-        # GROUND_TRUTH = {'a': 9.0, 'b': 10.0, 'c': 18.0} # Adjust ground truth to match 2 criteria
-        # self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': None, 'b': 2.0, 'c': 10.0})
-        # # Test 4: 1 criteria met; met at first time step?
-        # GROUND_TRUTH = {'a': 10, 'b': 8.0, 'c': 10.0} # Adjust ground truth to match 3 criteria
-        # self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': 1.0, 'b': None, 'c': None})
-         
 
 # This allows the module to be executed directly    
 def run_tests():

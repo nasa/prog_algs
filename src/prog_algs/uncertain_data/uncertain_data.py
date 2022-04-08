@@ -139,8 +139,6 @@ class UncertainData(ABC):
             print_bool : bool = True 
                 Optional argument specifying whether to print or not; default true.
         """
-        # metric_table = Table(self.metrics(), "Metrics")
-        # metric_table.print(print_bool)
         metric_table = print_table(self.metrics(), title, False)
 
         

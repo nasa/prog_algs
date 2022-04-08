@@ -29,7 +29,7 @@ def print_table(input_dict : dict, title : str, print_flag : bool = True) -> lis
 
     break_row = "+{}+".format((len(col_name_row)-2)*'-')
     title_row = f"+{title:^{len(break_row)-2}}+"
-    result = [title_row, break_row, col_name_row, break_row, value_row, break_row]
+    result = [break_row, title_row, break_row, col_name_row, break_row, value_row, break_row]
     
     if print_flag:
         print(*result, sep = "\n")

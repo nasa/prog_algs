@@ -21,7 +21,7 @@ def print_table(input_dict : dict, title : str, print_flag : bool = True) -> lis
     value_row = "|"
     for k,v in input_dict.items():
         if isinstance(v, dict):
-            print_table(v, k)
+            print_table(v, f"{title} {k}")
         else:
             col_len = len(max(str(k), str(v))) + 2
             col_name_row += f"{str(k):^{col_len}}|"

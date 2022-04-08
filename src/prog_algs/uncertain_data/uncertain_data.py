@@ -138,6 +138,6 @@ class UncertainData(ABC):
         """
         # metric_table = Table(self.metrics(), "Metrics")
         # metric_table.print(print_bool)
-        metric_table = print_table(self.metrics(), "Metrics")
+        metric_table = print_table(self.metrics(), "Metrics", False)
 
         

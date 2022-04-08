@@ -99,7 +99,7 @@ class TestUncertainData(unittest.TestCase):
 
     def test_unweighted_samples_describe(self):
         s = UnweightedSamples([{'a': 1, 'b':2}, {'a': 3, 'b':-2}])
-        s.describe()
+        s.describe("UnweightedSamples Metrics")
 
 # This allows the module to be executed directly    
 def run_tests():

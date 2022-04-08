@@ -129,15 +129,18 @@ class UncertainData(ABC):
         samples = self.sample(num_samples)
         return plot_hist(samples, fig=fig, keys=keys, **kwargs)
 
-    def describe(self, print_bool : bool = True):
+    def describe(self, title : str, print_bool : bool = True):
         """
         Print and view basic statistical information about this UncertainData object in a text-based printed table.
 
         Args:
-            print_bool (bool, optional): Optional argument specifying whether to print or not; default true.
+            title : str
+                Title of the table, printed before data rows.
+            print_bool : bool = True 
+                Optional argument specifying whether to print or not; default true.
         """
         # metric_table = Table(self.metrics(), "Metrics")
         # metric_table.print(print_bool)
-        metric_table = print_table(self.metrics(), "Metrics", False)
+        metric_table = print_table(self.metrics(), title, False)
 
         

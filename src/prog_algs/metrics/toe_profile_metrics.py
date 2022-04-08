@@ -63,19 +63,17 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callab
     }
     params.update(kwargs)
 
-    ph_result = {k:None for k in ground_truth.keys()}
-    ph_first_met = {k:False for k in ground_truth.keys()}
+    ph_result = {k:False for k in ground_truth.keys()} # False means not yet met; will be either a numerical value or None if met
     for (t_prediction, toe) in toe_profile.items():
         criteria_eqn_dict = criteria_eqn(toe, ground_truth) # -> dict[event_names as str, bool]
         for k,v in criteria_eqn_dict.items():
-            if v and not ph_first_met[k]:
+            if v and (ph_result[k] == False):
                 ph_calc = ground_truth[k] - t_prediction
                 if ph_calc > 0:
                     ph_result[k] = ph_calc # PH = EOL - ti # ground truth is a dictionary {'EOD': 3005.2} should be ph_result[k] = g_truth[key] - t_prediction
                 else:
                     ph_result[k] = None
-                ph_first_met[k] = True
-                if (all(v for v in ph_first_met.values())):
+                if (all(v != False for v in ph_result.values())):
                     # Return PH once all criteria are met
                     return ph_result
     # Return PH when criteria not met for at least one event key

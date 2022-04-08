@@ -419,7 +419,18 @@ class TestMetrics(unittest.TestCase):
                 10-i,  # Time (reverse so data is decreasing)
                 UnweightedSamples(data)  # ToE Prediction
             )
-        self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'c': 10.0, 'a': None, 'b': None})
+        # Test 1: 1 criteria met
+        self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': None, 'b': None, 'c': 10.0})
+        # Test 2: 2 criteria met
+        GROUND_TRUTH = {'a': 9.0, 'b': 10.0, 'c': 18.0} # Adjust ground truth to match 2 criteria
+        self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': None, 'b': 2.0, 'c': 10.0})
+        # Test 3: 3 criteria met
+        GROUND_TRUTH = {'a': 10.0, 'b': 10.0, 'c': 18.0} # Adjust ground truth to match 3 criteria
+        self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': 1.0, 'b': 2.0, 'c': 10.0})
+        # Test 4: 1 criteria met; met at first time step?
+        GROUND_TRUTH = {'a': 10, 'b': 8.0, 'c': 10.0} # Adjust ground truth to match 3 criteria
+        self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': 1.0, 'b': None, 'c': None})
+         
 
 # This allows the module to be executed directly    
 def run_tests():

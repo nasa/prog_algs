@@ -77,5 +77,8 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callab
                     # Return PH once all criteria are met
                     return ph_result
     # Return PH when criteria not met for at least one event key
+    for k,v in ph_result.items():
+        if v == False:
+            ph_result[k] = None
     return ph_result
 

@@ -55,7 +55,7 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callab
             |  * ground truth (dict[str, float]): Ground truth passed into prognostics_horizon
             | Returns: Map of event names to boolean representing if the event has been met. 
             |   e.g., {'event1': True, 'event2': False}
-        ground_truth (dict): Dictionary containing ground truth; specified as key, value pairs for event and its value
+        ground_truth (dict): Dictionary containing ground truth; specified as key, value pairs for event and its value. E.g, {'event1': 47.3, 'event2': 52.1, 'event3': 46.1}
         kwargs (optional): configuration arguments. Accepted args include:
             * keys (list[string], optional): list of keys to use. If not provided, all keys are used.
 

@@ -57,7 +57,7 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callab
             |   e.g., {'event1': True, 'event2': False}
         ground_truth (dict): Dictionary containing ground truth; specified as key, value pairs for event and its value. E.g, {'event1': 47.3, 'event2': 52.1, 'event3': 46.1}
         kwargs (optional): configuration arguments. Accepted args include:
-            * keys (list[string], optional): list of keys to use. If not provided, all keys are used.
+            * print (bool): Boolean specifying whether the prognostic horizon metric should be printed.
 
     Returns:
         dict: Dictionary containing prognostic horizon calculations (value) for each event (key)

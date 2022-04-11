@@ -32,7 +32,7 @@ import matplotlib.pyplot as plt
 # Constants
 NUM_SAMPLES = 10
 TIME_STEP = 1
-PREDICTION_UPDATE_FREQ = 5 # Number of steps between prediction update
+PREDICTION_UPDATE_FREQ = 50 # Number of steps between prediction update
 PLOT = True
 
 def run_example():
@@ -106,7 +106,7 @@ def run_example():
                 # Update Plot
                 rul_x.append(t)
                 rul_y.append(m['EOD']['mean']-t)
-                ymin, ymax = rulax.get_ylim()
+                _, ymax = rulax.get_ylim()
                 if m['EOD']['mean']-t > ymax:
                     rulax.set_ylim(0, (m['EOD']['mean']-t)*1.1)
                 rul_line.set_data(rul_x, rul_y)

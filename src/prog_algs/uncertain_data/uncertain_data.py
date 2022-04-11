@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod, abstractproperty
 
-from prog_algs.utils import print_table
+from prog_algs.utils.table import print_table_recursive
 from ..visualize import plot_scatter, plot_hist
 
 
@@ -139,6 +139,6 @@ class UncertainData(ABC):
             print_bool : bool = True 
                 Optional argument specifying whether to print or not; default true.
         """
-        metric_table = print_table(self.metrics(), title, False)
+        metric_table = print_table_recursive(self.metrics(), title, False)
 
         

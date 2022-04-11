@@ -69,7 +69,7 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callab
 
     ph_result = {k:None for k in ground_truth.keys()} # False means not yet met; will be either a numerical value or None if met
     for (t_prediction, toe) in toe_profile.items():
-        criteria_eqn_dict = criteria_eqn(toe, ground_truth) # -> dict[event_names as str, bool]
+        criteria_eqn_dict = criteria_eqn(toe, ground_truth, t_prediction) # -> dict[event_names as str, bool]
         for k,v in criteria_eqn_dict.items():
             if v and (ph_result[k] == None):
                 ph_calc = ground_truth[k] - t_prediction

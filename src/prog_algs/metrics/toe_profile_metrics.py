@@ -49,7 +49,12 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callab
     PH = ToE - ti
     Args:
         toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions
-        criteria_eqn (Callable function): A function calculating whether ground truth meets some criteria for corresponding key in ToEPredictionProfile
+        criteria_eqn (Callable function): A function (toe: UncertainData, ground_truth: dict[str, float]) -> dict[str, bool] calculating whether a prediction in ToEPredictionProfile meets some criteria. \n
+            | Args: 
+            |  * toe (UncertainData): A single prediction of Time of Event (ToE)
+            |  * ground truth (dict[str, float]): Ground truth passed into prognostics_horizon
+            | Returns: Map of event names to boolean representing if the event has been met. 
+            |   e.g., {'event1': True, 'event2': False}
         ground_truth (dict): Dictionary containing ground truth; specified as key, value pairs for event and its value
         kwargs (optional): configuration arguments. Accepted args include:
             * keys (list[string], optional): list of keys to use. If not provided, all keys are used.

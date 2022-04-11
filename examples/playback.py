@@ -101,7 +101,7 @@ def run_example():
 
             # Prediction Step (every PREDICTION_UPDATE_FREQ steps)
             if (step%PREDICTION_UPDATE_FREQ == 0):
-                mc_results = mc.predict(filt.x, future_loading, n_samples=NUM_SAMPLES, dt=TIME_STEP)
+                mc_results = mc.predict(filt.x, future_loading, t0 = t, n_samples=NUM_SAMPLES, dt=TIME_STEP)
                 m = mc_results.time_of_event.metrics()
                 print('  - ToE: {} (sigma: {})'.format(m['EOD']['mean'], m['EOD']['std']))
 

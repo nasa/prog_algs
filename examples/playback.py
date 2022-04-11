@@ -113,6 +113,22 @@ def run_example():
                 rul_fig.canvas.draw()
                 profile.add_prediction(t, mc_results.time_of_event)
 
+            # Calculating Prognostic Horizon
+            def criteria_eqn(toe : ToEPredictionProfile, tte : dict, t_prediction : int):
+                """
+                Sample criteria equation for unittesting. 
+                toe: Time of Event
+                tte = Ground truth
+                t_prediction = time prediction
+                """
+                result = {}
+                for key, value in tte.items():
+                    if abs(toe.mean[key] - value) < 0.6:
+                        result[key] = True
+                    else:
+                        result[key] = False
+                return result
+
     input('Press any key to exit')
 
 # This allows the module to be executed directly 

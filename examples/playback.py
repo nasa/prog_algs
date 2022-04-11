@@ -24,7 +24,7 @@ from prog_algs.state_estimators import ParticleFilter as StateEstimator
 # from prog_algs.state_estimators import UnscentedKalmanFilter as StateEstimator
 
 from prog_algs.predictors import MonteCarlo, ToEPredictionProfile
-from prog_algs.metrics import samples as metrics
+from prog_algs.metrics import samples as metrics, prognostic_horizon
 
 import csv
 import matplotlib.pyplot as plt 
@@ -82,6 +82,11 @@ def run_example():
             filt.estimate(t, i, z) 
             eod = batt.event_state(filt.x.mean)['EOD']
             print("  - Event State: ", eod)
+
+            # Prognostic Horizon Calculation
+            # NEED: criteria_eqn, ground_truth
+            ph = prognostic_horizon(profile, )
+            print("  - Prognostic Horizon: ", ph)
 
             # Update Plot
             xdata.append(t)

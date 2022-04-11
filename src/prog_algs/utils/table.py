@@ -107,9 +107,9 @@ def print_table_iterative(input_dict : dict, title : str, print_flag : bool = Tr
         print(title)
     if print_flag:
         print(*result, sep = "\n")
-    if sub_result:
-        for t in sub_result:
-            t.print()
+    # if sub_result:
+    #     for t in sub_result:
+    #         t.print()
 
 class Table():
     """

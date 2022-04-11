@@ -33,6 +33,7 @@ import matplotlib.pyplot as plt
 NUM_SAMPLES = 10
 TIME_STEP = 1
 PREDICTION_UPDATE_FREQ = 5 # Number of steps between prediction update
+PLOT = True
 
 def run_example():
     # Setup Model
@@ -46,24 +47,25 @@ def run_example():
         return {'i': 2.35}
     mc = MonteCarlo(batt)
 
-    # Prepare SOC Plot
-    fig, ax = plt.subplots()
-    line, = ax.plot([], [])
-    ax.grid()
-    ax.set_ylim(-0.05, 1.05)
-    ax.set_xlabel('Time (s)')
-    ax.set_ylabel('SOC')
-    xdata, ydata = [], []
-    fig.show()
+    if PLOT:
+        # Prepare SOC Plot
+        fig, ax = plt.subplots()
+        line, = ax.plot([], [])
+        ax.grid()
+        ax.set_ylim(-0.05, 1.05)
+        ax.set_xlabel('Time (s)')
+        ax.set_ylabel('SOC')
+        xdata, ydata = [], []
+        fig.show()
 
-    # Prepare RUL Plot
-    rul_fig, rulax = plt.subplots()
-    rul_line, = rulax.plot([], [])
-    rulax.grid()
-    rulax.set_xlabel('Time (s)')
-    rulax.set_ylabel('RUL (s)')
-    rul_x, rul_y = [], []
-    rul_fig.show()
+        # Prepare RUL Plot
+        rul_fig, rulax = plt.subplots()
+        rul_line, = rulax.plot([], [])
+        rulax.grid()
+        rulax.set_xlabel('Time (s)')
+        rulax.set_ylabel('RUL (s)')
+        rul_x, rul_y = [], []
+        rul_fig.show()
 
     # Run Playback
     step = 0
@@ -83,21 +85,17 @@ def run_example():
             eod = batt.event_state(filt.x.mean)['EOD']
             print("  - Event State: ", eod)
 
-            # Prognostic Horizon Calculation
-            # NEED: criteria_eqn, ground_truth
-            ph = prognostic_horizon(profile, )
-            print("  - Prognostic Horizon: ", ph)
+            if PLOT:
+                # Update Plot
+                xdata.append(t)
+                ydata.append(eod)
+                xmin, xmax = ax.get_xlim()
 
-            # Update Plot
-            xdata.append(t)
-            ydata.append(eod)
-            xmin, xmax = ax.get_xlim()
-
-            if t >= xmax:
-                ax.set_xlim(xmin, 2*xmax)
-                rulax.set_xlim(xmin, 2*xmax)
-            line.set_data(xdata, ydata)
-            fig.canvas.draw()
+                if t >= xmax:
+                    ax.set_xlim(xmin, 2*xmax)
+                    rulax.set_xlim(xmin, 2*xmax)
+                line.set_data(xdata, ydata)
+                fig.canvas.draw()
 
             # Prediction Step (every PREDICTION_UPDATE_FREQ steps)
             if (step%PREDICTION_UPDATE_FREQ == 0):

@@ -36,6 +36,18 @@ def print_table_recursive(input_dict : dict, title : str, print_flag : bool = Tr
     return result
 
 def print_table_iterative(input_dict : dict, title : str, print_flag : bool = True) -> list:
+    """
+    Accepts and formats an input dictionary in a character table. Stored and printed to standard output.
+    
+    Arguments
+    ---------
+    input_dict : dict
+        A dictionary of keys and values to print out in a table. Values can be dictionaries.
+    title : str
+        Optional title to print before table.
+    print_flag : bool = True
+        An optional boolean value determining whether the generated table is printed.
+    """
     pass
 
 class Table():

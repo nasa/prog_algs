@@ -61,10 +61,10 @@ def print_table_iterative(input_dict : dict, title : str, print_flag : bool = Tr
         break_row = "+{}+".format((len(col_name_row)-2)*'-')
         res = [break_row, col_name_row, break_row, value_row, break_row]
         title = f"+{title:^{len(break_row)-2}}+"
-            
-        if title:
-            print(title)
+
         if print_flag:
+            if title:
+                print(title)
             print(*res, sep = "\n")
         return res
 
@@ -98,15 +98,15 @@ def print_table_iterative(input_dict : dict, title : str, print_flag : bool = Tr
         for k,v in input_dict[m].items():
             # check isinstance v
             if isinstance(v, dict):
-                sub_result.append(sub_print_table_iterative(v, f"{m} {k}"))
+                sub_result.append(sub_print_table_iterative(v, f"{m} {k}", False))
             # else:
             if column_lengths[k]:
                 metric_row += f"{str(v):^{column_lengths[k]}}|"
         result.extend([metric_row, break_row])
 
-    if title:
-        print(title)
     if print_flag:
+        if title:
+            print(title)
         print(*result, sep = "\n")
     if sub_result:
         for t in sub_result:

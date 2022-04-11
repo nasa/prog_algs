@@ -45,7 +45,7 @@ def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda
 
 def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callable, ground_truth : dict, **kwargs):
     """
-    Compute prognostic horizon metric, given by the difference between a time ti, when the predictions meet specified performance criteria, and the time corresponding to the end of life (EoL).
+    Compute prognostic horizon metric, defined as the difference between a time ti, when the predictions meet specified performance criteria, and the time corresponding to the true Time of Event (ToE), for each event.
     PH = EOL - ti
     Args:
         toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions

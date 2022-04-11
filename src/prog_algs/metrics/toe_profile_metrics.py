@@ -5,7 +5,6 @@ This file includes functions for calculating metrics given a time of event (ToE)
 """
 from typing import Callable
 from ..predictors import ToEPredictionProfile
-from collections import defaultdict
 
 def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda_value : float, alpha : float, beta : float, **kwargs): 
     """

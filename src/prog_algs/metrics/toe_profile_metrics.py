@@ -60,7 +60,7 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callab
             * print (bool): Boolean specifying whether the prognostic horizon metric should be printed.
 
     Returns:
-        dict: Dictionary containing prognostic horizon calculations (value) for each event (key)
+        dict: Dictionary containing prognostic horizon calculations (value) for each event (key). e.g., {'event1': 12.3, 'event2': 15.1}
     """
     params = {
         'print': False

@@ -139,6 +139,7 @@ class UncertainData(ABC):
             print_bool : bool = True 
                 Optional argument specifying whether to print or not; default true.
         """
+ 
         # recursive_metric_table = print_table_recursive(self.metrics(), title, False)
         iterative_metric_table = print_table_iterative(self.metrics(), title, True)
         

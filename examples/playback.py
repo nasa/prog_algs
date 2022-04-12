@@ -129,6 +129,13 @@ def run_example():
                         result[key] = False
                 return result
 
+            tte = {} # ground truth
+            for (t_prediction, toe) in profile.items():
+                pass
+                # print("LINE:",t_prediction, toe)
+                # tte[t_prediction] = toe - t_prediction
+            # print(tte)
+
     input('Press any key to exit')
 
 # This allows the module to be executed directly 

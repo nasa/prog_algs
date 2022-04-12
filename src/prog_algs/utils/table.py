@@ -3,7 +3,7 @@
 
 from collections import defaultdict
 
-def print_table_recursive_1(input_dict : dict, title : str, print_flag : bool = True) -> list:
+def print_table_recursive_save(input_dict : dict, title : str, print_flag : bool = True) -> list:
     """
     Prints a table where keys are column headers and values are items in a row. 
     Returns the table formatted as a list of strings.
@@ -35,8 +35,14 @@ def print_table_recursive_1(input_dict : dict, title : str, print_flag : bool = 
         print(*result, sep = "\n") # pass false to innermost tables
     return result # use list of tables??
 
+def print_table_recursive(input_dict : dict, title : str) -> list:
+    table_list = _print_table_recursive_helper([], input_dict, title)
+    print("RESULT:\n")
+    print(*table_list, sep='\n')
+    return table_list
+
 # use helper function to define column widths?
-def print_table_recursive(table_prog : list, input_dict : dict, title : str, print_flag : bool = True) -> list:
+def _print_table_recursive_helper(table_prog : list, input_dict : dict, title : str) -> list:
     """
     Prints a table where keys are column headers and values are items in a row. 
     Returns the table formatted as a list of strings.
@@ -49,8 +55,6 @@ def print_table_recursive(table_prog : list, input_dict : dict, title : str, pri
         A dictionary of keys and values to print out in a table. Values can be dictionaries.
     title : str
         Title of the table, printed before data rows.
-    print_flag : bool = True
-        An optional boolean value determining whether the generated table is printed.
     """
 
     # Consider placing this in separate helper fcn
@@ -58,22 +62,18 @@ def print_table_recursive(table_prog : list, input_dict : dict, title : str, pri
     value_row = "|"
     for k,v in input_dict.items():
         if isinstance(v, dict): # treat it as separate row
-            pass
-            # print_table_recursive(v, f"{title} {k}") # instead of print value, save to a list
+            _print_table_recursive_helper(table_prog, v, f"{title} {k}") # instead of print value, save to a list
         else:
             col_len = len(max(str(k), str(v))) + 2
             col_name_row += f"{str(k):^{col_len}}|"
             value_row += f"{str(v):^{col_len}}|"
 
-    if not table_prog:
-        break_row = "+{}+".format((len(col_name_row)-2)*'-')
-        title_row = f"+{title:^{len(break_row)-2}}+"
-        table_prog.extend([break_row, title_row, break_row, col_name_row, break_row])
-    table_prog.extend([value_row, break_row])
+    break_row = "+{}+".format((len(col_name_row)-2)*'-')
+    title_row = f"+{title:^{len(break_row)-2}}+"
+    table_prog.extend([break_row, title_row, break_row, col_name_row, break_row, value_row, break_row])
     
-    if print_flag:
-        print(*table_prog, sep = "\n") # pass false to innermost tables
-    return table_prog 
+    return table_prog # use list of tables??
+
 
 
 def print_table_iterative(input_dict : dict, title : str, print_flag : bool = True) -> list:

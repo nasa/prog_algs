@@ -35,6 +35,7 @@ def print_table_recursive_1(input_dict : dict, title : str, print_flag : bool = 
         print(*result, sep = "\n") # pass false to innermost tables
     return result # use list of tables??
 
+# use helper function to define column widths?
 def print_table_recursive(input_dict : dict, title : str, print_flag : bool = True) -> list:
     """
     Prints a table where keys are column headers and values are items in a row. 

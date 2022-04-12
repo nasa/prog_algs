@@ -35,43 +35,41 @@ def print_table_recursive_save(input_dict : dict, title : str, print_flag : bool
         print(*result, sep = "\n") # pass false to innermost tables
     return result # use list of tables??
 
-def print_table_recursive(input_dict : dict, title : str) -> list:
-    class SubTable():
-        break_row = None
-        title_row = None
-        column_row = None
-        values = []
-        def __init__(self, input_list : list):
-            """
-            input_dict : list
-                List of str representing a printable table.
-            """
-            self.break_row = input_list[0]
-            self.title_row = input_list[1]
-            self.column_row = input_list[3]
-            self.values.append(input_list[5])
-        
-        def update(self, input_list : list):
-            pass
+def print_table_recursive(input_dict : dict, title : str, print_bool : bool = True) -> defaultdict:
+    """
+    Prints a table where keys are column headers and values are items in a row. 
+    Returns the table formatted as a dictionary of tables represented by a list of str.
 
+    Arguments
+    ---------
+    input_dict : dict
+        A dictionary of keys and values to print out in a table. Values can be dictionaries.
+    title : str
+        Title of the table, printed before data rows.
+    print_flag : bool = True
+        An optional boolean value determining whether the generated table is printed.
+    """
+    row_list = _print_table_recursive_helper([], input_dict, title)[:-7]
+    sub_tables = defaultdict(list)
+    new_sub_table = []
+    for row in row_list:
+        new_sub_table.append(row)
+        if len(new_sub_table) == 7:
+            if sub_tables[len(new_sub_table[0])]:
+                sub_tables[len(new_sub_table[0])].extend([new_sub_table[5], new_sub_table[6]])
+            else:
+                sub_tables[len(new_sub_table[0])].extend(new_sub_table)
+            new_sub_table = []
 
-    table_list = _print_table_recursive_helper([], input_dict, title)[:-14]
-
-    split_tables = defaultdict(list)
-    for row_str in table_list:
-        split_tables[len(row_str)].append(row_str)
-    # print("RESULT:\n")
-    # # print(*table_list, sep='\n')
-    # print(split_tables.keys())
-
-
-    return table_list
+    if print_bool:
+        for k in sorted(sub_tables.keys(), reverse=True):
+            print(*sub_tables[k], sep='\n')
+    return sub_tables
 
 # use helper function to define column widths?
 def _print_table_recursive_helper(table_prog : list, input_dict : dict, title : str, key : str = None) -> list:
     """
-    Prints a table where keys are column headers and values are items in a row. 
-    Returns the table formatted as a list of strings.
+    Helper function to recursively build subtables as a list of str.
 
     Arguments
     ---------
@@ -81,14 +79,18 @@ def _print_table_recursive_helper(table_prog : list, input_dict : dict, title : 
         A dictionary of keys and values to print out in a table. Values can be dictionaries.
     title : str
         Title of the table, printed before data rows.
+    key : str = None
+        Key for a value row, identifying what event the values belong to.
     """
-
-    # Consider placing this in separate helper fcn
-    col_name_row = f"| {key} |" # "| key |" and then limit key to 3 letters
-    value_row = f"| {key} |"
+    col_name_row = "| key |"
+    value_row = f"| {str(key):^3} |"
     for k,v in input_dict.items():
-        if isinstance(v, dict): # treat it as separate row
-            _print_table_recursive_helper(table_prog, v, f"{title} {k}", k) # instead of print value, save to a list
+        if isinstance(v, dict):
+            if key != None:
+                to_pass = key
+            else:
+                to_pass = k
+            _print_table_recursive_helper(table_prog, v, f"{title}", to_pass)
         else:
             col_len = len(max(str(k), str(v))) + 2
             col_name_row += f"{str(k):^{col_len}}|"
@@ -98,9 +100,7 @@ def _print_table_recursive_helper(table_prog : list, input_dict : dict, title : 
     title_row = f"+{title:^{len(break_row)-2}}+"
     table_prog.extend([break_row, title_row, break_row, col_name_row, break_row, value_row, break_row])
     
-    return table_prog # use list of tables??
-
-
+    return table_prog
 
 def print_table_iterative(input_dict : dict, title : str, print_flag : bool = True) -> list:
     """

@@ -39,10 +39,12 @@ def print_table_recursive(input_dict : dict, title : str) -> list:
     table_list = _print_table_recursive_helper([], input_dict, title)
     print("RESULT:\n")
     print(*table_list, sep='\n')
+    split_tables = defaultdict(list)
+
     return table_list
 
 # use helper function to define column widths?
-def _print_table_recursive_helper(table_prog : list, input_dict : dict, title : str) -> list:
+def _print_table_recursive_helper(table_prog : list, input_dict : dict, title : str, key : str = None) -> list:
     """
     Prints a table where keys are column headers and values are items in a row. 
     Returns the table formatted as a list of strings.
@@ -58,11 +60,11 @@ def _print_table_recursive_helper(table_prog : list, input_dict : dict, title : 
     """
 
     # Consider placing this in separate helper fcn
-    col_name_row = "|"
-    value_row = "|"
+    col_name_row = f"| {key} |"
+    value_row = f"| {key} |"
     for k,v in input_dict.items():
         if isinstance(v, dict): # treat it as separate row
-            _print_table_recursive_helper(table_prog, v, f"{title} {k}") # instead of print value, save to a list
+            _print_table_recursive_helper(table_prog, v, f"{title} {k}", k) # instead of print value, save to a list
         else:
             col_len = len(max(str(k), str(v))) + 2
             col_name_row += f"{str(k):^{col_len}}|"

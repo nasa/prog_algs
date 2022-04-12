@@ -2,6 +2,16 @@
 # National Aeronautics and Space Administration.  All Rights Reserved.
 
 from collections import defaultdict
+from typing import Union
+from math import log10
+
+MAX_COLUMN_WIDTH = 5
+def set_width(input_value : Union[float, int]) -> str:
+    if input_value < (10**MAX_COLUMN_WIDTH):
+        ndigits = int(log10(input_value))+1
+        return f"{input_value:<{ndigits}.{MAX_COLUMN_WIDTH-ndigits}f}"
+    else:
+        return f"{input_value:<{MAX_COLUMN_WIDTH}g}"
 
 def print_table_recursive(input_dict : dict, title : str, print_bool : bool = True) -> defaultdict:
     """

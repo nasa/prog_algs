@@ -36,10 +36,34 @@ def print_table_recursive_save(input_dict : dict, title : str, print_flag : bool
     return result # use list of tables??
 
 def print_table_recursive(input_dict : dict, title : str) -> list:
-    table_list = _print_table_recursive_helper([], input_dict, title)
-    print("RESULT:\n")
-    print(*table_list, sep='\n')
+    class SubTable():
+        break_row = None
+        title_row = None
+        column_row = None
+        values = []
+        def __init__(self, input_list : list):
+            """
+            input_dict : list
+                List of str representing a printable table.
+            """
+            self.break_row = input_list[0]
+            self.title_row = input_list[1]
+            self.column_row = input_list[3]
+            self.values.append(input_list[5])
+        
+        def update(self, input_list : list):
+            pass
+
+
+    table_list = _print_table_recursive_helper([], input_dict, title)[:-14]
+
     split_tables = defaultdict(list)
+    for row_str in table_list:
+        split_tables[len(row_str)].append(row_str)
+    # print("RESULT:\n")
+    # # print(*table_list, sep='\n')
+    # print(split_tables.keys())
+
 
     return table_list
 
@@ -60,7 +84,7 @@ def _print_table_recursive_helper(table_prog : list, input_dict : dict, title : 
     """
 
     # Consider placing this in separate helper fcn
-    col_name_row = f"| {key} |"
+    col_name_row = f"| {key} |" # "| key |" and then limit key to 3 letters
     value_row = f"| {key} |"
     for k,v in input_dict.items():
         if isinstance(v, dict): # treat it as separate row

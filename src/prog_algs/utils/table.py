@@ -3,38 +3,6 @@
 
 from collections import defaultdict
 
-def print_table_recursive_save(input_dict : dict, title : str, print_flag : bool = True) -> list:
-    """
-    Prints a table where keys are column headers and values are items in a row. 
-    Returns the table formatted as a list of strings.
-
-    Arguments
-    ---------
-    input_dict : dict
-        A dictionary of keys and values to print out in a table. Values can be dictionaries.
-    title : str
-        Title of the table, printed before data rows.
-    print_flag : bool = True
-        An optional boolean value determining whether the generated table is printed.
-    """
-    col_name_row = "|"
-    value_row = "|"
-    for k,v in input_dict.items():
-        if isinstance(v, dict): # treat it as separate row
-            print_table_recursive(v, f"{title} {k}") # instead of print value, save to a list
-        else:
-            col_len = len(max(str(k), str(v))) + 2
-            col_name_row += f"{str(k):^{col_len}}|"
-            value_row += f"{str(v):^{col_len}}|"
-
-    break_row = "+{}+".format((len(col_name_row)-2)*'-')
-    title_row = f"+{title:^{len(break_row)-2}}+"
-    result = [break_row, title_row, break_row, col_name_row, break_row, value_row, break_row]
-    
-    if print_flag:
-        print(*result, sep = "\n") # pass false to innermost tables
-    return result # use list of tables??
-
 def print_table_recursive(input_dict : dict, title : str, print_bool : bool = True) -> defaultdict:
     """
     Prints a table where keys are column headers and values are items in a row. 
@@ -66,7 +34,6 @@ def print_table_recursive(input_dict : dict, title : str, print_bool : bool = Tr
             print(*sub_tables[k], sep='\n')
     return sub_tables
 
-# use helper function to define column widths?
 def _print_table_recursive_helper(table_prog : list, input_dict : dict, title : str, key : str = None) -> list:
     """
     Helper function to recursively build subtables as a list of str.
@@ -101,6 +68,39 @@ def _print_table_recursive_helper(table_prog : list, input_dict : dict, title : 
     table_prog.extend([break_row, title_row, break_row, col_name_row, break_row, value_row, break_row])
     
     return table_prog
+
+# Maybe toss out these approaches below?
+def print_table_recursive_save(input_dict : dict, title : str, print_flag : bool = True) -> list:
+    """
+    Prints a table where keys are column headers and values are items in a row. 
+    Returns the table formatted as a list of strings.
+
+    Arguments
+    ---------
+    input_dict : dict
+        A dictionary of keys and values to print out in a table. Values can be dictionaries.
+    title : str
+        Title of the table, printed before data rows.
+    print_flag : bool = True
+        An optional boolean value determining whether the generated table is printed.
+    """
+    col_name_row = "|"
+    value_row = "|"
+    for k,v in input_dict.items():
+        if isinstance(v, dict): # treat it as separate row
+            print_table_recursive(v, f"{title} {k}") # instead of print value, save to a list
+        else:
+            col_len = len(max(str(k), str(v))) + 2
+            col_name_row += f"{str(k):^{col_len}}|"
+            value_row += f"{str(v):^{col_len}}|"
+
+    break_row = "+{}+".format((len(col_name_row)-2)*'-')
+    title_row = f"+{title:^{len(break_row)-2}}+"
+    result = [break_row, title_row, break_row, col_name_row, break_row, value_row, break_row]
+    
+    if print_flag:
+        print(*result, sep = "\n") # pass false to innermost tables
+    return result # use list of tables??
 
 def print_table_iterative(input_dict : dict, title : str, print_flag : bool = True) -> list:
     """

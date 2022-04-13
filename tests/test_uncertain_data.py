@@ -121,6 +121,30 @@ class TestUncertainData(unittest.TestCase):
         for k in d.keys():
             self.assertEqual(d.mean[k]+5.5, added_d.mean[k])
 
+    def test_scalardata_radd_override(self):
+        data = {'a': 12, 'b': 14}
+        d = ScalarData(data)
+
+        # Testing __add__ override
+        added_d = 0 + d
+        for k in d.keys():
+            self.assertEqual(d.mean[k], added_d.mean[k])
+        added_d = 5 + d
+        for k in d.keys():
+            self.assertEqual(d.mean[k]+5, added_d.mean[k])
+        added_d = -5 + d
+        for k in d.keys():
+            self.assertEqual(d.mean[k]-5, added_d.mean[k])
+        with self.assertRaises(TypeError):
+            # Test adding invalid type
+            added_d = [] + d
+            added_d = {} + d
+            added_d = "test" + d
+        # Also works with floats
+        added_d = 5.5 + d
+        for k in d.keys():
+            self.assertEqual(d.mean[k]+5.5, added_d.mean[k])
+
 
 # This allows the module to be executed directly    
 def run_tests():

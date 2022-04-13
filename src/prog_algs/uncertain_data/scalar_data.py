@@ -24,6 +24,11 @@ class ScalarData(UncertainData):
             new_state[k] = v + other
         return ScalarData(new_state)
 
+    def __radd__(self, other : int) -> "UncertainData":
+        if other == 0:
+            return self
+        return self.__add__(other)
+
     @property
     def median(self) -> array:
         return self.mean

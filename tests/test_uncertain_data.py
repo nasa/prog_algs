@@ -375,6 +375,11 @@ class TestUncertainData(unittest.TestCase):
         mod_d = dist + 5.5
         self.assertEqual(mod_d.mean, {'a': 7.5, 'b': 15.5})
 
+        # Ensure covariance has not changed
+        from numpy.testing import assert_array_equal
+        mod_d = dist + 5
+        assert_array_equal(mod_d.cov, dist.cov)
+
     def test_MultivariateNormalDist_radd_override(self):
         dist = MultivariateNormalDist(['a', 'b'], array([2, 10]), array([[1, 0], [0, 1]]))
         
@@ -393,8 +398,15 @@ class TestUncertainData(unittest.TestCase):
         mod_d = 5.5 + dist
         self.assertEqual(mod_d.mean, {'a': 7.5, 'b': 15.5})
 
+        # Ensure covariance has not changed
+        from numpy.testing import assert_array_equal
+        mod_d = 5 + dist
+        assert_array_equal(mod_d.cov, dist.cov)
+
     def test_MultivariateNormalDist_iadd_override(self):
         dist = MultivariateNormalDist(['a', 'b'], array([2, 10]), array([[1, 0], [0, 1]]))
+        from numpy import copy
+        dist_save = copy(dist.cov)
         
         dist += 0
         self.assertEqual(dist.mean, {'a': 2, 'b': 10})
@@ -410,6 +422,11 @@ class TestUncertainData(unittest.TestCase):
         # Also works with floats
         dist += 5.5
         self.assertEqual(dist.mean, {'a': 7.5, 'b': 15.5})
+
+        # Ensure covariance has not changed
+        from numpy.testing import assert_array_equal
+        dist += 5
+        assert_array_equal(dist.cov, dist_save)
 
     def test_MultivariateNormalDist_sub_override(self):
         dist = MultivariateNormalDist(['a', 'b'], array([2, 10]), array([[1, 0], [0, 1]]))
@@ -429,6 +446,11 @@ class TestUncertainData(unittest.TestCase):
         mod_d = dist - 5.5
         self.assertEqual(mod_d.mean, {'a': -3.5, 'b': 4.5})
 
+        # Ensure covariance has not changed
+        from numpy.testing import assert_array_equal
+        mod_d = dist - 5
+        assert_array_equal(mod_d.cov, dist.cov)
+
     def test_MultivariateNormalDist_rsub_override(self):
         dist = MultivariateNormalDist(['a', 'b'], array([2, 10]), array([[1, 0], [0, 1]]))
         
@@ -447,8 +469,15 @@ class TestUncertainData(unittest.TestCase):
         mod_d = 5.5 - dist
         self.assertEqual(mod_d.mean, {'a': -3.5, 'b': 4.5})
 
+        # Ensure covariance has not changed
+        from numpy.testing import assert_array_equal
+        mod_d = 5 - dist
+        assert_array_equal(mod_d.cov, dist.cov)
+
     def test_MultivariateNormalDist_isub_override(self):
         dist = MultivariateNormalDist(['a', 'b'], array([2, 10]), array([[1, 0], [0, 1]]))
+        from numpy import copy
+        dist_save = copy(dist.cov)
         
         dist -= 0
         self.assertEqual(dist.mean, {'a': 2, 'b': 10})
@@ -464,6 +493,11 @@ class TestUncertainData(unittest.TestCase):
         # Also works with floats
         dist -= 5.5
         self.assertEqual(dist.mean, {'a': -3.5, 'b': 4.5})
+
+        # Ensure covariance has not changed
+        from numpy.testing import assert_array_equal
+        dist -= 5
+        assert_array_equal(dist.cov, dist_save)
 
 # This allows the module to be executed directly    
 def run_tests():

@@ -1,6 +1,7 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
 from abc import ABC, abstractmethod, abstractproperty
+from collections import defaultdict
 
 from prog_algs.utils.table import print_table_recursive
 from ..visualize import plot_scatter, plot_hist
@@ -129,7 +130,7 @@ class UncertainData(ABC):
         samples = self.sample(num_samples)
         return plot_hist(samples, fig=fig, keys=keys, **kwargs)
 
-    def describe(self, title : str, print : bool = True) -> list:
+    def describe(self, title : str = "UncertainData Metrics", print : bool = True) -> defaultdict:
         """
         Print and view basic statistical information about this UncertainData object in a text-based printed table.
 
@@ -138,6 +139,10 @@ class UncertainData(ABC):
                 Title of the table, printed before data rows.
             print_bool : bool = True 
                 Optional argument specifying whether to print or not; default true.
+
+        Returns:
+            defaultdict
+                Dictionary of lists used to print metrics.
         """
         recursive_metrics_table = print_table_recursive(self.metrics(), title, print)
         return recursive_metrics_table

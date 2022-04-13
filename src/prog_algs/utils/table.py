@@ -87,7 +87,7 @@ def _print_table_recursive_helper(table_prog : list, input_dict : dict, title : 
                 value_row += f"{str(v):^{col_len}}|"
 
     break_row = "+{}+".format((len(col_name_row)-2)*'-')
-    title_row = f"+{title:^{len(break_row)-2}}+"
+    title_row = f"+{title:^{len(break_row)-2}}+".title()
     table_prog.extend([break_row, title_row, break_row, col_name_row, break_row, value_row, break_row])
     
     return table_prog

@@ -28,16 +28,13 @@ class MultivariateNormalDist(UncertainData):
         return MultivariateNormalDist(self.__labels, array([i+other for i in self.__mean]), self.__covar)
 
     def __radd__(self, other : int) -> "UncertainData":
-        if other == 0:
-            return self
         return self.__add__(other)
 
     def __iadd__(self, other : int) -> "UncertainData":
         if not isinstance(other, (int, float)):
             raise TypeError(f" unsupported operand type(s) for +: '{type(other)}' and '{type(self.__mean[0])}'")
-        if other == 0:
-            return self
-        self.__mean = array([i+other for i in self.__mean])
+        if other != 0:
+            self.__mean = array([i+other for i in self.__mean])
         return self
 
     def __sub__(self, other : int) -> "UncertainData":

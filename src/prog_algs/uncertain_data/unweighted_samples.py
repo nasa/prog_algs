@@ -55,6 +55,30 @@ class UnweightedSamples(UncertainData, UserList):
                 self.data[i][k] += other
         return self
 
+    def __sub__(self, other : int) -> "UncertainData":
+        if other == 0:
+            return self
+        result = []
+        for i in range(len(self.data)):
+            new_dict = {}
+            for k,v in self.data[i].items():
+                new_dict[k] = v - other
+            result.append(new_dict)
+        return UnweightedSamples(result)
+
+    def __rsub__(self, other : int) -> "UncertainData":
+        if other == 0:
+            return self
+        return self.__sub__(other)
+
+    def __isub__(self, other : int) -> "UncertainData":
+        if other == 0:
+            return self
+        for i in range(len(self.data)):
+            for k,v in self.data[i].items():
+                self.data[i][k] -= other
+        return self
+
     def sample(self, num_samples : int = 1, replace = True) -> "UnweightedSamples":
         # Completely random resample
         indices = random.choice(len(self.data), num_samples, replace = replace)

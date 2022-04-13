@@ -300,6 +300,25 @@ class TestUncertainData(unittest.TestCase):
         s += 5.5
         self.assertEqual(s.data, [{'a': 6.5, 'b': 7.5}, {'a': 8.5, 'b': 3.5}])
 
+    def test_unweightedsamples_sub_override(self):
+        s = UnweightedSamples([{'a': 1, 'b':2}, {'a': 3, 'b':-2}])
+
+        # Testing __add__ override
+        mod_d = s - 0
+        self.assertEqual(mod_d.data, [{'a': 1, 'b':2}, {'a': 3, 'b':-2}])
+        mod_d = s - -5
+        self.assertEqual(mod_d.data, [{'a': 6, 'b':7}, {'a': 8, 'b':3}])
+        mod_d = s - 5
+        self.assertEqual(mod_d.data, [{'a': -4, 'b':-3}, {'a': -2, 'b':-7}])
+        with self.assertRaises(TypeError):
+            # Test adding invalid type
+            mod_d = s + []
+            mod_d = s + {}
+            mod_d = s + "test"
+        # Also works with floats
+        mod_d = s - 5.5
+        self.assertEqual(mod_d.data, [{'a': -4.5, 'b': -3.5}, {'a': -2.5, 'b': -7.5}])
+
 # This allows the module to be executed directly    
 def run_tests():
     l = unittest.TestLoader()

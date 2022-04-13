@@ -137,7 +137,7 @@ class UncertainData(ABC):
         Args:
             title : str
                 Title of the table, printed before data rows.
-            print_bool : bool = True 
+            print : bool = True 
                 Optional argument specifying whether to print or not; default true.
 
         Returns:

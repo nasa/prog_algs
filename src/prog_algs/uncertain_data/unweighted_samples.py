@@ -43,16 +43,13 @@ class UnweightedSamples(UncertainData, UserList):
         return UnweightedSamples(result)
 
     def __radd__(self, other : int) -> "UncertainData":
-        if other == 0:
-            return self
         return self.__add__(other)
 
     def __iadd__(self, other : int) -> "UncertainData":
-        if other == 0:
-            return self
-        for i in range(len(self.data)):
-            for k,v in self.data[i].items():
-                self.data[i][k] += other
+        if other != 0:
+            for i in range(len(self.data)):
+                for k,v in self.data[i].items():
+                    self.data[i][k] += other
         return self
 
     def __sub__(self, other : int) -> "UncertainData":
@@ -67,16 +64,13 @@ class UnweightedSamples(UncertainData, UserList):
         return UnweightedSamples(result)
 
     def __rsub__(self, other : int) -> "UncertainData":
-        if other == 0:
-            return self
         return self.__sub__(other)
 
     def __isub__(self, other : int) -> "UncertainData":
         if other == 0:
-            return self
-        for i in range(len(self.data)):
-            for k,v in self.data[i].items():
-                self.data[i][k] -= other
+            for i in range(len(self.data)):
+                for k,v in self.data[i].items():
+                    self.data[i][k] -= other
         return self
 
     def sample(self, num_samples : int = 1, replace = True) -> "UnweightedSamples":

@@ -3,15 +3,21 @@
 
 from collections import defaultdict
 from typing import Union
-from math import log10
+from math import log10, ceil
 
 MAX_COLUMN_WIDTH = 5
 def set_width(input_value : Union[float, int]) -> str:
     if input_value < (10**MAX_COLUMN_WIDTH):
-        ndigits = int(log10(input_value))+1
+        ndigits = ceil(log10(input_value))+1
         return f"{input_value:<{ndigits}.{MAX_COLUMN_WIDTH-ndigits}f}"
     else:
-        return f"{input_value:<{MAX_COLUMN_WIDTH}g}"
+        scientific_input = f"{input_value:e}"
+        split_e = scientific_input.split("e+")
+        num_space = MAX_COLUMN_WIDTH - len(str(split_e[1])) - 2
+        split_e[0] = str(split_e[0])[:num_space]
+        return f"{split_e[0]}e+{split_e[1]}"
+    # what happens if we have 9.999999e+100 but are limited to 5?
+    # the exponent itself will occupy 5
 
 def print_table_recursive(input_dict : dict, title : str, print_bool : bool = True) -> defaultdict:
     """

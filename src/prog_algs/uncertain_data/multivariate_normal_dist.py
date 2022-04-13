@@ -22,6 +22,9 @@ class MultivariateNormalDist(UncertainData):
     def __eq__(self, other : "MultivariateNormalDist") -> bool:
         return self.keys() == other.keys() and self.mean == other.mean and (self.cov == other.cov).all()
 
+    def __add__(self, other : int) -> "UncertainData":
+        return MultivariateNormalDist(self.__labels, array([i+other for i in self.__mean]), self.__covar)
+
     def sample(self, num_samples : int = 1) -> UnweightedSamples:
         if len(self.__mean) != len(self.__labels):
             raise Exception("labels must be provided for each value")

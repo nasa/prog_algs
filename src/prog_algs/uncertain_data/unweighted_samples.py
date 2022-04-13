@@ -67,7 +67,7 @@ class UnweightedSamples(UncertainData, UserList):
         return self.__sub__(other)
 
     def __isub__(self, other : int) -> "UncertainData":
-        if other == 0:
+        if other != 0:
             for i in range(len(self.data)):
                 for k,v in self.data[i].items():
                     self.data[i][k] -= other

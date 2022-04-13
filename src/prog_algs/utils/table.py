@@ -3,9 +3,9 @@
 
 from collections import defaultdict
 from typing import Union
-from math import log10, ceil
+from math import log10
 
-MAX_COLUMN_WIDTH = 5
+MAX_COLUMN_WIDTH = 5 # numerical value will actually be min MAX_COLUMN_WIDTH-2 due to allocating spaces
 
 def print_table_recursive(input_dict : dict, title : str, print_bool : bool = True) -> defaultdict:
     """
@@ -83,13 +83,12 @@ def _print_table_recursive_helper(table_prog : list, input_dict : dict, title : 
                 to_pass = k
             _print_table_recursive_helper(table_prog, v, f"{title}", to_pass)
         else:
+            col_len = len(max(str(k), str(v))) + 2
+            col_name_row += f"{str(k):^{col_len}}|"
             if isinstance(v, (int, float)):
-                col_len = max(len(str(k)), MAX_COLUMN_WIDTH) + 2
-                col_name_row += f"{str(k):^{col_len}}|"
-                value_row += _set_width(col_len, v) + '|'
+                adj_width = _set_width(MAX_COLUMN_WIDTH-2, v)
+                value_row += f"{adj_width:^{col_len}}|"
             else:
-                col_len = len(max(str(k), str(v))) + 2
-                col_name_row += f"{str(k):^{col_len}}|"
                 value_row += f"{str(v):^{col_len}}|"
 
     break_row = "+{}+".format((len(col_name_row)-2)*'-')

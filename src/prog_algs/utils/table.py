@@ -79,9 +79,10 @@ def _print_table_recursive_helper(table_prog : list, input_dict : dict, title : 
         if isinstance(v, dict):
             if key != None:
                 to_pass = key
+                _print_table_recursive_helper(table_prog, v, f"{title} {k}", to_pass)
             else:
                 to_pass = k
-            _print_table_recursive_helper(table_prog, v, f"{title}", to_pass)
+                _print_table_recursive_helper(table_prog, v, f"{title}", to_pass)
         else:
             col_len = len(max(str(k), str(v))) + 2
             col_name_row += f"{str(k):^{col_len}}|"

@@ -375,6 +375,24 @@ class TestUncertainData(unittest.TestCase):
         mod_d = dist + 5.5
         self.assertEqual(mod_d.mean, {'a': 7.5, 'b': 15.5})
 
+    def test_MultivariateNormalDist_radd_override(self):
+        dist = MultivariateNormalDist(['a', 'b'], array([2, 10]), array([[1, 0], [0, 1]]))
+        
+        mod_d = 0 + dist
+        self.assertEqual(mod_d.mean, {'a': 2, 'b': 10})
+        mod_d = 5 + dist
+        self.assertEqual(mod_d.mean, {'a': 7, 'b': 15})
+        mod_d = -5 + dist
+        self.assertEqual(mod_d.mean, {'a': -3, 'b': 5})
+        with self.assertRaises(TypeError):
+            # Test adding invalid type
+            mod_d = [] + dist
+            mod_d = {} + dist
+            mod_d = "test" + dist
+        # Also works with floats
+        mod_d = 5.5 + dist
+        self.assertEqual(mod_d.mean, {'a': 7.5, 'b': 15.5})
+
 # This allows the module to be executed directly    
 def run_tests():
     l = unittest.TestLoader()

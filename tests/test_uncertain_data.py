@@ -97,29 +97,29 @@ class TestUncertainData(unittest.TestCase):
         pickle_converted_result = pickle.load(open('data_test.pkl', 'rb'))
         self.assertEqual(dist, pickle_converted_result)
 
-    def test_scalardata_add_override(self):
+    def test_scalardata_sub_override(self):
         data = {'a': 12, 'b': 14}
         d = ScalarData(data)
 
         # Testing __add__ override
-        added_d = d + 0
+        added_d = d - 0
         for k in d.keys():
             self.assertEqual(d.mean[k], added_d.mean[k])
-        added_d = d + 5
-        for k in d.keys():
-            self.assertEqual(d.mean[k]+5, added_d.mean[k])
-        added_d = d + -5
+        added_d = d - 5
         for k in d.keys():
             self.assertEqual(d.mean[k]-5, added_d.mean[k])
+        added_d = d - -5
+        for k in d.keys():
+            self.assertEqual(d.mean[k]+5, added_d.mean[k])
         with self.assertRaises(TypeError):
             # Test adding invalid type
-            added_d = d + []
-            added_d = d + {}
-            added_d = d + "test"
+            added_d = d - []
+            added_d = d - {}
+            added_d = d - "test"
         # Also works with floats
-        added_d = d + 5.5
+        added_d = d - 5.5
         for k in d.keys():
-            self.assertEqual(d.mean[k]+5.5, added_d.mean[k])
+            self.assertEqual(d.mean[k]-5.5, added_d.mean[k])
 
     def test_scalardata_radd_override(self):
         data = {'a': 12, 'b': 14}

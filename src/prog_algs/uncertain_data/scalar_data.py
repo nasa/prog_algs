@@ -30,6 +30,8 @@ class ScalarData(UncertainData):
         return self.__add__(other)
 
     def __iadd__(self, other : int) -> "UncertainData":
+        if other == 0:
+            return self
         for k in self.__state.keys():
             self.__state[k] += other
         return self

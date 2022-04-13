@@ -47,6 +47,14 @@ class UnweightedSamples(UncertainData, UserList):
             return self
         return self.__add__(other)
 
+    def __iadd__(self, other : int) -> "UncertainData":
+        if other == 0:
+            return self
+        for i in range(len(self.data)):
+            for k,v in self.data[i].items():
+                self.data[i][k] += other
+        return self
+
     def sample(self, num_samples : int = 1, replace = True) -> "UnweightedSamples":
         # Completely random resample
         indices = random.choice(len(self.data), num_samples, replace = replace)

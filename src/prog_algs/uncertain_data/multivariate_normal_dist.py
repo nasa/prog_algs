@@ -23,6 +23,8 @@ class MultivariateNormalDist(UncertainData):
         return self.keys() == other.keys() and self.mean == other.mean and (self.cov == other.cov).all()
 
     def __add__(self, other : int) -> "UncertainData":
+        if other == 0:
+            return self
         return MultivariateNormalDist(self.__labels, array([i+other for i in self.__mean]), self.__covar)
 
     def sample(self, num_samples : int = 1) -> UnweightedSamples:

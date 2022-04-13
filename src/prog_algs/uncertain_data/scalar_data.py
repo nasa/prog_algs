@@ -18,6 +18,38 @@ class ScalarData(UncertainData):
     def __eq__(self, other : "ScalarData") -> bool:
         return isinstance(other, ScalarData) and other.mean == self.__state
 
+    def __add__(self, other : int) -> "UncertainData":
+        if other == 0:
+            return self
+        new_state = dict()
+        for k,v in self.__state.items():
+            new_state[k] = v + other
+        return ScalarData(new_state)
+
+    def __radd__(self, other : int) -> "UncertainData":
+        return self.__add__(other)
+
+    def __iadd__(self, other : int) -> "UncertainData":
+        if other != 0:
+            for k in self.__state.keys():
+                self.__state[k] += other
+        return self
+
+    def __sub__(self, other : int) -> "UncertainData":
+        new_state = dict()
+        for k,v in self.__state.items():
+            new_state[k] = v - other
+        return ScalarData(new_state)
+
+    def __rsub__(self, other : int) -> "UncertainData":
+        return self.__sub__(other)
+
+    def __isub__(self, other : int) -> "UncertainData":
+        if other != 0:
+            for k in self.__state.keys():
+                self.__state[k] -= other
+        return self
+
     @property
     def median(self) -> array:
         return self.mean

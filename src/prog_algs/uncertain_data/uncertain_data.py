@@ -128,3 +128,14 @@ class UncertainData(ABC):
             keys = self.keys()
         samples = self.sample(num_samples)
         return plot_hist(samples, fig=fig, keys=keys, **kwargs)
+
+    # Overriding operators
+    @abstractmethod
+    def __add__(self, other : int) -> "UncertainData":
+        """Overriding __add__ (+ operator) for UncertainData. 
+
+        Args:
+            other (int): Integer value to be applied to class where appropriate.
+        """
+
+    

@@ -97,6 +97,10 @@ class TestUncertainData(unittest.TestCase):
         pickle_converted_result = pickle.load(open('data_test.pkl', 'rb'))
         self.assertEqual(dist, pickle_converted_result)
 
+    def test_unweighted_samples_describe(self):
+        s = UnweightedSamples([{'a': 1, 'b':2}, {'a': 3, 'b':-2}])
+        table_list = s.describe()
+
     def test_scalardata_add_override(self):
         data = {'a': 12, 'b': 14}
         d = ScalarData(data)

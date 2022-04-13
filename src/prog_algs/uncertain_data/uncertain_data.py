@@ -1,9 +1,11 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
 from abc import ABC, abstractmethod, abstractproperty
+from collections import defaultdict
 from matplotlib.figure import Figure
-
 from numpy import array
+
+from ..utils.table import print_table_recursive
 from ..visualize import plot_scatter, plot_hist
 
 
@@ -116,8 +118,9 @@ class UncertainData(ABC):
         samples = self.sample(num_samples)
         return plot_scatter(samples, fig=fig, keys=keys, **kwargs)
 
-    def plot_hist(self, fig : Figure = None, keys : list = None, num_samples : int = 100, **kwargs) -> Figure:
-        """Create a histogram
+    def plot_hist(self, fig = None, keys = None, num_samples = 100, **kwargs):
+        """
+        Create a histogram
 
         Args:
             fig (MatPlotLib Figure, optional): Existing histogram figure to be overritten. Defaults to create new figure.
@@ -128,6 +131,23 @@ class UncertainData(ABC):
             keys = self.keys()
         samples = self.sample(num_samples)
         return plot_hist(samples, fig=fig, keys=keys, **kwargs)
+
+    def describe(self, title : str = "UncertainData Metrics", print : bool = True) -> defaultdict:
+        """
+        Print and view basic statistical information about this UncertainData object in a text-based printed table.
+
+        Args:
+            title : str
+                Title of the table, printed before data rows.
+            print : bool = True 
+                Optional argument specifying whether to print or not; default true.
+
+        Returns:
+            defaultdict
+                Dictionary of lists used to print metrics.
+        """
+        recursive_metrics_table = print_table_recursive(self.metrics(), title, print)
+        return recursive_metrics_table
 
     @abstractmethod
     def __add__(self, other : int) -> "UncertainData":
@@ -176,4 +196,3 @@ class UncertainData(ABC):
         Args:
             other (int): Integer value to be applied to class where appropriate.
         """
-

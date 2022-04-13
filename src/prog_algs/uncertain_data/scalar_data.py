@@ -18,6 +18,12 @@ class ScalarData(UncertainData):
     def __eq__(self, other : "ScalarData") -> bool:
         return isinstance(other, ScalarData) and other.mean == self.__state
 
+    def __add__(self, other : int) -> "UncertainData":
+        new_state = dict()
+        for k,v in self.__state.items():
+            new_state[k] = v + other
+        return ScalarData(new_state)
+
     @property
     def median(self) -> array:
         return self.mean

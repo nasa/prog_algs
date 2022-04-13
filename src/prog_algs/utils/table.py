@@ -3,7 +3,6 @@
 
 from collections import defaultdict
 from typing import Union
-from math import log10
 
 MAX_COLUMN_WIDTH = 5 # numerical value will actually be min MAX_COLUMN_WIDTH-2 due to allocating spaces
 

@@ -19,21 +19,20 @@ class ScalarData(UncertainData):
         return isinstance(other, ScalarData) and other.mean == self.__state
 
     def __add__(self, other : int) -> "UncertainData":
+        if other == 0:
+            return self
         new_state = dict()
         for k,v in self.__state.items():
             new_state[k] = v + other
         return ScalarData(new_state)
 
     def __radd__(self, other : int) -> "UncertainData":
-        if other == 0:
-            return self
         return self.__add__(other)
 
     def __iadd__(self, other : int) -> "UncertainData":
-        if other == 0:
-            return self
-        for k in self.__state.keys():
-            self.__state[k] += other
+        if other != 0:
+            for k in self.__state.keys():
+                self.__state[k] += other
         return self
 
     def __sub__(self, other : int) -> "UncertainData":

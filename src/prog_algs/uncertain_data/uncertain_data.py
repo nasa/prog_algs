@@ -129,7 +129,7 @@ class UncertainData(ABC):
         samples = self.sample(num_samples)
         return plot_hist(samples, fig=fig, keys=keys, **kwargs)
 
-    def describe(self, title : str, print_bool : bool = True) -> list:
+    def describe(self, title : str, print : bool = True) -> list:
         """
         Print and view basic statistical information about this UncertainData object in a text-based printed table.
 
@@ -139,5 +139,5 @@ class UncertainData(ABC):
             print_bool : bool = True 
                 Optional argument specifying whether to print or not; default true.
         """
-        recursive_metrics_table = print_table_recursive(self.metrics(), title)
+        recursive_metrics_table = print_table_recursive(self.metrics(), title, print)
         return recursive_metrics_table

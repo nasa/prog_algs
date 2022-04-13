@@ -97,60 +97,60 @@ class TestUncertainData(unittest.TestCase):
         pickle_converted_result = pickle.load(open('data_test.pkl', 'rb'))
         self.assertEqual(dist, pickle_converted_result)
 
-    def test_scalardata_sub_override(self):
+    def test_scalardata_add_override(self):
         data = {'a': 12, 'b': 14}
         d = ScalarData(data)
 
         # Testing __add__ override
-        added_d = d - 0
+        mod_d = d + 0
         for k in d.keys():
-            self.assertEqual(d.mean[k], added_d.mean[k])
-        added_d = d - 5
+            self.assertEqual(d.mean[k], mod_d.mean[k])
+        mod_d = d + 5
         for k in d.keys():
-            self.assertEqual(d.mean[k]-5, added_d.mean[k])
-        added_d = d - -5
+            self.assertEqual(d.mean[k]+5, mod_d.mean[k])
+        mod_d = d + -5
         for k in d.keys():
-            self.assertEqual(d.mean[k]+5, added_d.mean[k])
+            self.assertEqual(d.mean[k]-5, mod_d.mean[k])
         with self.assertRaises(TypeError):
             # Test adding invalid type
-            added_d = d - []
-            added_d = d - {}
-            added_d = d - "test"
+            mod_d = d + []
+            mod_d = d + {}
+            mod_d = d + "test"
         # Also works with floats
-        added_d = d - 5.5
+        mod_d = d + 5.5
         for k in d.keys():
-            self.assertEqual(d.mean[k]-5.5, added_d.mean[k])
+            self.assertEqual(d.mean[k]+5.5, mod_d.mean[k])
 
-    def test_scalardata_rsub_override(self):
+    def test_scalardata_radd_override(self):
         data = {'a': 12, 'b': 14}
         d = ScalarData(data)
 
-        # Testing __add__ override
-        added_d = 0 - d
+        # Testing __radd__ override
+        mod_d = 0 + d
         for k in d.keys():
-            self.assertEqual(d.mean[k], added_d.mean[k])
-        added_d = 5 - d
+            self.assertEqual(d.mean[k], mod_d.mean[k])
+        mod_d = 5 + d
         for k in d.keys():
-            self.assertEqual(d.mean[k]-5, added_d.mean[k])
-        added_d = -5 - d
+            self.assertEqual(d.mean[k]+5, mod_d.mean[k])
+        mod_d = -5 + d
         for k in d.keys():
-            self.assertEqual(d.mean[k]+5, added_d.mean[k])
+            self.assertEqual(d.mean[k]-5, mod_d.mean[k])
         with self.assertRaises(TypeError):
             # Test adding invalid type
-            added_d = [] - d
-            added_d = {} - d
-            added_d = "test" - d
+            mod_d = [] + d
+            mod_d = {} + d
+            mod_d = "test" + d
         # Also works with floats
-        added_d = 5.5 - d
+        mod_d = 5.5 + d
         for k in d.keys():
-            self.assertEqual(d.mean[k]-5.5, added_d.mean[k])
+            self.assertEqual(d.mean[k]+5.5, mod_d.mean[k])
 
     def test_scalardata_iadd_override(self):
         data = {'a': 12, 'b': 14}
         data_copy = {'a': 12, 'b': 14}
         d = ScalarData(data)
 
-        # Testing __add__ override
+        # Testing __iadd__ override
         d += 0
         for k in d.keys():
             self.assertEqual(d.mean[k], data_copy[k])
@@ -162,13 +162,86 @@ class TestUncertainData(unittest.TestCase):
             self.assertEqual(d.mean[k], data_copy[k])
         with self.assertRaises(TypeError):
             # Test adding invalid type
-            added_d = d + []
-            added_d = d + {}
-            added_d = d + "test"
+            d += []
+            d += {}
+            d += "test"
         # Also works with floats
         d += 5.5
         for k in d.keys():
             self.assertEqual(d.mean[k], data_copy[k] + 5.5)
+
+    def test_scalardata_sub_override(self):
+        data = {'a': 12, 'b': 14}
+        d = ScalarData(data)
+
+        # Testing __sub__ override
+        mod_d = d - 0
+        for k in d.keys():
+            self.assertEqual(d.mean[k], mod_d.mean[k])
+        mod_d = d - 5
+        for k in d.keys():
+            self.assertEqual(d.mean[k]-5, mod_d.mean[k])
+        mod_d = d - -5
+        for k in d.keys():
+            self.assertEqual(d.mean[k]+5, mod_d.mean[k])
+        with self.assertRaises(TypeError):
+            # Test adding invalid type
+            mod_d = d - []
+            mod_d = d - {}
+            mod_d = d - "test"
+        # Also works with floats
+        mod_d = d - 5.5
+        for k in d.keys():
+            self.assertEqual(d.mean[k]-5.5, mod_d.mean[k])
+
+    def test_scalardata_rsub_override(self):
+        data = {'a': 12, 'b': 14}
+        d = ScalarData(data)
+
+        # Testing __rsub__ override
+        mod_d = 0 - d
+        for k in d.keys():
+            self.assertEqual(d.mean[k], mod_d.mean[k])
+        mod_d = 5 - d
+        for k in d.keys():
+            self.assertEqual(d.mean[k]-5, mod_d.mean[k])
+        mod_d = -5 - d
+        for k in d.keys():
+            self.assertEqual(d.mean[k]+5, mod_d.mean[k])
+        with self.assertRaises(TypeError):
+            # Test adding invalid type
+            mod_d = [] - d
+            mod_d = {} - d
+            mod_d = "test" - d
+        # Also works with floats
+        mod_d = 5.5 - d
+        for k in d.keys():
+            self.assertEqual(d.mean[k]-5.5, mod_d.mean[k])
+
+    def test_scalardata_isub_override(self):
+        data = {'a': 12, 'b': 14}
+        data_copy = {'a': 12, 'b': 14}
+        d = ScalarData(data)
+
+        # Testing __isub__ override
+        d -= 0
+        for k in d.keys():
+            self.assertEqual(d.mean[k], data_copy[k])
+        d -= 5
+        for k in d.keys():
+            self.assertEqual(d.mean[k], data_copy[k]-5)
+        d -= -5
+        for k in d.keys():
+            self.assertEqual(d.mean[k], data_copy[k])
+        with self.assertRaises(TypeError):
+            # Test adding invalid type
+            d -= []
+            d -= {}
+            d -= "test"
+        # Also works with floats
+        d -= 5.5
+        for k in d.keys():
+            self.assertEqual(d.mean[k], data_copy[k] - 5.5)
 
 
 # This allows the module to be executed directly    

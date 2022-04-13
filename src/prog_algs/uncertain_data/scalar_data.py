@@ -42,13 +42,12 @@ class ScalarData(UncertainData):
         return ScalarData(new_state)
 
     def __rsub__(self, other : int) -> "UncertainData":
-        if other == 0:
-            return self
         return self.__sub__(other)
 
     def __isub__(self, other : int) -> "UncertainData":
-        for k in self.__state.keys():
-            self.__state[k] -= other
+        if other != 0:
+            for k in self.__state.keys():
+                self.__state[k] -= other
         return self
 
     @property

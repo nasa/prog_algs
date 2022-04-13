@@ -1,6 +1,7 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from copy import deepcopy
+from typing import Callable
 import numpy as np
 from filterpy import kalman
 from prog_models import LinearModel
@@ -36,7 +37,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         'dt': 1
     } 
 
-    def __init__(self, model, x0, measurement_eqn = None, **kwargs):
+    def __init__(self, model, x0, measurement_eqn : Callable = None, **kwargs):
         # Note: Measurement equation kept in constructor to keep it consistent with other state estimators. This way measurement equation can be provided as an ordered argument, and will just be ignored here
         if not isinstance(model, LinearModel):
             raise Exception('Kalman Filter only supports Linear Models (i.e., models derived from prog_models.LinearModel)')
@@ -73,7 +74,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         self.filter.F = F
         self.filter.B = B
 
-    def estimate(self, t, u, z):
+    def estimate(self, t : float, u, z):
         """
         Perform one state estimation step (i.e., update the state estimate)
 
@@ -127,7 +128,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         self.filter.update(outputs, H=self.model.C)
     
     @property
-    def x(self):
+    def x(self) -> MultivariateNormalDist:
         """
         Getter for property 'x', the current estimated state. 
 

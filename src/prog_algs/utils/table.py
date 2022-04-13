@@ -6,18 +6,6 @@ from typing import Union
 from math import log10, ceil
 
 MAX_COLUMN_WIDTH = 5
-def set_width(max_width : int, input_value : Union[float, int]) -> str:
-    if input_value < (10**max_width):
-        ndigits = ceil(log10(input_value))+1
-        return f"{input_value:<{ndigits}.{max_width-ndigits}f}"
-    else:
-        scientific_input = f"{input_value:e}"
-        split_e = scientific_input.split("e+")
-        num_space = max_width - len(str(split_e[1])) - 2
-        split_e[0] = str(split_e[0])[:num_space]
-        return f"{split_e[0]}e+{split_e[1]}"
-    # what happens if we have 9.999999e+100 but are limited to 5?
-    # the exponent itself will occupy 5
 
 def print_table_recursive(input_dict : dict, title : str, print_bool : bool = True) -> defaultdict:
     """
@@ -50,6 +38,26 @@ def print_table_recursive(input_dict : dict, title : str, print_bool : bool = Tr
             print(*sub_tables[k], sep='\n')
     return sub_tables
 
+def _set_width(max_width : int, input_value : Union[float, int]) -> str:
+    if input_value < (10**max_width):
+        # what to do with negatives, 0 with log 10
+        if input_value > 0:
+            ndigits = int(log10(input_value))+1
+        elif input_value == 0:
+            ndigits = 1
+        elif input_value < 0:
+            ndigits = int(log10(-input_value))+2
+        return f"{input_value:<{ndigits}.{max_width-ndigits}f}"
+    else:
+        scientific_input = f"{input_value:e}"
+        split_e = scientific_input.split("e+")
+        num_space = max_width - len(str(split_e[1])) - 2
+        split_e[0] = str(split_e[0])[:num_space]
+        return f"{split_e[0]}e+{split_e[1]}"
+    # using this approach because e+ can't be formatted with f"{x:{some_width}g}"
+    # what happens if we have 9.999999e+100 but are limited to 5?
+    # the exponent itself will occupy 5, leaving no space for the numbers in front
+
 def _print_table_recursive_helper(table_prog : list, input_dict : dict, title : str, key : str = None) -> list:
     """
     Helper function to recursively build subtables as a list of str.
@@ -75,9 +83,14 @@ def _print_table_recursive_helper(table_prog : list, input_dict : dict, title : 
                 to_pass = k
             _print_table_recursive_helper(table_prog, v, f"{title}", to_pass)
         else:
-            col_len = len(max(str(k), str(v))) + 2
-            col_name_row += f"{str(k):^{col_len}}|"
-            value_row += f"{str(v):^{col_len}}|"
+            if isinstance(v, (int, float)):
+                col_len = max(len(str(k)), MAX_COLUMN_WIDTH) + 2
+                col_name_row += f"{str(k):^{col_len}}|"
+                value_row += _set_width(col_len, v) + '|'
+            else:
+                col_len = len(max(str(k), str(v))) + 2
+                col_name_row += f"{str(k):^{col_len}}|"
+                value_row += f"{str(v):^{col_len}}|"
 
     break_row = "+{}+".format((len(col_name_row)-2)*'-')
     title_row = f"+{title:^{len(break_row)-2}}+"

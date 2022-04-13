@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod, abstractproperty
 
-from prog_algs.utils.table import print_table_recursive, print_table_iterative
+from prog_algs.utils.table import print_table_recursive
 from ..visualize import plot_scatter, plot_hist
 
 
@@ -141,4 +141,3 @@ class UncertainData(ABC):
         """
         recursive_metric_table = print_table_recursive(self.metrics(), title)
 
-        

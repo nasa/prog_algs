@@ -40,14 +40,8 @@ def print_table_recursive(input_dict : dict, title : str, print_bool : bool = Tr
 
 def _set_width(max_width : int, input_value : Union[float, int]) -> str:
     if input_value < (10**max_width):
-        # what to do with negatives, 0 with log 10
-        if input_value > 0:
-            ndigits = int(log10(input_value))+1
-        elif input_value == 0:
-            ndigits = 1
-        elif input_value < 0:
-            ndigits = int(log10(-input_value))+2
-        return f"{input_value:<{ndigits}.{max_width-ndigits}f}"
+        ndigits = len(str(input_value))
+        return f"{input_value:^{ndigits}.{max_width-ndigits}f}"
     else:
         scientific_input = f"{input_value:e}"
         split_e = scientific_input.split("e+")

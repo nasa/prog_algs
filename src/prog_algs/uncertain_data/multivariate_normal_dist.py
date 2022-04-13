@@ -19,10 +19,40 @@ class MultivariateNormalDist(UncertainData):
         self.__mean = array(list(mean))
         self.__covar = array(list(covar))
 
-    def __eq__(self, other):
+    def __eq__(self, other : "MultivariateNormalDist") -> bool:
         return self.keys() == other.keys() and self.mean == other.mean and (self.cov == other.cov).all()
 
-    def sample(self, num_samples = 1):
+    def __add__(self, other : int) -> "UncertainData":
+        if other == 0:
+            return self
+        return MultivariateNormalDist(self.__labels, array([i+other for i in self.__mean]), self.__covar)
+
+    def __radd__(self, other : int) -> "UncertainData":
+        return self.__add__(other)
+
+    def __iadd__(self, other : int) -> "UncertainData":
+        if not isinstance(other, (int, float)):
+            raise TypeError(f" unsupported operand type(s) for +: '{type(other)}' and '{type(self.__mean[0])}'")
+        if other != 0:
+            self.__mean = array([i+other for i in self.__mean])
+        return self
+
+    def __sub__(self, other : int) -> "UncertainData":
+        if other == 0:
+            return self
+        return MultivariateNormalDist(self.__labels, array([i-other for i in self.__mean]), self.__covar)
+
+    def __rsub__(self, other : int) -> "UncertainData":
+        return self.__sub__(other)
+
+    def __isub__(self, other : int) -> "UncertainData":
+        if not isinstance(other, (int, float)):
+            raise TypeError(f" unsupported operand type(s) for -: '{type(other)}' and '{type(self.__mean[0])}'")
+        if other != 0:
+            self.__mean = array([i-other for i in self.__mean])
+        return self
+
+    def sample(self, num_samples : int = 1) -> UnweightedSamples:
         if len(self.__mean) != len(self.__labels):
             raise Exception("labels must be provided for each value")
     
@@ -30,21 +60,21 @@ class MultivariateNormalDist(UncertainData):
         samples = [{key: value for (key, value) in zip(self.__labels, x)} for x in samples]
         return UnweightedSamples(samples)
 
-    def keys(self):
+    def keys(self) -> list:
         return self.__labels
 
     @property
-    def median(self):
+    def median(self) -> float:
         # For normal distribution medain = mean
         return self.mean
 
     @property
-    def mean(self):
+    def mean(self) -> array:
         return {key: value for (key, value) in zip(self.__labels, self.__mean)}
 
-    def __str__(self):
+    def __str__(self) -> str:
         return 'MultivariateNormalDist(mean: {}, covar: {})'.format(self.__mean, self.__covar)     
 
     @property
-    def cov(self):
+    def cov(self) -> array:
         return self.__covar

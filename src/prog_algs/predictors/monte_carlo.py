@@ -3,6 +3,7 @@
 from .prediction import UnweightedSamplesPrediction, PredictionResults
 from .predictor import Predictor
 from copy import deepcopy
+from typing import Callable
 from prog_models.sim_result import SimResult, LazySimResult
 from prog_algs.uncertain_data import UnweightedSamples, UncertainData
 
@@ -37,7 +38,7 @@ class MonteCarlo(Predictor):
         'n_samples': 100  # Default number of samples to use, if none specified
     }
 
-    def predict(self, state : UncertainData, future_loading_eqn, **kwargs):
+    def predict(self, state : UncertainData, future_loading_eqn : Callable, **kwargs) -> PredictionResults:
         if isinstance(state, dict) or isinstance(state, self.model.StateContainer):
             # Convert to UnweightedSamples
             from prog_algs.uncertain_data import ScalarData

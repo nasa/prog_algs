@@ -1,9 +1,13 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 from matplotlib.collections import PathCollection
+from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 from math import sqrt
 
-def plot_scatter(samples, fig = None, keys = None, legend = 'auto', **kwargs):
+from numpy import array
+from typing import List
+
+def plot_scatter(samples : List[dict], fig : Figure = None, keys : List[str] = None, legend : str = 'auto', **kwargs) -> Figure:
     """
     Produce a scatter plot for a given list of states
 

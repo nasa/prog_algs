@@ -40,6 +40,24 @@ class MultivariateNormalDist(UncertainData):
         self.__mean = array([i+other for i in self.__mean])
         return self
 
+    def __sub__(self, other : int) -> "UncertainData":
+        if other == 0:
+            return self
+        return MultivariateNormalDist(self.__labels, array([i-other for i in self.__mean]), self.__covar)
+
+    def __rsub__(self, other : int) -> "UncertainData":
+        if other == 0:
+            return self
+        return self.__sub__(other)
+
+    def __isub__(self, other : int) -> "UncertainData":
+        if not isinstance(other, (int, float)):
+            raise TypeError(f" unsupported operand type(s) for -: '{type(other)}' and '{type(self.__mean[0])}'")
+        if other == 0:
+            return self
+        self.__mean = array([i-other for i in self.__mean])
+        return self
+
     def sample(self, num_samples : int = 1) -> UnweightedSamples:
         if len(self.__mean) != len(self.__labels):
             raise Exception("labels must be provided for each value")

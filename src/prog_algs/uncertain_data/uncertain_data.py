@@ -129,7 +129,6 @@ class UncertainData(ABC):
         samples = self.sample(num_samples)
         return plot_hist(samples, fig=fig, keys=keys, **kwargs)
 
-    # Overriding operators
     @abstractmethod
     def __add__(self, other : int) -> "UncertainData":
         """Overriding __add__ (+ operator) for UncertainData. 
@@ -148,9 +147,34 @@ class UncertainData(ABC):
 
     @abstractmethod
     def __iadd__(self, other : int) -> "UncertainData":
-        """Overriding __add__ (+= operator) for UncertainData. 
+        """Overriding __iadd__ (+= operator) for UncertainData. 
 
         Args:
             other (int): Integer value to be applied to class where appropriate.
         """
+
+    @abstractmethod
+    def __sub__(self, other : int) -> "UncertainData":
+        """Overriding __sub__ (- operator) for UncertainData. 
+
+        Args:
+            other (int): Integer value to be applied to class where appropriate.
+        """
+
+    @abstractmethod
+    def __rsub__(self, other : int) -> "UncertainData":
+        """Overriding __rsub__ (- operator right) for UncertainData. 
+
+        Args:
+            other (int): Integer value to be applied to class where appropriate.
+        """
+
+    @abstractmethod
+    def __isub__(self, other : int) -> "UncertainData":
+        """Overriding __isub__ (-= operator) for UncertainData. 
+
+        Args:
+            other (int): Integer value to be applied to class where appropriate.
+        """
+
         

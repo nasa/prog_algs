@@ -138,4 +138,19 @@ class UncertainData(ABC):
             other (int): Integer value to be applied to class where appropriate.
         """
 
-    
+    @abstractmethod
+    def __radd__(self, other : int) -> "UncertainData":
+        """Overriding __radd__ (+ operator right) for UncertainData. 
+
+        Args:
+            other (int): Integer value to be applied to class where appropriate.
+        """
+
+    @abstractmethod
+    def __iadd__(self, other : int) -> "UncertainData":
+        """Overriding __add__ (+= operator) for UncertainData. 
+
+        Args:
+            other (int): Integer value to be applied to class where appropriate.
+        """
+        

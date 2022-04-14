@@ -49,10 +49,10 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callab
     PH = ToE - ti
     Args:
         toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions
-        criteria_eqn (Callable function): A function (toe: UncertainData, ground_truth: dict[str, float]) -> dict[str, bool] calculating whether a prediction in ToEPredictionProfile meets some criteria. \n
+        criteria_eqn (Callable function): A function (tte: UncertainData, ground_truth_tte: dict[str, float]) -> dict[str, bool] calculating whether a prediction in ToEPredictionProfile meets some criteria. \n
             | Args: 
-            |  * toe (UncertainData): A single prediction of Time of Event (ToE)
-            |  * ground truth (dict[str, float]): Ground truth passed into prognostics_horizon
+            |  * tte (UncertainData): A single prediction of Time of Event (ToE)
+            |  * ground truth tte (dict[str, float]): Ground truth passed into prognostics_horizon
             | Returns: Map of event names to boolean representing if the event has been met. 
             |   e.g., {'event1': True, 'event2': False}
         ground_truth (dict): Dictionary containing ground truth; specified as key, value pairs for event and its value. E.g, {'event1': 47.3, 'event2': 52.1, 'event3': 46.1}
@@ -70,7 +70,7 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callab
     ph_result = {k:None for k in ground_truth.keys()} # False means not yet met; will be either a numerical value or None if met
     for (t_prediction, toe) in toe_profile.items():
         
-        # Convert to TtE here
+        # Convert to TtE for toe and ground_truth
         tte = toe - t_prediction # tte = ToE - t_p; operator overriding PR
         ground_truth_tte = {} # verify exact formula
         for k,v in ground_truth.items():

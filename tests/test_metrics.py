@@ -398,7 +398,7 @@ class TestMetrics(unittest.TestCase):
         # Define test sample ground truth
         GROUND_TRUTH = {'a': 9.0, 'b': 8.0, 'c': 18.0}
         # Create rudimentary criteria equation
-        def criteria_eqn(tte : UncertainData, ground_truth_tte : dict):
+        def criteria_eqn(tte : UncertainData, ground_truth_tte : dict) -> dict:
             """
             Sample criteria equation for unittesting. 
 

@@ -410,11 +410,7 @@ class TestMetrics(unittest.TestCase):
             """
             result = {}
             for key, value in ground_truth_tte.items():
-                # change to more precisely
-                if abs(tte.mean[key] - value) < 0.6:
-                    result[key] = True
-                else:
-                    result[key] = False
+                result[key] = abs(tte.mean[key] - value) < 0.6
             return result
         from prog_algs.metrics import prognostic_horizon
         # Prognostic horizon metric testing

@@ -129,10 +129,7 @@ def run_example():
                 """
                 result = {}
                 for key, value in ground_truth_tte.items():
-                    if abs(tte.mean[key] - value) < 0.6: # ADJUST WHEN FIGURING OUT GROUND_TRUTH
-                        result[key] = True
-                    else:
-                        result[key] = False
+                    result[key] = abs(tte.mean[key] - value) < 0.6 # GROUND TRUTH VALUE HERE
                 return result
 
             ph = prognostic_horizon(profile, criteria_eqn, ground_truth)

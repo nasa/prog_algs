@@ -410,6 +410,7 @@ class TestMetrics(unittest.TestCase):
             """
             result = {}
             for key, value in ground_truth_tte.items():
+                # change to more precisely
                 if abs(tte.mean[key] - value) < 0.6:
                     result[key] = True
                 else:

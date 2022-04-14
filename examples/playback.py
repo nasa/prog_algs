@@ -24,10 +24,9 @@ from prog_algs.state_estimators import ParticleFilter as StateEstimator
 # from prog_algs.state_estimators import UnscentedKalmanFilter as StateEstimator
 
 from prog_algs.predictors import MonteCarlo, ToEPredictionProfile
-from prog_algs.metrics import samples as metrics, prognostic_horizon
 
 import csv
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 
 # Constants
 NUM_SAMPLES = 10
@@ -114,27 +113,29 @@ def run_example():
                 profile.add_prediction(t, mc_results.time_of_event)
 
             # Calculating Prognostic Horizon
-            def criteria_eqn(toe : ToEPredictionProfile, tte : dict, t_prediction : int):
+            from prog_algs.uncertain_data.uncertain_data import UncertainData
+            from prog_algs.metrics import samples as metrics, prognostic_horizon
+
+            ground_truth = {}
+            def criteria_eqn(tte : UncertainData, ground_truth_tte : dict) -> dict:
                 """
                 Sample criteria equation for unittesting. 
-                toe: Time of Event
-                tte = Ground truth
-                t_prediction = time prediction
+
+                Args:
+                    tte : UncertainData
+                        Time to event in UncertainData format.
+                    ground_truth_tte : dict
+                        Dictionary of ground truth of time to event.
                 """
                 result = {}
-                for key, value in tte.items():
-                    if abs(toe.mean[key] - value) < 0.6:
+                for key, value in ground_truth_tte.items():
+                    if abs(tte.mean[key] - value) < 0.6: # ADJUST WHEN FIGURING OUT GROUND_TRUTH
                         result[key] = True
                     else:
                         result[key] = False
                 return result
 
-            tte = {} # ground truth
-            for (t_prediction, toe) in profile.items():
-                pass
-                # print("LINE:",t_prediction, toe)
-                # tte[t_prediction] = toe - t_prediction
-            # print(tte)
+            ph = prognostic_horizon(profile, criteria_eqn, ground_truth)
 
     input('Press any key to exit')
 

@@ -1,9 +1,10 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 import unittest
+from prog_algs import uncertain_data
 from prog_algs.metrics import prob_success
 from prog_algs.metrics import calc_metrics as toe_metrics
-from prog_algs.uncertain_data import UnweightedSamples, MultivariateNormalDist, ScalarData
+from prog_algs.uncertain_data import UncertainData, UnweightedSamples, MultivariateNormalDist, ScalarData
 
 
 class TestMetrics(unittest.TestCase):
@@ -397,15 +398,18 @@ class TestMetrics(unittest.TestCase):
         # Define test sample ground truth
         GROUND_TRUTH = {'a': 9.0, 'b': 8.0, 'c': 18.0}
         # Create rudimentary criteria equation
-        def criteria_eqn(tte : ToEPredictionProfile, ground_truth_tte : dict):
+        def criteria_eqn(tte : UncertainData, ground_truth_tte : dict):
             """
             Sample criteria equation for unittesting. 
-            toe: Time of Event
-            tte = Ground truth
-            t_prediction = Time of Prediction
+
+            Args:
+                tte : UncertainData
+                    Time to event in UncertainData format.
+                ground_truth_tte : dict
+                    Dictionary of ground truth of time to event.
             """
             result = {}
-            for key, value in tte.items():
+            for key, value in ground_truth_tte.items():
                 if abs(tte.mean[key] - value) < 0.6:
                     result[key] = True
                 else:

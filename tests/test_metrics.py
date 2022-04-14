@@ -397,7 +397,7 @@ class TestMetrics(unittest.TestCase):
         # Define test sample ground truth
         GROUND_TRUTH = {'a': 9.0, 'b': 8.0, 'c': 18.0}
         # Create rudimentary criteria equation
-        def criteria_eqn(toe : ToEPredictionProfile, tte : dict, t_prediction : int):
+        def criteria_eqn(tte : ToEPredictionProfile, ground_truth_tte : dict):
             """
             Sample criteria equation for unittesting. 
             toe: Time of Event
@@ -406,7 +406,7 @@ class TestMetrics(unittest.TestCase):
             """
             result = {}
             for key, value in tte.items():
-                if abs(toe.mean[key] - value) < 0.6:
+                if abs(tte.mean[key] - value) < 0.6:
                     result[key] = True
                 else:
                     result[key] = False

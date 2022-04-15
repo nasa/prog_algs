@@ -76,7 +76,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         elif isinstance(x0, UncertainData):
             # print(x0.keys)
             # print(type(model))
-            
+
             # place a new cov matrix in P
             # mapping = {i: x0.keys.index(key) for i, key in enumerate(model.states)}
             # print("MAP:",mapping)

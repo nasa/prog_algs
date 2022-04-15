@@ -20,7 +20,6 @@ def equal_cov(pair1, pair2):
     (keys1, cov1) = pair1
     (keys2, cov2) = pair2
     mapping = {i: keys2.index(key) for i, key in enumerate(keys1)}
-    print(mapping)
     return all([cov1[i][j] == cov2[mapping[i]][mapping[j]] for i in range(len(keys1)) for j in range(len(keys1))])
 
 

@@ -3,18 +3,18 @@
 """
 This file includes functions for calculating general metrics (i.e. mean, std, percentiles, etc.) on any distribution of type UncertainData (e.g. states, event_states, an EOL distribution, etc.)
 """
-from typing import Iterable
+from typing import Iterable, Union
 from numpy import isscalar, mean, std, array
 from scipy import stats
 from warnings import warn
 from ..uncertain_data import UncertainData, UnweightedSamples
 
-def calc_metrics(data, ground_truth = None, **kwargs):
+def calc_metrics(data : UncertainData, ground_truth : Union[float, dict] = None, **kwargs) -> dict:
     """Calculate all time of event metrics
 
     Args:
         data (array[float] or UncertainData): data from a single event
-        ground_truth (float, optional): Ground truth value. Defaults to None.
+        ground_truth (float, optional): Ground truth value. Defaults to None. dict when data is  of type UncertainData.
         **kwargs (optional): Configuration parameters. Supported parameters include:
           * n_samples (int): Number of samples to use for calculating metrics (if data is not UnweightedSamples). Defaults to 10,000.
           * keys (list of strings, optional): Keys to calculate metrics for. Defaults to all keys.

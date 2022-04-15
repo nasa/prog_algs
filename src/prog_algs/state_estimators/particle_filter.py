@@ -1,6 +1,7 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from prog_algs.uncertain_data.uncertain_data import UncertainData
+from typing import Callable
 from . import state_estimator
 from numpy import array, empty, random, take, exp, max, take
 from filterpy.monte_carlo import residual_resample
@@ -39,7 +40,7 @@ class ParticleFilter(state_estimator.StateEstimator):
             'x0_uncertainty': 0.5
         }
 
-    def __init__(self, model, x0, measurement_eqn = None, **kwargs):
+    def __init__(self, model, x0, measurement_eqn : Callable = None, **kwargs):
         super().__init__(model, x0, measurement_eqn = measurement_eqn, **kwargs)
         
         if measurement_eqn:
@@ -77,6 +78,7 @@ class ParticleFilter(state_estimator.StateEstimator):
             raise ProgAlgTypeError("ProgAlgTypeError: x0 must be of type {{UncertainData}} or x0_uncertainty must be of type {{dict, Number}}.")
         self.particles = dict(zip(x0.keys(), samples))
 
+
         if 'R' in self.parameters:
             # For backwards compatibility
             warn("'R' is deprecated. Use 'measurement_noise' instead.", DeprecationWarning)
@@ -87,7 +89,7 @@ class ParticleFilter(state_estimator.StateEstimator):
     def __str__(self):
         return "{} State Estimator".format(self.__class__)
         
-    def estimate(self, t, u, z):
+    def estimate(self, t : float, u, z):
         assert t > self.t, "New time must be greater than previous"
         dt = t - self.t
         self.t = t
@@ -157,7 +159,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         self.particles = dict(zip(self.particles.keys(), samples))
 
     @property
-    def x(self):
+    def x(self) -> UnweightedSamples:
         """
         Getter for property 'x', the current estimated state. 
 

@@ -128,6 +128,10 @@ def run_example():
                 ground_truth_tte : dict
                     Dictionary of ground truth of time to event.
             """
+            # given ground truth x, y% of distribution between x+a and x-a where a is percentage of tte
+            # example: Given a t_p of 100, a ground truth of 500, and predictions of type unweighted samples of 445, 470, 495, 520, and 545, 
+            # if the beta is 0.6 (i.e., 60% must be within alpha bounds), an alpha of 0.1 would be met. 
+            # Because true TtE is 400, and 60% is within 40 (i.e. 0.1 * 400), but an alpha of 0.05 would not be met, because only 40% is within 20 of 500
             result = {}
             for key, value in ground_truth_tte.items():
                 result[key] = abs(tte.mean[key] - value) < 10 # GROUND TRUTH VALUE HERE 

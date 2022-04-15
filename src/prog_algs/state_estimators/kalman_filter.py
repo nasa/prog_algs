@@ -91,7 +91,7 @@ class KalmanFilter(state_estimator.StateEstimator):
                 # for j in x0.cov[i]:
                     # mapped_cov[mapping[i]].append(j)
                     # mapped_cov[mapping[i]].insert(j, x0.cov[i][j])
-                    mapped_cov[mapping[i]][j] = x0.cov[i][j]
+                    mapped_cov[mapping[i]][mapping[j]] = x0.cov[i][j]
             # my understanding: mapping outtermost lists[i] and not lists[i][j]? what should be getting swapped?
         # row in x0.keys, placing that into mapping function
         # take ij, convert x0 to where it should be in model states, move to updated position

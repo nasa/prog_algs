@@ -340,12 +340,6 @@ class TestStateEstimators(unittest.TestCase):
         filt_mvnd = KalmanFilter(m, x_mvnd)
         self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
         # First fail
-
-        print()
-        print(x_mvnd.cov)
-        print()
-        print(filt_mvnd.x.cov)
-        print()
         self.assertTrue(
             equal_cov(
                 (list(x_mvnd.keys()), x_mvnd.cov), 

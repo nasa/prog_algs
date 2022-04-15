@@ -74,29 +74,11 @@ class KalmanFilter(state_estimator.StateEstimator):
             self.filter.x = np.array([[x0[key]] for key in model.states]) # x0.keys()
             self.filter.P = self.parameters['Q'] / 10
         elif isinstance(x0, UncertainData):
-            # print("KEYS:",x0.keys(), model.states)
-            # Create mapping of x0.keys to model.states DONE
-            # Use mapping to generate new cov, place in self.filter.P
-
             x_mean = x0.mean
             self.filter.x = np.array([[x_mean[key]] for key in model.states])
-
-            # mapping = {i: list(model.states).index(key) for i, key in enumerate(x0.keys())}
-            # # enumerate x0, get index from model.states
-            # # print("MAPPING:",mapping) # MAPPING: {0: 1, 1: 0}
-            # mapped_cov = x0.cov.copy() #[[] for i in range(len(x0.cov))] # pre-generate lists to add cov values into
-            # for i in range(len(x0.cov)):
-            #     for j in range(len(x0.cov[i])):
-            #     # for j in x0.cov[i]:
-            #         # mapped_cov[mapping[i]].append(j)
-            #         # mapped_cov[mapping[i]].insert(j, x0.cov[i][j])
-            #         mapped_cov[mapping[i]][mapping[j]] = x0.cov[i][j]
-
-
-            # CLEAN COMMENTS, ADD NOTES ABOUT WHAT CODE IS DOING; look at pr comments
             mapping = {i: list(x0.keys()).index(key) for i, key in enumerate(model.states)}
-            cov = x0.cov  # In case it's calculated
-            mapped_cov = [[cov[mapping[i]][mapping[j]] for j in range(len(cov))] for i in range(len(cov))]
+            cov = x0.cov  # Set covariance in case it has been calculated
+            mapped_cov = [[cov[mapping[i]][mapping[j]] for j in range(len(cov))] for i in range(len(cov))] # Set covariance based on mapping
             self.filter.P = np.array(mapped_cov)
         else:
             raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")

@@ -81,24 +81,23 @@ class KalmanFilter(state_estimator.StateEstimator):
             x_mean = x0.mean
             self.filter.x = np.array([[x_mean[key]] for key in model.states])
 
-            mapping = {i: list(model.states).index(key) for i, key in enumerate(x0.keys())}
-            # enumerate x0, get index from model.states
+            # mapping = {i: list(model.states).index(key) for i, key in enumerate(x0.keys())}
+            # # enumerate x0, get index from model.states
+            # # print("MAPPING:",mapping) # MAPPING: {0: 1, 1: 0}
+            # mapped_cov = x0.cov.copy() #[[] for i in range(len(x0.cov))] # pre-generate lists to add cov values into
+            # for i in range(len(x0.cov)):
+            #     for j in range(len(x0.cov[i])):
+            #     # for j in x0.cov[i]:
+            #         # mapped_cov[mapping[i]].append(j)
+            #         # mapped_cov[mapping[i]].insert(j, x0.cov[i][j])
+            #         mapped_cov[mapping[i]][mapping[j]] = x0.cov[i][j]
 
-            # print("MAPPING:",mapping) # MAPPING: {0: 1, 1: 0}
-            mapped_cov = x0.cov.copy() #[[] for i in range(len(x0.cov))] # pre-generate lists to add cov values into
-            for i in range(len(x0.cov)):
-                for j in range(len(x0.cov[i])):
-                # for j in x0.cov[i]:
-                    # mapped_cov[mapping[i]].append(j)
-                    # mapped_cov[mapping[i]].insert(j, x0.cov[i][j])
-                    mapped_cov[mapping[i]][mapping[j]] = x0.cov[i][j]
-            # my understanding: mapping outtermost lists[i] and not lists[i][j]? what should be getting swapped?
-        # row in x0.keys, placing that into mapping function
-        # take ij, convert x0 to where it should be in model states, move to updated position
-            print(np.array(mapped_cov))
+
+            # CLEAN COMMENTS, ADD NOTES ABOUT WHAT CODE IS DOING; look at pr comments
+            mapping = {i: list(x0.keys()).index(key) for i, key in enumerate(model.states)}
+            cov = x0.cov  # In case it's calculated
+            mapped_cov = [[cov[mapping[i]][mapping[j]] for j in range(len(cov))] for i in range(len(cov))]
             self.filter.P = np.array(mapped_cov)
-
-            # self.filter.P = x0.cov
         else:
             raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
 

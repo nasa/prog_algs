@@ -116,7 +116,7 @@ def run_example():
             from prog_algs.uncertain_data.uncertain_data import UncertainData
             from prog_algs.metrics import samples as metrics, prognostic_horizon
 
-            ground_truth = {}
+            ground_truth = {'EOD':3306.5}
             def criteria_eqn(tte : UncertainData, ground_truth_tte : dict) -> dict:
                 """
                 Sample criteria equation for unittesting. 

@@ -74,14 +74,12 @@ class KalmanFilter(state_estimator.StateEstimator):
             self.filter.x = np.array([[x0[key]] for key in model.states]) # x0.keys()
             self.filter.P = self.parameters['Q'] / 10
         elif isinstance(x0, UncertainData):
-            # print(x0.keys)
-            # print(type(model))
-
             # place a new cov matrix in P
-            # mapping = {i: x0.keys.index(key) for i, key in enumerate(model.states)}
-            # print("MAP:",mapping)
-            print("KEYS:",x0.keys(), model.states)
-            # self.filter.P = np.array(2D ARRAY)
+            # print("KEYS:",x0.keys(), model.states)
+            # Create mapping of x0.keys to model.states
+            mapping = {i: list(x0.keys()).index(key) for i, key in enumerate(model.states)}
+            print("MAPPING:",mapping)
+
             x_mean = x0.mean
             self.filter.x = np.array([[x_mean[key]] for key in model.states])
             self.filter.P = x0.cov

@@ -112,27 +112,28 @@ def run_example():
                 rul_fig.canvas.draw()
                 profile.add_prediction(t, mc_results.time_of_event)
 
-            # Calculating Prognostic Horizon
-            from prog_algs.uncertain_data.uncertain_data import UncertainData
-            from prog_algs.metrics import samples as metrics, prognostic_horizon
+        # Calculating Prognostic Horizon once for loop complete
+        from prog_algs.uncertain_data.uncertain_data import UncertainData
+        from prog_algs.metrics import samples as metrics, prognostic_horizon
 
-            ground_truth = {'EOD':3306.5}
-            def criteria_eqn(tte : UncertainData, ground_truth_tte : dict) -> dict:
-                """
-                Sample criteria equation for unittesting. 
+        ground_truth = {'EOD':3306.5}
+        def criteria_eqn(tte : UncertainData, ground_truth_tte : dict) -> dict:
+            """
+            Sample criteria equation for playback. 
 
-                Args:
-                    tte : UncertainData
-                        Time to event in UncertainData format.
-                    ground_truth_tte : dict
-                        Dictionary of ground truth of time to event.
-                """
-                result = {}
-                for key, value in ground_truth_tte.items():
-                    result[key] = abs(tte.mean[key] - value) < 0.6 # GROUND TRUTH VALUE HERE
-                return result
+            Args:
+                tte : UncertainData
+                    Time to event in UncertainData format.
+                ground_truth_tte : dict
+                    Dictionary of ground truth of time to event.
+            """
+            result = {}
+            for key, value in ground_truth_tte.items():
+                result[key] = abs(tte.mean[key] - value) < 10 # GROUND TRUTH VALUE HERE
+            return result
 
-            ph = prognostic_horizon(profile, criteria_eqn, ground_truth)
+        ph = prognostic_horizon(profile, criteria_eqn, ground_truth)
+        print(f"Prognostic Horizon: {ph}")
 
     input('Press any key to exit')
 

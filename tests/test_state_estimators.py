@@ -93,6 +93,58 @@ class TestStateEstimators(unittest.TestCase):
 
         filt = UnscentedKalmanFilter(m, x_guess)
         self.__test_state_est(filt, m)
+
+        m = ThrownObject(process_noise=5e-2, measurement_noise=5e-2)
+
+        # Test UnscentedKalmanFilter ScalarData
+        from prog_algs.uncertain_data.scalar_data import ScalarData
+        x_scalar = ScalarData({'x': 1.75, 'v': 35})
+        filt_scalar = UnscentedKalmanFilter(m, x_scalar)
+        self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
+        self.assertTrue(
+            equal_cov(
+                (list(x_scalar.keys()), x_scalar.cov), 
+                (list(filt_scalar.x.keys()), filt_scalar.x.cov)))
+
+        # Test UnscentedKalmanFilter MultivariateNormalDist
+        from numpy import array
+        from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
+        x_mvnd = MultivariateNormalDist(['x', 'v'], array([2, 10]), array([[1, 0], [0, 1]]))
+        filt_mvnd = UnscentedKalmanFilter(m, x_mvnd)
+        self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
+        self.assertTrue(
+            equal_cov(
+                (list(x_mvnd.keys()), x_mvnd.cov), 
+                (list(filt_mvnd.x.keys()), filt_mvnd.x.cov)))
+
+        # Now with a different order
+        x_mvnd = MultivariateNormalDist(['v', 'x'], array([10, 2]), array([[1, 0], [0, 2]]))
+        filt_mvnd = UnscentedKalmanFilter(m, x_mvnd)
+        self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
+        self.assertTrue(
+            equal_cov(
+                (list(x_mvnd.keys()), x_mvnd.cov), 
+                (list(filt_mvnd.x.keys()), filt_mvnd.x.cov)), "Covs are not equal for multivariate in different order")
+
+        # Test UnscentedKalmanFilter UnweightedSamples
+        from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
+        x_us = UnweightedSamples([{'x': 1, 'v':2}, {'x': 3, 'v':-2}])
+        filt_us = UnscentedKalmanFilter(m, x_us)
+        self.assertDictEqual(filt_us.x.mean, x_us.mean)
+        self.assertTrue(
+            equal_cov(
+                (list(x_us.keys()), x_us.cov), 
+                (list(filt_us.x.keys()), filt_us.x.cov)))
+
+        from prog_models.models import BatteryElectroChem
+
+        with self.assertRaises(Exception):
+            # Not linear model
+            UnscentedKalmanFilter(BatteryElectroChem, {})
+
+        with self.assertRaises(Exception):
+            # Missing states
+            UnscentedKalmanFilter(ThrownObject, {})
         
     def __incorrect_input_tests(self, filter):
         class IncompleteModel:
@@ -339,7 +391,6 @@ class TestStateEstimators(unittest.TestCase):
         x_mvnd = MultivariateNormalDist(['v', 'x'], array([10, 2]), array([[1, 0], [0, 2]]))
         filt_mvnd = KalmanFilter(m, x_mvnd)
         self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
-        # First fail
         self.assertTrue(
             equal_cov(
                 (list(x_mvnd.keys()), x_mvnd.cov), 

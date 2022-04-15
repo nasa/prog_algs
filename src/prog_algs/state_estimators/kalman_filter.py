@@ -77,12 +77,23 @@ class KalmanFilter(state_estimator.StateEstimator):
             # print("KEYS:",x0.keys(), model.states)
             # Create mapping of x0.keys to model.states DONE
             # Use mapping to generate new cov, place in self.filter.P
-            mapping = {i: list(x0.keys()).index(key) for i, key in enumerate(model.states)}
-            # print("MAPPING:",mapping) # MAPPING: {0: 1, 1: 0}
 
             x_mean = x0.mean
             self.filter.x = np.array([[x_mean[key]] for key in model.states])
-            self.filter.P = x0.cov
+
+            mapping = {i: list(x0.keys()).index(key) for i, key in enumerate(model.states)}
+            # print("MAPPING:",mapping) # MAPPING: {0: 1, 1: 0}
+            mapped_cov = [[] for i in range(len(x0.cov))] # pre-generate lists to add cov values into
+            for i in range(len(x0.cov)):
+                for j in range(len(x0.cov[i])):
+                # for j in x0.cov[i]:
+                    # mapped_cov[mapping[i]].append(j)
+                    mapped_cov[mapping[i]].insert(j, x0.cov[i][j])
+
+            print(np.array(mapped_cov))
+            self.filter.P = np.array(mapped_cov)
+
+            # self.filter.P = x0.cov
         else:
             raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
 

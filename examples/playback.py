@@ -129,14 +129,19 @@ def run_example():
                     Dictionary of ground truth of time to event.
             """
             # given ground truth x, y% of distribution between x+a and x-a where a is percentage of tte
-            # example: Given a t_p of 100, a ground truth of 500, and predictions of type unweighted samples of 445, 470, 495, 520, and 545, 
+            # example: 
+            # Given t_p = 100, a ground truth = 500, and predictions of type unweighted samples = [445, 470, 495, 520, and 545] 
             # if the beta is 0.6 (i.e., 60% must be within alpha bounds), an alpha of 0.1 would be met. 
             # Because true TtE is 400, and 60% is within 40 (i.e. 0.1 * 400), but an alpha of 0.05 would not be met, because only 40% is within 20 of 500
+            
+            # Set an alpha value
+            alpha_value = 2300 # 19 tte.mean values ranging 3174 - 2342
+            alpha_bounds = 100 # 2 fit within bound of tte.mean[key] - alpha_value?
             result = {}
             for key, value in ground_truth_tte.items():
-                result[key] = abs(tte.mean[key] - value) < 10 # GROUND TRUTH VALUE HERE 
-                # because it only needs to meet EOD, returns 1 value 
-                # Prognostic Horizon: {'EOD': 2207.5}  because first value met when abs(tte.mean[key] - value) < 10
+                # print(key, value, tte.mean[key])
+                # result[key] = abs(tte.mean[key] - value) < 10 # old simple metrics criteria_eqn
+                result[key] = (tte.mean[key] - alpha_value) < alpha_bounds # 2/19 TtE mean within alpha bounds 0.105%
             return result
 
         ph = prognostic_horizon(profile, criteria_eqn, ground_truth)

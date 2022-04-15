@@ -87,7 +87,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         self.filter.R = self.parameters['R']
         self.filter.F = F
         self.filter.B = B
-# CREATE NEW 2D NUMPY ARRAY WITH NEW ORDERING, saved into filter
+
     def estimate(self, t, u, z):
         """
         Perform one state estimation step (i.e., update the state estimate)

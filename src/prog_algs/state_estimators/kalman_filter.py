@@ -36,7 +36,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         't0': -1e-10,
         'dt': 1
     } 
-    # grab the state, reorder covariance to match the model state; covariane matrix is # need covariance and mean to be ordered
+    # grab the state, reorder covariance to match the model state; covariance matrix is # need covariance and mean to be ordered
     # change order of states; use self.__state_keys = x_mean.keys(); use this wherever we call model.states
     def __init__(self, model, x0, measurement_eqn = None, **kwargs):
         # Note: Measurement equation kept in constructor to keep it consistent with other state estimators. This way measurement equation can be provided as an ordered argument, and will just be ignored here

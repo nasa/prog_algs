@@ -33,7 +33,7 @@ class UncertainData(ABC):
         """The median of the UncertainData distribution or samples 
 
         Returns:
-            Dict[str, float]: Mean value. e.g., {'key1': 23.2, ...}
+            Dict[str, float]: Median value. e.g., {'key1': 23.2, ...}
 
         Example:
             median_value = data.median
@@ -67,6 +67,9 @@ class UncertainData(ABC):
         Returns:
             [string]: keys
         """
+
+    def __contains__(self, key):
+        return key in self.keys()
 
     def percentage_in_bounds(self, bounds : tuple, keys : list = None) -> float:
         """Calculate percentage of dist is within specified bounds

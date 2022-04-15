@@ -120,6 +120,7 @@ def run_example():
         def criteria_eqn(tte : UncertainData, ground_truth_tte : dict) -> dict:
             """
             Sample criteria equation for playback. 
+            # UPDATE THIS CRITERIA EQN AND WHAT IS CALCULATED
 
             Args:
                 tte : UncertainData
@@ -136,6 +137,7 @@ def run_example():
 
         ph = prognostic_horizon(profile, criteria_eqn, ground_truth)
         print(f"Prognostic Horizon: {ph}")
+        # printing for single event, but ph calculates for all predicted events MAKE COMMENT NICER
 
     input('Press any key to exit')
 

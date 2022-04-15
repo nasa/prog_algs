@@ -36,8 +36,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         't0': -1e-10,
         'dt': 1
     } 
-    # grab the state, reorder covariance to match the model state; covariance matrix is # need covariance and mean to be ordered
-    # change order of states; use self.__state_keys = x_mean.keys(); use this wherever we call model.states
+    
     def __init__(self, model, x0, measurement_eqn = None, **kwargs):
         # Note: Measurement equation kept in constructor to keep it consistent with other state estimators. This way measurement equation can be provided as an ordered argument, and will just be ignored here
         if not isinstance(model, LinearModel):
@@ -76,6 +75,8 @@ class KalmanFilter(state_estimator.StateEstimator):
         elif isinstance(x0, UncertainData):
             x_mean = x0.mean
             self.filter.x = np.array([[x_mean[key]] for key in model.states])
+
+            # Reorder covariance to be in same order as model.states
             mapping = {i: list(x0.keys()).index(key) for i, key in enumerate(model.states)}
             cov = x0.cov  # Set covariance in case it has been calculated
             mapped_cov = [[cov[mapping[i]][mapping[j]] for j in range(len(cov))] for i in range(len(cov))] # Set covariance based on mapping

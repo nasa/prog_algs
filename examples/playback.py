@@ -129,7 +129,9 @@ def run_example():
             """
             result = {}
             for key, value in ground_truth_tte.items():
-                result[key] = abs(tte.mean[key] - value) < 10 # GROUND TRUTH VALUE HERE
+                result[key] = abs(tte.mean[key] - value) < 10 # GROUND TRUTH VALUE HERE 
+                # because it only needs to meet EOD, returns 1 value 
+                # Prognostic Horizon: {'EOD': 2207.5}  because first value met when abs(tte.mean[key] - value) < 10
             return result
 
         ph = prognostic_horizon(profile, criteria_eqn, ground_truth)

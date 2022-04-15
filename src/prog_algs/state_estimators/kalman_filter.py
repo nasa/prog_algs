@@ -89,6 +89,7 @@ class KalmanFilter(state_estimator.StateEstimator):
                 # for j in x0.cov[i]:
                     # mapped_cov[mapping[i]].append(j)
                     mapped_cov[mapping[i]].insert(j, x0.cov[i][j])
+            # my understanding: mapping outtermost lists[i] and not lists[i][j]? what should be getting swapped?
 
             print(np.array(mapped_cov))
             self.filter.P = np.array(mapped_cov)

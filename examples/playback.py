@@ -136,11 +136,12 @@ def run_example():
             for key, value in ground_truth_tte.items():
                 # Set bounds for precentage_in_bounds by adding/subtracting to the ground_truth
                 alpha_calc = value * alpha_bounds
-                bounds = {'EOD': [value - alpha_calc, value + alpha_calc]}
+                bounds = {key: [value - alpha_calc, value + alpha_calc]} # Construct bounds for all events
                 percentage_in_bounds = tte.percentage_in_bounds(bounds)
 
                 # Verify if percentage in bounds for this ground truth meets beta distribution percentage limit
-                result[key] = (sum(percentage_in_bounds.values()) / len(percentage_in_bounds.keys())) > beta_percentage
+                # result[key] = (sum(percentage_in_bounds.values()) / len(percentage_in_bounds.keys())) > beta_percentage
+                result[key] = percentage_in_bounds[key] > beta_percentage 
             return result
 
         ph = prognostic_horizon(profile, criteria_eqn, ground_truth)

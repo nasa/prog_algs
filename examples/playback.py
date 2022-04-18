@@ -134,6 +134,9 @@ def run_example():
             # if the beta is 0.6 (i.e., 60% must be within alpha bounds), an alpha of 0.1 would be met. 
             # Because true TtE is 400, and 60% is within 40 (i.e. 0.1 * 400), but an alpha of 0.05 would not be met, because only 40% is within 20 of 500
             
+            bounds = {'EOD': []} # [lower, upper]
+            percentage_in_bounds = tte.percentage_in_bounds(bounds)
+
             # Set an alpha value
             alpha_value = 2300 # 19 tte.mean values ranging 3174 - 2342
             alpha_bounds = 100 # 2 fit within bound of tte.mean[key] - alpha_value?

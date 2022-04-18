@@ -130,21 +130,21 @@ def run_example():
             """
             
             # Set an alpha value
-            alpha_bounds = 0.10 # set the alpha value percentage here
-            beta_percentage = 0.60 # set later
+            alpha_bounds = 0.10 # set the alpha value percentage here; for x - a, x + a
+            beta_percentage = 0.60 # set the beta value percentage here; B% of distribution between alpha bounds
             result = {}
             for key, value in ground_truth_tte.items():
-                # print(key, value,)
+                # Set bounds for precentage_in_bounds by adding/subtracting to the ground_truth
                 alpha_calc = value * alpha_bounds
                 bounds = {'EOD': [value - alpha_calc, value + alpha_calc]}
                 percentage_in_bounds = tte.percentage_in_bounds(bounds)
-            #     result[key] = (tte.mean[key] - alpha_value) < alpha_bounds # 2/19 TtE mean within alpha bounds 0.105%
-                result[key] = percentage_in_bounds
+
+                # Verify if percentage in bounds for this ground truth meets beta distribution percentage limit
+                result[key] = (sum(percentage_in_bounds.values()) / len(percentage_in_bounds.keys())) > beta_percentage
             return result
 
         ph = prognostic_horizon(profile, criteria_eqn, ground_truth)
-        print(f"Prognostic Horizon: {ph}")
-        # printing for single event, but ph calculates for all predicted events MAKE COMMENT NICER
+        print(f"Prognostic Horizon for EOD: {ph['EOD']}")
 
     input('Press any key to exit')
 

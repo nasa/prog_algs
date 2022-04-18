@@ -128,24 +128,18 @@ def run_example():
                 ground_truth_tte : dict
                     Dictionary of ground truth of time to event.
             """
-            # given ground truth x, y% of distribution between x+a and x-a where a is percentage of tte
-            # example: 
-            # Given t_p = 100, a ground truth = 500, and predictions of type unweighted samples = [445, 470, 495, 520, and 545] 
-            # if the beta is 0.6 (i.e., 60% must be within alpha bounds), an alpha of 0.1 would be met. 
-            # Because true TtE is 400, and 60% is within 40 (i.e. 0.1 * 400), but an alpha of 0.05 would not be met, because only 40% is within 20 of 500
             
-            bounds = {'EOD': [750, 1250]} # [lower, upper] # range 600 - 3200
-            percentage_in_bounds = tte.percentage_in_bounds(bounds)
-            print(percentage_in_bounds)
-
             # Set an alpha value
-            alpha_value = 2300 # 19 tte.mean values ranging 3174 - 2342
-            alpha_bounds = 100 # 2 fit within bound of tte.mean[key] - alpha_value?
+            alpha_bounds = 0.10 # set the alpha value percentage here
+            beta_percentage = 0.60 # set later
             result = {}
-            # for key, value in ground_truth_tte.items():
-            #     # print(key, value, tte.mean[key])
-            #     # result[key] = abs(tte.mean[key] - value) < 10 # old simple metrics criteria_eqn
+            for key, value in ground_truth_tte.items():
+                # print(key, value,)
+                alpha_calc = value * alpha_bounds
+                bounds = {'EOD': [value - alpha_calc, value + alpha_calc]}
+                percentage_in_bounds = tte.percentage_in_bounds(bounds)
             #     result[key] = (tte.mean[key] - alpha_value) < alpha_bounds # 2/19 TtE mean within alpha bounds 0.105%
+                result[key] = percentage_in_bounds
             return result
 
         ph = prognostic_horizon(profile, criteria_eqn, ground_truth)

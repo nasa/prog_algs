@@ -17,9 +17,9 @@ class StateEstimator(ABC):
      model : ProgModel
         A prognostics model to be used in state estimation
         See: Prognostics Model Package
-     x0 : dict
+     x0 : UncertainData or dict
         Initial (starting) state, with keys defined by model.states \n
-        e.g., x = {'abc': 332.1, 'def': 221.003} given states = ['abc', 'def']
+        e.g., x = ScalarData({'abc': 332.1, 'def': 221.003}) given states = ['abc', 'def']
      measurement_eqn : optional, function
         Measurement equation (x)->z. Usually used in situations where what's measured don't exactly match the output (e.g., different unit, not ever output measured, etc.). see `examples.measurement_eqn_example`
      options : optional, kwargs

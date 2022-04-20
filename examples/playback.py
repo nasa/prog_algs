@@ -19,7 +19,7 @@ from prog_models.models import BatteryCircuit as Battery
 # VVV Uncomment this to use Electro Chemistry Model VVV
 # from prog_models.models import BatteryElectroChem as Battery
 
-from prog_algs.state_estimators import ParticleFilter as StateEstimator
+from prog_algs.state_estimators import ParticleFilter as StateEstimator, state_estimator
 # VVV Uncomment this to use UnscentedKalmanFilter instead VVV
 # from prog_algs.state_estimators import UnscentedKalmanFilter as StateEstimator
 
@@ -37,12 +37,14 @@ PLOT = True
 def run_example():
     # Setup Model
     # batt_noise = {'tb' : 0.5, 'qb' : 0.5, 'qcp' : 0.5, 'qcs' : 0.5}
-    batt_noise_all = 0.5
+    batt_noise_all = 1 # values from particle_filter_battery_example
     batt_noise_dist = "normal" # normal, uniform, triangular
-    batt = Battery(process_noise = batt_noise_all, process_noise_dist = batt_noise_dist)
+    measurement_noise = 2
+    batt = Battery(process_noise = batt_noise_all, process_noise_dist = batt_noise_dist, measurement_noise = measurement_noise)
 
     # Setup State Estimation
-    filt = StateEstimator(batt, batt.parameters['x0'])
+    state_estimator_noise = 1
+    filt = StateEstimator(batt, batt.parameters['x0'], x0_uncertainty = state_estimator_noise)
 
     # Setup Prediction
     def future_loading(t, x=None):
@@ -119,7 +121,8 @@ def run_example():
         from prog_algs.uncertain_data.uncertain_data import UncertainData
         from prog_algs.metrics import samples as metrics, prognostic_horizon
 
-        ground_truth = {'EOD':3306.5}
+        # ground_truth = {'EOD':3306.5}
+        ground_truth = {'EOD' : 2950.5}
         def criteria_eqn(tte : UncertainData, ground_truth_tte : dict) -> dict:
             """
             Sample criteria equation for playback. 
@@ -133,7 +136,7 @@ def run_example():
             """
             
             # Set an alpha value
-            alpha_bounds = 0.05 # set the alpha value percentage here; for x - a, x + a
+            alpha_bounds = 0.10 # set the alpha value percentage here; for x - a, x + a
             beta_percentage = 0.90 # set the beta value percentage here; B% of distribution between alpha bounds
             bounds = {}
             for key, value in ground_truth_tte.items():

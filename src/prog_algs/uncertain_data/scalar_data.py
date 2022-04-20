@@ -10,7 +10,7 @@ class ScalarData(UncertainData):
     Data without uncertainty- single value
 
     Args:
-            state (dict): Single state
+            state [dict, *Container]: Single state in the form of dict or model.*Container (InputContainer, OutputContainer, Statecontainer) representing states and respective values.
     """
     def __init__(self, state): 
         self.__state = state
@@ -60,7 +60,7 @@ class ScalarData(UncertainData):
 
     @property
     def cov(self) -> array:
-        return [[0]]
+        return [[0 for _ in range(len(self.__state))] for _ in range(len(self.__state))]
 
     def keys(self):
         return self.__state.keys()

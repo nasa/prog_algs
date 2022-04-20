@@ -22,11 +22,12 @@ from prog_models.models import BatteryCircuit as Battery
 from prog_algs.state_estimators import ParticleFilter as StateEstimator, state_estimator
 # VVV Uncomment this to use UnscentedKalmanFilter instead VVV
 # from prog_algs.state_estimators import UnscentedKalmanFilter as StateEstimator
-
 from prog_algs.predictors import MonteCarlo, ToEPredictionProfile
+from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
 
 import csv
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Constants
 NUM_SAMPLES = 10
@@ -43,7 +44,8 @@ def run_example():
     batt = Battery(process_noise = batt_noise_all, process_noise_dist = batt_noise_dist, measurement_noise = measurement_noise)
 
     # Setup State Estimation
-    state_estimator_noise = 1
+    x0 = batt.initialize()
+    state_estimator_noise = MultivariateNormalDist(x0.keys(), list(x0.values()), np.diag([0.10] * len(x0.keys())))
     filt = StateEstimator(batt, batt.parameters['x0'], x0_uncertainty = state_estimator_noise)
 
     # Setup Prediction

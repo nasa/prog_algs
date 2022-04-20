@@ -36,7 +36,10 @@ PLOT = True
 
 def run_example():
     # Setup Model
-    batt = Battery()
+    # batt_noise = {'tb' : 0.5, 'qb' : 0.5, 'qcp' : 0.5, 'qcs' : 0.5}
+    batt_noise_all = 0.5
+    batt_noise_dist = "normal" # normal, uniform, triangular
+    batt = Battery(process_noise = batt_noise_all, process_noise_dist = batt_noise_dist)
 
     # Setup State Estimation
     filt = StateEstimator(batt, batt.parameters['x0'])

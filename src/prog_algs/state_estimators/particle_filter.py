@@ -75,7 +75,7 @@ class ParticleFilter(state_estimator.StateEstimator):
                 sd = array([self.parameters['x0_uncertainty']] * len(x0))
             samples = [random.normal(x[i], sd[i], self.parameters['num_particles']) for i in range(len(x))]
         else:
-            raise ProgAlgTypeError("ProgAlgTypeError: x0 must be of type {{UncertainData}} or x0_uncertainty must be of type {{dict, Number}}.")
+            raise ProgAlgTypeError("ProgAlgTypeError: x0 must be of type UncertainData or x0_uncertainty must be of type [dict, Number].")
         self.particles = dict(zip(x0.keys(), samples))
 
 

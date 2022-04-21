@@ -46,7 +46,7 @@ def run_example():
     # Setup State Estimation
     x0 = batt.initialize()
     state_estimator_noise = MultivariateNormalDist(x0.keys(), list(x0.values()), np.diag([0.10] * len(x0.keys())))
-    filt = StateEstimator(batt, batt.parameters['x0'], x0_uncertainty = state_estimator_noise)
+    filt = StateEstimator(batt, state_estimator_noise)
 
     # Setup Prediction
     def future_loading(t, x=None):

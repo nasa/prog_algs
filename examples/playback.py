@@ -38,9 +38,8 @@ PLOT = True
 def run_example():
     # Setup Model
     batt_noise_all = 1 # values from particle_filter_battery_example
-    batt_noise_dist = "normal" # normal, uniform, triangular
     measurement_noise = 2
-    batt = Battery(process_noise = batt_noise_all, process_noise_dist = batt_noise_dist, measurement_noise = measurement_noise)
+    batt = Battery(process_noise = batt_noise_all, process_noise_dist = "normal", measurement_noise = measurement_noise)
 
     # Setup State Estimation
     x0 = batt.initialize()

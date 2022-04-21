@@ -37,7 +37,6 @@ PLOT = True
 
 def run_example():
     # Setup Model
-    # batt_noise = {'tb' : 0.5, 'qb' : 0.5, 'qcp' : 0.5, 'qcs' : 0.5}
     batt_noise_all = 1 # values from particle_filter_battery_example
     batt_noise_dist = "normal" # normal, uniform, triangular
     measurement_noise = 2
@@ -45,7 +44,7 @@ def run_example():
 
     # Setup State Estimation
     x0 = batt.initialize()
-    state_estimator_noise = MultivariateNormalDist(x0.keys(), list(x0.values()), np.diag([0.10] * len(x0.keys())))
+    state_estimator_noise = MultivariateNormalDist(x0.keys(), list(x0.values()), np.diag([5.0] * len(x0.keys())))
     filt = StateEstimator(batt, state_estimator_noise)
 
     # Setup Prediction
@@ -123,8 +122,8 @@ def run_example():
         from prog_algs.uncertain_data.uncertain_data import UncertainData
         from prog_algs.metrics import samples as metrics, prognostic_horizon
 
-        # ground_truth = {'EOD':3306.5}
-        ground_truth = {'EOD' : 2950.5}
+        ground_truth = {'EOD':3306.5}
+        # ground_truth = {'EOD' : 2950.5}
         def criteria_eqn(tte : UncertainData, ground_truth_tte : dict) -> dict:
             """
             Sample criteria equation for playback. 

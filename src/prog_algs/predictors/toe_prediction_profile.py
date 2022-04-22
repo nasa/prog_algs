@@ -6,7 +6,7 @@ from prog_algs.uncertain_data import UncertainData
 
 class ToEPredictionProfile(UserDict):
     """
-    Data structure for storing the result of multiple predictions, including time of prediction. This data structure can be treated as a dictionary of time of prediction to toe prediction. Iteration of this data structure is in order of increasing time of prediction
+    Data structure for storing the result of multiple predictions, including time of prediction. This data structure can be treated as a dictionary of time of prediction to Time of Event (ToE) prediction. Iteration of this data structure is in order of increasing time of prediction
     """
     def add_prediction(self, time_of_prediction: float, toe_prediction: UncertainData):
         """Add a single prediction to the profile

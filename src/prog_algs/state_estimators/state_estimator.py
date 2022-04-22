@@ -21,7 +21,7 @@ class StateEstimator(ABC):
         Initial (starting) state, with keys defined by model.states \n
         e.g., x = ScalarData({'abc': 332.1, 'def': 221.003}) given states = ['abc', 'def']
      measurement_eqn : optional, function
-        Measurement equation (x)->z. Usually used in situations where what's measured don't exactly match the output (e.g., different unit, not ever output measured, etc.). see `examples.measurement_eqn_example`
+        Measurement equation (x)->z. Usually used in situations where what's measured doesn't exactly match the output (e.g., different unit, not ever output measured, etc.). see `examples.measurement_eqn_example`
      options : optional, kwargs
         configuration options\n
         Dictionary of any additional configuration values. See state-estimator specific documentation

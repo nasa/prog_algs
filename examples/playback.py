@@ -19,10 +19,16 @@ from prog_models.models import BatteryCircuit as Battery
 # VVV Uncomment this to use Electro Chemistry Model VVV
 # from prog_models.models import BatteryElectroChem as Battery
 
-from prog_algs.state_estimators import ParticleFilter as StateEstimator, state_estimator
+from prog_algs.state_estimators import UnscentedKalmanFilter as StateEstimator
 # VVV Uncomment this to use UnscentedKalmanFilter instead VVV
-# from prog_algs.state_estimators import UnscentedKalmanFilter as StateEstimator
-from prog_algs.predictors import MonteCarlo, ToEPredictionProfile
+# from prog_algs.state_estimators import ParticleFilter as StateEstimator
+
+from prog_algs.predictors import ToEPredictionProfile
+
+from prog_algs.predictors import UnscentedTransformPredictor as Predictor
+# VVV Uncomment this to use MonteCarloPredictor instead
+# from prog_algs.predictors import MonteCarlo as Predictor
+
 from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
 
 import csv
@@ -30,26 +36,38 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Constants
-NUM_SAMPLES = 10
+NUM_SAMPLES = 20
+NUM_PARTICLES = 1000 # For state estimator (if using ParticleFilter)
 TIME_STEP = 1
 PREDICTION_UPDATE_FREQ = 50 # Number of steps between prediction update
 PLOT = True
+PROCESS_NOISE = 1e-4 # Percentage process noise
+MEASUREMENT_NOISE = 1e-4 # Percentage measurement noise
+X0_COV = 1 # Covariance percentage with initial state
+GROUND_TRUTH = {'EOD':2780}
+ALPHA = 0.05
+BETA = 0.90
 
 def run_example():
     # Setup Model
-    batt_noise_all = 1 # values from particle_filter_battery_example
-    measurement_noise = 2
-    batt = Battery(process_noise = batt_noise_all, process_noise_dist = "normal", measurement_noise = measurement_noise)
+    batt = Battery()
+
+    # Initial state
+    x0 = batt.initialize()
+    batt.parameters['process_noise'] = {key: PROCESS_NOISE * value for key, value in x0.items()}
+    z0 = batt.output(x0)
+    batt.parameters['measurement_noise'] = {key: MEASUREMENT_NOISE * value for key, value in z0.items()}
+    x0 = MultivariateNormalDist(x0.keys(), list(x0.values()), np.diag([max(1e-9, X0_COV * abs(x)) for x in x0.values()]))
 
     # Setup State Estimation
-    x0 = batt.initialize()
-    state_estimator_noise = MultivariateNormalDist(x0.keys(), list(x0.values()), np.diag([5.0] * len(x0.keys())))
-    filt = StateEstimator(batt, state_estimator_noise)
+    filt = StateEstimator(batt, x0, num_particles = NUM_PARTICLES)
 
     # Setup Prediction
     def future_loading(t, x=None):
         return {'i': 2.35}
-    mc = MonteCarlo(batt)
+    Q = np.diag([batt.parameters['process_noise'][key] for key in batt.states])
+    R = np.diag([batt.parameters['measurement_noise'][key] for key in batt.outputs])
+    mc = Predictor(batt, Q = Q, R = R)
 
     if PLOT:
         # Prepare SOC Plot
@@ -64,16 +82,20 @@ def run_example():
 
         # Prepare RUL Plot
         rul_fig, rulax = plt.subplots()
-        rul_line, = rulax.plot([], [])
         rulax.grid()
         rulax.set_xlabel('Time (s)')
         rulax.set_ylabel('RUL (s)')
-        rul_x, rul_y = [], []
+        gt_x = range(int(GROUND_TRUTH['EOD']))
+        gt_y = range(int(GROUND_TRUTH['EOD']), 0, -1)
+        rulax.plot(gt_x, gt_y, color='green')
+        rulax.fill_between(gt_x, np.array(gt_y)*(1-ALPHA), np.array(gt_y)*(1+ALPHA), color='green', alpha=0.2)
+        rulax.set_xlim(0, GROUND_TRUTH['EOD']+1)
         rul_fig.show()
 
     # Run Playback
     step = 0
     profile = ToEPredictionProfile()
+    
     with open('examples/data_const_load.csv', 'r') as f:
         reader = csv.reader(f)
         next(reader) # Skip header
@@ -97,32 +119,28 @@ def run_example():
 
                 if t >= xmax:
                     ax.set_xlim(xmin, 2*xmax)
-                    rulax.set_xlim(xmin, 2*xmax)
+                    # rulax.set_xlim(xmin, 2*xmax)
                 line.set_data(xdata, ydata)
                 fig.canvas.draw()
 
             # Prediction Step (every PREDICTION_UPDATE_FREQ steps)
             if (step%PREDICTION_UPDATE_FREQ == 0):
                 mc_results = mc.predict(filt.x, future_loading, t0 = t, n_samples=NUM_SAMPLES, dt=TIME_STEP)
-                m = mc_results.time_of_event.metrics()
-                print('  - ToE: {} (sigma: {})'.format(m['EOD']['mean'], m['EOD']['std']))
+                metrics = mc_results.time_of_event.metrics()
+                print('  - ToE: {} (sigma: {})'.format(metrics['EOD']['mean'], metrics['EOD']['std']))
 
                 # Update Plot
-                rul_x.append(t)
-                rul_y.append(m['EOD']['mean']-t)
-                _, ymax = rulax.get_ylim()
-                if m['EOD']['mean']-t > ymax:
-                    rulax.set_ylim(0, (m['EOD']['mean']-t)*1.1)
-                rul_line.set_data(rul_x, rul_y)
-                rul_fig.canvas.draw()
+                if PLOT:
+                    samples = mc_results.time_of_event.sample(100)
+                    samples = [e['EOD']-t for e in samples]
+                    rulax.scatter([t]*len(samples), samples, color='red')
+                    rul_fig.canvas.draw()
                 profile.add_prediction(t, mc_results.time_of_event)
 
-        # Calculating Prognostic Horizon once for loop complete
+        # Calculating Prognostic Horizon once the loop completes
         from prog_algs.uncertain_data.uncertain_data import UncertainData
         from prog_algs.metrics import samples as metrics, prognostic_horizon
 
-        ground_truth = {'EOD':3306.5}
-        # ground_truth = {'EOD' : 2950.5}
         def criteria_eqn(tte : UncertainData, ground_truth_tte : dict) -> dict:
             """
             Sample criteria equation for playback. 
@@ -136,19 +154,17 @@ def run_example():
             """
             
             # Set an alpha value
-            alpha_bounds = 0.10 # set the alpha value percentage here; for x - a, x + a
-            beta_percentage = 0.90 # set the beta value percentage here; B% of distribution between alpha bounds
             bounds = {}
             for key, value in ground_truth_tte.items():
                 # Set bounds for precentage_in_bounds by adding/subtracting to the ground_truth
-                alpha_calc = value * alpha_bounds
+                alpha_calc = value * ALPHA
                 bounds[key] = [value - alpha_calc, value + alpha_calc] # Construct bounds for all events
             percentage_in_bounds = tte.percentage_in_bounds(bounds)
             
             # Verify if percentage in bounds for this ground truth meets beta distribution percentage limit
-            return {key: percentage_in_bounds[key] > beta_percentage for key in percentage_in_bounds.keys()}
+            return {key: percentage_in_bounds[key] > BETA for key in percentage_in_bounds.keys()}
 
-        ph = prognostic_horizon(profile, criteria_eqn, ground_truth)
+        ph = prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH)
         print(f"Prognostic Horizon for 'EOD': {ph['EOD']}")
 
     input('Press any key to exit')

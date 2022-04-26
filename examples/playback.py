@@ -28,7 +28,10 @@ from prog_algs.predictors import MonteCarlo, ToEPredictionProfile
 from prog_algs.metrics import samples as metrics
 
 import csv
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
+
+from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist 
+import numpy as np
 
 # Constants
 NUM_SAMPLES = 10
@@ -41,6 +44,16 @@ def run_example():
 
     # Setup State Estimation
     filt = StateEstimator(batt, batt.parameters['x0'])
+    # Setup State Estimation alternate with uncertainty
+    # x0 = batt.initialize()
+    # PROCESS_NOISE = 1e-4
+    # MEASUREMENT_NOISE = 1e-4
+    # X0_COV = 1
+    # batt.parameters['process_noise'] = {key: PROCESS_NOISE * value for key, value in x0.items()}
+    # z0 = batt.output(x0)
+    # batt.parameters['measurement_noise'] = {key: MEASUREMENT_NOISE * value for key, value in z0.items()}
+    # x0 = MultivariateNormalDist(x0.keys(), list(x0.values()), np.diag([max(1e-9, X0_COV * abs(x)) for x in x0.values()]))
+    # filt = StateEstimator(batt, x0)
 
     # Setup Prediction
     def future_loading(t, x=None):

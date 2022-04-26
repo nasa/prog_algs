@@ -16,7 +16,6 @@ Results:
 """
 
 from prog_models.models import BatteryCircuit as Battery
-from prog_algs.metrics.toe_profile_metrics import alpha_lambda
 # VVV Uncomment this to use Electro Chemistry Model VVV
 # from prog_models.models import BatteryElectroChem as Battery
 
@@ -48,7 +47,7 @@ X0_COV = 1 # Covariance percentage with initial state
 GROUND_TRUTH = {'EOD':2780}
 ALPHA = 0.05
 BETA = 0.90
-LAMBDA_VALUE = 2400
+LAMBDA_VALUE = 1500
 
 def run_example():
     # Setup Model
@@ -142,6 +141,8 @@ def run_example():
         # Calculating Prognostic Horizon once the loop completes
         from prog_algs.uncertain_data.uncertain_data import UncertainData
         from prog_algs.metrics import samples as metrics, prognostic_horizon, alpha_lambda
+        # from prog_algs.metrics.toe_prediction_profile import ToEPredictionProfile
+
 
         def criteria_eqn(tte : UncertainData, ground_truth_tte : dict) -> dict:
             """

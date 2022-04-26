@@ -11,20 +11,20 @@ from warnings import warn
 def mean_square_error(values : list, ground_truth : float) -> float:
     """Mean Square Error
     Args:
-        values ([float]): time of event for a single event, output from predictor
+        values (List[float]): Times of Event (ToE) for a single event, output from predictor
         ground_truth (float): Ground truth ToE
     Returns:
-        float: mean square error of toe predictions
+        float: mean square error of ToE predictions
     """
     return sum([(mean(x) - ground_truth)**2 for x in values])/len(values)
 
 def root_mean_square_error(values, ground_truth):
     """Root Mean Square Error
     Args:
-        values ([float]): time of event for a single event, output from predictor
+        values (List[float]): Times of Event (ToE) for a single event, output from predictor
         ground_truth (float): Ground truth ToE
     Returns:
-        float: root mean square error of toe predictions
+        float: root mean square error of ToE predictions
     """
     return sqrt(sum([(mean(x) - ground_truth)**2 for x in values])/len(values))
 
@@ -32,7 +32,7 @@ def percentage_in_bounds(toe : list, bounds : tuple) -> float:
     """Calculate percentage of ToE dist is within specified bounds
 
     Args:
-        toe ([float]): Times of event for a single event, output from predictor
+        toe (List[float]): Times of Event (ToE) for a single event, output from predictor
         bounds ((float, float)): Lower and upper bounds
 
     Returns:

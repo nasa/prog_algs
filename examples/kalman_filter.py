@@ -10,6 +10,8 @@ import numpy as np
 
 from prog_models import LinearModel
 from prog_algs.state_estimators import KalmanFilter
+from prog_algs.uncertain_data.scalar_data import ScalarData
+from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
 
 # Linear Model for an object thrown into the air
 class ThrownObject(LinearModel):
@@ -105,6 +107,12 @@ def run_example():
     x_guess = {'x': 1.75, 'v': 35} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
     kf = KalmanFilter(m, x_guess)
 
+    # Step 2 (alt): Instantiate the Kalman Filter State Estimator with uncertainty
+    # Define the initial state with UncertainData, allowing specification of uncertainty
+    # x_guess_uncertainty = ScalarData({'x': 1.75, 'v': 35}) # no uncertainty?
+    x_guess_uncertainty = UnweightedSamples({'x': 1.75, 'v': 35})
+    kf_uncertainty = KalmanFilter(m, x_guess_uncertainty)
+
     # Step 3: Run the Kalman Filter State Estimator
     # Here we're using simulated data from the thrown_object. In a real application you would be using sensor data from the system
     dt = 0.01  # Time step (s)
@@ -128,6 +136,31 @@ def run_example():
 
         # Update Real state for next step
         x = m.next_state(x, u, dt)
+
+    # Step 3 (alt): Run the Kalman Filter State Estimator with uncertainty
+    # Here we're using simulated data from the thrown_object. In a real application you would be using sensor data from the system
+    dt = 0.01  # Time step (s)
+    print_freq = 50  # Print every print_freq'th iteration
+    x = m.initialize()
+    u = m.InputContainer({})  # No input for this model
+    
+    for i in range(500):
+        # Get simulated output (would be measured in a real application)
+        z = m.output(x)
+
+        # Estimate New State
+        kf_uncertainty.estimate(i*dt, u, z)
+        x_est = kf_uncertainty.x.mean
+
+        # Print Results
+        if i%print_freq == 0:  # Print every print_freq'th iteration
+            print(f"t: {i*dt:.2f}\n\tEstimate: {x_est}\n\tTruth: {x}")
+            diff = {key: x_est[key] - x[key] for key in x.keys()}
+            print(f"\t Diff: {diff}")
+
+        # Update Real state for next step
+        x = m.next_state(x, u, dt)
+
 
 if __name__ == '__main__':
     run_example()

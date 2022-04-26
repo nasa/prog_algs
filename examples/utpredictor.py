@@ -2,6 +2,7 @@
 
 from prog_models.models import BatteryCircuit
 from prog_algs import *
+from prog_algs.state_estimators.unscented_kalman_filter import UnscentedKalmanFilter
 # from prog_algs.visualize import plot_hist
 # import matplotlib.pyplot as plt
 
@@ -25,6 +26,19 @@ def run_example():
 
     ## State Estimation - perform a single ukf state estimate step
     filt = state_estimators.UnscentedKalmanFilter(batt, batt.parameters['x0'])
+
+    ## State Estimation alt. - perform a single ukf state estimate step with uncertainty
+    # from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist 
+    # import numpy as np
+    # x0 = batt.initialize()
+    # PROCESS_NOISE = 1e-4
+    # MEASUREMENT_NOISE = 1e-4
+    # X0_COV = 1
+    # batt.parameters['process_noise'] = {key: PROCESS_NOISE * value for key, value in x0.items()}
+    # z0 = batt.output(x0)
+    # batt.parameters['measurement_noise'] = {key: MEASUREMENT_NOISE * value for key, value in z0.items()}
+    # x0 = MultivariateNormalDist(x0.keys(), list(x0.values()), np.diag([max(1e-9, X0_COV * abs(x)) for x in x0.values()]))
+    # filt = UnscentedKalmanFilter(batt, x0)
 
     import matplotlib.pyplot as plt  # For plotting
     print("Prior State:", filt.x.mean)

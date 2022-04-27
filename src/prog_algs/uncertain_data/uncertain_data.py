@@ -81,7 +81,7 @@ class UncertainData(ABC):
         Returns:
             float: Percentage within bounds (where 0.5 = 50%)
         """
-        return self.sample(1000).percentage_in_bounds(bounds)
+        return self.sample(1000).percentage_in_bounds(bounds, keys)
 
     def metrics(self, **kwargs) -> dict:
         """Calculate Metrics for this dist

@@ -36,7 +36,8 @@ def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda
             for key in keys:
                 upper_bound = ground_truth[key] + alpha*(ground_truth[key]-t_prediction)
                 lower_bound = ground_truth[key] - alpha*(ground_truth[key]-t_prediction)
-                result[key] = toe.percentage_in_bounds([lower_bound, upper_bound])[key] >= beta 
+                # only one key, 'EOD': should dict be like {'EOD': lower_bound, ...}
+                result[key] = toe.percentage_in_bounds([lower_bound, upper_bound], keys)[key] >= beta 
                 if params['print']:
                     print('\n', key)
                     print('\ttoe:', toe.key(key))

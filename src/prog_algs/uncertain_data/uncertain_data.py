@@ -61,12 +61,19 @@ class UncertainData(ABC):
         """
 
     @property
-    def relative_accuracy(self) -> float:
+    def relative_accuracy(self) -> dict:
         """The relative accuracy measure of error in RUL prediction relative to the actual RUL at a specific time index
         
         Returns:
             float: Relative accuracy value between [0,1]
         """
+        # 1 - abs(ground truth actual - predicted RUL)/predicted RUL at time index i
+        # how is this done for multiple keys? return dict of RA?
+        GROUND_TRUTH_RUL_ACTUAL = None # what is this?
+        result = {}
+        for k,v in self.mean: # mean is {'a': 24.058823529411764, 'b': 9.019607843137255}
+            result[k] = 1 - (abs(GROUND_TRUTH_RUL_ACTUAL - v)/v) # what is actual?
+        return result
 
     @abstractmethod
     def keys(self):

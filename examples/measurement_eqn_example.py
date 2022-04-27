@@ -75,15 +75,32 @@ def run_example():
     # Note that the particle filter was still able to perform state estimation.
     # The updated outputs can be used for any case where the measurement doesn't match the model outputs
     # For example, when units are different, or when the measurement is some combination of the outputs
-    # For example:
+    # These are a little more complicated, since they require an instance of the parent class. For example:
+
+    parent = Battery()
+
+
     class MyBattery(Battery):
-        outputs = ['tv'] # output is temperature * voltage (for some reason)
+        outputs = ['tv']  # output is temperature * voltage (for some reason)
 
         def output(self, x):
-            z = Battery.output(self, x)
-            z['tv'] = z['v'] * z['t']
-            return z
+            parent.parameters = self.parameters  # only needed if you expect to change parameters
+            z = parent.output(x)
+            return self.OutputContainer({'tv': z['v'] * z['t']})
 
+    batt = MyBattery()
+    filt = state_estimators.ParticleFilter(batt, x0)
+
+    print('-----------------\n\nExample 2')
+    print("\nPrior State:", filt.x.mean)
+    print("\toutput: ", batt.output(filt.x.mean))
+    print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
+    t = 0.1
+    load = future_loading(t)
+    filt.estimate(t, load, {'tv': 80})
+    print("\nPosterior State:", filt.x.mean)
+    print("\toutput: ", batt.output(filt.x.mean))
+    print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
 
 # This allows the module to be executed directly 
 if __name__ == '__main__':

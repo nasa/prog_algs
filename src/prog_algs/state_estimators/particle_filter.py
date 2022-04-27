@@ -14,7 +14,7 @@ from warnings import warn
 
 class ParticleFilter(state_estimator.StateEstimator):
     """
-    Estimates state using a particle filter (PF) algorithm.
+    Estimates state using a Particle Filter (PF) algorithm.
 
     This class defines logic for a PF using a Prognostics Model (see Prognostics Model Package). This filter uses measurement data with noise to estimate the state of the system using a particles. At each step, particles are predicted forward (with noise). Particles are resampled with replacement from the existing particles according to how well the particles match the observed measurements.
 

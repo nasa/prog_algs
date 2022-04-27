@@ -6,6 +6,7 @@ from typing import Callable
 from ..uncertain_data import UncertainData
 from ..exceptions import ProgAlgTypeError
 from copy import deepcopy
+from warnings import warn
 
 class StateEstimator(ABC):
     """
@@ -20,8 +21,6 @@ class StateEstimator(ABC):
      x0 : UncertainData or dict
         Initial (starting) state, with keys defined by model.states \n
         e.g., x = ScalarData({'abc': 332.1, 'def': 221.003}) given states = ['abc', 'def']
-     measurement_eqn : optional, function
-        Measurement equation (x)->z. Usually used in situations where what's measured don't exactly match the output (e.g., different unit, not ever output measured, etc.). see `examples.measurement_eqn_example`
      options : optional, kwargs
         configuration options\n
         Dictionary of any additional configuration values. See state-estimator specific documentation
@@ -42,6 +41,9 @@ class StateEstimator(ABC):
         if not hasattr(model, 'states'):
             raise ProgAlgTypeError("model must have `states` property")
         self.model = deepcopy(model)
+
+        if measurement_eqn is not None:
+            warn('Measurement_eqn was deprecated in v1.3 in favor of model subclassing. I will remove this in v1.4. See measurement_equation example for more information', DeprecationWarning)
 
         # Check x0
         for key in model.states:

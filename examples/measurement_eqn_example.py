@@ -3,8 +3,8 @@
 """
 This example performs a state estimation with uncertainty given a Prognostics Model for a system in which not all output values are measured. 
  
-Method: An instance of the BatteryCircuit model in prog_models is created. We assume that we are only measuring one of the output values, and we define a measurement_eqn to remove the other output value.  
-        Estimation of the current state is performed at various time steps, using the defined state_estimator. The state_estimator takes the measurement_eqn as input, to account for the missing output information. 
+Method: An instance of the BatteryCircuit model in prog_models is created. We assume that we are only measuring one of the output values, and we define a subclass to remove the other output value.  
+        Estimation of the current state is performed at various time steps, using the defined state_estimator.
 
 Results: 
     i) Estimate of the current state given various times
@@ -18,7 +18,14 @@ from prog_models.models import BatteryCircuit as Battery
 from prog_algs import *
 
 def run_example():
-    # Step 1: Setup model & future loading
+    # Step 1: Subclass model with measurement equation
+    # In this case we're only measuring 'v' (i.e., removing temperature)
+    # To do this we're creating a new class that's subclassed from the complete model.
+    # To change the outputs we just have to override outputs (the list of keys)
+    class MyBattery(Battery):
+        outputs = ['v']
+
+    # Step 2: Setup model & future loading
     def future_loading(t, x={}):
         # Variable (piece-wise) future loading scheme 
         if (t < 600):
@@ -33,18 +40,11 @@ def run_example():
             i = 3
         return {'i': i}
 
-    batt = Battery()
+    batt = MyBattery()
     x0 = batt.parameters['x0']
 
-    # Step 2: Define Measurement Equation
-    # This example is a little different. Here we are saying that we dont have the complete output. Instead we're only measuring voltage. We use the measurement eqn to remove temp
-    def measure(x):
-        output = batt.output(x)
-        del output['t'] # Not measuring temperature
-        return output
-
-    # Step 3: Setup particle filter to use measurement eqn
-    filt = state_estimators.ParticleFilter(batt, x0, measurement_eqn = measure)
+    # Step 3: Use the updated model
+    filt = state_estimators.ParticleFilter(batt, x0)
 
     # Step 4: Run step and print results
     print('Running state estimation step with only one of 2 outputs measured')
@@ -54,6 +54,7 @@ def run_example():
     print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
 
     # Estimate Step
+    # Note, only voltage was needed in the measurement step, since that is the only output we're measuring
     t = 0.1
     load = future_loading(t)
     filt.estimate(t, load, {'v': 3.915})
@@ -72,8 +73,34 @@ def run_example():
     print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
 
     # Note that the particle filter was still able to perform state estimation.
-    # The measurement_eqn can be used for any case where the measurement doesn't match the model outputs
+    # The updated outputs can be used for any case where the measurement doesn't match the model outputs
     # For example, when units are different, or when the measurement is some combination of the outputs
+    # These are a little more complicated, since they require an instance of the parent class. For example:
+
+    parent = Battery()
+
+
+    class MyBattery(Battery):
+        outputs = ['tv']  # output is temperature * voltage (for some reason)
+
+        def output(self, x):
+            parent.parameters = self.parameters  # only needed if you expect to change parameters
+            z = parent.output(x)
+            return self.OutputContainer({'tv': z['v'] * z['t']})
+
+    batt = MyBattery()
+    filt = state_estimators.ParticleFilter(batt, x0)
+
+    print('-----------------\n\nExample 2')
+    print("\nPrior State:", filt.x.mean)
+    print("\toutput: ", batt.output(filt.x.mean))
+    print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
+    t = 0.1
+    load = future_loading(t)
+    filt.estimate(t, load, {'tv': 80})
+    print("\nPosterior State:", filt.x.mean)
+    print("\toutput: ", batt.output(filt.x.mean))
+    print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
 
 # This allows the module to be executed directly 
 if __name__ == '__main__':

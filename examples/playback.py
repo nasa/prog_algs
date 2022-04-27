@@ -168,8 +168,8 @@ def run_example():
         ph = profile.prognostic_horizon(criteria_eqn, GROUND_TRUTH)
         print(f"Prognostic Horizon for 'EOD': {ph['EOD']}")
 
-        # al = profile.alpha_lambda(profile, GROUND_TRUTH, LAMBDA_VALUE, ALPHA, BETA)
-        # print(f"Alpha Lambda for 'EOD': {al['EOD']}")
+        al = profile.alpha_lambda(GROUND_TRUTH, LAMBDA_VALUE, ALPHA, BETA)
+        print(f"Alpha Lambda for 'EOD': {al['EOD']}")
 
     input('Press any key to exit')
 

@@ -1,10 +1,13 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
+from warnings import warn
+from typing import Callable
 from . import state_estimator
 from filterpy import kalman
 from numpy import diag, array
 from warnings import warn
-from ..uncertain_data import MultivariateNormalDist
+from ..uncertain_data import MultivariateNormalDist, UncertainData
+
 
 class UnscentedKalmanFilter(state_estimator.StateEstimator):
     """
@@ -37,11 +40,12 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         'dt': 1
     } 
 
-    def __init__(self, model, x0, measurement_eqn = None, **kwargs):
+    def __init__(self, model, x0, measurement_eqn : Callable = None, **kwargs):
         super().__init__(model, x0, measurement_eqn, **kwargs)
 
         self.__input = None
         self.x0 = x0
+        # Saving for reduce pickling
 
         if measurement_eqn is None: 
             def measure(x):
@@ -72,26 +76,20 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         num_measurements = model.n_outputs
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measure, state_transition, points)
-        self.filter.x = array(list(x0.values())).ravel()
-        self.filter.Q = diag([model.parameters['process_noise'][key] for key in x0.keys()])
-
-        if measurement_eqn is not None:
-            if 'R' in self.parameters:
-                # If specified, use
-                self.filter.R = self.parameters['R']
-            else:
-                z = measurement_eqn(x0)
-                if all((key in model.outputs for key in z.keys())):
-                    # Subset of measurements
-                    self.filter.R = diag([model.parameters['measurement_noise'][key] for key in z.keys()])                
-                # Otherwise use default
+        
+        if isinstance(x0, dict) or isinstance(x0, model.StateContainer):
+            warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
+            self.filter.x = array(list(x0.values()))
+        elif isinstance(x0, UncertainData):
+            x_mean = x0.mean
+            self.filter.x = array(list(x_mean.values()))
         else:
-            if 'R' in self.parameters:
-                warn("UKF does not support R parameter when not using a measurement_eqn. Instead, set measurement noise, model.parameters['measurement_noise']")
-            # Not using measurement_eqn - then use model noise
-            self.filter.R = diag([model.parameters['measurement_noise'][key] for key in model.outputs])
+            raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
 
-    def estimate(self, t, u, z):
+        self.filter.P = diag([0]*len(x0))
+        self.filter.R = diag([0]*len(measure(self.filter.x)))
+
+    def estimate(self, t : float, u, z):
         """
         Perform one state estimation step (i.e., update the state estimate)
 
@@ -115,7 +113,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         self.filter.update(array(list(z.values())))
     
     @property
-    def x(self):
+    def x(self) -> MultivariateNormalDist:
         """
         Getter for property 'x', the current estimated state. 
 

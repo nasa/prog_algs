@@ -8,6 +8,7 @@ Method: An instance of the BatteryCircuit model in prog_models is created, the s
         1) The necessary data is extracted (time, current load, output values) and corresponding values defined (t, i, and z)
         2) The current state estimate is performed and samples are drawn from this distribution
         3) Prediction performed to get future states (with uncertainty) and the times at which the event threshold will be reached
+    
 Results: 
     i) Predicted future values (inputs, states, outputs, event_states) with uncertainty from prediction
     ii) Time event is predicted to occur (with uncertainty)
@@ -68,6 +69,7 @@ def run_example():
     # Run Playback
     step = 0
     profile = ToEPredictionProfile()
+    
     with open('examples/data_const_load.csv', 'r') as f:
         reader = csv.reader(f)
         next(reader) # Skip header

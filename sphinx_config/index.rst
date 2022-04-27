@@ -21,7 +21,8 @@ If you are new to this package, see `getting started <getting_started.html>`__.
    metrics
    exceptions
    ProgModels <https://nasa.github.io/prog_models>
-   dev_guide
+   ProgServer <https://nasa.github.io/prog_server>
+   dev_guide <https://nasa.github.io/prog_models/dev_guide.html>
    GitHub <https://github.com/nasa/prog_algs>
 
 Citing this repository

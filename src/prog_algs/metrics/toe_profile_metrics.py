@@ -1,11 +1,11 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
 """
-This file includes functions for calculating metrics given a time of event (ToE) profile (i.e., ToE's calculated at different times of prediction resulting from running prognostics multiple times, e.g., on playback data). The metrics calculated here are specific to multiple ToE estimates (e.g. alpha-lambda metric)
+This file includes functions for calculating metrics given a Time of Event (ToE) profile (i.e., ToE's calculated at different times of prediction resulting from running prognostics multiple times, e.g., on playback data). The metrics calculated here are specific to multiple ToE estimates (e.g. alpha-lambda metric)
 """
 from ..predictors import ToEPredictionProfile
 
-def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda_value : float, alpha : float, beta : float, **kwargs): 
+def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda_value : float, alpha : float, beta : float, **kwargs) -> dict: 
     """
     Compute alpha lambda metric, a common metric in prognostics. Alpha-Lambda is met if alpha % of the Time to Event (TtE) distribution is within beta % of the ground truth at prediction time lambda.
 
@@ -19,7 +19,7 @@ def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda
             * keys (list[string], optional): list of keys to use. If not provided, all keys are used.
 
     Returns:
-        bool: if alpha-lambda met
+        dict: dictionary containing key value pairs for each key and whether the alpha-lambda was met.
     """
     params = {
         'print': False

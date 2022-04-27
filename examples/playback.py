@@ -48,6 +48,7 @@ X0_COV = 1 # Covariance percentage with initial state
 GROUND_TRUTH = {'EOD':2780}
 ALPHA = 0.05
 BETA = 0.90
+LAMBDA_VALUE = 1500
 
 def run_example():
     # Setup Model
@@ -140,7 +141,7 @@ def run_example():
 
         # Calculating Prognostic Horizon once the loop completes
         from prog_algs.uncertain_data.uncertain_data import UncertainData
-        from prog_algs.metrics import samples as metrics, prognostic_horizon
+        from prog_algs.metrics import samples as metrics
 
         def criteria_eqn(tte : UncertainData, ground_truth_tte : dict) -> dict:
             """
@@ -165,8 +166,11 @@ def run_example():
             # Verify if percentage in bounds for this ground truth meets beta distribution percentage limit
             return {key: percentage_in_bounds[key] > BETA for key in percentage_in_bounds.keys()}
 
-        ph = prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH)
+        ph = profile.prognostic_horizon(criteria_eqn, GROUND_TRUTH)
         print(f"Prognostic Horizon for 'EOD': {ph['EOD']}")
+
+        al = profile.alpha_lambda(GROUND_TRUTH, LAMBDA_VALUE, ALPHA, BETA)
+        print(f"Alpha Lambda for 'EOD': {al['EOD']}")
 
     input('Press any key to exit')
 

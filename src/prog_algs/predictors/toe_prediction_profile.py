@@ -62,7 +62,7 @@ class ToEPredictionProfile(UserDict):
         from ..metrics import alpha_lambda
         return alpha_lambda(self, ground_truth, lambda_value, alpha, beta, **kwargs)
 
-    def prognostic_horizon(self, toe_profile, criteria_eqn, ground_truth, **kwargs) -> Dict[str, float]:
+    def prognostic_horizon(self, criteria_eqn, ground_truth, **kwargs) -> Dict[str, float]:
         """
         Compute prognostic horizon metric, defined as the difference between a time ti, when the predictions meet specified performance criteria, and the time corresponding to the true Time of Event (ToE), for each event.
         PH = ToE - ti
@@ -82,5 +82,5 @@ class ToEPredictionProfile(UserDict):
             dict: Dictionary containing prognostic horizon calculations (value) for each event (key). e.g., {'event1': 12.3, 'event2': 15.1}
         """
         from ..metrics import prognostic_horizon
-        return prognostic_horizon(self, toe_profile, criteria_eqn, ground_truth, **kwargs)
+        return prognostic_horizon(self, criteria_eqn, ground_truth, **kwargs)
 

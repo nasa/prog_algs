@@ -4,7 +4,7 @@
 This example performs a state estimation with uncertainty given a Prognostics Model for a system in which not all output values are measured. 
  
 Method: An instance of the BatteryCircuit model in prog_models is created. We assume that we are only measuring one of the output values, and we define a subclass to remove the other output value.  
-        Estimation of the current state is performed at various time steps, using the defined state_estimator. \
+        Estimation of the current state is performed at various time steps, using the defined state_estimator.
 
 Results: 
     i) Estimate of the current state given various times

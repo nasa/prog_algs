@@ -60,6 +60,14 @@ class UncertainData(ABC):
             array[array[float]]: Covariance matrix
         """
 
+    @property
+    def relative_accuracy(self) -> float:
+        """The relative accuracy measure of error in RUL prediction relative to the actual RUL at a specific time index
+        
+        Returns:
+            float: Relative accuracy value between [0,1]
+        """
+
     @abstractmethod
     def keys(self):
         """Get the keys for the property represented

@@ -1,21 +1,21 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
 """
-This file includes functions for calculating metrics specific to time of event (ToE) from a single event or multiple events given the same time of prediction
+This file includes functions for calculating metrics specific to Time of Event (ToE) from a single event or multiple events given the same time of prediction
 """
 
 from typing import Iterable
 from numpy import isscalar
 from ..uncertain_data import UncertainData, UnweightedSamples
 
-def prob_success(toe, time, **kwargs):
+def prob_success(toe : UncertainData, time : float, **kwargs) -> float:
     """Calculate probability of success - i.e., probability that event will not occur within a given time (i.e., success)
 
     Args:
-        toe (UncertainData or array[float]): Times of event for a single event (array[float]) or multiple events, output from predictor
+        toe (UncertainData or list[float]): Times of event for a single event (array[float]) or multiple events, output from predictor
         time (float): time for calculation
         **kwargs (optional): Configuration parameters. Supported parameters include:
-          * n_samples (int): Number of samples to use for calculating metrics (if toe is not UnweightedSamples). Defaults to 10,000.
+          * n_samples (int): Number of samples to use for calculating metrics (if ToE is not UnweightedSamples). Defaults to 10,000.
           * keys (list of strings, optional): Keys to calculate metrics for. Defaults to all keys.
 
     Returns:

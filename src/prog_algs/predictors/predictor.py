@@ -2,6 +2,9 @@
 
 from abc import ABC, abstractmethod
 from copy import deepcopy
+from typing import Callable
+
+from prog_algs.predictors.prediction import PredictionResults
 from ..exceptions import ProgAlgTypeError
 from ..uncertain_data import UncertainData
 
@@ -41,7 +44,7 @@ class Predictor(ABC):
         self.parameters.update(kwargs)
 
     @abstractmethod
-    def predict(self, state : UncertainData, future_loading_eqn, **kwargs):
+    def predict(self, state : UncertainData, future_loading_eqn : Callable, **kwargs) -> PredictionResults:
         """
         Perform a single prediction
 
@@ -59,7 +62,7 @@ class Predictor(ABC):
             * save_freq (float): Frequency at which results are saved (s)
             * save_pts (list[float]): Any additional savepoints (s) e.g., [10.1, 22.5]
 
-        Return
+        Return PredictionResults namedtuple
         ----------
         times : List[float]
             Times for each savepoint such that inputs.snapshot(i), states.snapshot(i), outputs.snapshot(i), and event_states.snapshot(i) are all at times[i]            

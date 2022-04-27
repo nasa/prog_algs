@@ -1,11 +1,13 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from copy import deepcopy
+from typing import Callable
 import numpy as np
+from warnings import warn
 from filterpy import kalman
 from prog_models import LinearModel
 from . import state_estimator
-from ..uncertain_data import MultivariateNormalDist
+from ..uncertain_data import MultivariateNormalDist, UncertainData
 
 class KalmanFilter(state_estimator.StateEstimator):
     """
@@ -35,8 +37,8 @@ class KalmanFilter(state_estimator.StateEstimator):
         't0': -1e-10,
         'dt': 1
     } 
-
-    def __init__(self, model, x0, measurement_eqn = None, **kwargs):
+    
+    def __init__(self, model, x0, measurement_eqn : Callable = None, **kwargs):
         # Note: Measurement equation kept in constructor to keep it consistent with other state estimators. This way measurement equation can be provided as an ordered argument, and will just be ignored here
         if not isinstance(model, LinearModel):
             raise Exception('Kalman Filter only supports Linear Models (i.e., models derived from prog_models.LinearModel)')
@@ -44,7 +46,14 @@ class KalmanFilter(state_estimator.StateEstimator):
         super().__init__(model, x0, None, **kwargs)
 
         self.x0 = x0
-
+        
+        if 'Q' not in self.parameters:
+            self.parameters['Q'] = np.diag([1.0e-3 for i in x0.keys()])
+        if 'R' not in self.parameters:
+            # Size of what's being measured (not output) 
+            # This is determined by running the measure function on the first state
+            self.parameters['R'] = np.diag([1.0e-3 for i in range(model.n_outputs)])
+        
         num_states = model.n_states
         num_inputs = model.n_inputs + 1
         num_measurements = model.n_outputs
@@ -97,14 +106,29 @@ class KalmanFilter(state_estimator.StateEstimator):
 
         self.filter = kalman.KalmanFilter(num_states, num_measurements, num_inputs)
 
-        self.filter.x = np.array([[x0[key]] for key in model.states])
-        self.filter.P = self.parameters['process_noise'] / 10
-        self.filter.Q = self.parameters['process_noise']
-        self.filter.R = self.parameters['measurement_noise']
+        self.__state_keys = list(x0.keys())
+        if isinstance(x0, dict) or isinstance(x0, model.StateContainer):
+            warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
+            self.filter.x = np.array([[x0[key]] for key in model.states]) # x0.keys()
+            self.filter.P = self.parameters['Q'] / 10
+        elif isinstance(x0, UncertainData):
+            x_mean = x0.mean
+            self.filter.x = np.array([[x_mean[key]] for key in model.states])
+
+            # Reorder covariance to be in same order as model.states
+            mapping = {i: list(x0.keys()).index(key) for i, key in enumerate(model.states)}
+            cov = x0.cov  # Set covariance in case it has been calculated
+            mapped_cov = [[cov[mapping[i]][mapping[j]] for j in range(len(cov))] for i in range(len(cov))] # Set covariance based on mapping
+            self.filter.P = np.array(mapped_cov)
+        else:
+            raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
+
+        self.filter.Q = self.parameters['Q']
+        self.filter.R = self.parameters['R']
         self.filter.F = F
         self.filter.B = B
 
-    def estimate(self, t, u, z):
+    def estimate(self, t : float, u, z):
         """
         Perform one state estimation step (i.e., update the state estimate)
 
@@ -158,7 +182,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         self.filter.update(outputs, H=self.model.C)
     
     @property
-    def x(self):
+    def x(self) -> MultivariateNormalDist:
         """
         Getter for property 'x', the current estimated state. 
 

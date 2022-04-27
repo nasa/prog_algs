@@ -1,9 +1,11 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
+from warnings import warn
+from typing import Callable
 from . import state_estimator
 from filterpy import kalman
 from numpy import diag, array
-from ..uncertain_data import MultivariateNormalDist
+from ..uncertain_data import MultivariateNormalDist, UncertainData
 
 class UnscentedKalmanFilter(state_estimator.StateEstimator):
     """
@@ -33,11 +35,12 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         'dt': 1
     } 
 
-    def __init__(self, model, x0, measurement_eqn = None, **kwargs):
+    def __init__(self, model, x0, measurement_eqn : Callable = None, **kwargs):
         super().__init__(model, x0, measurement_eqn, **kwargs)
 
         self.__input = None
         self.x0 = x0
+        # Saving for reduce pickling
 
         if measurement_eqn is None: 
             def measure(x):
@@ -113,12 +116,26 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
 
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measure, state_transition, points)
-        self.filter.x = array(list(x0.values())).ravel()
-        self.filter.P = self.parameters['process_noise'] / 10
-        self.filter.Q = self.parameters['process_noise']
-        self.filter.R = self.parameters['measurement_noise']
+        
+        if isinstance(x0, dict) or isinstance(x0, model.StateContainer):
+            warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
+            self.filter.x = array(list(x0.values()))
+            self.filter.P = self.parameters['Q'] / 10
+        elif isinstance(x0, UncertainData):
+            x_mean = x0.mean
+            self.filter.x = array(list(x_mean.values()))
+            self.filter.P = x0.cov
+        else:
+            raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
 
-    def estimate(self, t, u, z):
+        if 'R' not in self.parameters:
+                # Size of what's being measured (not output) 
+                # This is determined by running the measure function on the first state
+                self.parameters['R'] = diag([1.0e-3 for i in range(len(measure(self.filter.x)))])
+        self.filter.Q = self.parameters['Q']
+        self.filter.R = self.parameters['R']
+
+    def estimate(self, t : float, u, z):
         """
         Perform one state estimation step (i.e., update the state estimate)
 
@@ -142,7 +159,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         self.filter.update(array(list(z.values())))
     
     @property
-    def x(self):
+    def x(self) -> MultivariateNormalDist:
         """
         Getter for property 'x', the current estimated state. 
 

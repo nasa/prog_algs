@@ -1,6 +1,8 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from abc import ABC, abstractmethod, abstractproperty
+from typing import Callable
+
 from ..uncertain_data import UncertainData
 from ..exceptions import ProgAlgTypeError
 from copy import deepcopy
@@ -15,11 +17,11 @@ class StateEstimator(ABC):
      model : ProgModel
         A prognostics model to be used in state estimation
         See: Prognostics Model Package
-     x0 : dict
+     x0 : UncertainData or dict
         Initial (starting) state, with keys defined by model.states \n
-        e.g., x = {'abc': 332.1, 'def': 221.003} given states = ['abc', 'def']
+        e.g., x = ScalarData({'abc': 332.1, 'def': 221.003}) given states = ['abc', 'def']
      measurement_eqn : optional, function
-        Measurement equation (x)->z. Usually used in situations where what's measured don't exactly match the output (e.g., different unit, not ever output measured, etc.). see `examples.measurement_eqn_example`
+        Measurement equation (x)->z. Usually used in situations where what's measured doesn't exactly match the output (e.g., different unit, not ever output measured, etc.). see `examples.measurement_eqn_example`
      options : optional, kwargs
         configuration options\n
         Dictionary of any additional configuration values. See state-estimator specific documentation
@@ -29,7 +31,7 @@ class StateEstimator(ABC):
         't0': 0
     }
 
-    def __init__(self, model, x0, measurement_eqn = None, **kwargs):
+    def __init__(self, model, x0, measurement_eqn : Callable = None, **kwargs):
         # Check model
         if not hasattr(model, 'output'):
             raise ProgAlgTypeError("model must have `output` method")
@@ -57,7 +59,7 @@ class StateEstimator(ABC):
         self.t = self.parameters['t0']  # Initial Time
 
     @abstractmethod
-    def estimate(self, t, u, z, **kwargs) -> None:
+    def estimate(self, t : float, u, z, **kwargs) -> None:
         """
         Perform one state estimation step (i.e., update the state estimate, filt.x)
 

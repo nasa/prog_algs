@@ -31,13 +31,12 @@ def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda
             # If keys not provided, use all
             keys = params.setdefault('keys', toe.keys())
 
-            result = {}
-            for key in keys:
-                upper_bound = ground_truth[key] + alpha*(ground_truth[key]-t_prediction)
-                lower_bound = ground_truth[key] - alpha*(ground_truth[key]-t_prediction)
-                result[key] = toe.percentage_in_bounds([lower_bound, upper_bound])[key] >= beta 
-                if params['print']:
+            bounds = {key : [gt - alpha*(gt-t_prediction), gt + alpha*(gt-t_prediction)] for gt, key in enumerate(keys)}
+            pib = toe.percentage_in_bounds(bounds)
+            result = {key: pib[key] >= beta for key in keys}
+            if params['print']:
+                for key in keys:
                     print('\n', key)
                     print('\ttoe:', toe.key(key))
-                    print('\tBounds: [{} - {}]({}%)'.format(lower_bound, upper_bound, toe.percentage_in_bounds([lower_bound, upper_bound])[key]))
+                    print('\tBounds: [{} - {}]({}%)'.format(bounds[key][0], bounds[key][1], pib[key]))
             return result

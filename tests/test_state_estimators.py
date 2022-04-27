@@ -289,8 +289,9 @@ class TestStateEstimators(unittest.TestCase):
         filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0})
 
         # New Measurement eqn method
-        del m['o2']
-        filt = UnscentedKalmanFilter(m, x0)
+        class MyModel(MockProgModel2):
+            outputs = ['o1']
+        filt = UnscentedKalmanFilter(MyModel(), x0)
         filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0})
 
     def test_measurement_eq_PF(self):
@@ -321,8 +322,9 @@ class TestStateEstimators(unittest.TestCase):
         filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0}) 
 
         # New Measurement eqn method
-        del m['o2']
-        filt = ParticleFilter(m, x0)
+        class MyModel(MockProgModel2):
+            outputs = ['o1']
+        filt = ParticleFilter(MyModel(), x0)
         filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0})
         
     def test_PF_incorrect_input(self):

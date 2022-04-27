@@ -65,7 +65,7 @@ class UncertainData(ABC):
         """The relative accuracy measure of error in RUL prediction relative to the actual RUL at a specific time index
         
         Returns:
-            float: Relative accuracy value between [0,1]
+            dict(str:float): Relative accuracy for each event where value is relative accuracy between [0,1]
         """
         # 1 - abs(ground truth actual - predicted RUL)/predicted RUL at time index i
         # how is this done for multiple keys? return dict of RA?

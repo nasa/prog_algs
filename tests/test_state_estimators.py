@@ -265,10 +265,10 @@ class TestStateEstimators(unittest.TestCase):
         class MockProgModel2(MockProgModel):
             outputs = ['o1', 'o2']
             def output(self, x):
-                return {
+                return self.OutputContainer({
                     'o1': x['a'] + x['b'] + x['c'], 
                     'o2': 7
-                    }
+                    })
 
         m = MockProgModel2()
         x0 = m.initialize()
@@ -298,10 +298,10 @@ class TestStateEstimators(unittest.TestCase):
         class MockProgModel2(MockProgModel):
             outputs = ['o1', 'o2']
             def output(self, x):
-                return {
+                return self.OutputContainer({
                     'o1': x['a'] + x['b'] + x['c'], 
                     'o2': 7
-                    }
+                    })
 
         m = MockProgModel2()
         x0 = m.initialize()

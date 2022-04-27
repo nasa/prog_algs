@@ -35,7 +35,6 @@ def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda
             pib = toe.percentage_in_bounds(bounds)
             result = {key: pib[key] >= beta for key in keys}
             for key in keys:
-                result[key] = pib[key] >= beta 
                 if params['print']:
                     print('\n', key)
                     print('\ttoe:', toe.key(key))

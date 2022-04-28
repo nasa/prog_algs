@@ -66,10 +66,7 @@ class UncertainData(ABC):
         Returns:
             dict(str:float): Relative accuracy for each event where value is relative accuracy between [0,1]
         """
-        result = {}
-        for k,v in self.mean.items():
-            result[k] = 1 - (abs(ground_truth[k] - v)/ground_truth[k])
-        return result
+        return {k:1 - (abs(ground_truth[k] - v)/ground_truth[k]) for k,v in self.mean.items()}
 
     @abstractmethod
     def keys(self):

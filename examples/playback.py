@@ -42,9 +42,7 @@ def run_example():
     # Setup Model
     batt = Battery()
 
-    # Setup State Estimation
-    filt = StateEstimator(batt, batt.parameters['x0'])
-    # Setup State Estimation alternate with uncertainty
+    # Setup State Estimation with uncertainty
     x0 = batt.initialize()
     PROCESS_NOISE = 1e-4
     MEASUREMENT_NOISE = 1e-4

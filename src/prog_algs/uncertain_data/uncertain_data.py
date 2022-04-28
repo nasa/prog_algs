@@ -66,6 +66,11 @@ class UncertainData(ABC):
         Returns:
             dict(str:float): Relative accuracy for each event where value is relative accuracy between [0,1]
         """
+        # if this check isn't here, goes to divide by zero check and raises AttributeError instead of TypeError. Keep? There are unittests checking for type
+        if not isinstance(ground_truth, dict):
+            raise TypeError("Ground truth must be passed as a dictionary argument.")
+        if not all(ground_truth.values()):
+            raise ZeroDivisionError("Ground truth values must be non-zero in calculating relative accuracy.")
         return {k:1 - (abs(ground_truth[k] - v)/ground_truth[k]) for k,v in self.mean.items()}
 
     @abstractmethod

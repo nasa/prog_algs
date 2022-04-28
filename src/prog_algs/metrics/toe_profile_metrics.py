@@ -42,7 +42,7 @@ def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda
                     print('\tBounds: [{} - {}]({}%)'.format(bounds[key][0], bounds[key][1], pib[key]))
             return result
 
-def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callable, ground_truth : dict, **kwargs):
+def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callable, ground_truth : dict, **kwargs) -> dict:
     """
     Compute prognostic horizon metric, defined as the difference between a time ti, when the predictions meet specified performance criteria, and the time corresponding to the true Time of Event (ToE), for each event.
     PH = ToE - ti
@@ -85,3 +85,18 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callab
     # Return PH when criteria not met for at least one event key
     return ph_result
 
+def cumulative_relative_accuracy(toe_profile : ToEPredictionProfile, ground_truth : dict, **kwargs):
+    """
+    Compute cumulative relative accuracy for a given profile, defined as the normalized sum of relative prediction accuracies at specific time instances.
+    
+    Args:
+        toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions
+        ground_truth (dict): Dictionary containing ground truth; specified as key, value pairs for event and its value. E.g, {'event1': 47.3, 'event2': 52.1, 'event3': 46.1}
+        kwargs (optional): configuration arguments. Accepted args include:
+            * print (bool): Boolean specifying whether the prognostic horizon metric should be printed.
+
+    Returns:
+        float? 
+        dict: Dictionary containing cumulative relative accuracy (value) for each event (key). e.g., {'event1': 12.3, 'event2': 15.1}
+    """
+    pass

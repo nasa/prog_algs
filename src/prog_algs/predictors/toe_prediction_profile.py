@@ -84,3 +84,10 @@ class ToEPredictionProfile(UserDict):
         from ..metrics import prognostic_horizon
         return prognostic_horizon(self, criteria_eqn, ground_truth, **kwargs)
 
+    def alpha_beta(self):
+        """Produce an alpha-beta chart depicting the TtE distribution by time of prediction.
+
+        Args:
+        Returns:
+        """
+        pass

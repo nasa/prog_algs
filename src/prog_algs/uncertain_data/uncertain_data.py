@@ -60,7 +60,6 @@ class UncertainData(ABC):
             array[array[float]]: Covariance matrix
         """
 
-    @property
     def relative_accuracy(self, ground_truth : dict) -> dict:
         """The relative accuracy measure of error in RUL prediction relative to the actual RUL at a specific time index
         
@@ -68,7 +67,7 @@ class UncertainData(ABC):
             dict(str:float): Relative accuracy for each event where value is relative accuracy between [0,1]
         """
         result = {}
-        for k,v in self.mean:
+        for k,v in self.mean.items():
             result[k] = 1 - (abs(ground_truth[k] - v)/ground_truth[k])
         return result
 

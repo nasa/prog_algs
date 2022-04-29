@@ -91,7 +91,8 @@ class ToEPredictionProfile(UserDict):
         Args:
         Returns:
         """
-        # Plot SOC Setup
+        print("Testing plot...")
+        # Prepare SOC Plot
         fig, ax = plt.subplots()
         line, = ax.plot([], [])
         ax.grid()
@@ -102,8 +103,8 @@ class ToEPredictionProfile(UserDict):
         fig.show()
 
         # Prepare RUL Plot
-        # rul_fig, rulax = plt.subplots()
-        # rulax.grid()
+        rul_fig, rulax = plt.subplots()
+        rulax.grid()
         # rulax.set_xlabel('Time (s)')
         # rulax.set_ylabel('RUL (s)')
         # gt_x = range(int(GROUND_TRUTH['EOD']))
@@ -111,7 +112,22 @@ class ToEPredictionProfile(UserDict):
         # rulax.plot(gt_x, gt_y, color='green')
         # rulax.fill_between(gt_x, np.array(gt_y)*(1-ALPHA), np.array(gt_y)*(1+ALPHA), color='green', alpha=0.2)
         # rulax.set_xlim(0, GROUND_TRUTH['EOD']+1)
-        # rul_fig.show()
+        rul_fig.show()
 
+        # Update Plot: State Estimation step
+        # xdata.append(t)
+        # ydata.append(eod)
+        # xmin, xmax = ax.get_xlim()
+
+        # if t >= xmax:
+        #     ax.set_xlim(xmin, 2*xmax)
+        #     # rulax.set_xlim(xmin, 2*xmax)
+        # line.set_data(xdata, ydata)
         fig.canvas.draw()
+
+        # Update Plot: Prediction step
+        # samples = mc_results.time_of_event.sample(100)
+        # samples = [e['EOD']-t for e in samples]
+        # rulax.scatter([t]*len(samples), samples, color='red')
+        rul_fig.canvas.draw()
 

@@ -7,6 +7,7 @@ from numpy import array
 
 from ..utils.table import print_table_recursive
 from ..visualize import plot_scatter, plot_hist
+from prog_models.utils.containers import DictLikeMatrixWrapper
 
 
 class UncertainData(ABC):
@@ -59,6 +60,23 @@ class UncertainData(ABC):
         Returns:
             array[array[float]]: Covariance matrix
         """
+
+    def relative_accuracy(self, ground_truth : dict) -> dict:
+        """The relative accuracy of the mean of the distribution. 
+        
+        RA = 1 - |r-p|/r 
+        Where r is ground truth and p is mean of predicted distribution
+        Prognostics: The Science of Making Predictions (Goebel et al, 239)
+
+        Returns:
+            dict(str:float): Relative accuracy for each event where value is relative accuracy between [0,1]
+        """
+        # if this check isn't here, goes to divide by zero check and raises AttributeError instead of TypeError. Keep? There are unittests checking for type
+        if not (isinstance(ground_truth, dict) or isinstance(ground_truth, DictLikeMatrixWrapper)):
+            raise TypeError("Ground truth must be passed as a dictionary or *.container argument.")
+        if not all(ground_truth.values()):
+            raise ZeroDivisionError("Ground truth values must be non-zero in calculating relative accuracy.")
+        return {k:1 - (abs(ground_truth[k] - v)/ground_truth[k]) for k,v in self.mean.items()}
 
     @abstractmethod
     def keys(self):

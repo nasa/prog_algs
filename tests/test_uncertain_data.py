@@ -503,6 +503,62 @@ class TestUncertainData(unittest.TestCase):
         dist -= 5
         assert_array_equal(dist.cov, dist_save)
 
+    def test_relative_accuracy(self):
+        # Testing for ScalarData
+        d = ScalarData({'a': 12, 'b': 14})
+        gt_std = {'a': 14, 'b': 16}
+        gt_neg = {'a': -14, 'b': -16}
+        ra_std = d.relative_accuracy(gt_std)
+        ra_neg = d.relative_accuracy(gt_neg)
+        self.assertDictEqual(ra_std,  {'a': 0.8571428571428572, 'b': 0.875})
+        self.assertDictEqual(ra_neg, {'a': 2.857142857142857, 'b': 2.875})
+        with self.assertRaises(ZeroDivisionError): # Passing in ground truth of 0 leads to divide by 0 error
+            gt_zero = {'a': 0, 'b': 0}
+            ra_zero = d.relative_accuracy(gt_zero)
+        with self.assertRaises(TypeError): # Passing in non-dict arg
+            ra_err_list = d.relative_accuracy([])
+            ra_err_str = d.relative_accuracy("")
+            ra_err_int = d.relative_accuracy(1)
+            ra_err_float = d.relative_accuracy(0.1)
+            ra_err_set = d.relative_accuracy(set())
+
+        # Testing for UnweightedSamples
+        d = UnweightedSamples([{'a': 1, 'b':2}, {'a': 3, 'b':-2}])
+        gt_std = {'a': 5, 'b': 4}
+        gt_neg = {'a': -5, 'b': -3}
+        ra_std = d.relative_accuracy(gt_std)
+        ra_neg = d.relative_accuracy(gt_neg)
+        self.assertDictEqual(ra_std,  {'a': 0.4, 'b': 0.0})
+        self.assertDictEqual(ra_neg, {'a': 2.4, 'b': 2.0})
+        with self.assertRaises(ZeroDivisionError): # Hits -inf and nan; maybe because 0/0?
+            gt_zero = {'a': 0, 'b': 0}
+            ra_zero = d.relative_accuracy(gt_zero)
+        with self.assertRaises(TypeError): # Passing in non-dict arg
+            ra_err_list = d.relative_accuracy([])
+            ra_err_str = d.relative_accuracy("")
+            ra_err_int = d.relative_accuracy(1)
+            ra_err_float = d.relative_accuracy(0.1)
+            ra_err_set = d.relative_accuracy(set())
+        
+        # Testing for MultivariateNormalDist
+        d = MultivariateNormalDist(['a', 'b'], array([2, 10]), array([[1, 0], [0, 1]]))
+        gt_std = {'a': 3, 'b': 3}
+        gt_neg = {'a': -3, 'b': -3}
+        ra_std = d.relative_accuracy(gt_std)
+        ra_neg = d.relative_accuracy(gt_neg)
+        self.assertDictEqual(ra_std,  {'a': 0.6666666666666667, 'b': -1.3333333333333335})
+        self.assertDictEqual(ra_neg, {'a': 2.666666666666667, 'b': 5.333333333333333})
+        with self.assertRaises(ZeroDivisionError): # Hits -inf and nan; maybe because 0/0?
+            gt_zero = {'a': 0, 'b': 0}
+            ra_zero = d.relative_accuracy(gt_zero)
+        with self.assertRaises(TypeError): # Passing in non-dict arg
+            ra_err_list = d.relative_accuracy([])
+            ra_err_str = d.relative_accuracy("")
+            ra_err_int = d.relative_accuracy(1)
+            ra_err_float = d.relative_accuracy(0.1)
+            ra_err_set = d.relative_accuracy(set())
+
+
 # This allows the module to be executed directly    
 def run_tests():
     l = unittest.TestLoader()

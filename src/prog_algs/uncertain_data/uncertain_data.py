@@ -72,7 +72,7 @@ class UncertainData(ABC):
             dict(str:float): Relative accuracy for each event where value is relative accuracy between [0,1]
         """
         # if this check isn't here, goes to divide by zero check and raises AttributeError instead of TypeError. Keep? There are unittests checking for type
-        if (not isinstance(ground_truth, dict)) and (not isinstance(ground_truth, DictLikeMatrixWrapper)):
+        if not (isinstance(ground_truth, dict) or isinstance(ground_truth, DictLikeMatrixWrapper)):
             raise TypeError("Ground truth must be passed as a dictionary or *.container argument.")
         if not all(ground_truth.values()):
             raise ZeroDivisionError("Ground truth values must be non-zero in calculating relative accuracy.")

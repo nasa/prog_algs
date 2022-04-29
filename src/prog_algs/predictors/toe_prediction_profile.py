@@ -102,7 +102,7 @@ class ToEPredictionProfile(UserDict):
         xdata, ydata = [], []
         fig.show()
 
-        # Prepare RUL Plot
+        # Prepare RUL Plot # Don't want green if no ground truth?
         rul_fig, rulax = plt.subplots()
         rulax.grid()
         rulax.set_xlabel('Time to Prediction (s)') # time to prediction

@@ -85,53 +85,53 @@ class ToEPredictionProfile(UserDict):
         from ..metrics import prognostic_horizon
         return prognostic_horizon(self, criteria_eqn, ground_truth, **kwargs)
 
-    def alpha_beta(self, ground_truth : dict = None):
+    def alpha_beta(self, ground_truth : dict = None , alpha = None): # use ground truth, alpha if given,
         """Produce an alpha-beta chart depicting the TtE distribution by time of prediction.
 
         Args:
         Returns:
         """
-        print("Testing plot...")
-        # Prepare SOC Plot
-        fig, ax = plt.subplots()
-        line, = ax.plot([], [])
-        ax.grid()
-        ax.set_ylim(-0.05, 1.05)
-        ax.set_xlabel('Time (s)')
-        ax.set_ylabel('SOC')
-        xdata, ydata = [], []
-        fig.show()
+        # print("Testing plot...")
+        # # Prepare SOC Plot
+        # fig, ax = plt.subplots()
+        # line, = ax.plot([], [])
+        # ax.grid()
+        # ax.set_ylim(-0.05, 1.05)
+        # ax.set_xlabel('Time (s)')
+        # ax.set_ylabel('SOC')
+        # xdata, ydata = [], []
+        # fig.show()
 
         # Prepare RUL Plot # Don't want green if no ground truth?
-        rul_fig, rulax = plt.subplots()
+        rul_fig, rulax = plt.subplots() # EACH TIME THIS IS CALLED CREATE NEW FIGURE
         rulax.grid()
-        rulax.set_xlabel('Time to Prediction (s)') # time to prediction
-        rulax.set_ylabel('Time to Event (s)') # time to event
+        rulax.set_xlabel('Time of Prediction (s)') # time to prediction
+        rulax.set_ylabel('Time to Event (s)') # time to event; create different graph for every event. show event name here or make it the title
         # What key to use for range?
-        # gt_x = range(int(GROUND_TRUTH['EOD']))
-        # gt_y = range(int(GROUND_TRUTH['EOD']), 0, -1)
+        gt_x = range(int(GROUND_TRUTH['EOD'])) # instead of eod, use event name 134 as well
+        gt_y = range(int(GROUND_TRUTH['EOD']), 0, -1)
 
-        # rulax.plot(gt_x, gt_y, color='green')
-        # rulax.fill_between(gt_x, np.array(gt_y)*(1-ALPHA), np.array(gt_y)*(1+ALPHA), color='green', alpha=0.2)
+        rulax.plot(gt_x, gt_y, color='green') # printing ground truth; green line
+        rulax.fill_between(gt_x, np.array(gt_y)*(1-ALPHA), np.array(gt_y)*(1+ALPHA), color='green', alpha=0.2) # logic for printing aalpha bounds. IF GROUND TRUTH AAAAND ALPHA
         # rulax.set_xlim(0, GROUND_TRUTH['EOD']+1)
-        rul_fig.show()
+        rul_fig.show() # don't need this either
 
         # Update Plot: State Estimation step
         # need something to iterate data + append to
 
-        # xdata.append(t)
-        # ydata.append(eod)
-        # xmin, xmax = ax.get_xlim()
+        # # xdata.append(t)
+        # # ydata.append(eod)
+        # # xmin, xmax = ax.get_xlim()
 
-        # if t >= xmax:
-        #     ax.set_xlim(xmin, 2*xmax)
-        #     # rulax.set_xlim(xmin, 2*xmax)
-        # line.set_data(xdata, ydata)
-        fig.canvas.draw()
+        # # if t >= xmax:
+        # #     ax.set_xlim(xmin, 2*xmax)
+        # #     # rulax.set_xlim(xmin, 2*xmax)
+        # # line.set_data(xdata, ydata)
+        # fig.canvas.draw()
 
         # Update Plot: Prediction step
-        # samples = mc_results.time_of_event.sample(100)
-        # samples = [e['EOD']-t for e in samples]
-        # rulax.scatter([t]*len(samples), samples, color='red')
-        rul_fig.canvas.draw()
+        samples = individual element in prediction profile.sample(100) # NEED SOME VERSION OF THIS TO PRINT RED DOTS, NEED THIS. sample distribution
+        samples = [e['EOD']-t for e in samples] # t is time of prediction from .items() of above line
+        rulax.scatter([t]*len(samples), samples, color='red') # adding single distribution of estimates. for every prediction in prediction profile, create a scatter plot like this
+        rul_fig.canvas.draw() # don't need this, only if peridiocially
 

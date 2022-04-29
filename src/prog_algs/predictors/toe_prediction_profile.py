@@ -117,6 +117,8 @@ class ToEPredictionProfile(UserDict):
         rul_fig.show()
 
         # Update Plot: State Estimation step
+        # need something to iterate data + append to
+
         # xdata.append(t)
         # ydata.append(eod)
         # xmin, xmax = ax.get_xlim()

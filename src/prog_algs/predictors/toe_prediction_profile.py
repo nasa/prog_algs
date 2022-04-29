@@ -91,17 +91,6 @@ class ToEPredictionProfile(UserDict):
         Args:
         Returns:
         """
-        # print("Testing plot...")
-        # # Prepare SOC Plot
-        # fig, ax = plt.subplots()
-        # line, = ax.plot([], [])
-        # ax.grid()
-        # ax.set_ylim(-0.05, 1.05)
-        # ax.set_xlabel('Time (s)')
-        # ax.set_ylabel('SOC')
-        # xdata, ydata = [], []
-        # fig.show()
-
         # Prepare RUL Plot # Don't want green if no ground truth?
         rul_fig, rulax = plt.subplots() # EACH TIME THIS IS CALLED CREATE NEW FIGURE
         rulax.grid()
@@ -115,19 +104,6 @@ class ToEPredictionProfile(UserDict):
         rulax.fill_between(gt_x, np.array(gt_y)*(1-ALPHA), np.array(gt_y)*(1+ALPHA), color='green', alpha=0.2) # logic for printing aalpha bounds. IF GROUND TRUTH AAAAND ALPHA
         # rulax.set_xlim(0, GROUND_TRUTH['EOD']+1)
         rul_fig.show() # don't need this either
-
-        # Update Plot: State Estimation step
-        # need something to iterate data + append to
-
-        # # xdata.append(t)
-        # # ydata.append(eod)
-        # # xmin, xmax = ax.get_xlim()
-
-        # # if t >= xmax:
-        # #     ax.set_xlim(xmin, 2*xmax)
-        # #     # rulax.set_xlim(xmin, 2*xmax)
-        # # line.set_data(xdata, ydata)
-        # fig.canvas.draw()
 
         # Update Plot: Prediction step
         samples = individual element in prediction profile.sample(100) # NEED SOME VERSION OF THIS TO PRINT RED DOTS, NEED THIS. sample distribution

@@ -61,7 +61,7 @@ class UncertainData(ABC):
         """
 
     def relative_accuracy(self, ground_truth : dict) -> dict:
-        """The relative accuracy measure of error in RUL prediction relative to the actual RUL at a specific time index
+        """The relative accuracy of the mean of the distribution. 
         
         Returns:
             dict(str:float): Relative accuracy for each event where value is relative accuracy between [0,1]

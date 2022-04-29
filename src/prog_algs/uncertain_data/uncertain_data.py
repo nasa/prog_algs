@@ -63,6 +63,10 @@ class UncertainData(ABC):
     def relative_accuracy(self, ground_truth : dict) -> dict:
         """The relative accuracy of the mean of the distribution. 
         
+        RA = 1 - |r-p|/r 
+        Where r is ground truth RUL and p is predicted RUL distribution
+        Prognostics (Goebel et al, 239)
+
         Returns:
             dict(str:float): Relative accuracy for each event where value is relative accuracy between [0,1]
         """

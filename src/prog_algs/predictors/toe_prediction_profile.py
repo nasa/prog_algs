@@ -1,4 +1,5 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
+import matplotlib.pyplot as plt
 from collections import UserDict
 from typing import Dict
 
@@ -90,4 +91,27 @@ class ToEPredictionProfile(UserDict):
         Args:
         Returns:
         """
-        pass
+        # Plot SOC Setup
+        fig, ax = plt.subplots()
+        line, = ax.plot([], [])
+        ax.grid()
+        ax.set_ylim(-0.05, 1.05)
+        ax.set_xlabel('Time (s)')
+        ax.set_ylabel('SOC')
+        xdata, ydata = [], []
+        fig.show()
+
+        # Prepare RUL Plot
+        # rul_fig, rulax = plt.subplots()
+        # rulax.grid()
+        # rulax.set_xlabel('Time (s)')
+        # rulax.set_ylabel('RUL (s)')
+        # gt_x = range(int(GROUND_TRUTH['EOD']))
+        # gt_y = range(int(GROUND_TRUTH['EOD']), 0, -1)
+        # rulax.plot(gt_x, gt_y, color='green')
+        # rulax.fill_between(gt_x, np.array(gt_y)*(1-ALPHA), np.array(gt_y)*(1+ALPHA), color='green', alpha=0.2)
+        # rulax.set_xlim(0, GROUND_TRUTH['EOD']+1)
+        # rul_fig.show()
+
+        fig.canvas.draw()
+

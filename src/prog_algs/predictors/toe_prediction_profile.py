@@ -85,7 +85,7 @@ class ToEPredictionProfile(UserDict):
         from ..metrics import prognostic_horizon
         return prognostic_horizon(self, criteria_eqn, ground_truth, **kwargs)
 
-    def alpha_beta(self, ground_truth : dict):
+    def alpha_beta(self, ground_truth : dict = None):
         """Produce an alpha-beta chart depicting the TtE distribution by time of prediction.
 
         Args:
@@ -110,7 +110,7 @@ class ToEPredictionProfile(UserDict):
         # What key to use for range?
         # gt_x = range(int(GROUND_TRUTH['EOD']))
         # gt_y = range(int(GROUND_TRUTH['EOD']), 0, -1)
-        
+
         # rulax.plot(gt_x, gt_y, color='green')
         # rulax.fill_between(gt_x, np.array(gt_y)*(1-ALPHA), np.array(gt_y)*(1+ALPHA), color='green', alpha=0.2)
         # rulax.set_xlim(0, GROUND_TRUTH['EOD']+1)

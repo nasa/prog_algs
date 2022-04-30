@@ -91,23 +91,21 @@ class ToEPredictionProfile(UserDict):
         Args:
         Returns:
         """
-        # Prepare RUL Plot # Don't want green if no ground truth?
-        rul_fig, rulax = plt.subplots() # EACH TIME THIS IS CALLED CREATE NEW FIGURE
-        rulax.grid()
-        rulax.set_xlabel('Time of Prediction (s)') # time to prediction
-        rulax.set_ylabel('Time to Event (s)') # time to event; create different graph for every event. show event name here or make it the title
-        # What key to use for range?
-        gt_x = range(int(GROUND_TRUTH['EOD'])) # instead of eod, use event name 134 as well
-        gt_y = range(int(GROUND_TRUTH['EOD']), 0, -1)
+        for k,v in self.items():
+            # Prepare RUL Plot # Don't want green if no ground truth?
+            rul_fig, rulax = plt.subplots() # EACH TIME THIS IS CALLED CREATE NEW FIGURE
+            rulax.grid()
+            rulax.set_xlabel('Time of Prediction (s)') # time to prediction
+            rulax.set_ylabel('Time to Event (s)') # time to event; create different graph for every event. show event name here or make it the title
+            # What key to use for range?
+            gt_x = range(int(GROUND_TRUTH['EOD'])) # instead of eod, use event name 134 as well
+            gt_y = range(int(GROUND_TRUTH['EOD']), 0, -1)
 
-        rulax.plot(gt_x, gt_y, color='green') # printing ground truth; green line
-        rulax.fill_between(gt_x, np.array(gt_y)*(1-ALPHA), np.array(gt_y)*(1+ALPHA), color='green', alpha=0.2) # logic for printing aalpha bounds. IF GROUND TRUTH AAAAND ALPHA
-        # rulax.set_xlim(0, GROUND_TRUTH['EOD']+1)
-        rul_fig.show() # don't need this either
+            rulax.plot(gt_x, gt_y, color='green') # printing ground truth; green line
+            rulax.fill_between(gt_x, np.array(gt_y)*(1-ALPHA), np.array(gt_y)*(1+ALPHA), color='green', alpha=0.2) # logic for printing aalpha bounds. IF GROUND TRUTH AAAAND ALPHA
+            # rulax.set_xlim(0, GROUND_TRUTH['EOD']+1)
 
-        # Update Plot: Prediction step
-        samples = individual element in prediction profile.sample(100) # NEED SOME VERSION OF THIS TO PRINT RED DOTS, NEED THIS. sample distribution
-        samples = [e['EOD']-t for e in samples] # t is time of prediction from .items() of above line
-        rulax.scatter([t]*len(samples), samples, color='red') # adding single distribution of estimates. for every prediction in prediction profile, create a scatter plot like this
-        rul_fig.canvas.draw() # don't need this, only if peridiocially
-
+            # Update Plot: Prediction step
+            samples = individual element in prediction profile.sample(100) # NEED SOME VERSION OF THIS TO PRINT RED DOTS, NEED THIS. sample distribution
+            samples = [e['EOD']-t for e in samples] # t is time of prediction from .items() of above line
+            rulax.scatter([t]*len(samples), samples, color='red') # adding single distribution of estimates. for every prediction in prediction profile, create a scatter plot like this

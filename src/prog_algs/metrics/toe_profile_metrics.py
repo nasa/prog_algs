@@ -99,20 +99,12 @@ def cumulative_relative_accuracy(toe_profile : ToEPredictionProfile, ground_trut
             * print (bool): Boolean specifying whether the prognostic horizon metric should be printed.
 
     Returns:
-        float? 
         dict: Dictionary containing cumulative relative accuracy (value) for each event (key). e.g., {'event1': 12.3, 'event2': 15.1}
     """
-    # Implementation 1
-    # return sum(v.relative_accuracy(ground_truth) for v in toe_profile.values()) / len(toe_profile.keys())
-
-    # Implementation 2?
-    result = defaultdict(int)
-    for k,v in toe_profile.items():
-        """
-        1 <class 'int'>
-        UnweightedSamples([{'a': 9, 'b': 8, 'c': 13.5}, {'a': 10, 'b': 9, 'c': 15.5}, {'a': 11, 'b': 10, 'c': 17.5}, {'a': 12, 'b': 11, 'c': 19.5}, {'a': 13, 'b': 12, 'c': 21.5}, {'a': 14, 'b': 13, 'c': 23.5}, {'a': 15, 'b': 14, 'c': 25.5}, {'a': 16, 'b': 15, 'c': 27.5}, {'a': 17, 'b': 16, 'c': 29.5}, {'a': 18, 'b': 17, 'c': 31.5}, {'a': 19, 'b': 18, 'c': 33.5}, {'a': 20, 'b': 19, 'c': 35.5}, {'a': 21, 'b': 20, 'c': 37.5}, {'a': 22, 'b': 21, 'c': 39.5}, {'a': 23, 'b': 22, 'c': 41.5}, {'a': 24, 'b': 23, 'c': 43.5}, {'a': 25, 'b': 24, 'c': 45.5}, {'a': 26, 'b': 25, 'c': 47.5}, {'a': 27, 'b': 26, 'c': 49.5}, {'a': 28, 'b': 27, 'c': 51.5}]) <class 'prog_algs.uncertain_data.unweighted_samples.UnweightedSamples'>
-        """
-        result[k] += v.relative_accuracy(ground_truth)
-    return result
+    ra_sums = defaultdict(int)
+    for time, uncertaindata in toe_profile.items():
+        for event,value in uncertaindata.relative_accuracy(ground_truth).items():
+            ra_sums[event] += value
+    return {event:ra_sum/len(ground_truth) for event,ra_sum in ra_sums.items()}
 
 

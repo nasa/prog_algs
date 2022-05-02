@@ -92,23 +92,27 @@ class ToEPredictionProfile(UserDict):
         Args:
         Returns:
         """
+        result = {}
         for t,v in self.items():
             # Prepare RUL Plot # Don't want green if no ground truth?
-            rul_fig, rulax = plt.subplots() # EACH TIME THIS IS CALLED CREATE NEW FIGURE
+            rul_fig, rulax = plt.subplots() # EACH TIME THIS IS CALLED CREATE NEW FIGURE, rulfig = plt.figure(), replace all rulax with rul_fig
             rulax.grid()
             rulax.set_xlabel('Time of Prediction (s)') # time to prediction
             rulax.set_ylabel('Time to Event (s)') # time to event; create different graph for every event. show event name here or make it the title
             
             if ground_truth:
-                for key in ground_truth: # if ground_truth: add groudn truth (green line)
+                for key in ground_truth: # if ground_truth: add ground truth (green line)
                     gt_x = range(int(ground_truth[key]))
                     gt_y = range(int(ground_truth[key]), 0, -1)
                     rulax.plot(gt_x, gt_y, color='green')
                 if alpha: # if ground_truth and alpha: add alpha bounds (faded green highlight)
                     rulax.fill_between(gt_x, np.array(gt_y)*(1-alpha), np.array(gt_y)*(1+alpha), color='green', alpha=0.2)
-                rulax.set_xlim(0, ground_truth[key]+1)
+                rulax.set_xlim(0, ground_truth[key]+1) # this also goes with plot creation, only happens once
 
             for key in v.keys():
                 samples = v.sample(100) # sample distribution (red scatter plot)
                 samples = [e[key]-t for e in samples]
                 rulax.scatter([t]*len(samples), samples, color='red') # adding single distribution of estimates. for every prediction in prediction profile, create a scatter plot like this
+        plt.show()
+        return result # grab axes specific to what we are plotting
+        # move ground truth out, not plot every step

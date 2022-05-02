@@ -82,16 +82,16 @@ class Prediction():
         # Collect and organize mean values for each event
         by_event = defaultdict(list)
         for uncertaindata in self.data: # 
-            for key,value in uncertaindata.mean:
+            for key,value in uncertaindata.mean.items():
                 by_event[key].append(value)
 
         # For each event, calculate monotonicity using formula
         result = {}
-        for key,list in by_event.items():
+        for key,l in by_event.items():
             mono_sum = []
-            for i in range(len(list)-1): 
-                mono_sum.append((sign(list[i+1] - list[i])) / len(list)-1)
-            result[key] = abs(sum(result))
+            for i in range(len(l)-1): 
+                mono_sum.append((sign(l[i+1] - l[i])) / len(l)-1)
+            result[key] = abs(sum(mono_sum))
         return result
 
 class UnweightedSamplesPrediction(Prediction, UserList):

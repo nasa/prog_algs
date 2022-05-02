@@ -392,7 +392,7 @@ class TestPredictors(unittest.TestCase):
         means = [{'a': 1+i/10, 'b': 2-i/5} for i in range(10)]
         states = [MultivariateNormalDist(means[i].keys(), means[i].values(), covar) for i in range(10)]
         p = Prediction(times, states)
-        p.monotonicity()
+        print(p.monotonicity())
 
 # This allows the module to be executed directly    
 def run_tests():

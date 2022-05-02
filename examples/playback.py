@@ -71,29 +71,6 @@ def run_example():
     R = np.diag([batt.parameters['measurement_noise'][key] for key in batt.outputs])
     mc = Predictor(batt, Q = Q, R = R)
 
-    if PLOT:
-        # Prepare SOC Plot
-        fig, ax = plt.subplots()
-        line, = ax.plot([], [])
-        ax.grid()
-        ax.set_ylim(-0.05, 1.05)
-        ax.set_xlabel('Time (s)')
-        ax.set_ylabel('SOC')
-        xdata, ydata = [], []
-        fig.show()
-
-        # Prepare RUL Plot
-        rul_fig, rulax = plt.subplots()
-        rulax.grid()
-        rulax.set_xlabel('Time (s)')
-        rulax.set_ylabel('RUL (s)')
-        gt_x = range(int(GROUND_TRUTH['EOD']))
-        gt_y = range(int(GROUND_TRUTH['EOD']), 0, -1)
-        rulax.plot(gt_x, gt_y, color='green')
-        rulax.fill_between(gt_x, np.array(gt_y)*(1-ALPHA), np.array(gt_y)*(1+ALPHA), color='green', alpha=0.2)
-        rulax.set_xlim(0, GROUND_TRUTH['EOD']+1)
-        rul_fig.show()
-
     # Run Playback
     step = 0
     profile = ToEPredictionProfile()
@@ -113,30 +90,11 @@ def run_example():
             eod = batt.event_state(filt.x.mean)['EOD']
             print("  - Event State: ", eod)
 
-            if PLOT:
-                # Update Plot
-                xdata.append(t)
-                ydata.append(eod)
-                xmin, xmax = ax.get_xlim()
-
-                if t >= xmax:
-                    ax.set_xlim(xmin, 2*xmax)
-                    # rulax.set_xlim(xmin, 2*xmax)
-                line.set_data(xdata, ydata)
-                fig.canvas.draw()
-
             # Prediction Step (every PREDICTION_UPDATE_FREQ steps)
             if (step%PREDICTION_UPDATE_FREQ == 0):
                 mc_results = mc.predict(filt.x, future_loading, t0 = t, n_samples=NUM_SAMPLES, dt=TIME_STEP)
                 metrics = mc_results.time_of_event.metrics()
                 print('  - ToE: {} (sigma: {})'.format(metrics['EOD']['mean'], metrics['EOD']['std']))
-
-                # Update Plot
-                if PLOT:
-                    samples = mc_results.time_of_event.sample(100)
-                    samples = [e['EOD']-t for e in samples]
-                    rulax.scatter([t]*len(samples), samples, color='red')
-                    rul_fig.canvas.draw()
                 profile.add_prediction(t, mc_results.time_of_event)
 
         # Calculating Prognostic Horizon once the loop completes
@@ -166,9 +124,14 @@ def run_example():
             # Verify if percentage in bounds for this ground truth meets beta distribution percentage limit
             return {key: percentage_in_bounds[key] > BETA for key in percentage_in_bounds.keys()}
 
+        # Generate plots for playback example
+        playback_plots = profile.plot(GROUND_TRUTH, ALPHA, True)
+
+        # Calculate prognostic horizon with ground truth and print
         ph = profile.prognostic_horizon(criteria_eqn, GROUND_TRUTH)
         print(f"Prognostic Horizon for 'EOD': {ph['EOD']}")
 
+        # Calculate alpha lambda with ground truth, lambda, alpha, and beta and print
         al = profile.alpha_lambda(GROUND_TRUTH, LAMBDA_VALUE, ALPHA, BETA)
         print(f"Alpha Lambda for 'EOD': {al['EOD']}")
 

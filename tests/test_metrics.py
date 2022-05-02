@@ -442,6 +442,33 @@ class TestMetrics(unittest.TestCase):
         GROUND_TRUTH = {'a': 9.0, 'b': 8.0, 'c': 8.0}
         self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': None, 'b': None, 'c': None})
 
+    def test_toe_profile_cumulative_relative_accuracy(self):
+        from prog_algs.predictors import ToEPredictionProfile
+        profile = ToEPredictionProfile()  # Empty profile
+        # Loading profile
+        for i in range(10):
+            data = [{'a': j, 'b': j -1 , 'c': (j-4.5) * 2 + 4.5} for j in range(i, i+20)]
+            profile.add_prediction(
+                10-i,  # Time (reverse so data is decreasing)
+                UnweightedSamples(data)  # ToE Prediction
+            )
+        # Test positive floats ground truth
+        GROUND_TRUTH = {'a': 9.0, 'b': 8.0, 'c': 18.0}
+        self.assertEquals(profile.cumulative_relative_accuracy(GROUND_TRUTH), {'a': 0.4444444444444445, 'b': 0.375, 'c': 0.6388888888888888})
+        # Test negative floats ground truth
+        GROUND_TRUTH = {'a': -9.0, 'b': -8.0, 'c': -18.0}
+        self.assertEquals(profile.cumulative_relative_accuracy(GROUND_TRUTH), {'a': 3.555555555555556, 'b': 3.625, 'c': 3.305555555555556})
+        # Test ground truth values of 0; already caught by relative_accuracy
+        with self.assertRaises(ZeroDivisionError):
+            GROUND_TRUTH = {'a': 0, 'b': 0, 'c': 0}
+            raise_error = profile.cumulative_relative_accuracy(GROUND_TRUTH)
+        # Test ground truth in invalid input types; already caught by relative_accuracy
+        with self.assertRaises(TypeError):
+            GROUND_TRUTH = []
+            raise_error = profile.cumulative_relative_accuracy(GROUND_TRUTH)
+    
+
+
 # This allows the module to be executed directly    
 def run_tests():
     l = unittest.TestLoader()

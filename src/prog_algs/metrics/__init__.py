@@ -3,6 +3,6 @@
 from . import samples
 from .toe_metrics import prob_success
 from .uncertain_data_metrics import calc_metrics
-from .toe_profile_metrics import alpha_lambda, prognostic_horizon
+from .toe_profile_metrics import alpha_lambda, prognostic_horizon, cumulative_relative_accuracy
 
-__all__ = ['alpha_lambda', 'calc_metrics', 'prob_success', 'prognostic_horizon']
+__all__ = ['alpha_lambda', 'calc_metrics', 'prob_success', 'prognostic_horizon', 'cumulative_relative_accuracy']

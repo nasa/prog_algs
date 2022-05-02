@@ -3,8 +3,10 @@
 """
 This file includes functions for calculating metrics given a Time of Event (ToE) profile (i.e., ToE's calculated at different times of prediction resulting from running prognostics multiple times, e.g., on playback data). The metrics calculated here are specific to multiple ToE estimates (e.g. alpha-lambda metric)
 """
+from collections import defaultdict
 from typing import Callable
 from ..predictors import ToEPredictionProfile
+from typing import Dict
 
 def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda_value : float, alpha : float, beta : float, **kwargs) -> dict: 
     """
@@ -42,7 +44,7 @@ def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda
                     print('\tBounds: [{} - {}]({}%)'.format(bounds[key][0], bounds[key][1], pib[key]))
             return result
 
-def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callable, ground_truth : dict, **kwargs):
+def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callable, ground_truth : dict, **kwargs) -> dict:
     """
     Compute prognostic horizon metric, defined as the difference between a time ti, when the predictions meet specified performance criteria, and the time corresponding to the true Time of Event (ToE), for each event.
     PH = ToE - ti
@@ -84,4 +86,25 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callab
                     return ph_result
     # Return PH when criteria not met for at least one event key
     return ph_result
+
+def cumulative_relative_accuracy(toe_profile : ToEPredictionProfile, ground_truth : dict, **kwargs) -> Dict[str, float]:
+    """
+    Compute cumulative relative accuracy for a given profile, defined as the normalized sum of relative prediction accuracies at specific time instances.
+    
+    CRA = Σ(RA)/N for each event
+    Where Σ is summation of all relative accuracies for a given profile and N is the total count of profiles (Journal Prognostics Health Management, Saxena et al.)
+    Args:
+        toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions
+        ground_truth (dict): Dictionary containing ground truth; specified as key, value pairs for event and its value. E.g, {'event1': 47.3, 'event2': 52.1, 'event3': 46.1}
+        kwargs (optional): configuration arguments. Accepted args include:
+
+    Returns:
+        dict: Dictionary containing cumulative relative accuracy (value) for each event (key). e.g., {'event1': 12.3, 'event2': 15.1}
+    """
+    ra_sums = defaultdict(int)
+    for uncertaindata in toe_profile.values():
+        for event,value in uncertaindata.relative_accuracy(ground_truth).items():
+            ra_sums[event] += value
+    return {event:ra_sum/len(toe_profile) for event, ra_sum in ra_sums.items()}
+
 

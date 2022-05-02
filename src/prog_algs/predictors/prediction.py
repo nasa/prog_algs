@@ -69,12 +69,12 @@ class Prediction():
         """Calculate monotonicty for a single prediction. 
         Given a single prediction, for each event: go through all predicted states and compare those to the next one.
         
-        monotonoicity = (1/M) Σ|Σsign(i+1 - i) / N-1|
-        Where M is number of units, N is number of measurements, and sign indicates sign of calculation.
+        monotonoicity = |Σsign(i+1 - i) / N-1|
+        Where N is number of measurements and sign indicates sign of calculation.
         Args:
             None
         Returns:
-            float: Value between [0, 1] indicating monotonicity of predicted states.
+            float: Value between [0, 1] indicating monotonicity of a given event for the Prediction.
         """
 
         # return dict of keys, dropping outer loop

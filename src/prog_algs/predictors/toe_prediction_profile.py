@@ -86,6 +86,23 @@ class ToEPredictionProfile(UserDict):
         from ..metrics import prognostic_horizon
         return prognostic_horizon(self, criteria_eqn, ground_truth, **kwargs)
 
+
+    def cumulative_relative_accuracy(self, ground_truth, **kwargs) -> Dict[str, float]:
+        """
+        Compute cumulative relative accuracy for a given profile, defined as the normalized sum of relative prediction accuracies at specific time instances.
+        
+        CRA = Σ(RA)/N for each event
+        Where Σ is summation of all relative accuracies for a given profile and N is the total count of profiles (Journal Prognostics Health Management, Saxena et al.)
+        Args:
+            ground_truth (dict): Dictionary containing ground truth; specified as key, value pairs for event and its value. E.g, {'event1': 47.3, 'event2': 52.1, 'event3': 46.1}
+            kwargs (optional): configuration arguments. Accepted args include:
+
+        Returns:
+            dict: Dictionary containing cumulative relative accuracy (value) for each event (key). e.g., {'event1': 12.3, 'event2': 15.1}
+        """
+        from ..metrics import cumulative_relative_accuracy
+        return cumulative_relative_accuracy(self, ground_truth, **kwargs)
+    
     def plot(self, ground_truth : dict = None , alpha : float = None, show : bool = True) -> dict: # use ground truth, alpha if given,
         """Produce an alpha-beta plot depicting the TtE distribution by time of prediction.
 
@@ -129,4 +146,3 @@ class ToEPredictionProfile(UserDict):
         if show: # Optionally not display plots and just return plot objects
             plt.show()
         return result_figs 
-        

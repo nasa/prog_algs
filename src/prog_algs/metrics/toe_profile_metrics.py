@@ -6,6 +6,7 @@ This file includes functions for calculating metrics given a Time of Event (ToE)
 from collections import defaultdict
 from typing import Callable
 from ..predictors import ToEPredictionProfile
+from typing import Dict
 
 def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda_value : float, alpha : float, beta : float, **kwargs) -> dict: 
     """
@@ -86,7 +87,7 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callab
     # Return PH when criteria not met for at least one event key
     return ph_result
 
-def cumulative_relative_accuracy(toe_profile : ToEPredictionProfile, ground_truth : dict, **kwargs) -> dict:
+def cumulative_relative_accuracy(toe_profile : ToEPredictionProfile, ground_truth : dict, **kwargs) -> Dict[str, float]:
     """
     Compute cumulative relative accuracy for a given profile, defined as the normalized sum of relative prediction accuracies at specific time instances.
     
@@ -96,7 +97,6 @@ def cumulative_relative_accuracy(toe_profile : ToEPredictionProfile, ground_trut
         toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions
         ground_truth (dict): Dictionary containing ground truth; specified as key, value pairs for event and its value. E.g, {'event1': 47.3, 'event2': 52.1, 'event3': 46.1}
         kwargs (optional): configuration arguments. Accepted args include:
-            * print (bool): Boolean specifying whether the prognostic horizon metric should be printed.
 
     Returns:
         dict: Dictionary containing cumulative relative accuracy (value) for each event (key). e.g., {'event1': 12.3, 'event2': 15.1}

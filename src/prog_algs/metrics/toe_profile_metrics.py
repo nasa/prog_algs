@@ -105,6 +105,6 @@ def cumulative_relative_accuracy(toe_profile : ToEPredictionProfile, ground_trut
     for uncertaindata in toe_profile.values():
         for event,value in uncertaindata.relative_accuracy(ground_truth).items():
             ra_sums[event] += value
-    return {event:ra_sum/len(ground_truth) for event,ra_sum in ra_sums.items()}
+    return {event:ra_sum/len(toe_profile) for event, ra_sum in ra_sums.items()}
 
 

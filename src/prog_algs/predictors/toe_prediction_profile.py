@@ -1,6 +1,8 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
+import matplotlib.pyplot as plt
 from collections import UserDict
 from typing import Dict
+import numpy as np
 
 from prog_algs.uncertain_data import UncertainData 
 
@@ -84,6 +86,7 @@ class ToEPredictionProfile(UserDict):
         from ..metrics import prognostic_horizon
         return prognostic_horizon(self, criteria_eqn, ground_truth, **kwargs)
 
+
     def cumulative_relative_accuracy(self, ground_truth, **kwargs) -> Dict[str, float]:
         """
         Compute cumulative relative accuracy for a given profile, defined as the normalized sum of relative prediction accuracies at specific time instances.
@@ -99,3 +102,47 @@ class ToEPredictionProfile(UserDict):
         """
         from ..metrics import cumulative_relative_accuracy
         return cumulative_relative_accuracy(self, ground_truth, **kwargs)
+    
+    def plot(self, ground_truth : dict = None , alpha : float = None, show : bool = True) -> dict: # use ground truth, alpha if given,
+        """Produce an alpha-beta plot depicting the TtE distribution by time of prediction.
+
+        Args:
+            ground_truth : dict = None
+                Optional dictionary argument containing event and its respective ground truth value; none by default and plotted if specified
+            alpha : float
+                Optional alpha value; none by default and plotted if specified
+            show : bool = True
+                Optional bool value; specify whether to display generated plots or not
+        Returns:
+            dict
+                Collection of generated matplotlib figures for each event in profile
+        """
+        result_figs = {}
+        for t,v in self.items():
+            raw_samples = v.sample(100) # sample distribution (red scatter plot)
+            for key in v.keys():
+                if key not in result_figs:
+                    # Prepare Figure for Plot
+                    fig_window = plt.figure() # Create new figure for this event key
+                    fig_sub = fig_window.subplots()
+                    fig_sub.grid()
+                    fig_sub.set_title(f"{key} Event")
+                    fig_sub.set_xlabel('Time of Prediction (s)') # time to prediction
+                    fig_sub.set_ylabel('Time to Event (s)') # time to event
+                    result_figs[key] = fig_window
+                # Create scatter plot for this event
+                samples = [e[key]-t for e in raw_samples]
+                result_figs[key].get_axes()[0].scatter([t]*len(samples), samples, color='red') # Adding single distribution of estimates
+
+        if ground_truth: # If ground_truth is specified, add ground_truth to each event plot (green line)
+            for key, val in ground_truth.items():
+                gt_x = range(int(val))
+                gt_y = range(int(val), 0, -1)
+                result_figs[key].get_axes()[0].plot(gt_x, gt_y, color='green')
+                if alpha: # if ground_truth and alpha are specified, add alpha bounds (faded green highlight)
+                    result_figs[key].get_axes()[0].fill_between(gt_x, np.array(gt_y)*(1-alpha), np.array(gt_y)*(1+alpha), color='green', alpha=0.2)
+                result_figs[key].get_axes()[0].set_xlim(0, val+1)
+
+        if show: # Optionally not display plots and just return plot objects
+            plt.show()
+        return result_figs 

@@ -91,7 +91,8 @@ class Prediction():
             mono_sum = []
             for i in range(len(l)-1): 
                 mono_sum.append((sign(l[i+1] - l[i])) / len(l)-1)
-            result[key] = abs(sum(mono_sum))
+            result[key] = abs(sum(mono_sum)) # unmodified inner loop
+            result[key] = abs(sum(mono_sum)) / len(mono_sum) # modified inner loop
         return result
 
 class UnweightedSamplesPrediction(Prediction, UserList):

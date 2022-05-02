@@ -109,7 +109,7 @@ class ToEPredictionProfile(UserDict):
                     fig_window = plt.figure() # Create new figure for this event key
                     fig_sub = fig_window.subplots()
                     fig_sub.grid()
-                    fig_sub.set_title(f"Event {key} Plot")
+                    fig_sub.set_title(f"{key} Event")
                     fig_sub.set_xlabel('Time of Prediction (s)') # time to prediction
                     fig_sub.set_ylabel('Time to Event (s)') # time to event
                     result_figs[key] = fig_window

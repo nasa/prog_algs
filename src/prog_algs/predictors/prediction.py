@@ -76,7 +76,8 @@ class Prediction():
         Returns:
             float: Value between [0, 1] indicating monotonicity of predicted states.
         """
-        pass
+        for k,v in self.data:
+            print(k,v)
 
 
 class UnweightedSamplesPrediction(Prediction, UserList):

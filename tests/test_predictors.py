@@ -365,6 +365,15 @@ class TestPredictors(unittest.TestCase):
         pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
         self.assertEqual(pred_es, pickle_converted_result)
 
+    def test_prediction_monotonicity(self):
+        from prog_algs.predictors.prediction import UnweightedSamplesPrediction
+        from prog_algs.uncertain_data import UnweightedSamples
+        times = list(range(10))
+        states = [UnweightedSamples(list(range(10))), 
+            UnweightedSamples(list(range(1, 11))), 
+            UnweightedSamples(list(range(-1, 9)))]
+        p = UnweightedSamplesPrediction(times, states)
+
 # This allows the module to be executed directly    
 def run_tests():
     l = unittest.TestLoader()

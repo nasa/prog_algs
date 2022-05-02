@@ -86,7 +86,7 @@ class ToEPredictionProfile(UserDict):
         from ..metrics import prognostic_horizon
         return prognostic_horizon(self, criteria_eqn, ground_truth, **kwargs)
 
-    def plot(self, ground_truth : dict = None , alpha : float = None, print : bool = True) -> dict: # use ground truth, alpha if given,
+    def plot(self, ground_truth : dict = None , alpha : float = None, show : bool = True) -> dict: # use ground truth, alpha if given,
         """Produce an alpha-beta plot depicting the TtE distribution by time of prediction.
 
         Args:
@@ -94,7 +94,7 @@ class ToEPredictionProfile(UserDict):
                 Optional dictionary argument containing event and its respective ground truth value; none by default and plotted if specified
             alpha : float
                 Optional alpha value; none by default and plotted if specified
-            print : bool = True
+            show : bool = True
                 Optional bool value; specify whether to display generated plots or not
         Returns:
             dict
@@ -126,7 +126,7 @@ class ToEPredictionProfile(UserDict):
                     result_figs[key].get_axes()[0].fill_between(gt_x, np.array(gt_y)*(1-alpha), np.array(gt_y)*(1+alpha), color='green', alpha=0.2)
                 result_figs[key].get_axes()[0].set_xlim(0, val+1)
 
-        if print: # Optionally not display plots and just return plot objects
+        if show: # Optionally not display plots and just return plot objects
             plt.show()
         return result_figs 
         

@@ -76,7 +76,10 @@ class Prediction():
         Returns:
             float: Value between [0, 1] indicating monotonicity of predicted states.
         """
-        for k,v in self.data:
+
+        # return dict of keys, dropping outer loop
+        # for each key in 
+        for k,v in self.data: # 
             print(k,v)
 
 

@@ -102,7 +102,7 @@ class ToEPredictionProfile(UserDict):
         """
         result_figs = {}
         for t,v in self.items():
-            samples = v.sample(100) # sample distribution (red scatter plot)
+            raw_samples = v.sample(100) # sample distribution (red scatter plot)
             for key in v.keys():
                 if key not in result_figs:
                     # Prepare Figure for Plot
@@ -114,7 +114,7 @@ class ToEPredictionProfile(UserDict):
                     fig_sub.set_ylabel('Time to Event (s)') # time to event
                     result_figs[key] = fig_window
                 # Create scatter plot for this event
-                samples = [e[key]-t for e in samples]
+                samples = [e[key]-t for e in raw_samples]
                 result_figs[key].get_axes()[0].scatter([t]*len(samples), samples, color='red') # Adding single distribution of estimates
 
         if ground_truth: # If ground_truth is specified, add ground_truth to each event plot (green line)

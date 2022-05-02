@@ -117,6 +117,17 @@ class UnweightedSamplesPrediction(Prediction, UserList):
             self.__calculate_tranform()
         return self.__transform[time_index]
 
+    def monotonicity(self) -> float:
+        """Calculate monotonicty for a single prediction. 
+        Given a single prediction, for each event: go through all predicted states and compare those to the next one.
+        
+        Args:
+            None
+        Returns:
+            float: Value between [0, 1] indicating monotonicity of predicted states.
+        """
+        pass
+
     def __not_implemented(self, *args, **kw):
         """
         This function is not implemented. Calling this will raise an error. Is is only included to make the class immutable.

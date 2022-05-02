@@ -102,7 +102,7 @@ def cumulative_relative_accuracy(toe_profile : ToEPredictionProfile, ground_trut
         dict: Dictionary containing cumulative relative accuracy (value) for each event (key). e.g., {'event1': 12.3, 'event2': 15.1}
     """
     ra_sums = defaultdict(int)
-    for time, uncertaindata in toe_profile.items():
+    for uncertaindata in toe_profile.values():
         for event,value in uncertaindata.relative_accuracy(ground_truth).items():
             ra_sums[event] += value
     return {event:ra_sum/len(ground_truth) for event,ra_sum in ra_sums.items()}

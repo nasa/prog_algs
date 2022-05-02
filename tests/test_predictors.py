@@ -367,11 +367,11 @@ class TestPredictors(unittest.TestCase):
 
     def test_prediction_monotonicity(self):
         from prog_algs.predictors.prediction import Prediction
-        from prog_algs.uncertain_data import UnweightedSamples
+        from prog_algs.uncertain_data import MultivariateNormalDist
         times = list(range(10))
-        states = [UnweightedSamples(list(range(10))), 
-            UnweightedSamples(list(range(1, 11))), 
-            UnweightedSamples(list(range(-1, 9)))]
+        covar = [[0.1, 0.01], [0.01, 0.1]]
+        means = [{'a': 1+i/10, 'b': 2-i/5} for i in range(10)]
+        states = [MultivariateNormalDist(means[i].keys(), means[i].values(), covar) for i in range(10)]
         p = Prediction(times, states)
         p.monotonicity()
 

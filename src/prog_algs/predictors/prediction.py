@@ -1,6 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
-from collections import UserList, namedtuple
+from collections import UserList, defaultdict, namedtuple
 from warnings import warn
 
 from ..uncertain_data import UnweightedSamples, UncertainData
@@ -76,8 +76,10 @@ class Prediction():
         Returns:
             float: Value between [0, 1] indicating monotonicity of a given event for the Prediction.
         """
-        print(self.data)
-        # for k,v in self.data: # 
+        by_event = defaultdict(list)
+        for uncertaindata in self.data: # 
+            for key in uncertaindata.keys():
+                by_event[key].append()
         #     print(type(k), k)
         #     print(type(v), v)
 

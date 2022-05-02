@@ -3,6 +3,7 @@
 """
 This file includes functions for calculating metrics given a Time of Event (ToE) profile (i.e., ToE's calculated at different times of prediction resulting from running prognostics multiple times, e.g., on playback data). The metrics calculated here are specific to multiple ToE estimates (e.g. alpha-lambda metric)
 """
+from collections import defaultdict
 from typing import Callable
 from ..predictors import ToEPredictionProfile
 
@@ -101,5 +102,13 @@ def cumulative_relative_accuracy(toe_profile : ToEPredictionProfile, ground_trut
         float? 
         dict: Dictionary containing cumulative relative accuracy (value) for each event (key). e.g., {'event1': 12.3, 'event2': 15.1}
     """
+    # Implementation 1
     # return sum(v.relative_accuracy(ground_truth) for v in toe_profile.values()) / len(toe_profile.keys())
+
+    # Implementation 2?
+    result = defaultdict(int)
+    for k,v in toe_profile.items():
+        result[k] += v.relative_accuracy(ground_truth)
+    return result
+
 

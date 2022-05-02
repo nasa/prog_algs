@@ -86,8 +86,8 @@ class ToEPredictionProfile(UserDict):
         from ..metrics import prognostic_horizon
         return prognostic_horizon(self, criteria_eqn, ground_truth, **kwargs)
 
-    def alpha_beta(self, ground_truth : dict = None , alpha = None): # use ground truth, alpha if given,
-        """Produce an alpha-beta chart depicting the TtE distribution by time of prediction.
+    def plot(self, ground_truth : dict = None , alpha = None): # use ground truth, alpha if given,
+        """Produce an alpha-beta plot depicting the TtE distribution by time of prediction.
 
         Args:
         Returns:

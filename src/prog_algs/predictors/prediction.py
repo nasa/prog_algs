@@ -68,6 +68,7 @@ class Prediction():
     def monotonicity(self) -> float:
         """Calculate monotonicty for a single prediction. 
         Given a single prediction, for each event: go through all predicted states and compare those to the next one.
+        Calculates monotonicity for each event key using its associated mean value in UncertainData.
         
         monotonoicity = |Σsign(i+1 - i) / N-1|
         Where N is number of measurements and sign indicates sign of calculation.
@@ -78,8 +79,8 @@ class Prediction():
         """
         by_event = defaultdict(list)
         for uncertaindata in self.data: # 
-            for key in uncertaindata.keys():
-                by_event[key].append()
+            for key,value in uncertaindata.mean:
+                by_event[key].append(value)
         #     print(type(k), k)
         #     print(type(v), v)
 

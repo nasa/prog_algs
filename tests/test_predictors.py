@@ -374,15 +374,15 @@ class TestPredictors(unittest.TestCase):
         profile.add_prediction(0.5, ScalarData({'a': 1.05, 'b': 2.1, 'c': -3.15}))
 
         # No ground truth or alpha provided
-        # no_gt_alpha_plots = profile.plot(print=True)
+        no_gt_alpha_plots = profile.plot(show=True)
 
         # Ground truth provided, no alpha provided
         sample_gt = {'a': 1.075, 'b': 2.15, 'c': -3.125}
-        # gt_no_alpha_plots = profile.plot(ground_truth=sample_gt, print=True)
+        gt_no_alpha_plots = profile.plot(ground_truth=sample_gt, show=True)
 
         # Ground truth and alpha provided
         sample_alpha = 0.50
-        gt_and_alpha_plots = profile.plot(ground_truth=sample_gt, alpha=sample_alpha, print=True)
+        gt_and_alpha_plots = profile.plot(ground_truth=sample_gt, alpha=sample_alpha, show=True)
 
 # This allows the module to be executed directly    
 def run_tests():

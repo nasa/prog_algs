@@ -100,25 +100,28 @@ class ToEPredictionProfile(UserDict):
         """
         result_figs = {}
         for t,v in self.items():
-            # Prepare Figure for Plot
-            fig = plt.figure() # EACH TIME THIS IS CALLED CREATE NEW FIGURE
-            fig.grid()
-            fig.set_xlabel('Time of Prediction (s)') # time to prediction
-            fig.set_ylabel('Time to Event (s)') # time to event; create different graph for every event. show event name here or make it the title
-            
-            if ground_truth:
-                for key in ground_truth: # if ground_truth: add ground truth (green line)
-                    gt_x = range(int(ground_truth[key]))
-                    gt_y = range(int(ground_truth[key]), 0, -1)
-                    fig.plot(gt_x, gt_y, color='green')
-                if alpha: # if ground_truth and alpha: add alpha bounds (faded green highlight)
-                    fig.fill_between(gt_x, np.array(gt_y)*(1-alpha), np.array(gt_y)*(1+alpha), color='green', alpha=0.2)
-                fig.set_xlim(0, ground_truth[key]+1) # this also goes with plot creation, only happens once
-
             for key in v.keys():
+                if key not in result_figs:
+                    # Prepare Figure for Plot
+                    fig = plt.figure() # Create new figure for this event key
+                    fig.grid()
+                    fig.set_xlabel('Time of Prediction (s)') # time to prediction
+                    fig.set_ylabel('Time to Event (s)') # time to event
+                # Create scatter plot for this event
                 samples = v.sample(100) # sample distribution (red scatter plot)
                 samples = [e[key]-t for e in samples]
-                fig.scatter([t]*len(samples), samples, color='red') # adding single distribution of estimates. for every prediction in prediction profile, create a scatter plot like this
+                result_figs[key].scatter([t]*len(samples), samples, color='red') # adding single distribution of estimates. for every prediction in prediction profile, create a scatter plot like this
+        
+            
+            # if ground_truth:
+            #     for key in ground_truth: # if ground_truth: add ground truth (green line)
+            #         gt_x = range(int(ground_truth[key]))
+            #         gt_y = range(int(ground_truth[key]), 0, -1)
+            #         fig.plot(gt_x, gt_y, color='green')
+            #     if alpha: # if ground_truth and alpha: add alpha bounds (faded green highlight)
+            #         fig.fill_between(gt_x, np.array(gt_y)*(1-alpha), np.array(gt_y)*(1+alpha), color='green', alpha=0.2)
+            #     fig.set_xlim(0, ground_truth[key]+1) # this also goes with plot creation, only happens once
+
         plt.show()
         return result_figs # grab axes specific to what we are plotting
         # move ground truth out, not plot every step

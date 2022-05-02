@@ -105,23 +105,26 @@ class ToEPredictionProfile(UserDict):
             for key in v.keys():
                 if key not in result_figs:
                     # Prepare Figure for Plot
-                    fig = plt.figure() # Create new figure for this event key
-                    fig.grid()
-                    fig.set_xlabel('Time of Prediction (s)') # time to prediction
-                    fig.set_ylabel('Time to Event (s)') # time to event
+                    fig_window = plt.figure() # Create new figure for this event key
+                    fig_sub = fig_window.subplots()
+                    fig_sub.grid()
+                    fig_sub.set_title(key+" Plot")
+                    fig_sub.set_xlabel('Time of Prediction (s)') # time to prediction
+                    fig_sub.set_ylabel('Time to Event (s)') # time to event
+                    result_figs[key] = fig_window
                 # Create scatter plot for this event
                 samples = v.sample(100) # sample distribution (red scatter plot)
                 samples = [e[key]-t for e in samples]
-                result_figs[key].scatter([t]*len(samples), samples, color='red') # adding single distribution of estimates. for every prediction in prediction profile, create a scatter plot like this
-        
+                result_figs[key].get_axes()[0].scatter([t]*len(samples), samples, color='red') # Adding single distribution of estimates
+
         if ground_truth: # If ground_truth is specified, add ground_truth to each event plot (green line)
             for key, val in ground_truth.items():
                 gt_x = range(int(val))
                 gt_y = range(int(val), 0, -1)
-                result_figs[key].plot(gt_x, gt_y, color='green')
+                result_figs[key].get_axes()[0].plot(gt_x, gt_y, color='green')
                 if alpha: # if ground_truth and alpha are specified, add alpha bounds (faded green highlight)
-                    result_figs[key].fill_between(gt_x, np.array(gt_y)*(1-alpha), np.array(gt_y)*(1+alpha), color='green', alpha=0.2)
-                result_figs[key].set_xlim(0, val+1)
+                    result_figs[key].get_axes()[0].fill_between(gt_x, np.array(gt_y)*(1-alpha), np.array(gt_y)*(1+alpha), color='green', alpha=0.2)
+                result_figs[key].get_axes()[0].set_xlim(0, val+1)
 
         if print: # Optionally not display plots and just return plot objects
             plt.show()

@@ -372,7 +372,7 @@ class TestPredictors(unittest.TestCase):
         profile.add_prediction(0, ScalarData({'a': 1, 'b': 2, 'c': -3.2}))
         profile.add_prediction(1, ScalarData({'a': 1.1, 'b': 2.2, 'c': -3.1}))
         profile.add_prediction(0.5, ScalarData({'a': 1.05, 'b': 2.1, 'c': -3.15}))
-        profile.alpha_beta()
+        profile.plot()
 
 # This allows the module to be executed directly    
 def run_tests():

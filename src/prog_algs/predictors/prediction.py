@@ -1,6 +1,8 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
 from collections import UserList, defaultdict, namedtuple
+from typing import Dict
+from numpy import sign
 from warnings import warn
 
 from ..uncertain_data import UnweightedSamples, UncertainData
@@ -65,7 +67,7 @@ class Prediction():
         warn("Deprecated. Please use prediction.times[index] instead.")
         return self.times[index]
 
-    def monotonicity(self) -> float:
+    def monotonicity(self) -> Dict[str, float]:
         """Calculate monotonicty for a single prediction. 
         Given a single prediction, for each event: go through all predicted states and compare those to the next one.
         Calculates monotonicity for each event key using its associated mean value in UncertainData.
@@ -77,13 +79,20 @@ class Prediction():
         Returns:
             float: Value between [0, 1] indicating monotonicity of a given event for the Prediction.
         """
+        # Collect and organize mean values for each event
         by_event = defaultdict(list)
         for uncertaindata in self.data: # 
             for key,value in uncertaindata.mean:
                 by_event[key].append(value)
-        #     print(type(k), k)
-        #     print(type(v), v)
 
+        # For each event, calculate monotonicity using formula
+        result = {}
+        for key,list in by_event.items():
+            mono_sum = []
+            for i in range(len(list)-1): 
+                mono_sum.append((sign(list[i+1] - list[i])) / len(list)-1)
+            result[key] = abs(sum(result))
+        return result
 
 class UnweightedSamplesPrediction(Prediction, UserList):
     """

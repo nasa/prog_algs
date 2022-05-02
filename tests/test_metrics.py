@@ -447,28 +447,8 @@ class TestMetrics(unittest.TestCase):
         profile = ToEPredictionProfile()  # Empty profile
         # Define test sample ground truth
         GROUND_TRUTH = {'a': 9.0, 'b': 8.0, 'c': 18.0}
-        # Create rudimentary criteria equation
-        def criteria_eqn(tte : UncertainData, ground_truth_tte : dict) -> dict:
-            """
-            Sample criteria equation for unittesting. 
-
-            Args:
-                tte : UncertainData
-                    Time to event in UncertainData format.
-                ground_truth_tte : dict
-                    Dictionary of ground truth of time to event.
-            """
-            result = {}
-            for key, value in ground_truth_tte.items():
-                result[key] = abs(tte.mean[key] - value) < 0.6
-            return result
-        from prog_algs.metrics import cumulative_relative_accuracy
-
         # Loading profile
         for i in range(10):
-            # a will shift upward from 0-19 to 9-28
-            # b is always a-1
-            # c is always a * 2, and will therefore always have twice the spread
             data = [{'a': j, 'b': j -1 , 'c': (j-4.5) * 2 + 4.5} for j in range(i, i+20)]
             profile.add_prediction(
                 10-i,  # Time (reverse so data is decreasing)

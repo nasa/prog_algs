@@ -121,6 +121,8 @@ class UnweightedSamplesPrediction(Prediction, UserList):
         """Calculate monotonicty for a single prediction. 
         Given a single prediction, for each event: go through all predicted states and compare those to the next one.
         
+        monotonoicity = (1/M) Σ|Σsign(i+1 - i) / N-1|
+        Where M is number of units, N is number of measurements, and sign indicates sign of calculation.
         Args:
             None
         Returns:

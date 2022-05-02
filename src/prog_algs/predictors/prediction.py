@@ -65,6 +65,19 @@ class Prediction():
         warn("Deprecated. Please use prediction.times[index] instead.")
         return self.times[index]
 
+    def monotonicity(self) -> float:
+        """Calculate monotonicty for a single prediction. 
+        Given a single prediction, for each event: go through all predicted states and compare those to the next one.
+        
+        monotonoicity = (1/M) Σ|Σsign(i+1 - i) / N-1|
+        Where M is number of units, N is number of measurements, and sign indicates sign of calculation.
+        Args:
+            None
+        Returns:
+            float: Value between [0, 1] indicating monotonicity of predicted states.
+        """
+        pass
+
 
 class UnweightedSamplesPrediction(Prediction, UserList):
     """
@@ -116,19 +129,6 @@ class UnweightedSamplesPrediction(Prediction, UserList):
         if not self.__transformed:
             self.__calculate_tranform()
         return self.__transform[time_index]
-
-    def monotonicity(self) -> float:
-        """Calculate monotonicty for a single prediction. 
-        Given a single prediction, for each event: go through all predicted states and compare those to the next one.
-        
-        monotonoicity = (1/M) Σ|Σsign(i+1 - i) / N-1|
-        Where M is number of units, N is number of measurements, and sign indicates sign of calculation.
-        Args:
-            None
-        Returns:
-            float: Value between [0, 1] indicating monotonicity of predicted states.
-        """
-        pass
 
     def __not_implemented(self, *args, **kw):
         """

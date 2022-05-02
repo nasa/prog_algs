@@ -86,7 +86,7 @@ class ToEPredictionProfile(UserDict):
         from ..metrics import prognostic_horizon
         return prognostic_horizon(self, criteria_eqn, ground_truth, **kwargs)
 
-    def plot(self, ground_truth : dict = None , alpha : float = None) -> dict: # use ground truth, alpha if given,
+    def plot(self, ground_truth : dict = None , alpha : float = None, print : bool = True) -> dict: # use ground truth, alpha if given,
         """Produce an alpha-beta plot depicting the TtE distribution by time of prediction.
 
         Args:
@@ -94,6 +94,8 @@ class ToEPredictionProfile(UserDict):
                 Optional dictionary argument containing event and its respective ground truth value; none by default and plotted if specified
             alpha : float
                 Optional alpha value; none by default and plotted if specified
+            print : bool = True
+                Optional bool value; specify whether to display generated plots or not
         Returns:
             dict
                 Collection of generated matplotlib figures for each event in profile
@@ -112,16 +114,16 @@ class ToEPredictionProfile(UserDict):
                 samples = [e[key]-t for e in samples]
                 result_figs[key].scatter([t]*len(samples), samples, color='red') # adding single distribution of estimates. for every prediction in prediction profile, create a scatter plot like this
         
-            
-            # if ground_truth:
-            #     for key in ground_truth: # if ground_truth: add ground truth (green line)
-            #         gt_x = range(int(ground_truth[key]))
-            #         gt_y = range(int(ground_truth[key]), 0, -1)
-            #         fig.plot(gt_x, gt_y, color='green')
-            #     if alpha: # if ground_truth and alpha: add alpha bounds (faded green highlight)
-            #         fig.fill_between(gt_x, np.array(gt_y)*(1-alpha), np.array(gt_y)*(1+alpha), color='green', alpha=0.2)
-            #     fig.set_xlim(0, ground_truth[key]+1) # this also goes with plot creation, only happens once
+        if ground_truth: # If ground_truth is specified, add ground_truth to each event plot (green line)
+            for key, val in ground_truth.items():
+                gt_x = range(int(val))
+                gt_y = range(int(val), 0, -1)
+                result_figs[key].plot(gt_x, gt_y, color='green')
+                if alpha: # if ground_truth and alpha are specified, add alpha bounds (faded green highlight)
+                    result_figs[key].fill_between(gt_x, np.array(gt_y)*(1-alpha), np.array(gt_y)*(1+alpha), color='green', alpha=0.2)
+                result_figs[key].set_xlim(0, val+1)
 
-        plt.show()
-        return result_figs # grab axes specific to what we are plotting
-        # move ground truth out, not plot every step
+        if print: # Optionally not display plots and just return plot objects
+            plt.show()
+        return result_figs 
+        

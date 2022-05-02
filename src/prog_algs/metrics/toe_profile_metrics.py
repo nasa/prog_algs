@@ -86,7 +86,7 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callab
     # Return PH when criteria not met for at least one event key
     return ph_result
 
-def cumulative_relative_accuracy(toe_profile : ToEPredictionProfile, ground_truth : dict, **kwargs):
+def cumulative_relative_accuracy(toe_profile : ToEPredictionProfile, ground_truth : dict, **kwargs) -> dict:
     """
     Compute cumulative relative accuracy for a given profile, defined as the normalized sum of relative prediction accuracies at specific time instances.
     

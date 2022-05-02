@@ -454,18 +454,18 @@ class TestMetrics(unittest.TestCase):
             )
         # Test positive floats ground truth
         GROUND_TRUTH = {'a': 9.0, 'b': 8.0, 'c': 18.0}
-        self.assertEquals(profile.cumulative_relative_accuracy(GROUND_TRUTH), {'a': 1.4814814814814816, 'b': 1.25, 'c': 2.1296296296296293})
+        self.assertEquals(profile.cumulative_relative_accuracy(GROUND_TRUTH), {'a': 0.4444444444444445, 'b': 0.375, 'c': 0.6388888888888888})
         # Test negative floats ground truth
         GROUND_TRUTH = {'a': -9.0, 'b': -8.0, 'c': -18.0}
-        self.assertEquals(profile.cumulative_relative_accuracy(GROUND_TRUTH), {'a': 11.851851851851853, 'b': 12.083333333333334, 'c': 11.018518518518519})
+        self.assertEquals(profile.cumulative_relative_accuracy(GROUND_TRUTH), {'a': 3.555555555555556, 'b': 3.625, 'c': 3.305555555555556})
         # Test ground truth values of 0; already caught by relative_accuracy
         with self.assertRaises(ZeroDivisionError):
             GROUND_TRUTH = {'a': 0, 'b': 0, 'c': 0}
-            self.assertEquals(profile.cumulative_relative_accuracy(GROUND_TRUTH), {'a': 11.851851851851853, 'b': 12.083333333333334, 'c': 11.018518518518519})
+            raise_error = profile.cumulative_relative_accuracy(GROUND_TRUTH)
         # Test ground truth in invalid input types; already caught by relative_accuracy
         with self.assertRaises(TypeError):
             GROUND_TRUTH = []
-            self.assertEquals(profile.cumulative_relative_accuracy(GROUND_TRUTH), {'a': 11.851851851851853, 'b': 12.083333333333334, 'c': 11.018518518518519})
+            raise_error = profile.cumulative_relative_accuracy(GROUND_TRUTH)
     
 
 

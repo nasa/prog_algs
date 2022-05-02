@@ -81,7 +81,7 @@ class Prediction():
         """
         # Collect and organize mean values for each event
         by_event = defaultdict(list)
-        for uncertaindata in self.data: # 
+        for uncertaindata in self.data:
             for key,value in uncertaindata.mean.items():
                 by_event[key].append(value)
 
@@ -90,9 +90,8 @@ class Prediction():
         for key,l in by_event.items():
             mono_sum = []
             for i in range(len(l)-1): 
-                mono_sum.append((sign(l[i+1] - l[i])) / len(l)-1)
-            result[key] = abs(sum(mono_sum)) # unmodified inner loop
-            result[key] = abs(sum(mono_sum)) / len(mono_sum) # modified inner loop
+                mono_sum.append((sign(l[i+1] - l[i])) / (len(l)-1))
+            result[key] = abs(sum(mono_sum))
         return result
 
 class UnweightedSamplesPrediction(Prediction, UserList):

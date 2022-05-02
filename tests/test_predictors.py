@@ -373,6 +373,7 @@ class TestPredictors(unittest.TestCase):
             UnweightedSamples(list(range(1, 11))), 
             UnweightedSamples(list(range(-1, 9)))]
         p = Prediction(times, states)
+        p.monotonicity()
 
 # This allows the module to be executed directly    
 def run_tests():

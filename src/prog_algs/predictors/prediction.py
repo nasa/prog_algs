@@ -76,11 +76,10 @@ class Prediction():
         Returns:
             float: Value between [0, 1] indicating monotonicity of a given event for the Prediction.
         """
-
-        # return dict of keys, dropping outer loop
-        # for each key in 
-        for k,v in self.data: # 
-            print(k,v)
+        print(self.data)
+        # for k,v in self.data: # 
+        #     print(type(k), k)
+        #     print(type(v), v)
 
 
 class UnweightedSamplesPrediction(Prediction, UserList):

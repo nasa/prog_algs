@@ -124,7 +124,7 @@ def run_example():
             # Verify if percentage in bounds for this ground truth meets beta distribution percentage limit
             return {key: percentage_in_bounds[key] > BETA for key in percentage_in_bounds.keys()}
 
-        profile.plot(GROUND_TRUTH, ALPHA)
+        profile.plot(GROUND_TRUTH, ALPHA, True)
 
         ph = profile.prognostic_horizon(criteria_eqn, GROUND_TRUTH)
         print(f"Prognostic Horizon for 'EOD': {ph['EOD']}")

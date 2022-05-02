@@ -454,6 +454,7 @@ class TestMetrics(unittest.TestCase):
                 10-i,  # Time (reverse so data is decreasing)
                 UnweightedSamples(data)  # ToE Prediction
             )
+        profile.cumulative_relative_accuracy(GROUND_TRUTH)
 
 # This allows the module to be executed directly    
 def run_tests():

@@ -89,7 +89,7 @@ def cumulative_relative_accuracy(toe_profile : ToEPredictionProfile, ground_trut
     """
     Compute cumulative relative accuracy for a given profile, defined as the normalized sum of relative prediction accuracies at specific time instances.
     
-    CRA = Σ(RA)/N
+    CRA = Σ(RA)/N for each event
     Where Σ is summation of all relative accuracies for a given profile and N is the total count of profiles (REFERENCE)
     Args:
         toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions
@@ -101,4 +101,5 @@ def cumulative_relative_accuracy(toe_profile : ToEPredictionProfile, ground_trut
         float? 
         dict: Dictionary containing cumulative relative accuracy (value) for each event (key). e.g., {'event1': 12.3, 'event2': 15.1}
     """
-    pass
+    # return sum(v.relative_accuracy(ground_truth) for v in toe_profile.values()) / len(toe_profile.keys())
+

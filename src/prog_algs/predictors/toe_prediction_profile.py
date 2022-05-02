@@ -84,7 +84,7 @@ class ToEPredictionProfile(UserDict):
         from ..metrics import prognostic_horizon
         return prognostic_horizon(self, criteria_eqn, ground_truth, **kwargs)
 
-    def cumulative_relative_accuracy(self, criteria_eqn, ground_truth, **kwargs) -> Dict[str, float]:
+    def cumulative_relative_accuracy(self, ground_truth, **kwargs) -> Dict[str, float]:
         """
         Compute cumulative relative accuracy for a given profile, defined as the normalized sum of relative prediction accuracies at specific time instances.
         

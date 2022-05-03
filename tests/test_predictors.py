@@ -384,6 +384,37 @@ class TestPredictors(unittest.TestCase):
         sample_alpha = 0.50
         gt_and_alpha_plots = profile.plot(ground_truth=sample_gt, alpha=sample_alpha, show=True)
 
+    def test_prediction_monotonicity(self):
+        from prog_algs.predictors.prediction import Prediction
+        from prog_algs.uncertain_data import MultivariateNormalDist
+        times = list(range(10))
+        covar = [[0.1, 0.01], [0.01, 0.1]]
+
+        # Test monotonically increasing
+        means = [{'a': 1+i/10, 'b': 2-i/5} for i in range(10)]
+        states = [MultivariateNormalDist(means[i].keys(), means[i].values(), covar) for i in range(10)]
+        p = Prediction(times, states)
+        self.assertDictEqual(p.monotonicity(), {'a': 1.0, 'b': 1.0})
+
+        # Test monotonically decreasing
+        means = [{'a': i*(i%3-1), 'b': i*(i%3-1)} for i in range(10)]
+        states = [MultivariateNormalDist(means[i].keys(), means[i].values(), covar) for i in range(10)]
+        p = Prediction(times, states)
+        self.assertDictEqual(p.monotonicity(), {'a': 0.2222222222222222, 'b': 0.2222222222222222})
+
+        # Test no monotonicity
+        means = [{'a': i*(i%2-1), 'b': i*(i%2-1)} for i in range(10)]
+        states = [MultivariateNormalDist(means[i].keys(), means[i].values(), covar) for i in range(10)]
+        p = Prediction(times, states)
+        self.assertDictEqual(p.monotonicity(), {'a': 0.0, 'b': 0.0})
+
+        # Test monotonicity between range [0,1]
+        means = [{'a': i*(i%2+5), 'b': i*(i%3+5)} for i in range(10)]
+        states = [MultivariateNormalDist(means[i].keys(), means[i].values(), covar) for i in range(10)]
+        p = Prediction(times, states)
+        self.assertDictEqual(p.monotonicity(), {'a': 0.6666666666666666, 'b': 0.5555555555555556})
+
+
 # This allows the module to be executed directly    
 def run_tests():
     l = unittest.TestLoader()

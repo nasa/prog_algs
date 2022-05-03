@@ -90,8 +90,8 @@ class Prediction():
         for key,l in by_event.items():
             mono_sum = []
             for i in range(len(l)-1): 
-                mono_sum.append((sign(l[i+1] - l[i])) / (len(l)-1))
-            result[key] = abs(sum(mono_sum))
+                mono_sum.append(sign(l[i+1] - l[i])) 
+            result[key] = abs(sum(mono_sum) / (len(l)-1))
         return result
 
 class UnweightedSamplesPrediction(Prediction, UserList):

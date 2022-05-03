@@ -7,8 +7,8 @@ from warnings import warn
 
 from ..uncertain_data import UnweightedSamples, UncertainData
 
-
 PredictionResults = namedtuple('PredictionResults', ["times", "inputs", "states", "outputs", "event_states", "time_of_event"])
+
 
 class Prediction():
     """

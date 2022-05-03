@@ -39,6 +39,7 @@ class MockProgModel(PrognosticsModel):
     def threshold_met(self, x):
         return {key : value < 1e-6 for (key, value) in self.event_state(x).items()}
 
+
 class TestPredictors(unittest.TestCase):
     def test_pred_template(self):
         from predictor_template import TemplatePredictor
@@ -126,7 +127,7 @@ class TestPredictors(unittest.TestCase):
         def future_loading(t = None, x = None):
             return {}
             
-        mc_results = mc.predict(m.initialize(), future_loading, dt=0.2, num_samples=3, save_freq=1)
+        mc.predict(m.initialize(), future_loading, dt=0.2, num_samples=3, save_freq=1)
 
     def test_prediction_mvnormaldist(self):
         from prog_algs.predictors import Prediction as MultivariateNormalDistPrediction
@@ -386,21 +387,15 @@ class TestPredictors(unittest.TestCase):
 
     def test_prediction_monotonicity(self):
         from prog_algs.predictors.prediction import Prediction
-        from prog_algs.uncertain_data import MultivariateNormalDist
+        from prog_algs.uncertain_data import MultivariateNormalDist, ScalarData, UnweightedSamples
         times = list(range(10))
         covar = [[0.1, 0.01], [0.01, 0.1]]
 
-        # Test monotonically increasing
+        # Test monotonically increasing and decreasing
         means = [{'a': 1+i/10, 'b': 2-i/5} for i in range(10)]
         states = [MultivariateNormalDist(means[i].keys(), means[i].values(), covar) for i in range(10)]
         p = Prediction(times, states)
         self.assertDictEqual(p.monotonicity(), {'a': 1.0, 'b': 1.0})
-
-        # Test monotonically decreasing
-        means = [{'a': i*(i%3-1), 'b': i*(i%3-1)} for i in range(10)]
-        states = [MultivariateNormalDist(means[i].keys(), means[i].values(), covar) for i in range(10)]
-        p = Prediction(times, states)
-        self.assertDictEqual(p.monotonicity(), {'a': 0.2222222222222222, 'b': 0.2222222222222222})
 
         # Test no monotonicity
         means = [{'a': i*(i%2-1), 'b': i*(i%2-1)} for i in range(10)]
@@ -409,11 +404,28 @@ class TestPredictors(unittest.TestCase):
         self.assertDictEqual(p.monotonicity(), {'a': 0.0, 'b': 0.0})
 
         # Test monotonicity between range [0,1]
-        means = [{'a': i*(i%2+5), 'b': i*(i%3+5)} for i in range(10)]
+        means = [{'a': i*(i%3-1), 'b': i*(i%3-1)} for i in range(10)]
         states = [MultivariateNormalDist(means[i].keys(), means[i].values(), covar) for i in range(10)]
         p = Prediction(times, states)
-        self.assertDictEqual(p.monotonicity(), {'a': 0.6666666666666666, 'b': 0.5555555555555556})
+        self.assertDictEqual(p.monotonicity(), {'a': 0.2222222222222222, 'b': 0.2222222222222222})
 
+        # Test mixed
+        means = [{'a': i, 'b': i*(i%3+5)} for i in range(10)]
+        states = [MultivariateNormalDist(means[i].keys(), means[i].values(), covar) for i in range(10)]
+        p = Prediction(times, states)
+        self.assertDictEqual(p.monotonicity(), {'a': 1, 'b': 0.5555555555555556})
+
+        # Test Scalar
+        samples = [{'a': 1+i/10, 'b': 2-i/5, 'c': i*(i%2-1), 'd': i*(i%3-1)} for i in range(10)]
+        states = [ScalarData(samples[i]) for i in range(10)]
+        p = Prediction(times, states)
+        self.assertDictEqual(p.monotonicity(), {'a': 1, 'b': 1, 'c': 0, 'd': 0.2222222222222222})
+
+        # Test UnweightedSamples
+        samples = [{'a': 1+i/10, 'b': 2-i/5, 'c': i*(i%2-1), 'd': i*(i%3-1)} for i in range(10)]
+        states = [UnweightedSamples([samples[i]]) for i in range(10)]
+        p = Prediction(times, states)
+        self.assertDictEqual(p.monotonicity(), {'a': 1, 'b': 1, 'c': 0, 'd': 0.2222222222222222})
 
 # This allows the module to be executed directly    
 def run_tests():

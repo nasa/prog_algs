@@ -48,14 +48,14 @@ def run_example():
         print('\tu = {}'.format(mc_results.inputs.snapshot(i).mean))
         print('\tx = {}'.format(mc_results.states.snapshot(i).mean))
         print('\tz = {}'.format(mc_results.outputs.snapshot(i).mean))
-        print('\tevent state = {}'.format(mc_results.states.snapshot(i).mean))
+        print('\tevent state = {}'.format(mc_results.event_states.snapshot(i).mean))
 
     print('\nToE:', mc_results.time_of_event.mean)
 
     # You can also access the final state (of type UncertainData), like so:
     final_state = mc_results.time_of_event.final_state
     print('Final state @EOD: ', final_state['EOD'].mean)
-    # mc_results.time_of_event.plot_hist()
+    # toe.plot_hist()
     # plt.show()
 
 # This allows the module to be executed directly 

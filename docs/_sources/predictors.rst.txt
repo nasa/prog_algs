@@ -17,8 +17,8 @@ Here's an example of its use. In this example we use the ThrownObject model and 
    >>> def future_loading(t, x): 
    >>>    return {}  # ThrownObject doesn't have a way of loading it
    >>>
-   >>> (t, u, x, z, es, toe) = pred.predict(first_state, future_loading, save_freq=1)
-   >>> toe.plot_hist(events='impact')  # Plot a histogram of when the impact event occurred
+   >>> pred_results = pred.predict(first_state, future_loading, save_freq=1)
+   >>> pred_results.time_of_event.plot_hist(events='impact')  # Plot a histogram of when the impact event occurred
 
 See tutorial and examples for more information and additional features.
 

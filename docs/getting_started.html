@@ -36,12 +36,12 @@
   <section id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/nasa/prog_algs/master?labpath=tutorial.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" /></a>
-<p>The NASA Prognostics Algorithms Package is a Python framework for defining, building, using, and testing Algorithms for prognostics (computation of remaining useful life) of engineering systems, and provides a set of prognostics algorithms developed within this framework, suitable for use in prognostics applications. It can be used in conjunction with the Prognostics Models Library to perform research in prognostics with prognostics systems.</p>
+<p>The NASA Prognostics Algorithms Package is a Python framework for defining, building, using, and testing Algorithms for prognostics (computation of remaining useful life) of engineering systems, and provides a set of prognostics algorithms developed within this framework, suitable for use in prognostics applications. It can be used in conjunction with the Prognostics Models Package (<cite>prog_models</cite>) to perform research in prognostics with prognostics systems.</p>
 <section id="installing">
 <h2>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h2>
 <section id="installing-from-pip-recommended">
 <h3>Installing from pip (recommended)<a class="headerlink" href="#installing-from-pip-recommended" title="Permalink to this headline">¶</a></h3>
-<p>The latest stable release of <cite>prog_algs</cite> is hosted on PyPi. For most users (unless you want to contribute to the development of <cite>prog_algs</cite>), the version on PyPi will be adequate. To install from the command line, use the following command:</p>
+<p>The latest stable release of <cite>prog_algs</cite> is hosted on PyPi. For most users (unless you want to contribute to the development of <cite>prog_algs</cite>), this version will be adequate. To install from the command line, use the following command:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip install prog_algs
 </pre></div>
 </div>
@@ -65,14 +65,14 @@
 <li><p><strong>event state</strong>: progress towards event occurring. Defined as a number where an event state of 0 indicates the event has occurred and 1 indicates no progress towards the event (i.e., fully healthy operation for a failure event). For gradually occurring events (e.g., discharge) the number will progress from 1 to 0 as the event nears. In prognostics, event state is frequently called “State of Health”.</p></li>
 <li><p><strong>inputs</strong>: control applied to the system being modeled (e.g., current drawn from a battery).</p></li>
 <li><p><strong>outputs</strong>: measured sensor values from a system (e.g., voltage and temperature of a battery).</p></li>
-<li><p><strong>observables</strong>: performance characteristics of a system that are a function of system state, but are not directly measured.</p></li>
+<li><p><strong>performance metrics</strong>: performance characteristics of a system that are a function of system state, but are not directly measured.</p></li>
 <li><p><strong>states</strong>: Internal parameters (typically hidden states) used to represent the state of the system- can be same as inputs/outputs but do not have to be.</p></li>
-<li><p><strong>process noise</strong>: stochastic process representing uncertainty in the model transition.</p></li>
-<li><p><strong>measurement noise</strong>: stochastic process representing uncertainty in the measurement process; e.g., sensor sensitivity, sensor misalignements, environmental effects.</p></li>
+<li><p><strong>process noise</strong>: representing uncertainty in the model transition (e.g., model uncertainty).</p></li>
+<li><p><strong>measurement noise</strong>: representing uncertainty in the measurement process (e.g., sensor sensitivity, sensor misalignements, environmental effects).</p></li>
 </ul>
 <p>The structure of the packages is illustrated below:</p>
 <img alt="_images/package_structure.png" src="_images/package_structure.png" />
-<p>Prognostics is performed using <a class="reference external" href="state_estimators.html">State Estimators</a> and <a class="reference external" href="predictors.html">Predictors</a>. State Estimators are resposible for estimating the current state of the modeled system using sensor data and a prognostics model (see: <a class="reference external" href="https://github.com/nasa/prog_models">prog_models package</a>). The state estimator then produces an estimate of the system state with uncertainty in the form of an <a class="reference external" href="uncertain_data.html">uncertain data object</a>. This state estimate is used by the predictor to predict when events will occur (Time of Event, ToE - returned as an <a class="reference external" href="uncertain_data.html">uncertain data object</a>), and future system states (returned as a Prediction object).</p>
+<p>Prognostics is performed using <a class="reference external" href="state_estimators.html">State Estimators</a> and <a class="reference external" href="predictors.html">Predictors</a>. State Estimators are resposible for estimating the current state of the modeled system using sensor data and a prognostics model (see: <a class="reference external" href="https://github.com/nasa/prog_models">prog_models package</a>). The state estimator then produces an estimate of the system state with uncertainty in the form of an <a class="reference external" href="uncertain_data.html">uncertain data object</a>. This state estimate is used by the predictor to predict when events will occur (Time of Event, ToE - returned as an <a class="reference external" href="uncertain_data.html">uncertain data object</a>), and future system states (returned as a <a class="reference external" href="prediction.html#id1">Prediction object</a>).</p>
 <section id="data-structures">
 <h3>Data Structures<a class="headerlink" href="#data-structures" title="Permalink to this headline">¶</a></h3>
 <dl class="simple">
@@ -134,7 +134,8 @@
 </dl>
 </li>
 <li><dl>
-<dt><a class="reference download internal" download="" href="_downloads/3b9c0c03440e6a6ef2e2e2ccdbd961c5/utpredictor.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.utpredictor</span></code></a></dt><dd><span class="target" id="module-examples.utpredictor"></span><div class="line-block">
+<dt><a class="reference download internal" download="" href="_downloads/3b9c0c03440e6a6ef2e2e2ccdbd961c5/utpredictor.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.utpredictor</span></code></a></dt><dd><span class="target" id="module-examples.utpredictor"></span><p>An example using the UnscentedTransformPredictor class to predict the degredation of a battery.</p>
+<div class="line-block">
 <div class="line"><br /></div>
 </div>
 </dd>
@@ -197,6 +198,15 @@ Results:</p>
 </dl>
 </li>
 <li><dl>
+<dt><a class="reference download internal" download="" href="_downloads/2c94710bd8ef995f1d885fb2ba73f158/kalman_filter.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.kalman_filter</span></code></a></dt><dd><span class="target" id="module-examples.kalman_filter"></span><p>This example demonstrates use of the Kalman Filter State Estimator with a LinearModel.</p>
+<p>First, a linear model is defined. Then the KF State estimator is used with fake data to estimate state.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl>
 <dt><a class="reference download internal" download="" href="_downloads/daee0732ebc9103bad35edc2271b7f8d/measurement_eqn_example.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.measurement_eqn_example</span></code></a></dt><dd><span class="target" id="module-examples.measurement_eqn_example"></span><p>This example performs a state estimation with uncertainty given a Prognostics Model for a system in which not all output values are measured.</p>
 <dl class="simple">
 <dt>Method: An instance of the BatteryCircuit model in prog_models is created. We assume that we are only measuring one of the output values, and we define a subclass to remove the other output value.</dt><dd><p>Estimation of the current state is performed at various time steps, using the defined state_estimator.</p>
@@ -214,7 +224,9 @@ Results:</p>
 </dl>
 </li>
 <li><dl>
-<dt><a class="reference download internal" download="" href="_downloads/067e6c82fdc9573fb921219d62002181/new_state_estimator_example.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.new_state_estimator_example</span></code></a></dt><dd><span class="target" id="module-examples.new_state_estimator_example"></span><div class="line-block">
+<dt><a class="reference download internal" download="" href="_downloads/067e6c82fdc9573fb921219d62002181/new_state_estimator_example.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.new_state_estimator_example</span></code></a></dt><dd><span class="target" id="module-examples.new_state_estimator_example"></span><p>An example illustrating the creation of a new state estimator.</p>
+<p>In this example a basic state estimator is constructed by subclassing the StateEstimator class. This StateEstimator is then demonstrated with a ThrownObject model</p>
+<div class="line-block">
 <div class="line"><br /></div>
 </div>
 </dd>
@@ -243,14 +255,16 @@ Results:</p>
 </dl>
 </li>
 <li><dl>
-<dt><a class="reference download internal" download="" href="_downloads/ea97230ef09e27d10dd5f70f57cc729a/predict_specific_event.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.predict_specific_event</span></code></a></dt><dd><span class="target" id="module-examples.predict_specific_event"></span><div class="line-block">
+<dt><a class="reference download internal" download="" href="_downloads/ea97230ef09e27d10dd5f70f57cc729a/predict_specific_event.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.predict_specific_event</span></code></a></dt><dd><span class="target" id="module-examples.predict_specific_event"></span><p>In this example we are using the UTPredictor to predict a specific event, in this case impact. This will then ignore the other events which are not of interest.</p>
+<div class="line-block">
 <div class="line"><br /></div>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl>
-<dt><a class="reference download internal" download="" href="_downloads/a61393d56728af1a85621dfbed0a6ee1/particle_filter_battery_example.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.particle_filter_battery_example</span></code></a></dt><dd><span class="target" id="module-examples.particle_filter_battery_example"></span><div class="line-block">
+<dt><a class="reference download internal" download="" href="_downloads/a61393d56728af1a85621dfbed0a6ee1/particle_filter_battery_example.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.particle_filter_battery_example</span></code></a></dt><dd><span class="target" id="module-examples.particle_filter_battery_example"></span><p>In this example the BatteryElectroChemEOD model is used with a particle filter to estimate the state of the battery</p>
+<div class="line-block">
 <div class="line"><br /></div>
 </div>
 </dd>
@@ -268,7 +282,22 @@ Results:</p>
 <section id="extending">
 <h2>Extending<a class="headerlink" href="#extending" title="Permalink to this headline">¶</a></h2>
 <p>New State Estimators and Predictors are created by extending the <a class="reference internal" href="state_estimators.html#prog_algs.state_estimators.StateEstimator" title="prog_algs.state_estimators.StateEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.state_estimators.StateEstimator</span></code></a> and <a class="reference internal" href="predictors.html#prog_algs.predictors.Predictor" title="prog_algs.predictors.Predictor"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.predictors.Predictor</span></code></a> class, respectively.</p>
-<p>See <a href="#id1"><span class="problematic" id="id2">:download:`examples.new_state_estimator_example &lt;../examples/new_state_estimator_example.py&gt;`__</span></a> for an example of this approach.</p>
+<p>See <a class="reference download internal" download="" href="_downloads/067e6c82fdc9573fb921219d62002181/new_state_estimator_example.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.new_state_estimator_example</span></code></a> for an example of this approach.</p>
+</section>
+<section id="updates-in-v1-3">
+<h2>Updates in v1.3<a class="headerlink" href="#updates-in-v1-3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><strong>New State Estimator Added</strong> <a class="reference internal" href="state_estimators.html#prog_algs.state_estimators.KalmanFilter" title="prog_algs.state_estimators.KalmanFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.state_estimators.KalmanFilter</span></code></a>. Works with models derived from <code class="xref py py-class docutils literal notranslate"><span class="pre">prog_models.LinearModel</span></code>. See <a class="reference download internal" download="" href="_downloads/2c94710bd8ef995f1d885fb2ba73f158/kalman_filter.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.kalman_filter</span></code></a></p></li>
+<li><p><strong>New Predictor Added</strong> <a class="reference internal" href="predictors.html#prog_algs.predictors.UnscentedTransformPredictor" title="prog_algs.predictors.UnscentedTransformPredictor"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.predictors.UnscentedTransformPredictor</span></code></a>. See <a class="reference download internal" download="" href="_downloads/3b9c0c03440e6a6ef2e2e2ccdbd961c5/utpredictor.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.utpredictor</span></code></a></p></li>
+<li><p>Initial state estimate (x0) can now be passed as <cite>UncertainData</cite> to represent initial state uncertainty</p></li>
+<li><p>Added new metrics for <a class="reference internal" href="prediction.html#prog_algs.predictors.ToEPredictionProfile" title="prog_algs.predictors.ToEPredictionProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.predictors.ToEPredictionProfile</span></code></a>: Prognostics horizon, Cumulative Relative Accuracy (CRA)</p></li>
+<li><p>Added ability to plot <a class="reference internal" href="prediction.html#prog_algs.predictors.ToEPredictionProfile" title="prog_algs.predictors.ToEPredictionProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.predictors.ToEPredictionProfile</span></code></a>: profile.plot()</p></li>
+<li><p>Added new metric for <a class="reference internal" href="prediction.html#prog_algs.predictors.Prediction" title="prog_algs.predictors.Prediction"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.predictors.Prediction</span></code></a>: Monotonicity, Relative Accuracy (RA)</p></li>
+<li><p>Added new metric for <a class="reference internal" href="uncertain_data.html#prog_algs.uncertain_data.UncertainData" title="prog_algs.uncertain_data.UncertainData"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.uncertain_data.UncertainData</span></code></a> (and subclasses): Root Mean Square Error (RMSE)</p></li>
+<li><p>Added new describe method for <a class="reference internal" href="uncertain_data.html#prog_algs.uncertain_data.UncertainData" title="prog_algs.uncertain_data.UncertainData"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.uncertain_data.UncertainData</span></code></a> (and subclasses)</p></li>
+<li><p>Add support for python 3.10</p></li>
+<li><p>Various performance improvements and bugfixes</p></li>
+</ul>
 </section>
 <section id="updates-in-v1-2">
 <h2>Updates in v1.2<a class="headerlink" href="#updates-in-v1-2" title="Permalink to this headline">¶</a></h2>
@@ -353,6 +382,7 @@ Results:</p>
 <li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#use">Use</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#extending">Extending</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#updates-in-v1-3">Updates in v1.3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#updates-in-v1-2">Updates in v1.2</a></li>
 </ul>
 </li>
@@ -360,8 +390,6 @@ Results:</p>
 <li class="toctree-l1"><a class="reference internal" href="predictors.html">Predictors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="uncertain_data.html">Uncertain Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="prediction.html">Prediction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://nasa.github.io/prog_models">ProgModels</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://nasa.github.io/prog_server">ProgServer</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://nasa.github.io/prog_models/dev_guide.html">dev_guide</a></li>

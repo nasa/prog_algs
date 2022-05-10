@@ -3,14 +3,14 @@ Getting Started
 .. image:: https://mybinder.org/badge_logo.svg
  :target: https://mybinder.org/v2/gh/nasa/prog_algs/master?labpath=tutorial.ipynb
 
-The NASA Prognostics Algorithms Package is a Python framework for defining, building, using, and testing Algorithms for prognostics (computation of remaining useful life) of engineering systems, and provides a set of prognostics algorithms developed within this framework, suitable for use in prognostics applications. It can be used in conjunction with the Prognostics Models Library to perform research in prognostics with prognostics systems.
+The NASA Prognostics Algorithms Package is a Python framework for defining, building, using, and testing Algorithms for prognostics (computation of remaining useful life) of engineering systems, and provides a set of prognostics algorithms developed within this framework, suitable for use in prognostics applications. It can be used in conjunction with the Prognostics Models Package (`prog_models`) to perform research in prognostics with prognostics systems.
 
 Installing
 -----------------------
 
 Installing from pip (recommended)
 ********************************************
-The latest stable release of `prog_algs` is hosted on PyPi. For most users (unless you want to contribute to the development of `prog_algs`), the version on PyPi will be adequate. To install from the command line, use the following command:
+The latest stable release of `prog_algs` is hosted on PyPi. For most users (unless you want to contribute to the development of `prog_algs`), this version will be adequate. To install from the command line, use the following command:
 
 .. code-block:: console
 
@@ -39,19 +39,19 @@ A few definitions to get started:
 
 * **outputs**: measured sensor values from a system (e.g., voltage and temperature of a battery).
 
-* **observables**: performance characteristics of a system that are a function of system state, but are not directly measured.
+* **performance metrics**: performance characteristics of a system that are a function of system state, but are not directly measured.
 
 * **states**: Internal parameters (typically hidden states) used to represent the state of the system- can be same as inputs/outputs but do not have to be. 
 
-* **process noise**: stochastic process representing uncertainty in the model transition. 
+* **process noise**: representing uncertainty in the model transition (e.g., model uncertainty). 
 
-* **measurement noise**: stochastic process representing uncertainty in the measurement process; e.g., sensor sensitivity, sensor misalignements, environmental effects.
+* **measurement noise**: representing uncertainty in the measurement process (e.g., sensor sensitivity, sensor misalignements, environmental effects).
 
 The structure of the packages is illustrated below:
 
 .. image:: images/package_structure.png
 
-Prognostics is performed using `State Estimators <state_estimators.html>`__ and `Predictors <predictors.html>`__. State Estimators are resposible for estimating the current state of the modeled system using sensor data and a prognostics model (see: `prog_models package <https://github.com/nasa/prog_models>`__). The state estimator then produces an estimate of the system state with uncertainty in the form of an `uncertain data object <uncertain_data.html>`__. This state estimate is used by the predictor to predict when events will occur (Time of Event, ToE - returned as an `uncertain data object <uncertain_data.html>`__), and future system states (returned as a Prediction object).
+Prognostics is performed using `State Estimators <state_estimators.html>`__ and `Predictors <predictors.html>`__. State Estimators are resposible for estimating the current state of the modeled system using sensor data and a prognostics model (see: `prog_models package <https://github.com/nasa/prog_models>`__). The state estimator then produces an estimate of the system state with uncertainty in the form of an `uncertain data object <uncertain_data.html>`__. This state estimate is used by the predictor to predict when events will occur (Time of Event, ToE - returned as an `uncertain data object <uncertain_data.html>`__), and future system states (returned as a `Prediction object <prediction.html#id1>`__).
 
 Data Structures
 ***************
@@ -84,6 +84,9 @@ The best way to learn how to use `prog_algs` is through the `tutorial <https://m
 * :download:`examples.horizon <../examples/horizon.py>`
     .. automodule:: examples.horizon
     |
+* :download:`examples.kalman_filter <../examples/kalman_filter.py>`
+    .. automodule:: examples.kalman_filter
+    |
 * :download:`examples.measurement_eqn_example <../examples/measurement_eqn_example.py>`
     .. automodule:: examples.measurement_eqn_example
     |
@@ -106,7 +109,21 @@ Extending
 ---------
 New State Estimators and Predictors are created by extending the :class:`prog_algs.state_estimators.StateEstimator` and :class:`prog_algs.predictors.Predictor` class, respectively. 
 
-See :download:`examples.new_state_estimator_example <../examples/new_state_estimator_example.py>`__ for an example of this approach.
+See :download:`examples.new_state_estimator_example <../examples/new_state_estimator_example.py>` for an example of this approach.
+
+Updates in v1.3
+---------------
+* **New State Estimator Added** :class:`prog_algs.state_estimators.KalmanFilter`. Works with models derived from :class:`prog_models.LinearModel`. See :download:`examples.kalman_filter <../examples/kalman_filter.py>`
+* **New Predictor Added** :class:`prog_algs.predictors.UnscentedTransformPredictor`. See :download:`examples.utpredictor <../examples/utpredictor.py>`
+* Initial state estimate (x0) can now be passed as `UncertainData` to represent initial state uncertainty
+* Added new metrics for :class:`prog_algs.predictors.ToEPredictionProfile`: Prognostics horizon, Cumulative Relative Accuracy (CRA)
+* Added ability to plot :class:`prog_algs.predictors.ToEPredictionProfile`: profile.plot()
+* Added new metric for :class:`prog_algs.predictors.Prediction`: Monotonicity, Relative Accuracy (RA)
+* Added new metric for :class:`prog_algs.uncertain_data.UncertainData` (and subclasses): Root Mean Square Error (RMSE)
+* Added new describe method for :class:`prog_algs.uncertain_data.UncertainData` (and subclasses)
+* Add support for python 3.10
+* Various performance improvements and bugfixes
+
 
 Updates in v1.2
 ---------------

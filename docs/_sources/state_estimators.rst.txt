@@ -1,6 +1,6 @@
 State Estimators
 =======================
-The State Estimator uses sensor information and a Prognostics Model (see: `prog_models package <https://github.com/nasa/prog_models>`__) to produce an estimate of system state (which can be used to estimate outputs, event_states, and observables). This state estimate can either be used by itself or as input to a `Predictor <predictors.html>`__. A state estimator is typically run multiple times as new information is available.
+The State Estimator uses sensor information and a Prognostics Model (see: `prog_models package <https://github.com/nasa/prog_models>`__) to produce an estimate of system state (which can be used to estimate outputs, event_states, and performance metrics). This state estimate can either be used by itself or as input to a `Predictor <predictors.html>`__. A state estimator is typically run each time new information is available.
 
 Here's an example of its use. In this example we use the unscented kalman filter state estimator and the ThrownObject model. 
 

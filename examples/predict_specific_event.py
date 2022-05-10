@@ -1,12 +1,11 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
-from prog_models.models.thrown_object import ThrownObject
-from prog_algs import *
-from prog_algs.uncertain_data import UnweightedSamples
-
 """
 In this example we are using the UTPredictor to predict a specific event, in this case impact. This will then ignore the other events which are not of interest.
 """
+
+from prog_models.models.thrown_object import ThrownObject
+from prog_algs import *
 
 def run_example():
     ## Setup

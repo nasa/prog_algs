@@ -18,8 +18,6 @@ If you are new to this package, see `getting started <getting_started.html>`__.
    predictors
    uncertain_data
    prediction
-   metrics
-   exceptions
    ProgModels <https://nasa.github.io/prog_models>
    ProgServer <https://nasa.github.io/prog_server>
    dev_guide <https://nasa.github.io/prog_models/dev_guide.html>
@@ -40,7 +38,7 @@ Use the following to cite this repository:
 
 The corresponding reference should look like this:
 
-C. Teubert, C. Kulkarni, M. Corbetta Prognostics Algorithms Python Package, v1.3.0, May 2022. URL https://github.com/nasa/prog_algs.
+C. Teubert, C. Kulkarni, M. Corbetta. Prognostics Algorithms Python Package, v1.3.0, May 2022. URL https://github.com/nasa/prog_algs.
 
 Indices and tables
 -----------------------

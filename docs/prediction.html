@@ -15,7 +15,6 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Metrics" href="metrics.html" />
     <link rel="prev" title="Uncertain Data" href="uncertain_data.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -37,7 +36,7 @@
 <h1>Prediction<a class="headerlink" href="#prediction" title="Permalink to this headline">¶</a></h1>
 <section id="id1">
 <h2>Prediction<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>Predictions store the result of a prediction (i.e., returned by the predict method of a predictor). They store values (with uncertainty) at different future times. These are used to store states, inputs, outputs, observables, and event states with uncertainty at savepoints.</p>
+<p>Predictions store the result of a prediction (i.e., returned by the predict method of a predictor). They store values (with uncertainty) at different future times. These are used to store states, inputs, outputs, perfomance metrics, and event states with uncertainty at savepoints.</p>
 <p>Two types of predictions are distributed with this package: <cite>Prediction</cite> and <cite>UnweightedSamplesPrediction</cite>, described below. <cite>UnweightedSamplesPrediction</cite> extends <cite>Prediction</cite> to allow some operations specific to cases where each prediction is represented by an UnweightedSamples object (e.g., accessing SimResult for a single sample).</p>
 <section id="base-prediction">
 <h3>Base Prediction<a class="headerlink" href="#base-prediction" title="Permalink to this headline">¶</a></h3>
@@ -430,8 +429,6 @@ In either case, this is followed by: for k, v in F.items(): D[k] = v</p>
 <li class="toctree-l2"><a class="reference internal" href="#toe-prediction-profile">ToE Prediction Profile</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://nasa.github.io/prog_models">ProgModels</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://nasa.github.io/prog_server">ProgServer</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://nasa.github.io/prog_models/dev_guide.html">dev_guide</a></li>
@@ -443,7 +440,6 @@ In either case, this is followed by: for k, v in F.items(): D[k] = v</p>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="uncertain_data.html" title="previous chapter">Uncertain Data</a></li>
-      <li>Next: <a href="metrics.html" title="next chapter">Metrics</a></li>
   </ul></li>
 </ul>
 </div>

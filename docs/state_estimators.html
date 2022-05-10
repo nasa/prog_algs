@@ -35,7 +35,7 @@
             
   <section id="state-estimators">
 <h1>State Estimators<a class="headerlink" href="#state-estimators" title="Permalink to this headline">¶</a></h1>
-<p>The State Estimator uses sensor information and a Prognostics Model (see: <a class="reference external" href="https://github.com/nasa/prog_models">prog_models package</a>) to produce an estimate of system state (which can be used to estimate outputs, event_states, and observables). This state estimate can either be used by itself or as input to a <a class="reference external" href="predictors.html">Predictor</a>. A state estimator is typically run multiple times as new information is available.</p>
+<p>The State Estimator uses sensor information and a Prognostics Model (see: <a class="reference external" href="https://github.com/nasa/prog_models">prog_models package</a>) to produce an estimate of system state (which can be used to estimate outputs, event_states, and performance metrics). This state estimate can either be used by itself or as input to a <a class="reference external" href="predictors.html">Predictor</a>. A state estimator is typically run each time new information is available.</p>
 <p>Here’s an example of its use. In this example we use the unscented kalman filter state estimator and the ThrownObject model.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">prog_models.models</span> <span class="kn">import</span> <span class="n">ThrownObject</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">prog_algs.state_estimators</span> <span class="kn">import</span> <span class="n">UnscentedKalmanFilter</span>
@@ -226,8 +226,6 @@ e.g., z = {‘t’:12.4, ‘v’:3.3} given inputs = [‘t’, ‘v’]</p></li>
 <li class="toctree-l1"><a class="reference internal" href="predictors.html">Predictors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="uncertain_data.html">Uncertain Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="prediction.html">Prediction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://nasa.github.io/prog_models">ProgModels</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://nasa.github.io/prog_server">ProgServer</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://nasa.github.io/prog_models/dev_guide.html">dev_guide</a></li>

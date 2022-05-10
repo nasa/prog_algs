@@ -49,7 +49,7 @@ def run_example():
 
     # Step 3b: Perform a prediction
     samples = filt.x  # Since we're using a particle filter, which is also sample-based, we can directly use the samples, without changes
-    STEP_SIZE = 0.1
+    STEP_SIZE = 0.01
     mc_results = mc.predict(samples, future_loading, dt=STEP_SIZE, horizon=8)
     print("\nPredicted Time of Event:")
     pprint(mc_results.time_of_event.metrics())  # Note this takes some time

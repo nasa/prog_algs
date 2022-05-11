@@ -477,7 +477,7 @@ class TestMetrics(unittest.TestCase):
                 10-i,  # Time (reverse so data is decreasing)
                 UnweightedSamples(data)  # ToE Prediction
             )
-        profile.monotonicity()
+        print(profile.monotonicity())
 
 
 # This allows the module to be executed directly    

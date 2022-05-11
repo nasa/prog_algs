@@ -3,6 +3,7 @@
 """
 This file includes functions for calculating metrics given a Time of Event (ToE) profile (i.e., ToE's calculated at different times of prediction resulting from running prognostics multiple times, e.g., on playback data). The metrics calculated here are specific to multiple ToE estimates (e.g. alpha-lambda metric)
 """
+from numpy import sign
 from collections import defaultdict
 from typing import Callable
 from ..predictors import ToEPredictionProfile
@@ -107,7 +108,7 @@ def cumulative_relative_accuracy(toe_profile : ToEPredictionProfile, ground_trut
             ra_sums[event] += value
     return {event:ra_sum/len(toe_profile) for event, ra_sum in ra_sums.items()}
 
-def monotonicity(toe_profile : ToEPredictionProfile, **kwargs) -> Dict[str, float]:
+def monotonicity(toe_profile : ToEPredictionProfile, **kwargs) -> Dict[str, dict]:
         """Calculate monotonicty for a prediction profile. 
         Given a prediction profile, for each prediction: go through all predicted states and compare those to the next one.
         Calculates monotonicity for each prediction key using its associated mean value in UncertainData.
@@ -122,8 +123,21 @@ def monotonicity(toe_profile : ToEPredictionProfile, **kwargs) -> Dict[str, floa
         Args:
             toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions
         Returns:
-            float: Value between [0, 1] indicating monotonicity of a given event for the Prediction.
+            dict (str, dict): Dictionary where keys represent a profile and dict is a subdictionary representing an event and its respective monotonicitiy value between [0, 1].
         """
-        for k,v in toe_profile.items():
-            print(k,v)
-
+        result = dict()
+        for k,v in toe_profile.items(): # str, UnweightedSamples
+            # Collect and organize mean values for each event in the individual prediction v
+            by_event = defaultdict(list)
+            for subdict in v:
+                for event,value in subdict.items():
+                    by_event[event].append(value)
+            # For each event of this prediction v, calculate monotonicity using formula
+            sub_result = {}
+            for key,l in by_event.items():
+                mono_sum = []
+                for i in range(len(l)-1): 
+                    mono_sum.append(sign(l[i+1] - l[i])) 
+                sub_result[key] = abs(sum(mono_sum) / (len(l)-1))
+            result[k] = sub_result
+        return result

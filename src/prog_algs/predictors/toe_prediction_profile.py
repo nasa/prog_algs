@@ -117,7 +117,7 @@ class ToEPredictionProfile(UserDict):
         Args:
             toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions
         Returns:
-            float: Value between [0, 1] indicating monotonicity of a given event for the Prediction.
+            dict (str, dict): Dictionary where keys represent a profile and dict is a subdictionary representing an event and its respective monotonicitiy value between [0, 1].
         """
         from ..metrics import monotonicity
         return monotonicity(self, **kwargs)

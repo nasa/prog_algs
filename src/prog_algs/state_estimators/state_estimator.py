@@ -82,6 +82,9 @@ class StateEstimator(ABC):
         This method updates the state estimate stored in filt.x, but doesn't return the updated estimate. Call filt.x to get the updated estimate.
         """
 
+    def monotonicity(self) -> dict:
+        pass
+
     @property
     @abstractproperty
     def x(self) -> UncertainData:

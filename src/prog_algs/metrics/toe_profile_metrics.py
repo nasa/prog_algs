@@ -127,10 +127,10 @@ def monotonicity(toe_profile : ToEPredictionProfile, **kwargs) -> Dict[str, floa
         """
         result = dict()
         by_event = defaultdict(list)
-        for k,v in toe_profile.items():
+        for time,unvertaindata in toe_profile.items():
             # Collect and organize mean values for each event in the individual prediction v
-            for event,value in v.mean.items():
-                by_event[event].append(value - k)
+            for event,value in unvertaindata.mean.items():
+                by_event[event].append(value - time)
         # For each event of this prediction v, calculate monotonicity using formula
         for key,l in by_event.items():
             mono_sum = []

@@ -490,25 +490,25 @@ class TestMetrics(unittest.TestCase):
             )
         self.assertDictEqual(profile.monotonicity(), {1: {'a': 0.0, 'b': 0.0}, 2: {'a': 0.0, 'b': 0.0}, 3: {'a': 0.0, 'b': 0.0}, 4: {'a': 0.0, 'b': 0.0}, 5: {'a': 0.0, 'b': 0.0}, 6: {'a': 0.0, 'b': 0.0}, 7: {'a': 0.0, 'b': 0.0}, 8: {'a': 0.0, 'b': 0.0}, 9: {'a': 0.0, 'b': 0.0}, 10: {'a': 0.0, 'b': 0.0}})
 
-        # Test monotonicity between range [0,1]
-        profile = ToEPredictionProfile()  # Empty profile
-        for i in range(10):
-            data = [{'a': i*(i%3-1), 'b': i*(i%3-1)} for i in range(10)]
-            profile.add_prediction(
-                10-i,  # Time (reverse so data is decreasing)
-                UnweightedSamples(data)  # ToE Prediction
-            )
-        self.assertDictEqual(profile.monotonicity(), {1: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 2: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 3: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 4: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 5: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 6: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 7: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 8: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 9: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 10: {'a': 0.2222222222222222, 'b': 0.2222222222222222}})
+        # # Test monotonicity between range [0,1]
+        # profile = ToEPredictionProfile()  # Empty profile
+        # for i in range(10):
+        #     data = [{'a': i*(i%3-1), 'b': i*(i%3-1)} for i in range(10)]
+        #     profile.add_prediction(
+        #         10-i,  # Time (reverse so data is decreasing)
+        #         UnweightedSamples(data)  # ToE Prediction
+        #     )
+        # self.assertDictEqual(profile.monotonicity(), {1: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 2: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 3: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 4: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 5: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 6: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 7: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 8: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 9: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 10: {'a': 0.2222222222222222, 'b': 0.2222222222222222}})
 
-        # Test mixed
-        profile = ToEPredictionProfile()  # Empty profile
-        for i in range(10):
-            data = [{'a': i, 'b': i*(i%3+5)} for i in range(10)]
-            profile.add_prediction(
-                10-i,  # Time (reverse so data is decreasing)
-                UnweightedSamples(data)  # ToE Prediction
-            )
-        self.assertDictEqual(profile.monotonicity(), {1: {'a': 1.0, 'b': 0.5555555555555556}, 2: {'a': 1.0, 'b': 0.5555555555555556}, 3: {'a': 1.0, 'b': 0.5555555555555556}, 4: {'a': 1.0, 'b': 0.5555555555555556}, 5: {'a': 1.0, 'b': 0.5555555555555556}, 6: {'a': 1.0, 'b': 0.5555555555555556}, 7: {'a': 1.0, 'b': 0.5555555555555556}, 8: {'a': 1.0, 'b': 0.5555555555555556}, 9: {'a': 1.0, 'b': 0.5555555555555556}, 10: {'a': 1.0, 'b': 0.5555555555555556}})
+        # # Test mixed
+        # profile = ToEPredictionProfile()  # Empty profile
+        # for i in range(10):
+        #     data = [{'a': i, 'b': i*(i%3+5)} for i in range(10)]
+        #     profile.add_prediction(
+        #         10-i,  # Time (reverse so data is decreasing)
+        #         UnweightedSamples(data)  # ToE Prediction
+        #     )
+        # self.assertDictEqual(profile.monotonicity(), {1: {'a': 1.0, 'b': 0.5555555555555556}, 2: {'a': 1.0, 'b': 0.5555555555555556}, 3: {'a': 1.0, 'b': 0.5555555555555556}, 4: {'a': 1.0, 'b': 0.5555555555555556}, 5: {'a': 1.0, 'b': 0.5555555555555556}, 6: {'a': 1.0, 'b': 0.5555555555555556}, 7: {'a': 1.0, 'b': 0.5555555555555556}, 8: {'a': 1.0, 'b': 0.5555555555555556}, 9: {'a': 1.0, 'b': 0.5555555555555556}, 10: {'a': 1.0, 'b': 0.5555555555555556}})
 
         # # Test ScalarData
         # profile = ToEPredictionProfile()  # Empty profile

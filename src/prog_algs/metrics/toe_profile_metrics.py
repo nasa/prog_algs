@@ -126,18 +126,15 @@ def monotonicity(toe_profile : ToEPredictionProfile, **kwargs) -> Dict[str, dict
             dict (str, dict): Dictionary where keys represent a profile and dict is a subdictionary representing an event and its respective monotonicitiy value between [0, 1].
         """
         result = dict()
+        by_event = defaultdict(list)
         for k,v in toe_profile.items(): # str, UnweightedSamples
             # Collect and organize mean values for each event in the individual prediction v
-            by_event = defaultdict(list)
-            for subdict in v:
-                for event,value in subdict.items():
-                    by_event[event].append(value)
+            for event,value in v.mean.items():
+                by_event[event].append(value - k)
             # For each event of this prediction v, calculate monotonicity using formula
-            sub_result = {}
-            for key,l in by_event.items():
-                mono_sum = []
-                for i in range(len(l)-1): 
-                    mono_sum.append(sign(l[i+1] - l[i])) 
-                sub_result[key] = abs(sum(mono_sum) / (len(l)-1))
-            result[k] = sub_result
+        for key,l in by_event.items():
+            mono_sum = []
+            for i in range(len(l)-1): 
+                mono_sum.append(sign(l[i+1] - l[i])) 
+            result[key] = abs(sum(mono_sum) / (len(l)-1))
         return result

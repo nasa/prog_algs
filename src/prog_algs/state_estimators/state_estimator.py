@@ -83,6 +83,21 @@ class StateEstimator(ABC):
         """
 
     def monotonicity(self) -> dict:
+        """Calculate monotonicty for a state estimate. 
+        Given a state estimate, for each state: go through all events and compare those to the next one.
+        Calculates monotonicity for each event key using its associated value.
+        
+        monotonoicity = |Σsign(i+1 - i) / N-1|
+        Where N is number of measurements and sign indicates sign of calculation.
+        Coble, J., et. al. (2021). Identifying Optimal Prognostic Parameters from Data: A Genetic Algorithms Approach. Annual Conference of the PHM Society.
+        http://www.papers.phmsociety.org/index.php/phmconf/article/view/1404
+        Baptistia, M., et. al. (2022). Relation between prognostics predictor evaluation metrics and local interpretability SHAP values. Aritifical Intelligence, Volume 306.
+        https://www.sciencedirect.com/science/article/pii/S0004370222000078
+        Args:
+            None
+        Returns:
+            dict (str, float): Dictionary where keys represent an event and float is its respective monotonicitiy value between [0, 1].
+        """
         pass
 
     @property

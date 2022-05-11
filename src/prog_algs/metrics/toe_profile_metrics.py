@@ -108,9 +108,9 @@ def cumulative_relative_accuracy(toe_profile : ToEPredictionProfile, ground_trut
             ra_sums[event] += value
     return {event:ra_sum/len(toe_profile) for event, ra_sum in ra_sums.items()}
 
-def monotonicity(toe_profile : ToEPredictionProfile, **kwargs) -> Dict[str, dict]:
+def monotonicity(toe_profile : ToEPredictionProfile, **kwargs) -> Dict[str, float]:
         """Calculate monotonicty for a prediction profile. 
-        Given a prediction profile, for each prediction: go through all predicted states and compare those to the next one.
+        Given a prediction profile, for each prediction: go through all predicted events and compare those to the next one.
         Calculates monotonicity for each prediction key using its associated mean value in UncertainData.
         
         monotonoicity = |Σsign(i+1 - i) / N-1|
@@ -123,15 +123,15 @@ def monotonicity(toe_profile : ToEPredictionProfile, **kwargs) -> Dict[str, dict
         Args:
             toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions
         Returns:
-            dict (str, dict): Dictionary where keys represent a profile and dict is a subdictionary representing an event and its respective monotonicitiy value between [0, 1].
+            dict (str, float): Dictionary where keys represent an event and values are float representing its respective monotonicitiy value between [0, 1].
         """
         result = dict()
         by_event = defaultdict(list)
-        for k,v in toe_profile.items(): # str, UnweightedSamples
+        for k,v in toe_profile.items():
             # Collect and organize mean values for each event in the individual prediction v
             for event,value in v.mean.items():
                 by_event[event].append(value - k)
-            # For each event of this prediction v, calculate monotonicity using formula
+        # For each event of this prediction v, calculate monotonicity using formula
         for key,l in by_event.items():
             mono_sum = []
             for i in range(len(l)-1): 

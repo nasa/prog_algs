@@ -86,7 +86,6 @@ class ToEPredictionProfile(UserDict):
         from ..metrics import prognostic_horizon
         return prognostic_horizon(self, criteria_eqn, ground_truth, **kwargs)
 
-
     def cumulative_relative_accuracy(self, ground_truth, **kwargs) -> Dict[str, float]:
         """
         Compute cumulative relative accuracy for a given profile, defined as the normalized sum of relative prediction accuracies at specific time instances.
@@ -102,6 +101,26 @@ class ToEPredictionProfile(UserDict):
         """
         from ..metrics import cumulative_relative_accuracy
         return cumulative_relative_accuracy(self, ground_truth, **kwargs)
+
+    def monotonicity(self, **kwargs) -> Dict[str, float]:
+        """Calculate monotonicty for a prediction profile. 
+        Given a prediction profile, for each prediction: go through all predicted states and compare those to the next one.
+        Calculates monotonicity for each prediction key using its associated mean value in UncertainData.
+        
+        monotonoicity = |Σsign(i+1 - i) / N-1|
+        Where N is number of measurements and sign indicates sign of calculation.
+        Coble, J., et. al. (2021). Identifying Optimal Prognostic Parameters from Data: A Genetic Algorithms Approach. Annual Conference of the PHM Society.
+        http://www.papers.phmsociety.org/index.php/phmconf/article/view/1404
+        Baptistia, M., et. al. (2022). Relation between prognostics predictor evaluation metrics and local interpretability SHAP values. Aritifical Intelligence, Volume 306.
+        https://www.sciencedirect.com/science/article/pii/S0004370222000078
+
+        Args:
+            toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions
+        Returns:
+            float: Value between [0, 1] indicating monotonicity of a given event for the Prediction.
+        """
+        from ..metrics import monotonicity
+        return monotonicity(self, **kwargs)
     
     def plot(self, ground_truth : dict = None , alpha : float = None, show : bool = True) -> dict: # use ground truth, alpha if given,
         """Produce an alpha-beta plot depicting the TtE distribution by time of prediction.

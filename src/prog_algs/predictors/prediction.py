@@ -82,7 +82,7 @@ class Prediction():
         Args:
             None
         Returns:
-            float: Value between [0, 1] indicating monotonicity of a given event for the Prediction.
+            dict (str, float): Value between [0, 1] indicating monotonicity of a given event for the Prediction.
         """
         # Collect and organize mean values for each event
         by_event = defaultdict(list)

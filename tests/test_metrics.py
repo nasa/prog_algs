@@ -469,15 +469,56 @@ class TestMetrics(unittest.TestCase):
 
     def test_toe_profile_monotonicity(self):
         from prog_algs.predictors import ToEPredictionProfile
+
+        # Test monotonically increasing and decreasing
         profile = ToEPredictionProfile()  # Empty profile
-        # Loading profile
         for i in range(10):
-            data = [{'a': j, 'b': j -1 , 'c': (j-4.5) * 2 + 4.5} for j in range(i, i+20)]
+            data = [{'a': 1+i/10, 'b': 2-i/5} for i in range(10)]
             profile.add_prediction(
                 10-i,  # Time (reverse so data is decreasing)
                 UnweightedSamples(data)  # ToE Prediction
             )
-        print(profile.monotonicity())
+        self.assertDictEqual(profile.monotonicity(), {1: {'a': 1.0, 'b': 1.0}, 2: {'a': 1.0, 'b': 1.0}, 3: {'a': 1.0, 'b': 1.0}, 4: {'a': 1.0, 'b': 1.0}, 5: {'a': 1.0, 'b': 1.0}, 6: {'a': 1.0, 'b': 1.0}, 7: {'a': 1.0, 'b': 1.0}, 8: {'a': 1.0, 'b': 1.0}, 9: {'a': 1.0, 'b': 1.0}, 10: {'a': 1.0, 'b': 1.0}})
+
+        # Test no monotonicity
+        profile = ToEPredictionProfile()  # Empty profile
+        for i in range(10):
+            data = [{'a': i*(i%2-1), 'b': i*(i%2-1)} for i in range(10)]
+            profile.add_prediction(
+                10-i,  # Time (reverse so data is decreasing)
+                UnweightedSamples(data)  # ToE Prediction
+            )
+        self.assertDictEqual(profile.monotonicity(), {1: {'a': 0.0, 'b': 0.0}, 2: {'a': 0.0, 'b': 0.0}, 3: {'a': 0.0, 'b': 0.0}, 4: {'a': 0.0, 'b': 0.0}, 5: {'a': 0.0, 'b': 0.0}, 6: {'a': 0.0, 'b': 0.0}, 7: {'a': 0.0, 'b': 0.0}, 8: {'a': 0.0, 'b': 0.0}, 9: {'a': 0.0, 'b': 0.0}, 10: {'a': 0.0, 'b': 0.0}})
+
+        # Test monotonicity between range [0,1]
+        profile = ToEPredictionProfile()  # Empty profile
+        for i in range(10):
+            data = [{'a': i*(i%3-1), 'b': i*(i%3-1)} for i in range(10)]
+            profile.add_prediction(
+                10-i,  # Time (reverse so data is decreasing)
+                UnweightedSamples(data)  # ToE Prediction
+            )
+        self.assertDictEqual(profile.monotonicity(), {1: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 2: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 3: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 4: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 5: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 6: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 7: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 8: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 9: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 10: {'a': 0.2222222222222222, 'b': 0.2222222222222222}})
+
+        # Test mixed
+        profile = ToEPredictionProfile()  # Empty profile
+        for i in range(10):
+            data = [{'a': i, 'b': i*(i%3+5)} for i in range(10)]
+            profile.add_prediction(
+                10-i,  # Time (reverse so data is decreasing)
+                UnweightedSamples(data)  # ToE Prediction
+            )
+        self.assertDictEqual(profile.monotonicity(), {1: {'a': 1.0, 'b': 0.5555555555555556}, 2: {'a': 1.0, 'b': 0.5555555555555556}, 3: {'a': 1.0, 'b': 0.5555555555555556}, 4: {'a': 1.0, 'b': 0.5555555555555556}, 5: {'a': 1.0, 'b': 0.5555555555555556}, 6: {'a': 1.0, 'b': 0.5555555555555556}, 7: {'a': 1.0, 'b': 0.5555555555555556}, 8: {'a': 1.0, 'b': 0.5555555555555556}, 9: {'a': 1.0, 'b': 0.5555555555555556}, 10: {'a': 1.0, 'b': 0.5555555555555556}})
+
+        # # Test ScalarData
+        # profile = ToEPredictionProfile()  # Empty profile
+        # for i in range(10):
+        #     data = [{'a': i, 'b': i*(i%3+5)} for i in range(10)]
+        #     profile.add_prediction(
+        #         10-i,  # Time (reverse so data is decreasing)
+        #         ScalarData(data)  # ToE Prediction
+        #     )
+        # self.assertDictEqual(profile.monotonicity(), {1: {'a': 1.0, 'b': 0.5555555555555556}, 2: {'a': 1.0, 'b': 0.5555555555555556}, 3: {'a': 1.0, 'b': 0.5555555555555556}, 4: {'a': 1.0, 'b': 0.5555555555555556}, 5: {'a': 1.0, 'b': 0.5555555555555556}, 6: {'a': 1.0, 'b': 0.5555555555555556}, 7: {'a': 1.0, 'b': 0.5555555555555556}, 8: {'a': 1.0, 'b': 0.5555555555555556}, 9: {'a': 1.0, 'b': 0.5555555555555556}, 10: {'a': 1.0, 'b': 0.5555555555555556}})
 
 
 # This allows the module to be executed directly    

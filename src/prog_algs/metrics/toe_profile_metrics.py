@@ -124,4 +124,6 @@ def monotonicity(toe_profile : ToEPredictionProfile, **kwargs) -> Dict[str, floa
         Returns:
             float: Value between [0, 1] indicating monotonicity of a given event for the Prediction.
         """
-        pass
+        for k,v in toe_profile.items():
+            print(k,v)
+

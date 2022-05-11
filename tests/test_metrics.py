@@ -466,7 +466,18 @@ class TestMetrics(unittest.TestCase):
         with self.assertRaises(TypeError):
             GROUND_TRUTH = []
             raise_error = profile.cumulative_relative_accuracy(GROUND_TRUTH)
-    
+
+    def test_toe_profile_monotonicity(self):
+        from prog_algs.predictors import ToEPredictionProfile
+        profile = ToEPredictionProfile()  # Empty profile
+        # Loading profile
+        for i in range(10):
+            data = [{'a': j, 'b': j -1 , 'c': (j-4.5) * 2 + 4.5} for j in range(i, i+20)]
+            profile.add_prediction(
+                10-i,  # Time (reverse so data is decreasing)
+                UnweightedSamples(data)  # ToE Prediction
+            )
+        profile.monotonicity()
 
 
 # This allows the module to be executed directly    

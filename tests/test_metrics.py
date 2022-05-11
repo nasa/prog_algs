@@ -454,10 +454,10 @@ class TestMetrics(unittest.TestCase):
             )
         # Test positive floats ground truth
         GROUND_TRUTH = {'a': 9.0, 'b': 8.0, 'c': 18.0}
-        self.assertEquals(profile.cumulative_relative_accuracy(GROUND_TRUTH), {'a': 0.4444444444444445, 'b': 0.375, 'c': 0.6388888888888888})
+        self.assertEqual(profile.cumulative_relative_accuracy(GROUND_TRUTH), {'a': 0.4444444444444445, 'b': 0.375, 'c': 0.6388888888888888})
         # Test negative floats ground truth
         GROUND_TRUTH = {'a': -9.0, 'b': -8.0, 'c': -18.0}
-        self.assertEquals(profile.cumulative_relative_accuracy(GROUND_TRUTH), {'a': 3.555555555555556, 'b': 3.625, 'c': 3.305555555555556})
+        self.assertEqual(profile.cumulative_relative_accuracy(GROUND_TRUTH), {'a': 3.555555555555556, 'b': 3.625, 'c': 3.305555555555556})
         # Test ground truth values of 0; already caught by relative_accuracy
         with self.assertRaises(ZeroDivisionError):
             GROUND_TRUTH = {'a': 0, 'b': 0, 'c': 0}
@@ -482,10 +482,10 @@ class TestMetrics(unittest.TestCase):
 
         # Test no monotonicity
         profile = ToEPredictionProfile()  # Empty profile
-        for i in range(10):
-            data = [{'a': i*(i%2-1), 'b': i*(i%2-1)} for i in range(10)]
+        for i in range(0,11):
+            data = [{'a': i + i*(i%2-0.5), 'b': i + i*(i%2-0.5)}]*10
             profile.add_prediction(
-                10-i,  # Time (reverse so data is decreasing)
+                i,  # Time (reverse so data is decreasing)
                 UnweightedSamples(data)  # ToE Prediction
             )
         self.assertDictEqual(profile.monotonicity(), {'a': 0.0, 'b': 0.0})

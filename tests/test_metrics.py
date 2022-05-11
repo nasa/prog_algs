@@ -481,14 +481,14 @@ class TestMetrics(unittest.TestCase):
         self.assertDictEqual(profile.monotonicity(), {'a': 1.0, 'b': 1.0})
 
         # Test no monotonicity
-        # profile = ToEPredictionProfile()  # Empty profile
-        # for i in range(10):
-        #     data = [{'a': i*(i%2-1), 'b': i*(i%2-1)} for i in range(10)]
-        #     profile.add_prediction(
-        #         10-i,  # Time (reverse so data is decreasing)
-        #         UnweightedSamples(data)  # ToE Prediction
-        #     )
-        # self.assertDictEqual(profile.monotonicity(), {'a': 1.0, 'b': 1.0})
+        profile = ToEPredictionProfile()  # Empty profile
+        for i in range(10):
+            data = [{'a': i*(i%2-1), 'b': i*(i%2-1)} for i in range(10)]
+            profile.add_prediction(
+                10-i,  # Time (reverse so data is decreasing)
+                UnweightedSamples(data)  # ToE Prediction
+            )
+        self.assertDictEqual(profile.monotonicity(), {'a': 0.0, 'b': 0.0})
 
         # # Test monotonicity between range [0,1]
         # profile = ToEPredictionProfile()  # Empty profile

@@ -119,7 +119,7 @@ class UnweightedSamples(UncertainData, UserList):
         return self[min_index]
 
     @property
-    def mean(self) -> array:
+    def mean(self) -> dict:
         mean = {}
         for key in self.keys():
             values = array([x[key] for x in self.data if x is not None and x[key] is not None])

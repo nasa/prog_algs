@@ -510,15 +510,26 @@ class TestMetrics(unittest.TestCase):
             )
         self.assertDictEqual(profile.monotonicity(), {'a': 0.4, 'b': 0.0, 'c': 1.0})
 
-        # Test ScalarData
+        # Test MultivariateNormalDist
         profile = ToEPredictionProfile()  # Empty profile
+        covar = [[0.1, 0.01], [0.01, 0.1]]
         for i in range(11):
-            data = [{'a': i+i*(i%3-0.5), 'b': i+i*(i%3-0.5)}] * 10
+            data = [{'a': i, 'b': i*(i%3+5)}] * 11
             profile.add_prediction(
                 i,  # Time (reverse so data is decreasing)
-                ScalarData(data)  # ToE Prediction
+                MultivariateNormalDist(data[i].keys(), data[i].values(), covar)  # ToE Prediction
             )
-        self.assertDictEqual(profile.monotonicity(), {'a': 0.4, 'b': 0.4})
+        self.assertDictEqual(profile.monotonicity(), {'a': 0.0, 'b': 0.5})
+
+        # # Test ScalarData
+        # profile = ToEPredictionProfile()  # Empty profile
+        # for i in range(11):
+        #     data = [{'a': i+i*(i%3-0.5), 'b': i+i*(i%3-0.5)}] * 10
+        #     profile.add_prediction(
+        #         i,  # Time (reverse so data is decreasing)
+        #         ScalarData(data)  # ToE Prediction
+        #     )
+        # self.assertDictEqual(profile.monotonicity(), {'a': 0.4, 'b': 0.4})
 
 
 # This allows the module to be executed directly    

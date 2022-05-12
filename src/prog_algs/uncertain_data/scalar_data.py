@@ -55,7 +55,7 @@ class ScalarData(UncertainData):
         return self.mean
         
     @property
-    def mean(self) -> array:
+    def mean(self) -> dict:
         return self.__state
 
     @property

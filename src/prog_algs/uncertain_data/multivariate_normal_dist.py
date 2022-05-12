@@ -69,7 +69,7 @@ class MultivariateNormalDist(UncertainData):
         return self.mean
 
     @property
-    def mean(self) -> array:
+    def mean(self) -> dict:
         return {key: value for (key, value) in zip(self.__labels, self.__mean)}
 
     def __str__(self) -> str:

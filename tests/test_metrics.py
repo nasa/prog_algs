@@ -510,15 +510,15 @@ class TestMetrics(unittest.TestCase):
             )
         self.assertDictEqual(profile.monotonicity(), {'a': 0.4, 'b': 0.0, 'c': 1.0})
 
-        # # Test ScalarData
-        # profile = ToEPredictionProfile()  # Empty profile
-        # for i in range(10):
-        #     data = [{'a': i, 'b': i*(i%3+5)} for i in range(10)]
-        #     profile.add_prediction(
-        #         10-i,  # Time (reverse so data is decreasing)
-        #         ScalarData(data)  # ToE Prediction
-        #     )
-        # self.assertDictEqual(profile.monotonicity(), {1: {'a': 1.0, 'b': 0.5555555555555556}, 2: {'a': 1.0, 'b': 0.5555555555555556}, 3: {'a': 1.0, 'b': 0.5555555555555556}, 4: {'a': 1.0, 'b': 0.5555555555555556}, 5: {'a': 1.0, 'b': 0.5555555555555556}, 6: {'a': 1.0, 'b': 0.5555555555555556}, 7: {'a': 1.0, 'b': 0.5555555555555556}, 8: {'a': 1.0, 'b': 0.5555555555555556}, 9: {'a': 1.0, 'b': 0.5555555555555556}, 10: {'a': 1.0, 'b': 0.5555555555555556}})
+        # Test ScalarData
+        profile = ToEPredictionProfile()  # Empty profile
+        for i in range(11):
+            data = [{'a': i+i*(i%3-0.5), 'b': i+i*(i%3-0.5)}] * 10
+            profile.add_prediction(
+                i,  # Time (reverse so data is decreasing)
+                ScalarData(data)  # ToE Prediction
+            )
+        self.assertDictEqual(profile.monotonicity(), {'a': 0.4, 'b': 0.4})
 
 
 # This allows the module to be executed directly    

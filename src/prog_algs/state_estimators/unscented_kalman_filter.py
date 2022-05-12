@@ -37,9 +37,6 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
             Process Noise Matrix 
         R : List[List[float]]
             Measurement Noise Matrix 
-        x0_uncertainty : float or dict
-            Initial uncertainty in state. Can be 1. scalar (standard deviation applied to all), or 2. dict (stardard deviation for each)\n
-            e.g., 0.5 or {'state1': 0.5, 'state2': 0.2}
     """
     default_parameters = {
         'alpha': 1, 

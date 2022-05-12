@@ -521,15 +521,15 @@ class TestMetrics(unittest.TestCase):
             )
         self.assertDictEqual(profile.monotonicity(), {'a': 0.0, 'b': 0.5})
 
-        # # Test ScalarData
-        # profile = ToEPredictionProfile()  # Empty profile
-        # for i in range(11):
-        #     data = [{'a': i+i*(i%3-0.5), 'b': i+i*(i%3-0.5)}] * 10
-        #     profile.add_prediction(
-        #         i,  # Time (reverse so data is decreasing)
-        #         ScalarData(data)  # ToE Prediction
-        #     )
-        # self.assertDictEqual(profile.monotonicity(), {'a': 0.4, 'b': 0.4})
+        # Test ScalarData
+        profile = ToEPredictionProfile()  # Empty profile
+        for i in range(11):
+            data = {'a': i+i*(i%3-0.5), 'b': i+i*(i%3-0.5)}
+            profile.add_prediction(
+                i,  # Time (reverse so data is decreasing)
+                ScalarData(data)  # ToE Prediction
+            )
+        self.assertDictEqual(profile.monotonicity(), {'a': 0.4, 'b': 0.4})
 
 
 # This allows the module to be executed directly    

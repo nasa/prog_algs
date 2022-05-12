@@ -493,12 +493,12 @@ class TestMetrics(unittest.TestCase):
         # Test monotonicity between range [0,1]
         profile = ToEPredictionProfile()  # Empty profile
         for i in range(10):
-            data = [{'a': i*(i%3), 'b': i*(i%3)} for i in range(10)]
+            data = [{'a': i+i*(i%3-0.5), 'b': i+i*(i%3-0.5)} for i in range(10)]
             profile.add_prediction(
                 i,  # Time (reverse so data is decreasing)
                 UnweightedSamples(data)  # ToE Prediction
             )
-        self.assertDictEqual(profile.monotonicity(), {1: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 2: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 3: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 4: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 5: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 6: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 7: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 8: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 9: {'a': 0.2222222222222222, 'b': 0.2222222222222222}, 10: {'a': 0.2222222222222222, 'b': 0.2222222222222222}})
+        self.assertDictEqual(profile.monotonicity(), {'a': 1.0, 'b': 1.0})
 
         # # Test mixed
         # profile = ToEPredictionProfile()  # Empty profile

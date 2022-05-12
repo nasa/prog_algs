@@ -11,9 +11,9 @@ from ..uncertain_data import MultivariateNormalDist, UncertainData
 
 class KalmanFilter(state_estimator.StateEstimator):
     """
-    An Kalman Filter (KF) for state estimation
+    A Kalman Filter (KF) for state estimation
 
-    This class defines logic for performing a kalman filter with a LinearModel (see Prognostics Model Package). This filter uses measurement data with noise to generate a state estimate and covariance matrix. 
+    This class defines the logic for performing a kalman filter with a LinearModel (see Prognostics Model Package). This filter uses measurement data with noise to generate a state estimate and covariance matrix. 
 
     The supported configuration parameters (keyword arguments) for UKF construction are described below:
 

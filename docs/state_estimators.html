@@ -60,22 +60,34 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="prog_algs.state_estimators.KalmanFilter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">prog_algs.state_estimators.</span></span><span class="sig-name descname"><span class="pre">KalmanFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement_eqn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prog_algs.state_estimators.KalmanFilter" title="Permalink to this definition">¶</a></dt>
-<dd><p>An Kalman Filter (KF) for state estimation</p>
-<p>This class defines logic for performing a kalman filter with a LinearModel (see Prognostics Model Package). This filter uses measurement data with noise to generate a state estimate and covariance matrix.</p>
+<dd><p>A Kalman Filter (KF) for state estimation</p>
+<p>This class defines the logic for performing a kalman filter with a LinearModel (see Prognostics Model Package). This filter uses measurement data with noise to generate a state estimate and covariance matrix.</p>
 <p>The supported configuration parameters (keyword arguments) for UKF construction are described below:</p>
-<dl class="simple">
-<dt>Constructor Configuration Parameters:</dt><dd><dl class="simple">
-<dt>alpha: float</dt><dd><p>KF Scaling parameter. An alpha &gt; 1 turns this into a fading memory filter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – ProgModel
+A prognostics model to be used in state estimation
+See: Prognostics Model Package</p></li>
+<li><p><strong>x0</strong> – <p>UncertainData, model.StateContainer, or dict
+Initial (starting) state, with keys defined by model.states</p>
+<p>e.g., x = ScalarData({‘abc’: 332.1, ‘def’: 221.003}) given states = [‘abc’, ‘def’]</p>
+</p></li>
+</ul>
 </dd>
-<dt>t0<span class="classifier">float</span></dt><dd><p>Starting time (s)</p>
-</dd>
-<dt>dt<span class="classifier">float</span></dt><dd><p>time step (s)</p>
-</dd>
-<dt>Q<span class="classifier">List[List[float]]</span></dt><dd><p>Process Noise Matrix</p>
-</dd>
-<dt>R<span class="classifier">List[List[float]]</span></dt><dd><p>Measurement Noise Matrix</p>
-</dd>
-</dl>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>alpha</strong> – float
+KF Scaling parameter. An alpha &gt; 1 turns this into a fading memory filter.</p></li>
+<li><p><strong>t0</strong> – float
+Starting time (s)</p></li>
+<li><p><strong>dt</strong> – float
+time step (s)</p></li>
+<li><p><strong>Q</strong> – List[List[float]]
+Process Noise Matrix</p></li>
+<li><p><strong>R</strong> – List[List[float]]
+Measurement Noise Matrix</p></li>
+</ul>
 </dd>
 </dl>
 <div class="admonition note">
@@ -93,8 +105,21 @@
 <dd><p>An Unscented Kalman Filter (UKF) for state estimation</p>
 <p>This class defines logic for performing an unscented kalman filter with a Prognostics Model (see Prognostics Model Package). This filter uses measurement data with noise to generate a state estimate and covariance matrix.</p>
 <p>The supported configuration parameters (keyword arguments) for UKF construction are described below:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – ProgModel
+A prognostics model to be used in state estimation
+See: Prognostics Model Package</p></li>
+<li><p><strong>x0</strong> – <p>UncertainData, model.StateContainer, or dict
+Initial (starting) state, with keys defined by model.states</p>
+<p>e.g., x = ScalarData({‘abc’: 332.1, ‘def’: 221.003}) given states = [‘abc’, ‘def’]</p>
+</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="simple">
-<dt>Constructor Configuration Parameters:</dt><dd><dl class="simple">
+<dt>Keyword Args</dt><dd><dl class="simple">
 <dt>alpha, beta, kappa: float</dt><dd><p>UKF Scaling parameters</p>
 </dd>
 <dt>t0<span class="classifier">float</span></dt><dd><p>Starting time (s)</p>
@@ -119,20 +144,29 @@
 <dd><p>Estimates state using a Particle Filter (PF) algorithm.</p>
 <p>This class defines logic for a PF using a Prognostics Model (see Prognostics Model Package). This filter uses measurement data with noise to estimate the state of the system using a particles. At each step, particles are predicted forward (with noise). Particles are resampled with replacement from the existing particles according to how well the particles match the observed measurements.</p>
 <p>The supported configuration parameters (keyword arguments) for UKF construction are described below:</p>
-<dl>
-<dt>Constructor Configuration Parameters:</dt><dd><dl>
-<dt>t0<span class="classifier">float</span></dt><dd><p>Starting time (s)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – ProgModel
+A prognostics model to be used in state estimation
+See: Prognostics Model Package</p></li>
+<li><p><strong>x0</strong> – <p>UncertainData, model.StateContainer, or dict
+Initial (starting) state, with keys defined by model.states</p>
+<p>e.g., x = ScalarData({‘abc’: 332.1, ‘def’: 221.003}) given states = [‘abc’, ‘def’]</p>
+</p></li>
+</ul>
 </dd>
-<dt>dt<span class="classifier">float</span></dt><dd><p>time step (s)</p>
-</dd>
-<dt>num_particles<span class="classifier">int</span></dt><dd><p>Number of particles in particle filter</p>
-</dd>
-<dt>resample_fcn<span class="classifier">function</span></dt><dd><p>Resampling function ([weights]) -&gt; [indexes] e.g., filterpy.monte_carlo.residual_resample</p>
-</dd>
-<dt>x0_uncertainty<span class="classifier">float or dict</span></dt><dd><p>Initial uncertainty in state. Can be 1. scalar (standard deviation applied to all), or 2. dict (stardard deviation for each)</p>
-<p>e.g., 0.5 or {‘state1’: 0.5, ‘state2’: 0.2}</p>
-</dd>
-</dl>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>t0</strong> – float
+Starting time (s)</p></li>
+<li><p><strong>dt</strong> – float
+time step (s)</p></li>
+<li><p><strong>num_particles</strong> – int
+Number of particles in particle filter</p></li>
+<li><p><strong>resample_fcn</strong> – function
+Resampling function ([weights]) -&gt; [indexes] e.g., filterpy.monte_carlo.residual_resample</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -152,7 +186,7 @@
 <li><p><strong>model</strong> – ProgModel
 A prognostics model to be used in state estimation
 See: Prognostics Model Package</p></li>
-<li><p><strong>x0</strong> – <p>UncertainData or dict
+<li><p><strong>x0</strong> – <p>UncertainData, model.StateContainer, or dict
 Initial (starting) state, with keys defined by model.states</p>
 <p>e.g., x = ScalarData({‘abc’: 332.1, ‘def’: 221.003}) given states = [‘abc’, ‘def’]</p>
 </p></li>
@@ -230,6 +264,7 @@ e.g., z = {‘t’:12.4, ‘v’:3.3} given inputs = [‘t’, ‘v’]</p></li>
 <li class="toctree-l1"><a class="reference external" href="https://nasa.github.io/prog_server">ProgServer</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://nasa.github.io/prog_models/dev_guide.html">dev_guide</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/nasa/prog_algs">GitHub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release.html">Release Notes</a></li>
 </ul>
 
 <div class="relations">
@@ -264,7 +299,7 @@ e.g., z = {‘t’:12.4, ‘v’:3.3} given inputs = [‘t’, ‘v’]</p></li>
       <div class="clearer"></div>
     </div>
 
-Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
   </body>
 </html>

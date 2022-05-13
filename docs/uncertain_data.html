@@ -209,7 +209,7 @@ Optional argument specifying whether to print or not; default true.</p></li>
 <dt class="sig sig-object py" id="prog_algs.uncertain_data.UncertainData.relative_accuracy">
 <span class="sig-name descname"><span class="pre">relative_accuracy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#prog_algs.uncertain_data.UncertainData.relative_accuracy" title="Permalink to this definition">¶</a></dt>
 <dd><p>The relative accuracy of the mean of the distribution.</p>
-<p>RA = 1 - <a href="#id5"><span class="problematic" id="id6">|r-p|</span></a>/r
+<p>RA = 1 - <a href="#id3"><span class="problematic" id="id4">|r-p|</span></a>/r
 Where r is ground truth and p is mean of predicted distribution
 Prognostics: The Science of Making Predictions (Goebel et al, 239)</p>
 <dl class="field-list simple">
@@ -307,11 +307,7 @@ Prognostics: The Science of Making Predictions (Goebel et al, 239)</p>
 <dd><p>Data without uncertainty- single value</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>[</strong><strong>dict</strong> (<em>state</em>) – Single state in the form of dict or model.*Container (InputContainer, OutputContainer, Statecontainer) representing states and respective values.</p></li>
-<li><p><strong>*Container</strong><strong>]</strong> – <p>Single state in the form of dict or model.*Container (InputContainer, OutputContainer, Statecontainer) representing states and respective values.</p>
-</p></li>
-</ul>
+<dd class="field-odd"><p><strong>state</strong> (<em>dict</em><em> or </em><em>Container</em>) – Single state in the form of dict or model.*Container (InputContainer, OutputContainer, Statecontainer) representing states and respective values.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -348,12 +344,11 @@ Prognostics: The Science of Making Predictions (Goebel et al, 239)</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="prediction.html">Prediction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://nasa.github.io/prog_models">ProgModels</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://nasa.github.io/prog_server">ProgServer</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://nasa.github.io/prog_models/dev_guide.html">dev_guide</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/nasa/prog_algs">GitHub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release.html">Release Notes</a></li>
 </ul>
 
 <div class="relations">
@@ -388,7 +383,7 @@ Prognostics: The Science of Making Predictions (Goebel et al, 239)</p>
       <div class="clearer"></div>
     </div>
 
-Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
   </body>
 </html>

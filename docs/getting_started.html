@@ -284,78 +284,6 @@ Results:</p>
 <p>New State Estimators and Predictors are created by extending the <a class="reference internal" href="state_estimators.html#prog_algs.state_estimators.StateEstimator" title="prog_algs.state_estimators.StateEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.state_estimators.StateEstimator</span></code></a> and <a class="reference internal" href="predictors.html#prog_algs.predictors.Predictor" title="prog_algs.predictors.Predictor"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.predictors.Predictor</span></code></a> class, respectively.</p>
 <p>See <a class="reference download internal" download="" href="_downloads/067e6c82fdc9573fb921219d62002181/new_state_estimator_example.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.new_state_estimator_example</span></code></a> for an example of this approach.</p>
 </section>
-<section id="updates-in-v1-3">
-<h2>Updates in v1.3<a class="headerlink" href="#updates-in-v1-3" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><strong>New State Estimator Added</strong> <a class="reference internal" href="state_estimators.html#prog_algs.state_estimators.KalmanFilter" title="prog_algs.state_estimators.KalmanFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.state_estimators.KalmanFilter</span></code></a>. Works with models derived from <code class="xref py py-class docutils literal notranslate"><span class="pre">prog_models.LinearModel</span></code>. See <a class="reference download internal" download="" href="_downloads/2c94710bd8ef995f1d885fb2ba73f158/kalman_filter.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.kalman_filter</span></code></a></p></li>
-<li><p><strong>New Predictor Added</strong> <a class="reference internal" href="predictors.html#prog_algs.predictors.UnscentedTransformPredictor" title="prog_algs.predictors.UnscentedTransformPredictor"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.predictors.UnscentedTransformPredictor</span></code></a>. See <a class="reference download internal" download="" href="_downloads/3b9c0c03440e6a6ef2e2e2ccdbd961c5/utpredictor.py"><code class="xref download docutils literal notranslate"><span class="pre">examples.utpredictor</span></code></a></p></li>
-<li><p>Initial state estimate (x0) can now be passed as <cite>UncertainData</cite> to represent initial state uncertainty</p></li>
-<li><p>Added new metrics for <a class="reference internal" href="prediction.html#prog_algs.predictors.ToEPredictionProfile" title="prog_algs.predictors.ToEPredictionProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.predictors.ToEPredictionProfile</span></code></a>: Prognostics horizon, Cumulative Relative Accuracy (CRA)</p></li>
-<li><p>Added ability to plot <a class="reference internal" href="prediction.html#prog_algs.predictors.ToEPredictionProfile" title="prog_algs.predictors.ToEPredictionProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.predictors.ToEPredictionProfile</span></code></a>: profile.plot()</p></li>
-<li><p>Added new metric for <a class="reference internal" href="prediction.html#prog_algs.predictors.Prediction" title="prog_algs.predictors.Prediction"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.predictors.Prediction</span></code></a>: Monotonicity, Relative Accuracy (RA)</p></li>
-<li><p>Added new metric for <a class="reference internal" href="uncertain_data.html#prog_algs.uncertain_data.UncertainData" title="prog_algs.uncertain_data.UncertainData"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.uncertain_data.UncertainData</span></code></a> (and subclasses): Root Mean Square Error (RMSE)</p></li>
-<li><p>Added new describe method for <a class="reference internal" href="uncertain_data.html#prog_algs.uncertain_data.UncertainData" title="prog_algs.uncertain_data.UncertainData"><code class="xref py py-class docutils literal notranslate"><span class="pre">prog_algs.uncertain_data.UncertainData</span></code></a> (and subclasses)</p></li>
-<li><p>Add support for python 3.10</p></li>
-<li><p>Various performance improvements and bugfixes</p></li>
-</ul>
-</section>
-<section id="updates-in-v1-2">
-<h2>Updates in v1.2<a class="headerlink" href="#updates-in-v1-2" title="Permalink to this headline">¶</a></h2>
-<section id="note-for-existing-users">
-<h3>Note for Existing Users<a class="headerlink" href="#note-for-existing-users" title="Permalink to this headline">¶</a></h3>
-<p>This release includes changes to the return format of the MonteCarlo Predictor’s <cite>predict</cite> method. These changes were necessary to support non-sample based predictors. The non backwards-compatible changes are listed below:
-* times:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>previous <code class="docutils literal notranslate"><span class="pre">`List[List[float]]`</span></code> where times[n][m] corresponds to timepoint m of sample n.</p></li>
-<li><p>new <code class="docutils literal notranslate"><span class="pre">`List[float]`</span></code> where times[m] corresponds to timepoint m for all samples.</p></li>
-</ul>
-</div></blockquote>
-<ul class="simple">
-<li><dl class="simple">
-<dt>End of Life (EOL)/ Time of Event (ToE) estimates:</dt><dd><ul>
-<li><p>previous <code class="docutils literal notranslate"><span class="pre">`List[float]`</span></code> where the times correspond to the time that the first event occurs.</p></li>
-<li><p>new <code class="docutils literal notranslate"><span class="pre">`UnweightedSamples`</span></code> where keys correspond to the inidividualevents predicted.</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>State at time of event (ToE).</dt><dd><ul>
-<li><p>previous: element in states.</p></li>
-<li><p>new: member of ToE structure (e.g., ToE.final_state[‘event1’]).</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
-</section>
-<section id="general-updates">
-<h3>General Updates<a class="headerlink" href="#general-updates" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p>New Feature: Histogram and Scatter Plot of UncertainData.</p></li>
-<li><dl class="simple">
-<dt>New Feature: Vectorized particle filter.</dt><dd><ul>
-<li><p>Particle Filter State Estimator is now vectorized for vectorized models - this significantly improves performance.</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>New Feature: Unscented Transform Predictor.</dt><dd><ul>
-<li><p>New predictor that propogates sigma points forward to estimate time of event and future states.</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><p>New Feature: <cite>Prediction</cite> class to represent predicted future values.</p></li>
-<li><p>New Feature: <cite>ToEPredictionProfile</cite> class to represent and operate on the result of multiple predictions generated at different prediction times.</p></li>
-<li><p>Added metrics <cite>percentage_in_bounds</cite> and <cite>metrics</cite> and plots to UncertainData .</p></li>
-<li><p>Add support for Python3.9.</p></li>
-<li><p>General Bugfixes.</p></li>
-</ul>
-</section>
-</section>
 </section>
 
 
@@ -382,8 +310,6 @@ Results:</p>
 <li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#use">Use</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#extending">Extending</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#updates-in-v1-3">Updates in v1.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#updates-in-v1-2">Updates in v1.2</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="state_estimators.html">State Estimators</a></li>
@@ -394,6 +320,7 @@ Results:</p>
 <li class="toctree-l1"><a class="reference external" href="https://nasa.github.io/prog_server">ProgServer</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://nasa.github.io/prog_models/dev_guide.html">dev_guide</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/nasa/prog_algs">GitHub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release.html">Release Notes</a></li>
 </ul>
 
 <div class="relations">
@@ -428,7 +355,7 @@ Results:</p>
       <div class="clearer"></div>
     </div>
 
-Copyright © 2020 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
   </body>
 </html>

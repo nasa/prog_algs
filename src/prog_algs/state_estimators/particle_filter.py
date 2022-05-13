@@ -20,6 +20,17 @@ class ParticleFilter(state_estimator.StateEstimator):
 
     The supported configuration parameters (keyword arguments) for UKF construction are described below:
 
+    Initialization Parameters:
+        model : ProgModel
+            A prognostics model to be used in state estimation
+            See: Prognostics Model Package
+        x0 : UncertainData, model.StateContainer, or dict
+            Initial (starting) state, with keys defined by model.states \n
+            e.g., x = ScalarData({'abc': 332.1, 'def': 221.003}) given states = ['abc', 'def']
+        options : optional, kwargs
+            configuration options\n
+            Dictionary of any additional configuration values. See state-estimator specific documentation
+
     Constructor Configuration Parameters:
         t0 : float
             Starting time (s)
@@ -29,9 +40,6 @@ class ParticleFilter(state_estimator.StateEstimator):
             Number of particles in particle filter
         resample_fcn : function 
             Resampling function ([weights]) -> [indexes] e.g., filterpy.monte_carlo.residual_resample
-        x0_uncertainty : float or dict
-            Initial uncertainty in state. Can be 1. scalar (standard deviation applied to all), or 2. dict (stardard deviation for each)\n
-            e.g., 0.5 or {'state1': 0.5, 'state2': 0.2}
     """
     default_parameters = {
             't0': -1e-99,  # practically 0, but allowing for a 0 first estimate

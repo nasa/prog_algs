@@ -14,16 +14,16 @@ class StateEstimator(ABC):
 
     Abstract base class for creating state estimators that perform state estimation. Subclasses must implement this interface. Equivilant to "Observers" in NASA's Matlab Prognostics Algorithm Library
 
-    parameters:
-     model : ProgModel
-        A prognostics model to be used in state estimation
-        See: Prognostics Model Package
-     x0 : UncertainData or dict
-        Initial (starting) state, with keys defined by model.states \n
-        e.g., x = ScalarData({'abc': 332.1, 'def': 221.003}) given states = ['abc', 'def']
-     options : optional, kwargs
-        configuration options\n
-        Dictionary of any additional configuration values. See state-estimator specific documentation
+    Initialization Parameters:
+        model : ProgModel
+            A prognostics model to be used in state estimation
+            See: Prognostics Model Package
+        x0 : UncertainData, model.StateContainer, or dict
+            Initial (starting) state, with keys defined by model.states \n
+            e.g., x = ScalarData({'abc': 332.1, 'def': 221.003}) given states = ['abc', 'def']
+        options : optional, kwargs
+            configuration options\n
+            Dictionary of any additional configuration values. See state-estimator specific documentation
     """
 
     default_parameters = {

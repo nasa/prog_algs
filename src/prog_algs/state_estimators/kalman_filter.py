@@ -17,18 +17,15 @@ class KalmanFilter(state_estimator.StateEstimator):
 
     The supported configuration parameters (keyword arguments) for UKF construction are described below:
 
-    Initialization Parameters:
+    Args:
         model : ProgModel
             A prognostics model to be used in state estimation
             See: Prognostics Model Package
         x0 : UncertainData, model.StateContainer, or dict
             Initial (starting) state, with keys defined by model.states \n
             e.g., x = ScalarData({'abc': 332.1, 'def': 221.003}) given states = ['abc', 'def']
-        options : optional, kwargs
-            configuration options\n
-            Dictionary of any additional configuration values. See state-estimator specific documentation
 
-    Constructor Configuration Parameters:
+    Keyword Args:
         alpha: float
             KF Scaling parameter. An alpha > 1 turns this into a fading memory filter.
         t0 : float

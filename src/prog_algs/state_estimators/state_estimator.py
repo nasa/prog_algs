@@ -14,7 +14,7 @@ class StateEstimator(ABC):
 
     Abstract base class for creating state estimators that perform state estimation. Subclasses must implement this interface. Equivilant to "Observers" in NASA's Matlab Prognostics Algorithm Library
 
-    Initialization Parameters:
+    Args:
         model : ProgModel
             A prognostics model to be used in state estimation
             See: Prognostics Model Package

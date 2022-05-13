@@ -16,7 +16,7 @@ Results:
 
 from prog_models.models import BatteryCircuit as Battery
 # VVV Uncomment this to use Electro Chemistry Model VVV
-# from prog_models.models import BatteryElectroChem as Battery
+from prog_models.models import BatteryElectroChemEOD as Battery
 
 from prog_algs import *
 

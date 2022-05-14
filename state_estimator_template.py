@@ -57,6 +57,6 @@ class TemplateStateEstimator(state_estimators.StateEstimator):
         # REPLACE THE FOLLOWING WITH THE LOGIC TO CONSTRUCT/RETURN THE STATE
 
         # Here we're using ScalarData, but the state could be represented by any other type of UncertainData (e.g., MultivariateNormalDist)
-        x = ScalarData({key: 0.0 for key in self.model.states})
+        x = ScalarData(self.model.StateContainer({key: 0.0 for key in self.model.states}))
 
         return x

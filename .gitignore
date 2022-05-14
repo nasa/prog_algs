@@ -99,3 +99,6 @@ cython_debug/
 # VS Code
 .vscode/
 .pypirc
+.DS_Store
+data_test.pkl
+predictor_test.pkl

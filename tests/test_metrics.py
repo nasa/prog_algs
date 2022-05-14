@@ -1,9 +1,10 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 import unittest
+from prog_algs import uncertain_data
 from prog_algs.metrics import prob_success
 from prog_algs.metrics import calc_metrics as toe_metrics
-from prog_algs.uncertain_data import UnweightedSamples, MultivariateNormalDist, ScalarData
+from prog_algs.uncertain_data import UncertainData, UnweightedSamples, MultivariateNormalDist, ScalarData
 
 
 class TestMetrics(unittest.TestCase):
@@ -358,6 +359,115 @@ class TestMetrics(unittest.TestCase):
         self.assertIn('a', metrics)
         self.assertIn('b', metrics)
         self.assertNotIn('c', metrics)
+
+    def test_toe_profile_metrics(self):
+        from prog_algs.predictors import ToEPredictionProfile
+        profile = ToEPredictionProfile()  # Empty profile
+        for i in range(10):
+            # a will shift upward from 0-19 to 9-28
+            # b is always a-1
+            # c is always a * 2, and will therefore always have twice the spread
+            data = [{'a': j, 'b': j -1 , 'c': (j-4.5) * 2 + 4.5} for j in range(i, i+20)]
+            profile.add_prediction(
+                10-i,  # Time (reverse so data is decreasing)
+                UnweightedSamples(data)  # ToE Prediction
+            )
+
+        from prog_algs.metrics import alpha_lambda
+
+        # Test 1: Ground truth at median
+        ground_truth = {'a': 9.0, 'b': 8.0, 'c': 18.0}
+        lambda_value = 8  # Almost at prediction 
+        alpha = 0.5
+        beta = 0.05  # 5% is really bad
+        metrics = alpha_lambda(profile, ground_truth, lambda_value, alpha, beta)
+        
+        # Test pickling ToEPredictionProfile
+        import pickle
+        pickle.dump(profile, open('predictor_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
+        self.assertEqual(profile, pickle_converted_result)
+        # Test pickling alpha_lambda result
+        pickle.dump(metrics, open('predictor_test.pkl', 'wb'))
+        pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
+        self.assertEqual(metrics, pickle_converted_result)
+
+    def test_toe_profile_prognostic_horizon(self):
+        from prog_algs.predictors import ToEPredictionProfile
+        profile = ToEPredictionProfile()  # Empty profile
+        # Define test sample ground truth
+        GROUND_TRUTH = {'a': 9.0, 'b': 8.0, 'c': 18.0}
+        # Create rudimentary criteria equation
+        def criteria_eqn(tte : UncertainData, ground_truth_tte : dict) -> dict:
+            """
+            Sample criteria equation for unittesting. 
+
+            Args:
+                tte : UncertainData
+                    Time to event in UncertainData format.
+                ground_truth_tte : dict
+                    Dictionary of ground truth of time to event.
+            """
+            result = {}
+            for key, value in ground_truth_tte.items():
+                result[key] = abs(tte.mean[key] - value) < 0.6
+            return result
+        from prog_algs.metrics import prognostic_horizon
+        # Prognostic horizon metric testing
+        # Test 0: Empty profile (should return None for all)
+        self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': None, 'b': None, 'c': None})
+
+        # Loading profile
+        for i in range(10):
+            # a will shift upward from 0-19 to 9-28
+            # b is always a-1
+            # c is always a * 2, and will therefore always have twice the spread
+            data = [{'a': j, 'b': j -1 , 'c': (j-4.5) * 2 + 4.5} for j in range(i, i+20)]
+            profile.add_prediction(
+                10-i,  # Time (reverse so data is decreasing)
+                UnweightedSamples(data)  # ToE Prediction
+            )
+        # Test 1: simple 1 criteria met
+        self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': None, 'b': None, 'c': 10.0})
+        # Test 2: all criteria are met at different times
+        GROUND_TRUTH = {'a': 10.0, 'b': 10.0, 'c': 18.0} # Adjust ground truth to match 3 criteria
+        self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': 1.0, 'b': 2.0, 'c': 10.0})
+        # Test 3: 2 criteria are met at once (at 10.0)
+        GROUND_TRUTH = {'a': 9.0, 'b': 14.0, 'c': 18.0}
+        self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': None, 'b': 10.0, 'c': 10.0})
+        # Test 4: at least one criteria is met at beginning of the prediction
+        GROUND_TRUTH = {'a': 10, 'b': 8.0, 'c': 10.0}
+        self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': 1.0, 'b': None, 'c': None})
+        # Test 5: criteria not met for any
+        GROUND_TRUTH = {'a': 9.0, 'b': 8.0, 'c': 8.0}
+        self.assertDictEqual(prognostic_horizon(profile, criteria_eqn, GROUND_TRUTH), {'a': None, 'b': None, 'c': None})
+
+    def test_toe_profile_cumulative_relative_accuracy(self):
+        from prog_algs.predictors import ToEPredictionProfile
+        profile = ToEPredictionProfile()  # Empty profile
+        # Loading profile
+        for i in range(10):
+            data = [{'a': j, 'b': j -1 , 'c': (j-4.5) * 2 + 4.5} for j in range(i, i+20)]
+            profile.add_prediction(
+                10-i,  # Time (reverse so data is decreasing)
+                UnweightedSamples(data)  # ToE Prediction
+            )
+        # Test positive floats ground truth
+        GROUND_TRUTH = {'a': 9.0, 'b': 8.0, 'c': 18.0}
+        self.assertEquals(profile.cumulative_relative_accuracy(GROUND_TRUTH), {'a': 0.4444444444444445, 'b': 0.375, 'c': 0.6388888888888888})
+        # Test negative floats ground truth
+        GROUND_TRUTH = {'a': -9.0, 'b': -8.0, 'c': -18.0}
+        self.assertEquals(profile.cumulative_relative_accuracy(GROUND_TRUTH), {'a': 3.555555555555556, 'b': 3.625, 'c': 3.305555555555556})
+        # Test ground truth values of 0; already caught by relative_accuracy
+        with self.assertRaises(ZeroDivisionError):
+            GROUND_TRUTH = {'a': 0, 'b': 0, 'c': 0}
+            raise_error = profile.cumulative_relative_accuracy(GROUND_TRUTH)
+        # Test ground truth in invalid input types; already caught by relative_accuracy
+        with self.assertRaises(TypeError):
+            GROUND_TRUTH = []
+            raise_error = profile.cumulative_relative_accuracy(GROUND_TRUTH)
+    
+
 
 # This allows the module to be executed directly    
 def run_tests():

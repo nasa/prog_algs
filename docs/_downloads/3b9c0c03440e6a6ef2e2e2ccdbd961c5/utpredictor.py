@@ -1,5 +1,9 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
+"""
+An example using the UnscentedTransformPredictor class to predict the degredation of a battery. 
+"""
+
 from prog_models.models import BatteryCircuit
 from prog_algs import *
 # from prog_algs.visualize import plot_hist
@@ -40,20 +44,20 @@ def run_example():
     mc = predictors.UnscentedTransformPredictor(batt)
 
     # Predict with a step size of 0.1
-    (times, inputs, states, outputs, event_states, toe) = mc.predict(filt.x, future_loading, dt=0.1, save_freq= 100)
+    mc_results = mc.predict(filt.x, future_loading, dt=0.1, save_freq= 100)
 
     # Print Results
-    for i, time in enumerate(times):
+    for i, time in enumerate(mc_results.times):
         print('\nt = {}'.format(time))
-        print('\tu = {}'.format(inputs.snapshot(i).mean))
-        print('\tx = {}'.format(states.snapshot(i).mean))
-        print('\tz = {}'.format(outputs.snapshot(i).mean))
-        print('\tevent state = {}'.format(event_states.snapshot(i).mean))
+        print('\tu = {}'.format(mc_results.inputs.snapshot(i).mean))
+        print('\tx = {}'.format(mc_results.states.snapshot(i).mean))
+        print('\tz = {}'.format(mc_results.outputs.snapshot(i).mean))
+        print('\tevent state = {}'.format(mc_results.event_states.snapshot(i).mean))
 
-    print('\nToE:', toe.mean)
+    print('\nToE:', mc_results.time_of_event.mean)
 
     # You can also access the final state (of type UncertainData), like so:
-    final_state = toe.final_state
+    final_state = mc_results.time_of_event.final_state
     print('Final state @EOD: ', final_state['EOD'].mean)
     # toe.plot_hist()
     # plt.show()

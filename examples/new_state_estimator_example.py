@@ -1,5 +1,11 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
+"""
+An example illustrating the creation of a new state estimator.
+
+In this example a basic state estimator is constructed by subclassing the StateEstimator class. This StateEstimator is then demonstrated with a ThrownObject model
+"""
+
 from prog_algs.state_estimators import StateEstimator
 from prog_algs.uncertain_data import ScalarData
 import random

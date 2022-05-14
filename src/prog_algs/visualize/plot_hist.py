@@ -1,8 +1,12 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
+from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
+from numpy import array
 
-def plot_hist(samples, fig = None, keys = None, **kwargs):
+from typing import List
+
+def plot_hist(samples : array, fig : Figure = None, keys : List[str] = None, **kwargs) -> Figure:
     """Create a histogram
 
     Args:

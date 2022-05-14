@@ -1,9 +1,13 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
-from collections import UserList
+from collections import UserList, defaultdict, namedtuple
+from typing import Dict
+from numpy import sign
 from warnings import warn
 
-from ..uncertain_data import UnweightedSamples
+from ..uncertain_data import UnweightedSamples, UncertainData
+
+PredictionResults = namedtuple('PredictionResults', ["times", "inputs", "states", "outputs", "event_states", "time_of_event"])
 
 
 class Prediction():
@@ -11,28 +15,28 @@ class Prediction():
     Class for the result of a prediction. Is returned by the predict method of a predictor.
 
     Args:
-        times (array(float)):
+        times (list[float]):
             Times for each data point where times[n] corresponds to data[n]
-        data (array(UncertainData)):
+        data (list[UncertainData]):
             Data points for each time in times 
     """
 
-    def __init__(self, times, data):
+    def __init__(self, times : list, data : list):
         self.times = times
         self.data = data
 
-    def __eq__(self, other):
+    def __eq__(self, other : "Prediction") -> bool:
         """Compare 2 Predictions
 
         Args:
-            other (Precition):
+            other (Prediction):
 
         Returns:
             bool: If the two Predictions are equal
         """
         return self.times == other.times and self.data == other.data
 
-    def snapshot(self, time_index):
+    def snapshot(self, time_index : int) -> UncertainData:
         """Get all samples from a specific timestep
 
         Args:
@@ -45,11 +49,11 @@ class Prediction():
         return self.data[time_index]
 
     @property
-    def mean(self):
+    def mean(self) -> list:
         """Estimate of the mean value of the prediction at each time
 
         Returns:
-            array(dict): 
+            list[dict]: 
                 Mean value of the prediction at each time where mean[n] corresponds to the mean value of the prediction at time times[n].\n
                 The mean value at each time is a dictionary. \n
                 e.g., [{'state1': 1.2, 'state2': 1.3, ...}, ...]
@@ -59,10 +63,41 @@ class Prediction():
         """
         return [dist.mean for dist in self.data]
 
-    def time(self, index):
+    def time(self, index : int):
         warn("Deprecated. Please use prediction.times[index] instead.")
         return self.times[index]
 
+    def monotonicity(self) -> Dict[str, float]:
+        """Calculate monotonicty for a single prediction. 
+        Given a single prediction, for each event: go through all predicted states and compare those to the next one.
+        Calculates monotonicity for each event key using its associated mean value in UncertainData.
+        
+        monotonoicity = |Σsign(i+1 - i) / N-1|
+        Where N is number of measurements and sign indicates sign of calculation.
+        Coble, J., et. al. (2021). Identifying Optimal Prognostic Parameters from Data: A Genetic Algorithms Approach. Annual Conference of the PHM Society.
+        http://www.papers.phmsociety.org/index.php/phmconf/article/view/1404
+        Baptistia, M., et. al. (2022). Relation between prognostics predictor evaluation metrics and local interpretability SHAP values. Aritifical Intelligence, Volume 306.
+        https://www.sciencedirect.com/science/article/pii/S0004370222000078
+
+        Args:
+            None
+        Returns:
+            float: Value between [0, 1] indicating monotonicity of a given event for the Prediction.
+        """
+        # Collect and organize mean values for each event
+        by_event = defaultdict(list)
+        for uncertaindata in self.data:
+            for key,value in uncertaindata.mean.items():
+                by_event[key].append(value)
+
+        # For each event, calculate monotonicity using formula
+        result = {}
+        for key,l in by_event.items():
+            mono_sum = []
+            for i in range(len(l)-1): 
+                mono_sum.append(sign(l[i+1] - l[i])) 
+            result[key] = abs(sum(mono_sum) / (len(l)-1))
+        return result
 
 class UnweightedSamplesPrediction(Prediction, UserList):
     """
@@ -75,7 +110,7 @@ class UnweightedSamplesPrediction(Prediction, UserList):
             Data points where data[n] is a SimResult for sample n
     """
 
-    def __init__(self, times, data):
+    def __init__(self, times : list, data : list):
         super(UnweightedSamplesPrediction, self).__init__(times, data)
         self.__transformed = False  # If transform has been calculated
 
@@ -89,20 +124,20 @@ class UnweightedSamplesPrediction(Prediction, UserList):
         self.__transform = [UnweightedSamples([sample[time_index] if len(sample) > time_index else None for sample in self.data]) for time_index in range(len(self.times))]
         self.__transformed = True
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "UnweightedSamplesPrediction with {} savepoints".format(len(self.times))
 
     @property
-    def mean(self):
+    def mean(self) -> list:
         if not self.__transformed:
             self.__calculate_tranform()
         return [dist.mean for dist in self.__transform]
 
-    def sample(self, sample_id):
+    def sample(self, sample_id : int):
         warn("Deprecated. Please use prediction[sample_id] instead.")
         return self[sample_id]
 
-    def snapshot(self, time_index):
+    def snapshot(self, time_index : int) -> UnweightedSamples:
         """Get all samples from a specific timestep
 
         Args:

@@ -1,7 +1,26 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 import unittest
-from prog_models import PrognosticsModel
+import numpy as np
+
+from prog_models import PrognosticsModel, LinearModel
 from prog_algs.exceptions import ProgAlgTypeError
+
+def equal_cov(pair1, pair2):
+    """
+    Compare 2 covariance matricies, considering the order
+
+    Args:
+        pair1 (tuple[list, array[array[float]]]):
+            keys (list[str]): Labels for keys
+            covar (array[array[float]]): Covariance matrix
+        pair2 (tuple[list, array[array[float]]]):
+            keys (list[str]): Labels for keys
+            covar (array[array[float]]): Covariance matrix
+    """
+    (keys1, cov1) = pair1
+    (keys2, cov2) = pair2
+    mapping = {i: keys2.index(key) for i, key in enumerate(keys1)}
+    return all([cov1[i][j] == cov2[mapping[i]][mapping[j]] for i in range(len(keys1)) for j in range(len(keys1))])
 
 
 class MockProgModel(PrognosticsModel):
@@ -41,25 +60,92 @@ class TestStateEstimators(unittest.TestCase):
         m = MockProgModel()
         se = TemplateStateEstimator(m, {'a': 0.0, 'b': 0.0, 'c': 0.0, 't':0.0})
 
-    def test_UKF(self):
-        from prog_algs.state_estimators import UnscentedKalmanFilter
-        m = MockProgModel(process_noise = 1e-3, measurement_noise = 1e-4)
-        x0 = m.initialize()
-        filt = UnscentedKalmanFilter(m, x0)
+    def __test_state_est(self, filt, m):
+        x_guess = m.StateContainer(filt.x.mean)  # Might be new
+        x = m.initialize()
+
         self.assertTrue(all(key in filt.x.mean for key in m.states))
-        self.assertDictEqual(x0, filt.x.mean)
-        filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': 0.8}) 
-        filt.estimate(0.15, {'i1': 1, 'i2': 2}, {'o1': 0.8})# note- if input is correct, o1 should be 0.9
-        x = filt.x.mean
-        self.assertFalse( x0 == x )
-        self.assertFalse( {'a': 1.1, 'b': 2, 'c': -5.2, 't': 0} == x )
 
-        # Between the model and sense outputs
-        o = m.output(x)
-        o0 = m.output(x0)
-        self.assertGreater(o['o1'], 0.5)
-        self.assertLess(o['o1'], o0['o1']) 
+        # run for a while
+        dt = 0.01
+        u = m.InputContainer({})
+        for i in range(1250):
+            # Get simulated output (would be measured in a real application)
+            x = m.next_state(x, u, dt)
+            x_guess = m.next_state(x_guess, u, dt)
+            z = m.output(x)
 
+            # Estimate New State
+            filt.estimate((i+1)*dt, u, z)
+
+        # Check results - make sure it converged
+        x_est = filt.x.mean
+        for key in m.states:
+            # should be close to right
+            self.assertAlmostEqual(x_est[key], x[key], delta=0.4)
+
+    def test_UKF(self):
+        from prog_models.models import ThrownObject
+        from prog_algs.state_estimators import UnscentedKalmanFilter
+
+        m = ThrownObject(process_noise=5e-2, measurement_noise=5e-2)
+        x_guess = {'x': 1.75, 'v': 35} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
+
+        filt = UnscentedKalmanFilter(m, x_guess)
+        self.__test_state_est(filt, m)
+
+        m = ThrownObject(process_noise=5e-2, measurement_noise=5e-2)
+
+        # Test UnscentedKalmanFilter ScalarData
+        from prog_algs.uncertain_data.scalar_data import ScalarData
+        x_scalar = ScalarData({'x': 1.75, 'v': 35})
+        filt_scalar = UnscentedKalmanFilter(m, x_scalar)
+        self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
+        self.assertTrue(
+            equal_cov(
+                (list(x_scalar.keys()), x_scalar.cov), 
+                (list(filt_scalar.x.keys()), filt_scalar.x.cov)))
+
+        # Test UnscentedKalmanFilter MultivariateNormalDist
+        from numpy import array
+        from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
+        x_mvnd = MultivariateNormalDist(['x', 'v'], array([2, 10]), array([[1, 0], [0, 1]]))
+        filt_mvnd = UnscentedKalmanFilter(m, x_mvnd)
+        self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
+        self.assertTrue(
+            equal_cov(
+                (list(x_mvnd.keys()), x_mvnd.cov), 
+                (list(filt_mvnd.x.keys()), filt_mvnd.x.cov)))
+
+        # Now with a different order
+        x_mvnd = MultivariateNormalDist(['v', 'x'], array([10, 2]), array([[1, 0], [0, 2]]))
+        filt_mvnd = UnscentedKalmanFilter(m, x_mvnd)
+        self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
+        self.assertTrue(
+            equal_cov(
+                (list(x_mvnd.keys()), x_mvnd.cov), 
+                (list(filt_mvnd.x.keys()), filt_mvnd.x.cov)), "Covs are not equal for multivariate in different order")
+
+        # Test UnscentedKalmanFilter UnweightedSamples
+        from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
+        x_us = UnweightedSamples([{'x': 1, 'v':2}, {'x': 3, 'v':-2}])
+        filt_us = UnscentedKalmanFilter(m, x_us)
+        self.assertDictEqual(filt_us.x.mean, x_us.mean)
+        self.assertTrue(
+            equal_cov(
+                (list(x_us.keys()), x_us.cov), 
+                (list(filt_us.x.keys()), filt_us.x.cov)))
+
+        from prog_models.models import BatteryElectroChem
+
+        with self.assertRaises(Exception):
+            # Not linear model
+            UnscentedKalmanFilter(BatteryElectroChem, {})
+
+        with self.assertRaises(Exception):
+            # Missing states
+            UnscentedKalmanFilter(ThrownObject, {})
+        
     def __incorrect_input_tests(self, filter):
         class IncompleteModel:
             outputs = []
@@ -70,11 +156,8 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'c': 2}
-        try:
-            filt = filter(m, x0)
-            self.fail()
-        except ProgAlgTypeError:
-            pass
+        with self.assertRaises(ProgAlgTypeError):
+            filter(m, x0)
 
         class IncompleteModel:
             states = ['a', 'b']
@@ -84,11 +167,8 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'b': 2}
-        try:
-            filt = filter(m, x0)
-            self.fail()
-        except ProgAlgTypeError:
-            pass
+        with self.assertRaises(ProgAlgTypeError):
+            filter(m, x0)
 
         class IncompleteModel:
             outputs = []
@@ -98,11 +178,8 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'b': 2}
-        try:
-            filt = filter(m, x0)
-            self.fail()
-        except ProgAlgTypeError:
-            pass
+        with self.assertRaises(ProgAlgTypeError):
+            filter(m, x0)
 
         class IncompleteModel:
             outputs = []
@@ -111,12 +188,8 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'b': 2}
-        try:
-            filt = filter(m, x0)
-            self.fail()
-        except ProgAlgTypeError:
-            pass
-
+        with self.assertRaises(ProgAlgTypeError):
+            filter(m, x0)
         class IncompleteModel:
             outputs = []
             states = ['a', 'b']
@@ -124,11 +197,8 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'b': 2}
-        try:
-            filt = filter(m, x0)
-            self.fail()
-        except ProgAlgTypeError:
-            pass
+        with self.assertRaises(ProgAlgTypeError):
+            filter(m, x0)
 
     def test_UKF_incorrect_input(self):
         from prog_algs.state_estimators import UnscentedKalmanFilter
@@ -136,46 +206,69 @@ class TestStateEstimators(unittest.TestCase):
 
     def test_PF(self):
         from prog_algs.state_estimators import ParticleFilter
-        m = MockProgModel(process_noise=5e-2, measurement_noise=0)
-        x0 = m.initialize()
-        filt = ParticleFilter(m, x0, n_samples=200, x0_uncertainty=0.1)
-        self.assertTrue(all(key in filt.x[0] for key in m.states))
-        # self.assertDictEqual(x0, filt.x) // Not true - sample production means they may not be equal
-        u = {'i1': 1, 'i2': 2}
-        x = m.next_state(m.initialize(), u, 0.1)
-        filt.estimate(0.1, u, m.output(x))  
-        x_est = filt.x.mean
-        self.assertFalse( x0 == x_est )
-        self.assertFalse( {'a': 1.1, 'b': 2, 'c': -5.2} == x_est )
+        from prog_models.models import ThrownObject
 
-        # Between the model and sense outputs
-        o_est = m.output(x_est)
-        o0 = m.output(x0)
-        self.assertGreater(o_est['o1'], 0.7) # Should be between 0.9-o0['o1'], choosing this gives some buffer for noise
-        self.assertLess(o_est['o1'], o0['o1']) # Should be between 0.8-0.9, choosing this gives some buffer for noise. Testing that the estimate is improving
+        m = ThrownObject(process_noise={'x': 1, 'v': 3}, measurement_noise=1, num_particles = 1000)
+        x_guess = {'x': 1.75, 'v': 38.5} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
 
-        try:
-            # Only given half of the inputs 
-            filt.estimate(0.5, {'i1': 0}, {'o1': -2.0})
-            self.fail("Shouldn't have made it here- only half the inputs")
-        except Exception:
-            pass
+        filt = ParticleFilter(m, x_guess)
+        self.__test_state_est(filt, m)
 
-        try:
-            # Missing output
-            filt.estimate(0.5, {'i1': 0, 'i2': 0}, {})
-            self.fail("Shouldn't have made it here- missing output")
-        except Exception:
-            pass
+        # Test ParticleFilter ScalarData
+        from prog_algs.uncertain_data.scalar_data import ScalarData
+        x_scalar = ScalarData({'x': 1.75, 'v': 38.5})
+        filt_scalar = ParticleFilter(m, x_scalar, num_particles = 20) # Sample count does not affect ScalarData testing
+        self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
+        self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
+        
+        # Test ParticleFilter MultivariateNormalDist
+        from numpy import array
+        from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
+        x_mvnd = MultivariateNormalDist(['x', 'v'], array([2, 10]), array([[1, 0], [0, 1]]))
+        filt_mvnd = ParticleFilter(m, x_mvnd, num_particles = 100000)
+        for k, v in filt_mvnd.x.mean.items():
+            self.assertAlmostEqual(v, x_mvnd.mean[k], delta = 0.01)
+        for i in range(len(filt_mvnd.x.cov)):
+            for j in range(len(filt_mvnd.x.cov[i])):
+                self.assertAlmostEqual(filt_mvnd.x.cov[i][j], x_mvnd.cov[i][j], delta=0.1)
+
+        # Test ParticleFilter UnweightedSamples
+        from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
+        import random
+        uw_input = []
+        x_bounds, v_bounds, x0_samples = 5, 5, 10000
+        for i in range(x0_samples):
+            uw_input.append({'x': random.randrange(-x_bounds, x_bounds), 'v': random.randrange(-v_bounds, v_bounds)})
+        x_us = UnweightedSamples(uw_input)
+        filt_us = ParticleFilter(m, x_us, num_particles = 100000)
+        for k, v in filt_us.x.mean.items():
+            self.assertAlmostEqual(v, x_us.mean[k], delta=0.02)
+        for i in range(len(filt_us.x.cov)):
+            for j in range(len(filt_us.x.cov[i])):
+                self.assertAlmostEqual(filt_us.x.cov[i][j], x_us.cov[i][j], delta=0.1)
+
+        # Test x0 if-else Control
+        # Case 0: Both isinstance(x0, UncertainData) and x0_uncertainty parameter provided; expect x0_uncertainty to be skipped
+        x_scalar = ScalarData({'x': 1.75, 'v': 38.5}) # Testing with ScalarData
+        filt_scalar = ParticleFilter(m, x_scalar, num_particles = 20, x0_uncertainty = 0.5) # Sample count does not affect ScalarData testing
+        self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
+        self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
+        # Case 1: Only x0_uncertainty provided; expect a warning issued
+        with self.assertWarns(Warning):
+            filt_scalar = ParticleFilter(m, {'x': 1.75, 'v': 38.5}, x0_uncertainty = 0.5)
+        # Case 2: Raise ProgAlgTypeError if x0 not UncertainData or x0_uncertainty not of type {{dict, Number}}.
+        from prog_algs.exceptions import ProgAlgTypeError
+        with self.assertRaises(ProgAlgTypeError):
+            filt_scalar = ParticleFilter(m, {'x': 1.75, 'v': 38.5}, num_particles = 20, x0_uncertainty = [])
 
     def test_measurement_eq_UKF(self):
         class MockProgModel2(MockProgModel):
             outputs = ['o1', 'o2']
             def output(self, x):
-                return {
+                return self.OutputContainer({
                     'o1': x['a'] + x['b'] + x['c'], 
                     'o2': 7
-                    }
+                    })
 
         m = MockProgModel2()
         x0 = m.initialize()
@@ -185,12 +278,6 @@ class TestStateEstimators(unittest.TestCase):
         filt = UnscentedKalmanFilter(m, x0)
         
         # Try using
-        try:
-            filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0}) 
-            self.fail('Should have failed- missing o2')
-        except Exception:
-            pass
-        
         filt.estimate(0.2, {'i1': 1, 'i2': 2}, {'o1': -2.0, 'o2': 7})
 
         # Add Measurement eqn
@@ -201,14 +288,20 @@ class TestStateEstimators(unittest.TestCase):
         filt = UnscentedKalmanFilter(m, x0, measurement_eqn=measurement_eqn)
         filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0})
 
+        # New Measurement eqn method
+        class MyModel(MockProgModel2):
+            outputs = ['o1']
+        filt = UnscentedKalmanFilter(MyModel(), x0)
+        filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0})
+
     def test_measurement_eq_PF(self):
         class MockProgModel2(MockProgModel):
             outputs = ['o1', 'o2']
             def output(self, x):
-                return {
+                return self.OutputContainer({
                     'o1': x['a'] + x['b'] + x['c'], 
                     'o2': 7
-                    }
+                    })
 
         m = MockProgModel2()
         x0 = m.initialize()
@@ -217,13 +310,7 @@ class TestStateEstimators(unittest.TestCase):
         from prog_algs.state_estimators import ParticleFilter
         filt = ParticleFilter(m, x0)
         
-        # Try using
-        try:
-            filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0}) 
-            self.fail('Should have failed- missing o2')
-        except Exception:
-            pass
-        
+        # This one should work
         filt.estimate(0.2, {'i1': 1, 'i2': 2}, {'o1': -2.0, 'o2': 7})
 
         # Add Measurement eqn
@@ -233,10 +320,113 @@ class TestStateEstimators(unittest.TestCase):
             return z
         filt = ParticleFilter(m, x0, measurement_eqn=measurement_eqn)
         filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0}) 
+
+        # New Measurement eqn method
+        class MyModel(MockProgModel2):
+            outputs = ['o1']
+        filt = ParticleFilter(MyModel(), x0)
+        filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0})
         
     def test_PF_incorrect_input(self):
         from prog_algs.state_estimators import ParticleFilter
         self.__incorrect_input_tests(ParticleFilter)
+
+    def test_KF(self):
+        from prog_algs.state_estimators import KalmanFilter
+        class ThrownObject(LinearModel):
+            inputs = []  # no inputs, no way to control
+            states = ['x', 'v']
+            outputs = ['x']
+            events = ['falling', 'impact']
+
+            A = np.array([[0, 1], [0, 0]])
+            E = np.array([[0], [-9.81]])
+            C = np.array([[1, 0]])
+            F = None # Will override method
+
+            default_parameters = {
+                'thrower_height': 1.83, 
+                'throwing_speed': 40, 
+                'g': -9.81 
+            }
+
+            def initialize(self, u=None, z=None):
+                return self.StateContainer({
+                    'x': self.parameters['thrower_height'], 
+                    'v': self.parameters['throwing_speed'] 
+                    })
+            
+            def threshold_met(self, x):
+                return {
+                    'falling': x['v'] < 0,
+                    'impact': x['x'] <= 0
+                }
+
+            def event_state(self, x): 
+                x_max = x['x'] + np.square(x['v'])/(-self.parameters['g']*2) # Use speed and position to estimate maximum height
+                return {
+                    'falling': np.maximum(x['v']/self.parameters['throwing_speed'],0),  # Throwing speed is max speed
+                    'impact': np.maximum(x['x']/x_max,0) if x['v'] < 0 else 1  # 1 until falling begins, then it's fraction of height
+                }
+
+        m = ThrownObject(process_noise=5e-2, measurement_noise=5e-2)
+        x_guess = {'x': 1.75, 'v': 35} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
+
+        filt = KalmanFilter(m, x_guess)
+
+        self.__test_state_est(filt, m)
+
+        m = ThrownObject(process_noise=5e-2, measurement_noise=5e-2)
+
+        # Test KalmanFilter ScalarData
+        from prog_algs.uncertain_data.scalar_data import ScalarData
+        x_scalar = ScalarData({'x': 1.75, 'v': 35})
+        filt_scalar = KalmanFilter(m, x_scalar)
+        self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
+        self.assertTrue(
+            equal_cov(
+                (list(x_scalar.keys()), x_scalar.cov), 
+                (list(filt_scalar.x.keys()), filt_scalar.x.cov)))
+
+        # Test KalmanFilter MultivariateNormalDist
+        from numpy import array
+        from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
+        x_mvnd = MultivariateNormalDist(['x', 'v'], array([2, 10]), array([[1, 0], [0, 1]]))
+        filt_mvnd = KalmanFilter(m, x_mvnd)
+        self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
+        self.assertTrue(
+            equal_cov(
+                (list(x_mvnd.keys()), x_mvnd.cov), 
+                (list(filt_mvnd.x.keys()), filt_mvnd.x.cov)))
+
+        # Now with a different order
+        x_mvnd = MultivariateNormalDist(['v', 'x'], array([10, 2]), array([[1, 0], [0, 2]]))
+        filt_mvnd = KalmanFilter(m, x_mvnd)
+        self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
+        self.assertTrue(
+            equal_cov(
+                (list(x_mvnd.keys()), x_mvnd.cov), 
+                (list(filt_mvnd.x.keys()), filt_mvnd.x.cov)), "Covs are not equal for multivariate in different order")
+
+        # Test KalmanFilter UnweightedSamples
+        from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
+        x_us = UnweightedSamples([{'x': 1, 'v':2}, {'x': 3, 'v':-2}])
+        filt_us = KalmanFilter(m, x_us)
+        self.assertDictEqual(filt_us.x.mean, x_us.mean)
+        self.assertTrue(
+            equal_cov(
+                (list(x_us.keys()), x_us.cov), 
+                (list(filt_us.x.keys()), filt_us.x.cov)))
+
+        from prog_models.models import BatteryElectroChem
+
+        with self.assertRaises(Exception):
+            # Not linear model
+            KalmanFilter(BatteryElectroChem, {})
+
+        with self.assertRaises(Exception):
+            # Missing states
+            KalmanFilter(ThrownObject, {})
 
 # This allows the module to be executed directly    
 def run_tests():

@@ -5,13 +5,20 @@ from typing import Callable
 from . import state_estimator
 from filterpy import kalman
 from numpy import diag, array
+from warnings import warn
 from ..uncertain_data import MultivariateNormalDist, UncertainData
+
 
 class UnscentedKalmanFilter(state_estimator.StateEstimator):
     """
     An Unscented Kalman Filter (UKF) for state estimation
 
     This class defines logic for performing an unscented kalman filter with a Prognostics Model (see Prognostics Model Package). This filter uses measurement data with noise to generate a state estimate and covariance matrix. 
+
+    Arguments:
+        model: A Prognostics Model object
+        x0: A dictionary of initial state values
+        measurement_eqn (optional): A function that takes a dictionary of state values and returns a dictionary of measurement values. If not specified, the model's output function is used.
 
     The supported configuration parameters (keyword arguments) for UKF construction are described below:
 
@@ -22,10 +29,8 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
             Starting time (s)
         dt : float 
             time step (s)
-        Q : List[List[float]]
-            Process Noise Matrix 
-        R : List[List[float]]
-            Measurement Noise Matrix 
+        R : numpy.ndarray
+            Measurement noise covariance matrix (n_measurements x n_measurements). Only applicable if using measurement_eqn
     """
     default_parameters = {
         'alpha': 1, 
@@ -56,16 +61,15 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
                 z = measurement_eqn(x)
                 return array(list(z.values())).ravel()
 
-        if 'Q' not in self.parameters:
-            self.parameters['Q'] = diag([1.0e-3 for i in x0.keys()])
+        if 'Q' in self.parameters:
+            warn("UKF does not support Q parameter. Instead, set process noise, model.parameters['process_noise']")
 
         def state_transition(x, dt):
             x = {key: value for (key, value) in zip(x0.keys(), x)}
             Q_err = model.parameters['process_noise'].copy()
             model.parameters['process_noise'] = dict.fromkeys(Q_err, 0)
-            z = model.output(x)
-            model.parameters['process_noise'] = Q_err
             x = model.next_state(x, self.__input, dt)
+            model.parameters['process_noise'] = Q_err
             return array(list(x.values())).ravel()
 
         num_states = len(x0.keys())
@@ -76,20 +80,14 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         if isinstance(x0, dict) or isinstance(x0, model.StateContainer):
             warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
             self.filter.x = array(list(x0.values()))
-            self.filter.P = self.parameters['Q'] / 10
         elif isinstance(x0, UncertainData):
             x_mean = x0.mean
             self.filter.x = array(list(x_mean.values()))
-            self.filter.P = x0.cov
         else:
             raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
 
-        if 'R' not in self.parameters:
-                # Size of what's being measured (not output) 
-                # This is determined by running the measure function on the first state
-                self.parameters['R'] = diag([1.0e-3 for i in range(len(measure(self.filter.x)))])
-        self.filter.Q = self.parameters['Q']
-        self.filter.R = self.parameters['R']
+        self.filter.P = diag([0]*len(x0))
+        self.filter.R = diag([0]*len(measure(self.filter.x)))
 
     def estimate(self, t : float, u, z):
         """

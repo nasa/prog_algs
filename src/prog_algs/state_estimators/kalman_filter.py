@@ -24,10 +24,6 @@ class KalmanFilter(state_estimator.StateEstimator):
             Starting time (s)
         dt : float 
             time step (s)
-        Q : List[List[float]]
-            Process Noise Matrix 
-        R : List[List[float]]
-            Measurement Noise Matrix 
 
     Note:
         The Kalman Filter does not support a custom measurement function
@@ -47,13 +43,11 @@ class KalmanFilter(state_estimator.StateEstimator):
 
         self.x0 = x0
 
-        if 'Q' not in self.parameters:
-            self.parameters['Q'] = np.diag([1.0e-3 for i in x0.keys()])
-        if 'R' not in self.parameters:
-            # Size of what's being measured (not output) 
-            # This is determined by running the measure function on the first state
-            self.parameters['R'] = np.diag([1.0e-3 for i in range(model.n_outputs)])
-        
+        if 'Q' in self.parameters:
+            warn("UKF does not support Q parameter. Instead, set process noise, model.parameters['process_noise']")
+        if 'R' in self.parameters:
+            warn("UKF does not support R parameter. Instead, set measurement noise, model.parameters['measurement_noise']")
+
         num_states = len(x0.keys())
         num_inputs = model.n_inputs + 1
         num_measurements = model.n_outputs
@@ -72,21 +66,14 @@ class KalmanFilter(state_estimator.StateEstimator):
         if isinstance(x0, dict) or isinstance(x0, model.StateContainer):
             warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
             self.filter.x = np.array([[x0[key]] for key in model.states]) # x0.keys()
-            self.filter.P = self.parameters['Q'] / 10
         elif isinstance(x0, UncertainData):
             x_mean = x0.mean
             self.filter.x = np.array([[x_mean[key]] for key in model.states])
-
-            # Reorder covariance to be in same order as model.states
-            mapping = {i: list(x0.keys()).index(key) for i, key in enumerate(model.states)}
-            cov = x0.cov  # Set covariance in case it has been calculated
-            mapped_cov = [[cov[mapping[i]][mapping[j]] for j in range(len(cov))] for i in range(len(cov))] # Set covariance based on mapping
-            self.filter.P = np.array(mapped_cov)
         else:
             raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
 
-        self.filter.Q = self.parameters['Q']
-        self.filter.R = self.parameters['R']
+        self.filter.Q = np.diag([0]*len(x0))
+        self.filter.R = np.diag([0]*len(model.outputs))
         self.filter.F = F
         self.filter.B = B
 

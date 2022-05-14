@@ -24,10 +24,10 @@ class KalmanFilter(state_estimator.StateEstimator):
             Starting time (s)
         dt : float 
             time step (s)
-        Q : List[List[float]]
-            Process Noise Matrix 
-        R : List[List[float]]
-            Measurement Noise Matrix 
+        process_noise : 2darray[float]
+            Process Noise Matrix (n_states, n_states) - default model.process_noise
+        measurement_noise : 2darray[float]
+            Measurement Noise Matrix (n_measurements x n_measurements) - default model.measurement_noise
 
     Note:
         The Kalman Filter does not support a custom measurement function
@@ -46,7 +46,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         super().__init__(model, x0, None, **kwargs)
 
         self.x0 = x0
-
+        
         if 'Q' not in self.parameters:
             self.parameters['Q'] = np.diag([1.0e-3 for i in x0.keys()])
         if 'R' not in self.parameters:
@@ -54,9 +54,47 @@ class KalmanFilter(state_estimator.StateEstimator):
             # This is determined by running the measure function on the first state
             self.parameters['R'] = np.diag([1.0e-3 for i in range(model.n_outputs)])
         
-        num_states = len(x0.keys())
+        num_states = model.n_states
         num_inputs = model.n_inputs + 1
         num_measurements = model.n_outputs
+
+        # Process Noise (Q)
+        # Users can use process_noise (like in prog_models) or Q (like in filterpy). They're synced.
+        if 'Q' in self.parameters:
+            self.parameters['process_noise'] = self.parameters['Q']
+
+        if 'process_noise' not in self.parameters:
+            if 'process_noise' in model.parameters:
+                self.parameters['process_noise'] = np.diag([model.parameters['process_noise'][key] for key in x0.keys()])
+            else:
+                self.parameters['process_noise'] = np.diag([1.0e-3 for _ in range(num_states)])
+        else:
+            # Manage type
+            if isinstance(self.parameters['process_noise'], list):
+                self.parameters['process_noise'] = np.array(self.parameters['process_noise'])
+            
+            # Check size
+            if self.parameters['process_noise'].shape != (num_states, num_states):
+                raise Exception('process_noise must be a square matrix with size equal to the number of states')
+
+        # Measurement Noise (R)
+        # Users can use measurement_noise (like in prog_models) or R (like in filterpy). They're synced.
+        if 'R' in self.parameters:
+            self.parameters['measurement_noise'] = self.parameters['R']
+        elif 'measurement_noise' not in self.parameters:
+            if 'measurement_noise' in model.parameters:
+                self.parameters['measurement_noise'] = np.diag([model.parameters['measurement_noise'][key] for key in model.outputs])
+            else:
+                self.parameters['measurement_noise'] = np.diag([1.0e-3 for _ in range(num_measurements)])
+        else:
+            # Manage type
+            if isinstance(self.parameters['measurement_noise'], list):
+                self.parameters['measurement_noise'] = np.array(self.parameters['measurement_noise'])
+            
+            # Check size
+            if self.parameters['measurement_noise'].shape != (num_measurements, num_measurements):
+                raise Exception('measurement_noise must be a square matrix with size equal to the number of outputs')
+
         F = deepcopy(model.A)
         B = deepcopy(model.B)
         if np.size(B) == 0:

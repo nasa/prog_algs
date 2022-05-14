@@ -104,6 +104,9 @@ def run_example():
     # Define the initial state to be slightly off of actual
     x_guess = {'x': 1.75, 'v': 35} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
     kf = KalmanFilter(m, x_guess)
+    # You can also change the process and measurement noise for the filter by specifying them in the constructor. 
+    # This is used for the case where you want to apply different noise in the filter
+    # By default, they are set to the model noise.
 
     # Step 3: Run the Kalman Filter State Estimator
     # Here we're using simulated data from the thrown_object. In a real application you would be using sensor data from the system

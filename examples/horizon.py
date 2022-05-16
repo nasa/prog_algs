@@ -53,7 +53,7 @@ def run_example():
     # We're saying we are not interested in any events that occur after this time
     PREDICTION_HORIZON = 7.75
     samples = filt.x  # Since we're using a particle filter, which is also sample-based, we can directly use the samples, without changes
-    STEP_SIZE = 0.1
+    STEP_SIZE = 0.01
     mc_results = mc.predict(samples, future_loading, dt=STEP_SIZE, horizon = PREDICTION_HORIZON)
     print("\nPredicted Time of Event:")
     metrics = mc_results.time_of_event.metrics()

@@ -127,13 +127,17 @@ def run_example():
         # Generate plots for playback example
         playback_plots = profile.plot(GROUND_TRUTH, ALPHA, True)
 
-        # Calculate prognostic horizon with ground truth and print
+        # Calculate prognostic horizon with ground truth, and print
         ph = profile.prognostic_horizon(criteria_eqn, GROUND_TRUTH)
         print(f"Prognostic Horizon for 'EOD': {ph['EOD']}")
 
-        # Calculate alpha lambda with ground truth, lambda, alpha, and beta and print
+        # Calculate alpha lambda with ground truth, lambda, alpha, and beta, and print
         al = profile.alpha_lambda(GROUND_TRUTH, LAMBDA_VALUE, ALPHA, BETA)
         print(f"Alpha Lambda for 'EOD': {al['EOD']}")
+
+        # Calculate cumulative relative accuracy with ground truth, and print
+        cra = profile.cumulative_relative_accuracy(GROUND_TRUTH)
+        print(f"Cumulative Relative Accuracy for 'EOD': {cra['EOD']}")
 
     input('Press any key to exit')
 

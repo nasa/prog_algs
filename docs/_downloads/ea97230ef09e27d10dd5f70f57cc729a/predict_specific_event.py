@@ -1,12 +1,11 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
-from prog_models.models.thrown_object import ThrownObject
-from prog_algs import *
-from prog_algs.uncertain_data import UnweightedSamples
-
 """
 In this example we are using the UTPredictor to predict a specific event, in this case impact. This will then ignore the other events which are not of interest.
 """
+
+from prog_models.models.thrown_object import ThrownObject
+from prog_algs import *
 
 def run_example():
     ## Setup
@@ -25,18 +24,18 @@ def run_example():
     pred = predictors.UnscentedTransformPredictor(m)
 
     # Predict with a step size of 0.1
-    (times, inputs, states, outputs, event_states, toe) = pred.predict(filt.x, future_loading, dt=0.1, save_freq= 1, events=['impact'])
+    mc_results = pred.predict(filt.x, future_loading, dt=0.1, save_freq= 1, events=['impact'])
 
     # Print Results
-    for i, time in enumerate(times):
+    for i, time in enumerate(mc_results.times):
         print('\nt = {}'.format(time))
-        print('\tu = {}'.format(inputs.snapshot(i).mean))
-        print('\tx = {}'.format(states.snapshot(i).mean))
-        print('\tz = {}'.format(outputs.snapshot(i).mean))
-        print('\tevent state = {}'.format(event_states.snapshot(i).mean))
+        print('\tu = {}'.format(mc_results.inputs.snapshot(i).mean))
+        print('\tx = {}'.format(mc_results.states.snapshot(i).mean))
+        print('\tz = {}'.format(mc_results.outputs.snapshot(i).mean))
+        print('\tevent state = {}'.format(mc_results.states.snapshot(i).mean))
 
     # Note only impact event is shown here
-    print('\nToE:', toe.mean)
+    print('\nToE:', mc_results.time_of_event.mean)
 
 # This allows the module to be executed directly 
 if __name__ == '__main__':

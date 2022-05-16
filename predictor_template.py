@@ -71,6 +71,8 @@ class TemplatePredictor(Predictor):
 
         # Time of event is represented by some type of UncertainData (e.g., MultivariateNormalDist)
         time_of_event = ScalarData({'event1': 748, 'event2': 300})
+        # Save the final state when each event occurs like this, with each final state represented by an UncertainData object (e.g., MultivariateNormalDist)
+        # time_of_event.final_state = {'event1': ScalarData({'state1': 10, 'state2': 20}), 'event2': ScalarData({'state1': 12, 'state2': 18})}
 
         return PredictionResults(
             times, 

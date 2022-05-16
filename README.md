@@ -38,7 +38,7 @@ Use the following to cite this repository:
     month     = May,
     year      = 2022,
     version   = {1.3.0},
-    url       = {https://github.com/nasa/prog_algs}
+    url       = {https://github.com/nasa/prog\_algs}
     }
 ```
 

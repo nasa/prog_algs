@@ -230,7 +230,7 @@ class UnscentedTransformPredictor(Predictor):
                         if isnan(ToE[key][i]):
                             # First time event has been reached
                             ToE[key][i] = t
-                            last_state[key][i] = deepcopy(x)
+                            last_state[key][i] = x.copy()
                     else:
                         all_failed = False  # This event for this sigma point hasn't been met yet
             if all_failed:

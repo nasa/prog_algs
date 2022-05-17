@@ -38,7 +38,7 @@ Use the following to cite this repository:
     month     = May,
     year      = 2022,
     version   = {1.3.0},
-    url       = {https://github.com/nasa/prog_algs}
+    url       = {https://github.com/nasa/prog\_algs}
     }
 ```
 
@@ -50,7 +50,6 @@ C. Teubert, M. Corbetta, C. Kulkarni, Prognostics Algorithm Python Package, v1.3
 The structure and algorithms of this package are strongly inspired by the [MATLAB Prognostics Algorithm Library](https://github.com/nasa/PrognosticsAlgorithmLibrary) and the [MATLAB Prognostics Metrics Library](https://github.com/nasa/PrognosticsMetricsLibrary). We would like to recognize Matthew Daigle, Shankar Sankararaman and the rest of the team that contributed to the Prognostics Model Library for the contributions their work on the MATLAB library made to the design of prog_algs
 
 ## Notices
-
 Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 ## Disclaimers

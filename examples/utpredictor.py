@@ -1,5 +1,9 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
+"""
+An example using the UnscentedTransformPredictor class to predict the degredation of a battery. 
+"""
+
 from prog_models.models import BatteryCircuit
 from prog_algs import *
 # from prog_algs.visualize import plot_hist

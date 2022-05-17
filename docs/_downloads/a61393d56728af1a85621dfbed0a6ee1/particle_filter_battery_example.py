@@ -1,6 +1,10 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
-from prog_models.models.battery_electrochem import BatteryElectroChemEOD
+"""
+In this example the BatteryElectroChemEOD model is used with a particle filter to estimate the state of the battery
+"""
+
+from prog_models.models import BatteryElectroChemEOD
 from prog_algs import *
 import numpy as np
 import matplotlib.pyplot as plt

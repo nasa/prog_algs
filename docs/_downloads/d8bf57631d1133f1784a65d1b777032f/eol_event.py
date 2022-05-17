@@ -1,6 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 """
-This example demonstrates a use case where someone wants to predict the first event (i.e., EOL) of a system. Many system models have multiple events that can occur. In some prognostics applications, users are not interested in predicting a specific event, and are instead interested in when the first event occurs, regardless of the event. This example demonstrates how to predict the first event of a system.
+This example demonstrates a use case where someone wants to predict the first event (i.e., End Of Life (EOL)) of a system. Many system models have multiple events that can occur. In some prognostics applications, users are not interested in predicting a specific event, and are instead interested in when the first event occurs, regardless of the event. This example demonstrates how to predict the first event of a system.
 
 Method: An instance of ThrownObject is used for this example. In this case it is trivial because the event 'falling' will always occur before 'impact', but for some other models that might not be true. The ThrownObject class is subclassed to add a new event 'EOL' which occurs if any other event occurs. The new model is then instantiated and used for prognostics like in basic_example. Prediction specifically specifies EOL as the event to be predicted.
 Results: 
@@ -41,10 +41,10 @@ def run_example():
     state = ScalarData(m.initialize())
 
     # Step 4: Predict to EOL event
-    (times, inputs, states, outputs, event_states, toe) = pred.predict(state, future_loading, events=['EOL'], dt=0.025)
+    pred_results = pred.predict(state, future_loading, events=['EOL'], dt=0.025)
 
     # Step 5: Plot results
-    toe.plot_hist()
+    pred_results.time_of_event.plot_hist()
 
     import matplotlib.pyplot as plt
     plt.show()

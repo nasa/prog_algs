@@ -1,4 +1,4 @@
 filterpy>=1.4.5
-matplotlib>=3.5.1
+matplotlib>=3.5.2
 scipy>=1.7.3
 prog_models>=1.3

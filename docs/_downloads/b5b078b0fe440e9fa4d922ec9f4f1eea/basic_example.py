@@ -16,7 +16,7 @@ Results:
 
 from prog_models.models import BatteryCircuit as Battery
 # VVV Uncomment this to use Electro Chemistry Model VVV
-# from prog_models.models import BatteryElectroChem as Battery
+from prog_models.models import BatteryElectroChemEOD as Battery
 
 from prog_algs import *
 
@@ -78,41 +78,41 @@ def run_example():
     # Step 3b: Perform a prediction
     NUM_SAMPLES = 5
     STEP_SIZE = 0.1
-    (times, inputs, states, outputs, event_states, toe) = mc.predict(filt.x, future_loading, n_samples = NUM_SAMPLES, dt=STEP_SIZE)
-    print('ToE', toe.mean)
+    mc_results = mc.predict(filt.x, future_loading, n_samples = NUM_SAMPLES, dt=STEP_SIZE)
+    print('ToE', mc_results.time_of_event.mean)
 
     # Step 3c: Analyze the results
 
     # Note: The results of a sample-based prediction can be accessed by sample, e.g.,
-    states_sample_1 = states[1]
+    states_sample_1 = mc_results.states[1]
     # now states_sample_1[n] corresponds to times[n] for the first sample
 
     # You can also access a state distribution at a specific time using the .snapshot function
-    states_time_1 = states.snapshot(1)
+    states_time_1 = mc_results.states.snapshot(1)
     # now you have all the samples corresponding to times[1]
 
     # You can also access the final state (of type UncertainData), like so:
-    final_state = toe.final_state
+    final_state = mc_results.time_of_event.final_state
     print('Final state @EOD: ', final_state['EOD'].mean)
     
     # You can also use the metrics package to generate some useful metrics on the result of a prediction
     print("\nEOD Prediction Metrics")
 
     from prog_algs.metrics import prob_success
-    print('\tPortion between 3005.2 and 3005.6: ', toe.percentage_in_bounds([3005.2, 3005.6]))
-    print('\tAssuming ground truth 3002.25: ', toe.metrics(ground_truth=3005.25))
-    print('\tP(Success) if mission ends at 3002.25: ', prob_success(toe, 3005.25))
+    print('\tPortion between 3005.2 and 3005.6: ', mc_results.time_of_event.percentage_in_bounds([3005.2, 3005.6]))
+    print('\tAssuming ground truth 3002.25: ', mc_results.time_of_event.metrics(ground_truth=3005.25))
+    print('\tP(Success) if mission ends at 3002.25: ', prob_success(mc_results.time_of_event, 3005.25))
 
     # Plot state transition 
     # Here we will plot the states at t0, 25% to ToE, 50% to ToE, 75% to ToE, and ToE
-    fig = states.snapshot(0).plot_scatter(label = "t={} s".format(int(times[0])))  # 0
-    quarter_index = int(len(times)/4)
-    states.snapshot(quarter_index).plot_scatter(fig = fig, label = "t={} s".format(int(times[quarter_index])))  # 25%
-    states.snapshot(quarter_index*2).plot_scatter(fig = fig, label = "t={} s".format(int(times[quarter_index*2])))  # 50%
-    states.snapshot(quarter_index*3).plot_scatter(fig = fig, label = "t={} s".format(int(times[quarter_index*3])))  # 75%
-    states.snapshot(-1).plot_scatter(fig = fig, label = "t={} s".format(int(times[-1])))  # 100%
+    fig = mc_results.states.snapshot(0).plot_scatter(label = "t={} s".format(int(mc_results.times[0])))  # 0
+    quarter_index = int(len(mc_results.times)/4)
+    mc_results.states.snapshot(quarter_index).plot_scatter(fig = fig, label = "t={} s".format(int(mc_results.times[quarter_index])))  # 25%
+    mc_results.states.snapshot(quarter_index*2).plot_scatter(fig = fig, label = "t={} s".format(int(mc_results.times[quarter_index*2])))  # 50%
+    mc_results.states.snapshot(quarter_index*3).plot_scatter(fig = fig, label = "t={} s".format(int(mc_results.times[quarter_index*3])))  # 75%
+    mc_results.states.snapshot(-1).plot_scatter(fig = fig, label = "t={} s".format(int(mc_results.times[-1])))  # 100%
 
-    toe.plot_hist()
+    mc_results.time_of_event.plot_hist()
     
     # Step 4: Show all plots
     import matplotlib.pyplot as plt  # For plotting

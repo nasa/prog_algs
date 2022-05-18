@@ -51,7 +51,7 @@ class ScalarData(UncertainData):
         return self
 
     @property
-    def median(self) -> array:
+    def median(self) -> dict:
         return self.mean
         
     @property

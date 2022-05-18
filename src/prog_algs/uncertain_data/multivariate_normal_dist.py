@@ -20,6 +20,9 @@ class MultivariateNormalDist(UncertainData):
         self.__covar = array(list(covar))
         super().__init__(_type)
 
+    def __reduce__(self):
+        return (MultivariateNormalDist, (self.__labels, self.__mean, self.__covar))
+
     def __eq__(self, other : "MultivariateNormalDist") -> bool:
         return self.keys() == other.keys() and self.mean == other.mean and (self.cov == other.cov).all()
 

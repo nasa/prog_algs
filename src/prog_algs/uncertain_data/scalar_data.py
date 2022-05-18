@@ -15,6 +15,9 @@ class ScalarData(UncertainData):
     def __init__(self, state, _type = dict): 
         self.__state = state
         super().__init__(_type)
+    
+    def __reduce__(self):
+        return (ScalarData, (self.__state, ))
 
     def __eq__(self, other : "ScalarData") -> bool:
         return isinstance(other, ScalarData) and other.mean == self.__state

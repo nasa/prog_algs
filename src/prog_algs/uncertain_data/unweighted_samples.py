@@ -75,6 +75,9 @@ class UnweightedSamples(UncertainData, UserList):
                     self.data[i][k] -= other
         return self
 
+    def __reduce__(self):
+        return (UnweightedSamples, (self.data, ))
+
     def sample(self, num_samples : int = 1, replace = True) -> "UnweightedSamples":
         # Completely random resample
         indices = random.choice(len(self.data), num_samples, replace = replace)

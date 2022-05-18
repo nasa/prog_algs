@@ -33,6 +33,9 @@ class UnweightedSamples(UncertainData, UserList):
         else:
             raise ValueError('Invalid input. Must be list or dict, was {}'.format(type(samples)))
 
+    def __getitem__(self,n):
+        return self._type(self.data[n])
+
     def __add__(self, other : int) -> "UncertainData":
         if other == 0:
             return self
@@ -81,7 +84,7 @@ class UnweightedSamples(UncertainData, UserList):
     def sample(self, num_samples : int = 1, replace = True) -> "UnweightedSamples":
         # Completely random resample
         indices = random.choice(len(self.data), num_samples, replace = replace)
-        return UnweightedSamples([self.data[i] for i in indices])
+        return UnweightedSamples([self.data[i] for i in indices], _type = self._type)
 
     def keys(self) -> list:
         if len(self.data) == 0:

@@ -194,7 +194,7 @@ class UnscentedTransformPredictor(Predictor):
         def update_all():
             times.append(t)
             inputs.append(deepcopy(self.__input))  # Avoid optimization where u is not copied
-            x_dict = MultivariateNormalDist(self.__state_keys, filt.x, filt.P)
+            x_dict = MultivariateNormalDist(self.__state_keys, filt.x, filt.P, _type = self.model.StateContainer)
             states.append(x_dict)  # Avoid optimization where x is not copied
 
         # Optimization

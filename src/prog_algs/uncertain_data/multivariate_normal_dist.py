@@ -62,7 +62,7 @@ class MultivariateNormalDist(UncertainData):
     
         samples = multivariate_normal(self.__mean, self.__covar, num_samples)
         samples = [{key: value for (key, value) in zip(self.__labels, x)} for x in samples]
-        return UnweightedSamples(samples)
+        return UnweightedSamples(samples, _type = self._type)
 
     def keys(self) -> list:
         return self.__labels

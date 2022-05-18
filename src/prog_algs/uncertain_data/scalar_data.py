@@ -70,7 +70,7 @@ class ScalarData(UncertainData):
         return self.__state.keys()
         
     def sample(self, num_samples : int = 1) -> UnweightedSamples:
-        return UnweightedSamples([self.__state] * num_samples)
+        return UnweightedSamples([self.__state] * num_samples, _type = self._type)
 
     def __str__(self) -> str:
         return 'ScalarData({})'.format(self.__state)

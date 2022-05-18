@@ -105,6 +105,28 @@ def run_example():
     stats = pstats.Stats(profiler).sort_stats('cumtime')
     stats.print_stats(0.1)
 
+    # Adding large step size/fast surrogate 
+    # options['save_freq'] = options_surrogate['save_freq'] = 100
+    options['step_size'] = options_surrogate['save_freq'] = 100
+    batt.parameters['process_noise'] = 0
+
+    surrogate_large_step = batt.generate_surrogate(load_functions,**options_surrogate)
+
+    surrogate_large_step.parameters['process_noise'] = 2e-5
+
+    mc_surrogate_large_step = predictors.MonteCarlo(surrogate_large_step)
+
+    x0_surrogate_large_step = surrogate_large_step.initialize()
+
+    profiler = cProfile.Profile()
+    profiler.enable()
+    mc_results_surrogate_large_step = mc_surrogate_large_step.predict(x0_surrogate_large_step, future_loading, **options)
+    profiler.disable()
+    stats = pstats.Stats(profiler).sort_stats('cumtime')
+    stats.print_stats(0.1)
+
+    debug = 1
+
 
 # This allows the module to be executed directly 
 if __name__ == '__main__':

@@ -30,7 +30,7 @@ class UncertainData(ABC):
 
     @property
     @abstractproperty
-    def median(self) -> array:
+    def median(self) -> dict:
         """The median of the UncertainData distribution or samples 
 
         Returns:
@@ -42,7 +42,7 @@ class UncertainData(ABC):
 
     @property
     @abstractproperty
-    def mean(self) -> array:
+    def mean(self) -> dict:
         """The mean of the UncertainData distribution or samples 
 
         Returns:

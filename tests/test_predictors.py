@@ -157,16 +157,16 @@ class TestPredictors(unittest.TestCase):
         from prog_algs.predictors.prediction import UnweightedSamplesPrediction
         from prog_algs.uncertain_data import UnweightedSamples
         times = list(range(10))
-        states = [UnweightedSamples(list(range(10))), 
-            UnweightedSamples(list(range(1, 11))), 
-            UnweightedSamples(list(range(-1, 9)))]
+        states = [UnweightedSamples([{'a': i} for i in range(10)]), 
+            UnweightedSamples([{'a': i} for i in range(1, 11)]), 
+            UnweightedSamples([{'a': i} for i in range(-1, 9)])]
         p = UnweightedSamplesPrediction(times, states)
 
         self.assertEqual(p[0], states[0])
         self.assertEqual(p.sample(0), states[0])
         self.assertEqual(p.sample(-1), states[-1])
-        self.assertEqual(p.snapshot(0), UnweightedSamples([0, 1, -1]))
-        self.assertEqual(p.snapshot(-1), UnweightedSamples([9, 10, 8]))
+        self.assertEqual(p.snapshot(0), UnweightedSamples([{'a': 0}, {'a': 1}, {'a': -1}]))
+        self.assertEqual(p.snapshot(-1), UnweightedSamples([{'a': 9}, {'a': 10}, {'a': 8}]))
         self.assertEqual(p.time(0), times[0])
         self.assertEqual(p.times[0], times[0])
         self.assertEqual(p.time(-1), times[-1])
@@ -432,7 +432,9 @@ def run_tests():
     l = unittest.TestLoader()
     runner = unittest.TextTestRunner()
     print("\n\nTesting Predictor")
-    result = runner.run(l.loadTestsFromTestCase(TestPredictors)).wasSuccessful()
+    from unittest.mock import patch
+    with patch('matplotlib.pyplot') as p:
+        result = runner.run(l.loadTestsFromTestCase(TestPredictors)).wasSuccessful()
 
     if not result:
         raise Exception("Failed test")

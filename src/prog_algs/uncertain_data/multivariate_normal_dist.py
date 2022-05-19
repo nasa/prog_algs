@@ -24,7 +24,7 @@ class MultivariateNormalDist(UncertainData):
         return (MultivariateNormalDist, (self.__labels, self.__mean, self.__covar))
 
     def __eq__(self, other : "MultivariateNormalDist") -> bool:
-        return self.keys() == other.keys() and self.mean == other.mean and (self.cov == other.cov).all()
+        return isinstance(other, MultivariateNormalDist) and self.keys() == other.keys() and self.mean == other.mean and (self.cov == other.cov).all()
 
     def __add__(self, other : int) -> "UncertainData":
         if other == 0:

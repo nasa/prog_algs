@@ -33,6 +33,9 @@ class UnweightedSamples(UncertainData, UserList):
         else:
             raise ValueError('Invalid input. Must be list or dict, was {}'.format(type(samples)))
 
+    def __eq__(self, other):
+        return isinstance(other, UnweightedSamples) and self.data == other.data
+
     def __getitem__(self,n):
         return self._type(self.data[n])
 

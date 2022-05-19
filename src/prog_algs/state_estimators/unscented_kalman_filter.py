@@ -59,6 +59,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
                 model.parameters['measurement_noise'] = R_err
                 return array(list(z.values())).ravel()
         else:
+            warn("Warning: measurement_eqn depreciated as of v1.3.1, will be removed in v1.4. Use Model subclassing instead. See examples.measurement_eqn_example")
             def measure(x):
                 x = {key: value for (key, value) in zip(x0.keys(), x)}
                 z = measurement_eqn(x)
@@ -82,7 +83,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measure, state_transition, points)
         
         if isinstance(x0, dict) or isinstance(x0, model.StateContainer):
-            warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
+            warn("Warning: x0_uncertainty depreciated as of v1.3, will be removed in v1.4. Use UncertainData type if estimating filtering with uncertain data.")
             self.filter.x = array(list(x0.values()))
             self.filter.P = self.parameters['Q'] / 10
         elif isinstance(x0, UncertainData):

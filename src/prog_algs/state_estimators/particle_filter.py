@@ -49,6 +49,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         super().__init__(model, x0, measurement_eqn = measurement_eqn, **kwargs)
         
         if measurement_eqn:
+            warn("Warning: measurement_eqn depreciated as of v1.3.1, will be removed in v1.4. Use Model subclassing instead. See examples.measurement_eqn_example")
             # update output_container
             from prog_models.utils.containers import DictLikeMatrixWrapper
             z0 = measurement_eqn(x0)
@@ -72,7 +73,7 @@ class ParticleFilter(state_estimator.StateEstimator):
             sample_gen = x0.sample(self.parameters['num_particles'])
             samples = [array(sample_gen.key(k)) for k in x0.keys()]
         elif paramters_x0_exist and (parameters_x0_dict or parameters_x0_num):
-            warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
+            warn("Warning: x0_uncertainty depreciated as of v1.3, will be removed in v1.4. Use UncertainData type if estimating filtering with uncertain data.")
             x = array(list(x0.values()))
             if parameters_x0_dict:
                 sd = array([self.parameters['x0_uncertainty'][key] for key in x0.keys()])

@@ -65,7 +65,7 @@ class MonteCarlo(Predictor):
 
         # Perform prediction
         for x in state:
-            events_remaining = deepcopy(params['events'])
+            events_remaining = params['events'].copy()
             first_output = ouput_eqn(x)
             
             time_of_event = {}
@@ -121,7 +121,7 @@ class MonteCarlo(Predictor):
                 t0 = times.pop()
                 inputs.pop()
                 x = states.pop()
-                last_state[event] = deepcopy(x)
+                last_state[event] = x.copy()
                 outputs.pop()
                 event_states.pop()
             

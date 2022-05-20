@@ -201,6 +201,7 @@ class UnscentedTransformPredictor(Predictor):
         state_keys = self.__state_keys
 
         # Simulation
+        self.__input = future_loading_eqn(t, state.mean)
         update_all()  # First State
         while t < params['horizon']:
             # Iterate through time

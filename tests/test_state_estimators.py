@@ -100,7 +100,11 @@ class TestStateEstimators(unittest.TestCase):
         from prog_algs.uncertain_data.scalar_data import ScalarData
         x_scalar = ScalarData({'x': 1.75, 'v': 35})
         filt_scalar = UnscentedKalmanFilter(m, x_scalar)
-        self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
+        mean1 = filt_scalar.x.mean
+        mean2 = x_scalar.mean
+        self.assertSetEqual(set(mean1.keys()), set(mean2.keys()))
+        for k in mean1.keys():
+            self.assertEqual(mean1[k], mean2[k])
         self.assertTrue(
             equal_cov(
                 (list(x_scalar.keys()), x_scalar.cov), 
@@ -111,7 +115,11 @@ class TestStateEstimators(unittest.TestCase):
         from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
         x_mvnd = MultivariateNormalDist(['x', 'v'], array([2, 10]), array([[1, 0], [0, 1]]))
         filt_mvnd = UnscentedKalmanFilter(m, x_mvnd)
-        self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
+        mean1 = filt_mvnd.x.mean
+        mean2 = x_mvnd.mean
+        self.assertSetEqual(set(mean1.keys()), set(mean2.keys()))
+        for k in mean1.keys():
+            self.assertEqual(mean1[k], mean2[k])
         self.assertTrue(
             equal_cov(
                 (list(x_mvnd.keys()), x_mvnd.cov), 
@@ -120,7 +128,11 @@ class TestStateEstimators(unittest.TestCase):
         # Now with a different order
         x_mvnd = MultivariateNormalDist(['v', 'x'], array([10, 2]), array([[1, 0], [0, 2]]))
         filt_mvnd = UnscentedKalmanFilter(m, x_mvnd)
-        self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
+        mean1 = filt_mvnd.x.mean
+        mean2 = x_mvnd.mean
+        self.assertSetEqual(set(mean1.keys()), set(mean2.keys()))
+        for k in mean1.keys():
+            self.assertEqual(mean1[k], mean2[k])
         self.assertTrue(
             equal_cov(
                 (list(x_mvnd.keys()), x_mvnd.cov), 
@@ -130,7 +142,11 @@ class TestStateEstimators(unittest.TestCase):
         from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
         x_us = UnweightedSamples([{'x': 1, 'v':2}, {'x': 3, 'v':-2}])
         filt_us = UnscentedKalmanFilter(m, x_us)
-        self.assertDictEqual(filt_us.x.mean, x_us.mean)
+        mean1 = filt_us.x.mean
+        mean2 = x_us.mean
+        self.assertSetEqual(set(mean1.keys()), set(mean2.keys()))
+        for k in mean1.keys():
+            self.assertEqual(mean1[k], mean2[k])
         self.assertTrue(
             equal_cov(
                 (list(x_us.keys()), x_us.cov), 
@@ -218,7 +234,11 @@ class TestStateEstimators(unittest.TestCase):
         from prog_algs.uncertain_data.scalar_data import ScalarData
         x_scalar = ScalarData({'x': 1.75, 'v': 38.5})
         filt_scalar = ParticleFilter(m, x_scalar, num_particles = 20) # Sample count does not affect ScalarData testing
-        self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
+        mean1 = filt_scalar.x.mean
+        mean2 = x_scalar.mean
+        self.assertSetEqual(set(mean1.keys()), set(mean2.keys()))
+        for k in mean1.keys():
+            self.assertEqual(mean1[k], mean2[k])
         self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
         
         # Test ParticleFilter MultivariateNormalDist
@@ -251,7 +271,11 @@ class TestStateEstimators(unittest.TestCase):
         # Case 0: Both isinstance(x0, UncertainData) and x0_uncertainty parameter provided; expect x0_uncertainty to be skipped
         x_scalar = ScalarData({'x': 1.75, 'v': 38.5}) # Testing with ScalarData
         filt_scalar = ParticleFilter(m, x_scalar, num_particles = 20, x0_uncertainty = 0.5) # Sample count does not affect ScalarData testing
-        self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
+        mean1 = filt_scalar.x.mean
+        mean2 = x_scalar.mean
+        self.assertSetEqual(set(mean1.keys()), set(mean2.keys()))
+        for k in mean1.keys():
+            self.assertEqual(mean1[k], mean2[k])
         self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
         # Case 1: Only x0_uncertainty provided; expect a warning issued
         with self.assertWarns(Warning):
@@ -382,7 +406,11 @@ class TestStateEstimators(unittest.TestCase):
         from prog_algs.uncertain_data.scalar_data import ScalarData
         x_scalar = ScalarData({'x': 1.75, 'v': 35})
         filt_scalar = KalmanFilter(m, x_scalar)
-        self.assertDictEqual(filt_scalar.x.mean, x_scalar.mean)
+        mean1 = filt_scalar.x.mean
+        mean2 = x_scalar.mean
+        self.assertSetEqual(set(mean1.keys()), set(mean2.keys()))
+        for k in mean1.keys():
+            self.assertEqual(mean1[k], mean2[k])
         self.assertTrue(
             equal_cov(
                 (list(x_scalar.keys()), x_scalar.cov), 
@@ -393,7 +421,11 @@ class TestStateEstimators(unittest.TestCase):
         from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
         x_mvnd = MultivariateNormalDist(['x', 'v'], array([2, 10]), array([[1, 0], [0, 1]]))
         filt_mvnd = KalmanFilter(m, x_mvnd)
-        self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
+        mean1 = filt_mvnd.x.mean
+        mean2 = x_mvnd.mean
+        self.assertSetEqual(set(mean1.keys()), set(mean2.keys()))
+        for k in mean1.keys():
+            self.assertEqual(mean1[k], mean2[k])
         self.assertTrue(
             equal_cov(
                 (list(x_mvnd.keys()), x_mvnd.cov), 
@@ -402,7 +434,11 @@ class TestStateEstimators(unittest.TestCase):
         # Now with a different order
         x_mvnd = MultivariateNormalDist(['v', 'x'], array([10, 2]), array([[1, 0], [0, 2]]))
         filt_mvnd = KalmanFilter(m, x_mvnd)
-        self.assertDictEqual(filt_mvnd.x.mean, x_mvnd.mean)
+        mean1 = filt_mvnd.x.mean
+        mean2 = x_mvnd.mean
+        self.assertSetEqual(set(mean1.keys()), set(mean2.keys()))
+        for k in mean1.keys():
+            self.assertEqual(mean1[k], mean2[k])
         self.assertTrue(
             equal_cov(
                 (list(x_mvnd.keys()), x_mvnd.cov), 
@@ -412,7 +448,11 @@ class TestStateEstimators(unittest.TestCase):
         from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
         x_us = UnweightedSamples([{'x': 1, 'v':2}, {'x': 3, 'v':-2}])
         filt_us = KalmanFilter(m, x_us)
-        self.assertDictEqual(filt_us.x.mean, x_us.mean)
+        mean1 = filt_us.x.mean
+        mean2 = x_us.mean
+        self.assertSetEqual(set(mean1.keys()), set(mean2.keys()))
+        for k in mean1.keys():
+            self.assertEqual(mean1[k], mean2[k])
         self.assertTrue(
             equal_cov(
                 (list(x_us.keys()), x_us.cov), 

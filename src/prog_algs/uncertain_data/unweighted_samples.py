@@ -17,7 +17,8 @@ class UnweightedSamples(UncertainData, UserList):
             If list, must be of the form of [{key: value, ...}, ...]\n
             If InputContainer, OutputContainer, or StateContainer, must be of the form of *Container({'key': value, ...})
     """
-    def __init__(self, samples : list = []):
+    def __init__(self, samples : list = [], _type = dict):
+        super().__init__(_type)
         if isinstance(samples, dict):
             # Is in form of {key: [value, ...], ...}
             # Convert to array of samples
@@ -31,6 +32,12 @@ class UnweightedSamples(UncertainData, UserList):
             self.data = samples
         else:
             raise ValueError('Invalid input. Must be list or dict, was {}'.format(type(samples)))
+
+    def __eq__(self, other):
+        return isinstance(other, UnweightedSamples) and self.data == other.data
+
+    def __getitem__(self,n):
+        return self._type(self.data[n])
 
     def __add__(self, other : int) -> "UncertainData":
         if other == 0:
@@ -74,10 +81,13 @@ class UnweightedSamples(UncertainData, UserList):
                     self.data[i][k] -= other
         return self
 
+    def __reduce__(self):
+        return (UnweightedSamples, (self.data, ))
+
     def sample(self, num_samples : int = 1, replace = True) -> "UnweightedSamples":
         # Completely random resample
         indices = random.choice(len(self.data), num_samples, replace = replace)
-        return UnweightedSamples([self.data[i] for i in indices])
+        return UnweightedSamples([self.data[i] for i in indices], _type = self._type)
 
     def keys(self) -> list:
         if len(self.data) == 0:

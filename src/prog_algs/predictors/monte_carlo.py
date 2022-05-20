@@ -42,7 +42,11 @@ class MonteCarlo(Predictor):
         if isinstance(state, dict) or isinstance(state, self.model.StateContainer):
             # Convert to UnweightedSamples
             from prog_algs.uncertain_data import ScalarData
-            state = ScalarData(state)
+            state = ScalarData(state, _type = self.model.StateContainer)
+        elif isinstance(state, UncertainData):
+            state._type = self.model.StateContainer
+        else:
+            raise TypeError("state must be UncertainData, dict, or StateContainer")
 
         params = deepcopy(self.parameters) # copy parameters
         params.update(kwargs) # update for specific run
@@ -147,7 +151,7 @@ class MonteCarlo(Predictor):
 
         # Transform final states:
         last_states = {
-            key: UnweightedSamples([sample[key] for sample in last_states]) for key in time_of_event.keys()
+            key: UnweightedSamples([sample[key] for sample in last_states], _type = self.model.StateContainer) for key in time_of_event.keys()
         }
         time_of_event.final_state = last_states
 

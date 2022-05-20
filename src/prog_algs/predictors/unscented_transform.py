@@ -194,7 +194,7 @@ class UnscentedTransformPredictor(Predictor):
         def update_all():
             times.append(t)
             inputs.append(deepcopy(self.__input))  # Avoid optimization where u is not copied
-            x_dict = MultivariateNormalDist(self.__state_keys, filt.x, filt.P)
+            x_dict = MultivariateNormalDist(self.__state_keys, filt.x, filt.P, _type = self.model.StateContainer)
             states.append(x_dict)  # Avoid optimization where x is not copied
 
         # Optimization
@@ -249,7 +249,7 @@ class UnscentedTransformPredictor(Predictor):
             last_state_pts = array([[last_state_i[state_key] for state_key in state_keys] for last_state_i in last_state[event_key]])
             # last_state_pts = transpose(last_state_pts)
             last_state_mean, last_state_cov = kalman.unscented_transform(last_state_pts, sigma_points.Wm, sigma_points.Wc)
-            final_state[event_key] = MultivariateNormalDist(state_keys, last_state_mean, last_state_cov)
+            final_state[event_key] = MultivariateNormalDist(state_keys, last_state_mean, last_state_cov, _type = self.model.StateContainer)
 
         # At this point only time of event, inputs, and state are calculated 
         inputs_prediction = UnweightedSamplesPrediction(times, [inputs])

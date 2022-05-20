@@ -173,4 +173,4 @@ class ParticleFilter(state_estimator.StateEstimator):
         -------
         state = observer.x
         """
-        return UnweightedSamples(self.particles)
+        return UnweightedSamples(self.particles, _type = self.model.StateContainer)

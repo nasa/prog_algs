@@ -14,10 +14,11 @@ class MultivariateNormalDist(UncertainData):
             mean (array[float]): Mean values for state in the same order as labels
             covar (array[array[float]]): Covariance matrix for state
     """
-    def __init__(self, labels, mean: array, covar : array):
+    def __init__(self, labels, mean: array, covar : array, _type = dict):
         self.__labels = list(labels)
         self.__mean = array(list(mean))
         self.__covar = array(list(covar))
+        super().__init__(_type)
 
     def __eq__(self, other : "MultivariateNormalDist") -> bool:
         return self.keys() == other.keys() and self.mean == other.mean and (self.cov == other.cov).all()
@@ -69,8 +70,8 @@ class MultivariateNormalDist(UncertainData):
         return self.mean
 
     @property
-    def mean(self) -> array:
-        return {key: value for (key, value) in zip(self.__labels, self.__mean)}
+    def mean(self) -> dict:
+        return self._type({key: value for (key, value) in zip(self.__labels, self.__mean)})
 
     def __str__(self) -> str:
         return 'MultivariateNormalDist(mean: {}, covar: {})'.format(self.__mean, self.__covar)     

@@ -17,7 +17,8 @@ class UnweightedSamples(UncertainData, UserList):
             If list, must be of the form of [{key: value, ...}, ...]\n
             If InputContainer, OutputContainer, or StateContainer, must be of the form of *Container({'key': value, ...})
     """
-    def __init__(self, samples : list = []):
+    def __init__(self, samples : list = [], _type = dict):
+        super().__init__(_type)
         if isinstance(samples, dict):
             # Is in form of {key: [value, ...], ...}
             # Convert to array of samples

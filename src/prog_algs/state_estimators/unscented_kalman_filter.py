@@ -132,4 +132,4 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         -------
         state = observer.x
         """
-        return MultivariateNormalDist(self.x0.keys(), self.filter.x, self.filter.P)
+        return MultivariateNormalDist(self.x0.keys(), self.filter.x, self.filter.P, _type = self.model.StateContainer)

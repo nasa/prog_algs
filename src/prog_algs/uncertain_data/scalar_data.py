@@ -12,8 +12,9 @@ class ScalarData(UncertainData):
     Args:
             state (dict or Container): Single state in the form of dict or model.*Container (InputContainer, OutputContainer, Statecontainer) representing states and respective values.
     """
-    def __init__(self, state): 
+    def __init__(self, state, _type = dict): 
         self.__state = state
+        super().__init__(_type)
 
     def __eq__(self, other : "ScalarData") -> bool:
         return isinstance(other, ScalarData) and other.mean == self.__state
@@ -55,8 +56,8 @@ class ScalarData(UncertainData):
         return self.mean
         
     @property
-    def mean(self) -> array:
-        return self.__state
+    def mean(self) -> dict:
+        return self._type(self.__state)
 
     @property
     def cov(self) -> array:

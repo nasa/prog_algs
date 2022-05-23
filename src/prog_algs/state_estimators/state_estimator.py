@@ -40,7 +40,7 @@ class StateEstimator(ABC):
             raise ProgAlgTypeError("model must have `outputs` property")
         if not hasattr(model, 'states'):
             raise ProgAlgTypeError("model must have `states` property")
-        self.model = deepcopy(model)
+        self.model = model
 
         if measurement_eqn is not None:
             warn('Measurement_eqn was deprecated in v1.3 in favor of model subclassing. I will remove this in v1.4. See measurement_equation example for more information', DeprecationWarning)

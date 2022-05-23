@@ -1,9 +1,14 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 import unittest
 import numpy as np
+import random
 
 from prog_models import PrognosticsModel, LinearModel
+from prog_models.models import ThrownObject, BatteryElectroChem
+from prog_algs.state_estimators import ParticleFilter, KalmanFilter, UnscentedKalmanFilter
 from prog_algs.exceptions import ProgAlgTypeError
+from prog_algs.uncertain_data import ScalarData, MultivariateNormalDist, UnweightedSamples
+
 
 def equal_cov(pair1, pair2):
     """
@@ -54,11 +59,29 @@ class MockProgModel(PrognosticsModel):
     def threshold_met(self, x):
         return {key : value < 1e-6 for (key, value) in self.event_state(x).items()}
 
+
+class MockProgModel2(MockProgModel):
+    outputs = ['o1', 'o2']
+    def output(self, x):
+        return self.OutputContainer({
+            'o1': x['a'] + x['b'] + x['c'], 
+            'o2': 7
+            })
+
+
 class TestStateEstimators(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls._m_mock = MockProgModel()
+        cls._m = ThrownObject()
+        def future_loading(t, x= None):
+            return cls._m.InputContainer({})
+        cls._future_loading = future_loading
+        cls._s = cls._m.generate_surrogate([future_loading], states = ['v'], dt = 0.1, save_freq = 0.1)
+
     def test_state_est_template(self):
         from state_estimator_template import TemplateStateEstimator
-        m = MockProgModel()
-        se = TemplateStateEstimator(m, {'a': 0.0, 'b': 0.0, 'c': 0.0, 't':0.0})
+        se = TemplateStateEstimator(self._m_mock, {'a': 0.0, 'b': 0.0, 'c': 0.0, 't':0.0})
 
     def __test_state_est(self, filt, m):
         x_guess = m.StateContainer(filt.x.mean)  # Might be new
@@ -85,9 +108,6 @@ class TestStateEstimators(unittest.TestCase):
             self.assertAlmostEqual(x_est[key], x[key], delta=0.4)
 
     def test_UKF(self):
-        from prog_models.models import ThrownObject
-        from prog_algs.state_estimators import UnscentedKalmanFilter
-
         m = ThrownObject(process_noise=5e-2, measurement_noise=5e-2)
         x_guess = {'x': 1.75, 'v': 35} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
 
@@ -97,7 +117,6 @@ class TestStateEstimators(unittest.TestCase):
         m = ThrownObject(process_noise=5e-2, measurement_noise=5e-2)
 
         # Test UnscentedKalmanFilter ScalarData
-        from prog_algs.uncertain_data.scalar_data import ScalarData
         x_scalar = ScalarData({'x': 1.75, 'v': 35})
         filt_scalar = UnscentedKalmanFilter(m, x_scalar)
         mean1 = filt_scalar.x.mean
@@ -111,9 +130,7 @@ class TestStateEstimators(unittest.TestCase):
                 (list(filt_scalar.x.keys()), filt_scalar.x.cov)))
 
         # Test UnscentedKalmanFilter MultivariateNormalDist
-        from numpy import array
-        from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
-        x_mvnd = MultivariateNormalDist(['x', 'v'], array([2, 10]), array([[1, 0], [0, 1]]))
+        x_mvnd = MultivariateNormalDist(['x', 'v'], np.array([2, 10]), np.array([[1, 0], [0, 1]]))
         filt_mvnd = UnscentedKalmanFilter(m, x_mvnd)
         mean1 = filt_mvnd.x.mean
         mean2 = x_mvnd.mean
@@ -126,7 +143,7 @@ class TestStateEstimators(unittest.TestCase):
                 (list(filt_mvnd.x.keys()), filt_mvnd.x.cov)))
 
         # Now with a different order
-        x_mvnd = MultivariateNormalDist(['v', 'x'], array([10, 2]), array([[1, 0], [0, 2]]))
+        x_mvnd = MultivariateNormalDist(['v', 'x'], np.array([10, 2]), np.array([[1, 0], [0, 2]]))
         filt_mvnd = UnscentedKalmanFilter(m, x_mvnd)
         mean1 = filt_mvnd.x.mean
         mean2 = x_mvnd.mean
@@ -139,7 +156,6 @@ class TestStateEstimators(unittest.TestCase):
                 (list(filt_mvnd.x.keys()), filt_mvnd.x.cov)), "Covs are not equal for multivariate in different order")
 
         # Test UnscentedKalmanFilter UnweightedSamples
-        from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
         x_us = UnweightedSamples([{'x': 1, 'v':2}, {'x': 3, 'v':-2}])
         filt_us = UnscentedKalmanFilter(m, x_us)
         mean1 = filt_us.x.mean
@@ -151,8 +167,6 @@ class TestStateEstimators(unittest.TestCase):
             equal_cov(
                 (list(x_us.keys()), x_us.cov), 
                 (list(filt_us.x.keys()), filt_us.x.cov)))
-
-        from prog_models.models import BatteryElectroChem
 
         with self.assertRaises(Exception):
             # Not linear model
@@ -217,13 +231,9 @@ class TestStateEstimators(unittest.TestCase):
             filter(m, x0)
 
     def test_UKF_incorrect_input(self):
-        from prog_algs.state_estimators import UnscentedKalmanFilter
         self.__incorrect_input_tests(UnscentedKalmanFilter)
 
     def test_PF(self):
-        from prog_algs.state_estimators import ParticleFilter
-        from prog_models.models import ThrownObject
-
         m = ThrownObject(process_noise={'x': 1, 'v': 3}, measurement_noise=1, num_particles = 1000)
         x_guess = {'x': 1.75, 'v': 38.5} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
 
@@ -231,7 +241,6 @@ class TestStateEstimators(unittest.TestCase):
         self.__test_state_est(filt, m)
 
         # Test ParticleFilter ScalarData
-        from prog_algs.uncertain_data.scalar_data import ScalarData
         x_scalar = ScalarData({'x': 1.75, 'v': 38.5})
         filt_scalar = ParticleFilter(m, x_scalar, num_particles = 20) # Sample count does not affect ScalarData testing
         mean1 = filt_scalar.x.mean
@@ -242,9 +251,7 @@ class TestStateEstimators(unittest.TestCase):
         self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
         
         # Test ParticleFilter MultivariateNormalDist
-        from numpy import array
-        from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
-        x_mvnd = MultivariateNormalDist(['x', 'v'], array([2, 10]), array([[1, 0], [0, 1]]))
+        x_mvnd = MultivariateNormalDist(['x', 'v'], np.array([2, 10]), np.array([[1, 0], [0, 1]]))
         filt_mvnd = ParticleFilter(m, x_mvnd, num_particles = 100000)
         for k, v in filt_mvnd.x.mean.items():
             self.assertAlmostEqual(v, x_mvnd.mean[k], delta = 0.01)
@@ -253,8 +260,6 @@ class TestStateEstimators(unittest.TestCase):
                 self.assertAlmostEqual(filt_mvnd.x.cov[i][j], x_mvnd.cov[i][j], delta=0.1)
 
         # Test ParticleFilter UnweightedSamples
-        from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
-        import random
         uw_input = []
         x_bounds, v_bounds, x0_samples = 5, 5, 10000
         for i in range(x0_samples):
@@ -281,24 +286,14 @@ class TestStateEstimators(unittest.TestCase):
         with self.assertWarns(Warning):
             filt_scalar = ParticleFilter(m, {'x': 1.75, 'v': 38.5}, x0_uncertainty = 0.5)
         # Case 2: Raise ProgAlgTypeError if x0 not UncertainData or x0_uncertainty not of type {{dict, Number}}.
-        from prog_algs.exceptions import ProgAlgTypeError
         with self.assertRaises(ProgAlgTypeError):
             filt_scalar = ParticleFilter(m, {'x': 1.75, 'v': 38.5}, num_particles = 20, x0_uncertainty = [])
 
     def test_measurement_eq_UKF(self):
-        class MockProgModel2(MockProgModel):
-            outputs = ['o1', 'o2']
-            def output(self, x):
-                return self.OutputContainer({
-                    'o1': x['a'] + x['b'] + x['c'], 
-                    'o2': 7
-                    })
-
         m = MockProgModel2()
         x0 = m.initialize()
 
         # Setup
-        from prog_algs.state_estimators import UnscentedKalmanFilter
         filt = UnscentedKalmanFilter(m, x0)
         
         # Try using
@@ -319,19 +314,10 @@ class TestStateEstimators(unittest.TestCase):
         filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0})
 
     def test_measurement_eq_PF(self):
-        class MockProgModel2(MockProgModel):
-            outputs = ['o1', 'o2']
-            def output(self, x):
-                return self.OutputContainer({
-                    'o1': x['a'] + x['b'] + x['c'], 
-                    'o2': 7
-                    })
-
         m = MockProgModel2()
         x0 = m.initialize()
 
         # Setup
-        from prog_algs.state_estimators import ParticleFilter
         filt = ParticleFilter(m, x0)
         
         # This one should work
@@ -352,18 +338,12 @@ class TestStateEstimators(unittest.TestCase):
         filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0})
         
     def test_PF_incorrect_input(self):
-        from prog_algs.state_estimators import ParticleFilter
         self.__incorrect_input_tests(ParticleFilter)
 
     def _test_state_est_surrogate(self, StateEst):
-        from prog_models.models import ThrownObject
+        m = self._m
+        s = self._s
 
-        # Setup Surrogate
-        m = ThrownObject()
-        def future_loading(t, x= None):
-            return m.InputContainer({})
-        s = m.generate_surrogate([future_loading], states = ['v'], dt = 0.1, save_freq = 0.1)
-        
         # Setup ParticleFilter
         x0 = s.initialize()
         filt = StateEst(s, x0)
@@ -381,22 +361,15 @@ class TestStateEstimators(unittest.TestCase):
         #     self.assertAlmostEqual(mean[key], es[key], delta=0.2)
 
     def test_PF_Surrogate(self):
-        from prog_algs.state_estimators import ParticleFilter
-
         self._test_state_est_surrogate(ParticleFilter)
 
     def test_UKF_Surrogate(self):
-        from prog_algs.state_estimators import UnscentedKalmanFilter
-
         self._test_state_est_surrogate(UnscentedKalmanFilter)
 
     def test_KF_Surrogate(self):
-        from prog_algs.state_estimators import KalmanFilter
-
         self._test_state_est_surrogate(KalmanFilter)
     
     def test_KF(self):
-        from prog_algs.state_estimators import KalmanFilter
         class ThrownObject(LinearModel):
             inputs = []  # no inputs, no way to control
             states = ['x', 'v']
@@ -443,7 +416,6 @@ class TestStateEstimators(unittest.TestCase):
         m = ThrownObject(process_noise=5e-2, measurement_noise=5e-2)
 
         # Test KalmanFilter ScalarData
-        from prog_algs.uncertain_data.scalar_data import ScalarData
         x_scalar = ScalarData({'x': 1.75, 'v': 35})
         filt_scalar = KalmanFilter(m, x_scalar)
         mean1 = filt_scalar.x.mean
@@ -457,9 +429,7 @@ class TestStateEstimators(unittest.TestCase):
                 (list(filt_scalar.x.keys()), filt_scalar.x.cov)))
 
         # Test KalmanFilter MultivariateNormalDist
-        from numpy import array
-        from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
-        x_mvnd = MultivariateNormalDist(['x', 'v'], array([2, 10]), array([[1, 0], [0, 1]]))
+        x_mvnd = MultivariateNormalDist(['x', 'v'], np.array([2, 10]), np.array([[1, 0], [0, 1]]))
         filt_mvnd = KalmanFilter(m, x_mvnd)
         mean1 = filt_mvnd.x.mean
         mean2 = x_mvnd.mean
@@ -472,7 +442,7 @@ class TestStateEstimators(unittest.TestCase):
                 (list(filt_mvnd.x.keys()), filt_mvnd.x.cov)))
 
         # Now with a different order
-        x_mvnd = MultivariateNormalDist(['v', 'x'], array([10, 2]), array([[1, 0], [0, 2]]))
+        x_mvnd = MultivariateNormalDist(['v', 'x'], np.array([10, 2]), np.array([[1, 0], [0, 2]]))
         filt_mvnd = KalmanFilter(m, x_mvnd)
         mean1 = filt_mvnd.x.mean
         mean2 = x_mvnd.mean
@@ -485,7 +455,6 @@ class TestStateEstimators(unittest.TestCase):
                 (list(filt_mvnd.x.keys()), filt_mvnd.x.cov)), "Covs are not equal for multivariate in different order")
 
         # Test KalmanFilter UnweightedSamples
-        from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
         x_us = UnweightedSamples([{'x': 1, 'v':2}, {'x': 3, 'v':-2}])
         filt_us = KalmanFilter(m, x_us)
         mean1 = filt_us.x.mean
@@ -497,8 +466,6 @@ class TestStateEstimators(unittest.TestCase):
             equal_cov(
                 (list(x_us.keys()), x_us.cov), 
                 (list(filt_us.x.keys()), filt_us.x.cov)))
-
-        from prog_models.models import BatteryElectroChem
 
         with self.assertRaises(Exception):
             # Not linear model

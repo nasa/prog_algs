@@ -321,17 +321,17 @@ def run_example():
 
     ### Time for CPU time
     import time
-    # x0_surrogate = surrogate.initialize()
-    # x0_hf = batt.initialize()
+    x0_surrogate = surrogate.initialize()
+    x0_hf = batt.initialize()
     time_surrogate = []
     time_hf = []
     for i in range(30):
-        x0_surrogate = surrogate.initialize()
+        # x0_surrogate = surrogate.initialize()
         start1 = time.process_time()
         mc_results_surrogate = mc_surrogate.predict(x0_surrogate, future_loading, **options_approx)
         end1 = time.process_time()
 
-        x0_hf = batt.initialize()
+        # x0_hf = batt.initialize()
         start2 = time.process_time()
         mc_results_hf = mc_hf.predict(x0_hf, future_loading, **options_hf)
         end2 = time.process_time()
@@ -347,25 +347,23 @@ def run_example():
 
     # Adding large step size/fast surrogate 
     # options['save_freq'] = options_surrogate['save_freq'] = 100
-    options['step_size'] = options_surrogate['save_freq'] = 100
-    batt.parameters['process_noise'] = 0
+    # options['step_size'] = options_surrogate['save_freq'] = 100
+    # batt.parameters['process_noise'] = 0
 
-    surrogate_large_step = batt.generate_surrogate(load_functions,**options_surrogate)
+    # surrogate_large_step = batt.generate_surrogate(load_functions,**options_surrogate)
+    # surrogate_large_step.parameters['process_noise'] = 2e-5
+    # mc_surrogate_large_step = predictors.MonteCarlo(surrogate_large_step)
 
-    surrogate_large_step.parameters['process_noise'] = 2e-5
+    # x0_surrogate_large_step = surrogate_large_step.initialize()
 
-    mc_surrogate_large_step = predictors.MonteCarlo(surrogate_large_step)
+    # profiler = cProfile.Profile()
+    # profiler.enable()
+    # mc_results_surrogate_large_step = mc_surrogate_large_step.predict(x0_surrogate_large_step, future_loading, **options)
+    # profiler.disable()
+    # stats = pstats.Stats(profiler).sort_stats('cumtime')
+    # stats.print_stats(0.1)
 
-    x0_surrogate_large_step = surrogate_large_step.initialize()
-
-    profiler = cProfile.Profile()
-    profiler.enable()
-    mc_results_surrogate_large_step = mc_surrogate_large_step.predict(x0_surrogate_large_step, future_loading, **options)
-    profiler.disable()
-    stats = pstats.Stats(profiler).sort_stats('cumtime')
-    stats.print_stats(0.1)
-
-    debug = 1
+    # debug = 1
 
 
 # This allows the module to be executed directly 

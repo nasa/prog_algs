@@ -277,7 +277,7 @@ def run_example():
     # Step 3b: Perform a prediction
     surrogate.parameters['process_noise'] = 0.002 # or percentage of values 
     batt.parameters['process_noise'] = 0.002
-    NUM_SAMPLES = 50
+    NUM_SAMPLES = 100
     STEP_SIZE = 1
     options_approx = {
         'n_samples': NUM_SAMPLES,
@@ -309,15 +309,38 @@ def run_example():
     # stats.print_stats(0.1)
 
     ### Time with timeit
-    x0_surrogate = surrogate.initialize()
-    x0_hf = batt.initialize()
-    def time_surrogate_fcn():
-        mc_results_surrogate = mc_surrogate.predict(x0_surrogate, future_loading, **options_approx)
-    def time_hf_fcn():
-        mc_results_hf = mc_hf.predict(x0_hf, future_loading, **options_hf)
+    # x0_surrogate = surrogate.initialize()
+    # x0_hf = batt.initialize()
+    # def time_surrogate_fcn():
+    #     mc_results_surrogate = mc_surrogate.predict(x0_surrogate, future_loading, **options_approx)
+    # def time_hf_fcn():
+    #     mc_results_hf = mc_hf.predict(x0_hf, future_loading, **options_hf)
 
-    time_surrogate = timeit.timeit(time_surrogate_fcn,number=1)
-    time_hf = timeit.timeit(time_hf_fcn,number=1)
+    # time_surrogate = timeit.timeit(time_surrogate_fcn,number=1)
+    # time_hf = timeit.timeit(time_hf_fcn,number=1)
+
+    ### Time for CPU time
+    import time
+    # x0_surrogate = surrogate.initialize()
+    # x0_hf = batt.initialize()
+    time_surrogate = []
+    time_hf = []
+    for i in range(30):
+        x0_surrogate = surrogate.initialize()
+        start1 = time.process_time()
+        mc_results_surrogate = mc_surrogate.predict(x0_surrogate, future_loading, **options_approx)
+        end1 = time.process_time()
+
+        x0_hf = batt.initialize()
+        start2 = time.process_time()
+        mc_results_hf = mc_hf.predict(x0_hf, future_loading, **options_hf)
+        end2 = time.process_time()
+
+        time_surrogate.append(end1-start1)
+        time_hf.append(end2-start2)
+
+        print(i, end1-start1, end2-start2)
+
 
     # mc_results_surrogate.time_of_event.plot_hist()
     # mc_results_hf.time_of_event.plot_hist()

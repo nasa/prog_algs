@@ -1,8 +1,16 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+import pickle
 import sys
 import unittest
 
 from prog_models import PrognosticsModel
+from prog_algs.predictors import UnscentedTransformPredictor, MonteCarlo, ToEPredictionProfile
+from prog_algs.uncertain_data import MultivariateNormalDist, UnweightedSamples, ScalarData
+from prog_models.models import BatteryCircuit, ThrownObject
+from prog_algs.state_estimators import UnscentedKalmanFilter
+from prog_algs.predictors.prediction import UnweightedSamplesPrediction, Prediction
+from prog_algs.metrics import samples
+
 # This ensures that the directory containing predictor_template is in the Python search directory
 from os.path import dirname, join
 sys.path.append(join(dirname(__file__), ".."))
@@ -41,15 +49,20 @@ class MockProgModel(PrognosticsModel):
 
 
 class TestPredictors(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls._m = ThrownObject()
+        def future_loading(t, x= None):
+            return cls._m.InputContainer({})
+        cls._future_loading = future_loading
+        cls._s = cls._m.generate_surrogate([future_loading], states = ['v'], dt = 0.1, save_freq = 0.1)
+
     def test_pred_template(self):
         from predictor_template import TemplatePredictor
         m = MockProgModel()
         pred = TemplatePredictor(m)
 
     def test_UTP_ThrownObject(self):
-        from prog_algs.predictors import UnscentedTransformPredictor
-        from prog_algs.uncertain_data import MultivariateNormalDist
-        from prog_models.models.thrown_object import ThrownObject
         m = ThrownObject()
         pred = UnscentedTransformPredictor(m)
         samples = MultivariateNormalDist(['x', 'v'], [1.83, 40], [[0.1, 0.01], [0.01, 0.1]])
@@ -63,9 +76,6 @@ class TestPredictors(unittest.TestCase):
 
     def test_UTP_ThrownObject_One_Event(self):
         # Test thrown object, similar to test_UKP_ThrownObject, but with only the 'falling' event
-        from prog_algs.predictors import UnscentedTransformPredictor
-        from prog_algs.uncertain_data import MultivariateNormalDist
-        from prog_models.models.thrown_object import ThrownObject
         m = ThrownObject()
         pred = UnscentedTransformPredictor(m)
         samples = MultivariateNormalDist(['x', 'v'], [1.83, 40], [[0.1, 0.01], [0.01, 0.1]])
@@ -78,11 +88,6 @@ class TestPredictors(unittest.TestCase):
         self.assertAlmostEqual(mc_results.times[-1], 4, 1)  # Saving every second, last time should be around the nearest 1s before falling event
 
     def test_UKP_Battery(self):
-        from prog_algs.predictors import UnscentedTransformPredictor
-        from prog_algs.uncertain_data import MultivariateNormalDist
-        from prog_models.models import BatteryCircuit
-        from prog_algs.state_estimators import UnscentedKalmanFilter
-
         def future_loading(t, x = None):
             # Variable (piece-wise) future loading scheme 
             if (t < 600):
@@ -115,13 +120,10 @@ class TestPredictors(unittest.TestCase):
         self.assertAlmostEqual(mc_results.time_of_event.mean['EOD'], 3004, -2)
 
         # Test Metrics
-        from prog_algs.metrics import samples
         s = mc_results.time_of_event.sample(100).key('EOD')
         samples.eol_metrics(s)  # Kept for backwards compatibility
 
     def test_MC(self):
-        from prog_models.models import ThrownObject
-        from prog_algs.predictors import MonteCarlo
         m = ThrownObject()
         mc = MonteCarlo(m)
         def future_loading(t = None, x = None):
@@ -130,13 +132,11 @@ class TestPredictors(unittest.TestCase):
         mc.predict(m.initialize(), future_loading, dt=0.2, num_samples=3, save_freq=1)
 
     def test_prediction_mvnormaldist(self):
-        from prog_algs.predictors import Prediction as MultivariateNormalDistPrediction
-        from prog_algs.uncertain_data import MultivariateNormalDist
         times = list(range(10))
         covar = [[0.1, 0.01], [0.01, 0.1]]
         means = [{'a': 1+i/10, 'b': 2-i/5} for i in range(10)]
         states = [MultivariateNormalDist(means[i].keys(), means[i].values(), covar) for i in range(10)]
-        p = MultivariateNormalDistPrediction(times, states)
+        p = Prediction(times, states)
 
         self.assertEqual(p.mean, means)
         self.assertEqual(p.snapshot(0), states[0])
@@ -154,8 +154,6 @@ class TestPredictors(unittest.TestCase):
             pass
 
     def test_prediction_uwsamples(self):
-        from prog_algs.predictors.prediction import UnweightedSamplesPrediction
-        from prog_algs.uncertain_data import UnweightedSamples
         times = list(range(10))
         states = [UnweightedSamples([{'a': i} for i in range(10)]), 
             UnweightedSamples([{'a': i} for i in range(1, 11)]), 
@@ -198,8 +196,6 @@ class TestPredictors(unittest.TestCase):
             pass
     
     def test_prediction_profile(self):
-        from prog_algs.predictors import ToEPredictionProfile
-        from prog_algs.uncertain_data import ScalarData
         profile = ToEPredictionProfile()
         self.assertEqual(len(profile), 0)
 
@@ -229,9 +225,6 @@ class TestPredictors(unittest.TestCase):
             pass
 
     def test_pickle_UTP_ThrownObject_pickle_result(self): # PREDICTION TEST
-        from prog_algs.predictors import UnscentedTransformPredictor
-        from prog_algs.uncertain_data import MultivariateNormalDist
-        from prog_models.models.thrown_object import ThrownObject
         m = ThrownObject()
         pred = UnscentedTransformPredictor(m)
         samples = MultivariateNormalDist(['x', 'v'], [1.83, 40], [[0.1, 0.01], [0.01, 0.1]])
@@ -239,16 +232,12 @@ class TestPredictors(unittest.TestCase):
             return {}
 
         mc_results = pred.predict(samples, future_loading, dt=0.01, save_freq=1)
-        import pickle # try pickle'ing
         pickle.dump(mc_results, open('predictor_test.pkl', 'wb'))
         pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
         self.assertEqual(mc_results, pickle_converted_result)
 
     def test_UTP_ThrownObject_One_Event_pickle_result(self): # PREDICTION TEST
         # Test thrown object, similar to test_UKP_ThrownObject, but with only the 'falling' event
-        from prog_algs.predictors import UnscentedTransformPredictor
-        from prog_algs.uncertain_data import MultivariateNormalDist
-        from prog_models.models.thrown_object import ThrownObject
         m = ThrownObject()
         pred = UnscentedTransformPredictor(m)
         samples = MultivariateNormalDist(['x', 'v'], [1.83, 40], [[0.1, 0.01], [0.01, 0.1]])
@@ -256,17 +245,11 @@ class TestPredictors(unittest.TestCase):
             return {}
 
         mc_results = pred.predict(samples, future_loading, dt=0.01, events=['falling'], save_freq=1)
-        import pickle # try pickle'ing
         pickle.dump(mc_results, open('predictor_test.pkl', 'wb'))
         pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
         self.assertEqual(mc_results, pickle_converted_result)
 
     def test_UKP_Battery_pickle_result(self):
-        from prog_algs.predictors import UnscentedTransformPredictor
-        from prog_algs.uncertain_data import MultivariateNormalDist
-        from prog_models.models import BatteryCircuit
-        from prog_algs.state_estimators import UnscentedKalmanFilter
-
         def future_loading(t, x = None):
             # Variable (piece-wise) future loading scheme 
             if (t < 600):
@@ -296,40 +279,31 @@ class TestPredictors(unittest.TestCase):
 
         # Predict with a step size of 0.1
         mc_results = ut.predict(filt.x, future_loading, dt=0.1)
-        import pickle # try pickle'ing
         pickle.dump(mc_results, open('predictor_test.pkl', 'wb'))
         pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
         self.assertEqual(mc_results, pickle_converted_result)
 
     def test_pickle_prediction_mvnormaldist(self):
-        from prog_algs.predictors import Prediction as MultivariateNormalDistPrediction
-        from prog_algs.uncertain_data import MultivariateNormalDist
         times = list(range(10))
         covar = [[0.1, 0.01], [0.01, 0.1]]
         means = [{'a': 1+i/10, 'b': 2-i/5} for i in range(10)]
         states = [MultivariateNormalDist(means[i].keys(), means[i].values(), covar) for i in range(10)]
-        p = MultivariateNormalDistPrediction(times, states)
+        p = Prediction(times, states)
 
-        import pickle
         p2 = pickle.loads(pickle.dumps(p))
         self.assertEqual(p2, p)
 
     def test_pickle_prediction_uwsamples(self):
-        from prog_algs.predictors.prediction import UnweightedSamplesPrediction
-        from prog_algs.uncertain_data import UnweightedSamples
         times = list(range(10))
         states = [UnweightedSamples(list(range(10))), 
             UnweightedSamples(list(range(1, 11))), 
             UnweightedSamples(list(range(-1, 9)))]
         p = UnweightedSamplesPrediction(times, states)
 
-        import pickle
         p2 = pickle.loads(pickle.dumps(p))
         self.assertEqual(p2, p)
     
     def test_pickle_prediction_profile(self):
-        from prog_algs.predictors import ToEPredictionProfile
-        from prog_algs.uncertain_data import ScalarData
         profile = ToEPredictionProfile()
         self.assertEqual(len(profile), 0)
 
@@ -338,15 +312,11 @@ class TestPredictors(unittest.TestCase):
         profile.add_prediction(0.5, ScalarData({'a': 1.05, 'b': 2.1, 'c': -3.15}))
         self.assertEqual(len(profile), 3)
         
-        import pickle
         p2 = pickle.loads(pickle.dumps(profile))
         self.assertEqual(p2, profile)
 
     # Testing LazyUTPrediction
     def test_pickle_UTP_ThrownObject(self):
-        from prog_algs.predictors import UnscentedTransformPredictor
-        from prog_algs.uncertain_data import MultivariateNormalDist
-        from prog_models.models.thrown_object import ThrownObject
         m = ThrownObject()
         pred = UnscentedTransformPredictor(m)
         samples = MultivariateNormalDist(['x', 'v'], [1.83, 40], [[0.1, 0.01], [0.01, 0.1]])
@@ -357,7 +327,6 @@ class TestPredictors(unittest.TestCase):
         pred_op = mc_results.outputs
         pred_es = mc_results.event_states
 
-        import pickle # try pickle'ing
         pickle.dump(pred_op, open('predictor_test.pkl', 'wb'))
         pickle_converted_result = pickle.load(open('predictor_test.pkl', 'rb'))
         self.assertEqual(pred_op, pickle_converted_result)
@@ -367,8 +336,6 @@ class TestPredictors(unittest.TestCase):
         self.assertEqual(pred_es, pickle_converted_result)
 
     def test_profile_plot(self):
-        from prog_algs.predictors import ToEPredictionProfile
-        from prog_algs.uncertain_data import ScalarData
         profile = ToEPredictionProfile()
         profile.add_prediction(0, ScalarData({'a': 1, 'b': 2, 'c': -3.2}))
         profile.add_prediction(1, ScalarData({'a': 1.1, 'b': 2.2, 'c': -3.1}))
@@ -386,8 +353,6 @@ class TestPredictors(unittest.TestCase):
         gt_and_alpha_plots = profile.plot(ground_truth=sample_gt, alpha=sample_alpha, show=True)
 
     def test_prediction_monotonicity(self):
-        from prog_algs.predictors.prediction import Prediction
-        from prog_algs.uncertain_data import MultivariateNormalDist, ScalarData, UnweightedSamples
         times = list(range(10))
         covar = [[0.1, 0.01], [0.01, 0.1]]
 
@@ -426,6 +391,12 @@ class TestPredictors(unittest.TestCase):
         states = [UnweightedSamples([samples[i]]) for i in range(10)]
         p = Prediction(times, states)
         self.assertDictEqual(p.monotonicity(), {'a': 1, 'b': 1, 'c': 0, 'd': 0.2222222222222222})
+
+    def test_utp_surrogate(self):
+        s = self._s
+        p = UnscentedTransformPredictor(s)
+        result = p.predict(s.initialize(), self._future_loading)
+        print(result)
 
 # This allows the module to be executed directly    
 def run_tests():

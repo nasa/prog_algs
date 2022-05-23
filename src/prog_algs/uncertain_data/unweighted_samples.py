@@ -109,7 +109,7 @@ class UnweightedSamples(UncertainData, UserList):
         return [sample[key] for sample in self.data if sample is not None]
 
     @property
-    def median(self) -> array:
+    def median(self) -> dict:
         # Calculate Geometric median of all samples
         min_value = float('inf')
         none_flag = False
@@ -126,20 +126,20 @@ class UnweightedSamples(UncertainData, UserList):
             if total_dist < min_value:
                 min_index = i
                 min_value = total_dist
-        return self[min_index]
+        return self._type(self[min_index])
 
     @property
-    def mean(self) -> array:
+    def mean(self) -> dict:
         mean = {}
         for key in self.keys():
             values = array([x[key] for x in self.data if x is not None and x[key] is not None])
             if len(values) < len(self.data):
                 warn("Some samples were None, resulting mean is of all non-None samples. Note: in some cases, this will bias the mean result.")
             mean[key] = values.mean()
-        return mean
+        return self._type(mean)
 
     @property
-    def cov(self) -> array:
+    def cov(self) -> dict:
         if len(self.data) == 0:
             return [[]]
         unlabeled_samples = array([[x[key] for x in self.data if x is not None and x[key] is not None] for key in self.keys()])

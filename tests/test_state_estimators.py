@@ -355,6 +355,46 @@ class TestStateEstimators(unittest.TestCase):
         from prog_algs.state_estimators import ParticleFilter
         self.__incorrect_input_tests(ParticleFilter)
 
+    def _test_state_est_surrogate(self, StateEst):
+        from prog_models.models import ThrownObject
+
+        # Setup Surrogate
+        m = ThrownObject()
+        def future_loading(t, x= None):
+            return m.InputContainer({})
+        s = m.generate_surrogate([future_loading], states = ['v'], dt = 0.1, save_freq = 0.1)
+        
+        # Setup ParticleFilter
+        x0 = s.initialize()
+        filt = StateEst(s, x0)
+
+        # Test
+        x0 = m.initialize()
+        x = m.next_state(x0, {}, 0.1)
+        filt.estimate(0.1, s.InputContainer({}), m.output(x))
+        self.assertIsInstance(filt.x.mean, s.StateContainer)
+        # mean = filt.x.mean
+        # self.assertAlmostEqual(mean['x'], x['x'], delta=10)
+        # self.assertAlmostEqual(mean['v'], x['v'], delta=1)
+        # es = m.event_state(x)
+        # for key in es.keys():
+        #     self.assertAlmostEqual(mean[key], es[key], delta=0.2)
+
+    def test_PF_Surrogate(self):
+        from prog_algs.state_estimators import ParticleFilter
+
+        self._test_state_est_surrogate(ParticleFilter)
+
+    def test_UKF_Surrogate(self):
+        from prog_algs.state_estimators import UnscentedKalmanFilter
+
+        self._test_state_est_surrogate(UnscentedKalmanFilter)
+
+    def test_KF_Surrogate(self):
+        from prog_algs.state_estimators import KalmanFilter
+
+        self._test_state_est_surrogate(KalmanFilter)
+    
     def test_KF(self):
         from prog_algs.state_estimators import KalmanFilter
         class ThrownObject(LinearModel):

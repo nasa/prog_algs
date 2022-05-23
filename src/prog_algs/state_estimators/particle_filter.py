@@ -105,11 +105,11 @@ class ParticleFilter(state_estimator.StateEstimator):
         next_state = self.model.next_state
         apply_process_noise = self.model.apply_process_noise
         output = self._measure
-        apply_measurement_noise = self.model.apply_measurement_noise
+        # apply_measurement_noise = self.model.apply_measurement_noise
         noise_params = self.model.parameters['measurement_noise']
         num_particles = self.parameters['num_particles']
         # Check which output keys are present (i.e., output of measurement function)
-        measurement_keys = output({key: particles[key][0] for key in particles.keys()}).keys()
+        measurement_keys = output(self.model.StateContainer({key: particles[key][0] for key in particles.keys()})).keys()
         zPredicted = {key: empty(num_particles) for key in measurement_keys}
 
         if self.model.is_vectorized:
@@ -121,7 +121,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         else:
             # Propogate and calculate weights
             for i in range(num_particles):
-                x = {key: particles[key][i] for key in particles.keys()}
+                x = self.model.StateContainer({key: particles[key][i] for key in particles.keys()})
                 x = next_state(x, u, dt) 
                 x = apply_process_noise(x, dt)
                 for key in particles.keys():

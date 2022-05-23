@@ -7,7 +7,7 @@ from numpy import diag, array, transpose
 from copy import deepcopy
 from math import isnan
 from filterpy import kalman
-from prog_algs.uncertain_data import MultivariateNormalDist
+from prog_algs.uncertain_data import MultivariateNormalDist, UncertainData
 
 
 class LazyUTPrediction(Prediction):
@@ -161,6 +161,14 @@ class UnscentedTransformPredictor(Predictor):
             Estimated time where a predicted event will occur for each sample. Note: Mean and Covariance Matrix will both 
             be nan if every sigma point doesnt reach threshold within horizon
         """
+        if isinstance(state, dict) or isinstance(state, self.model.StateContainer):
+            from prog_algs.uncertain_data import ScalarData
+            state = ScalarData(state, _type = self.model.StateContainer)
+        elif isinstance(state, UncertainData):
+            state._type = self.model.StateContainer
+        else:
+            raise TypeError("state must be UncertainData, dict, or StateContainer")
+
         params = deepcopy(self.parameters) # copy parameters
         params.update(kwargs) # update for specific run
         events_to_predict = params['events']

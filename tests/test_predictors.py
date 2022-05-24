@@ -392,9 +392,9 @@ class TestPredictors(unittest.TestCase):
         p = Prediction(times, states)
         self.assertDictEqual(p.monotonicity(), {'a': 1, 'b': 1, 'c': 0, 'd': 0.2222222222222222})
 
-    def _test_surrogate_pred(self, Predictor):
+    def _test_surrogate_pred(self, Predictor, **kwargs):
         s = self._s
-        p = Predictor(s)
+        p = Predictor(s, **kwargs)
         def future_loading(t, x= None):
             return s.InputContainer({})
         x0 = s.initialize()
@@ -403,7 +403,7 @@ class TestPredictors(unittest.TestCase):
         print(result)
 
     def test_utp_surrogate(self):
-        self._test_surrogate_pred(UnscentedTransformPredictor)
+        self._test_surrogate_pred(UnscentedTransformPredictor, Q = np.diag([1e-3, 1e-3, 1e-7, 1e-7]))
 
     def test_mc_surrogate(self):
         self._test_surrogate_pred(MonteCarlo)

@@ -37,7 +37,8 @@ class UnweightedSamples(UncertainData, UserList):
         return isinstance(other, UnweightedSamples) and self.data == other.data
 
     def __getitem__(self,n):
-        return self._type(self.data[n])
+        datem = self.data[n]
+        return self._type(datem) if datem is not None else None
 
     def __add__(self, other : int) -> "UncertainData":
         if other == 0:

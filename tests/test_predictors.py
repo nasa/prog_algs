@@ -1,4 +1,5 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+import numpy as np
 import pickle
 import sys
 import unittest
@@ -51,11 +52,10 @@ class MockProgModel(PrognosticsModel):
 class TestPredictors(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls._m = ThrownObject()
+        cls._m = ThrownObject(process_noise = 0, measurement_noise = 0)
         def future_loading(t, x= None):
             return cls._m.InputContainer({})
-        cls._future_loading = future_loading
-        cls._s = cls._m.generate_surrogate([future_loading], states = ['v'], dt = 0.1, save_freq = 0.1)
+        cls._s = cls._m.generate_surrogate([future_loading], states = ['v'], dt = 0.1, save_freq = 0.1, threshold_keys='impact')
 
     def test_pred_template(self):
         from predictor_template import TemplatePredictor
@@ -392,11 +392,21 @@ class TestPredictors(unittest.TestCase):
         p = Prediction(times, states)
         self.assertDictEqual(p.monotonicity(), {'a': 1, 'b': 1, 'c': 0, 'd': 0.2222222222222222})
 
-    def test_utp_surrogate(self):
+    def _test_surrogate_pred(self, Predictor):
         s = self._s
-        p = UnscentedTransformPredictor(s)
-        result = p.predict(s.initialize(), self._future_loading)
+        p = Predictor(s)
+        def future_loading(t, x= None):
+            return s.InputContainer({})
+        x0 = s.initialize()
+        x0 = MultivariateNormalDist(x0.keys(), x0.values(), np.diag([1e-8 * xi for xi in x0.values()]))
+        result = p.predict(x0, future_loading, horizon = 50, dt = 0.1)
         print(result)
+
+    def test_utp_surrogate(self):
+        self._test_surrogate_pred(UnscentedTransformPredictor)
+
+    def test_mc_surrogate(self):
+        self._test_surrogate_pred(MonteCarlo)
 
 # This allows the module to be executed directly    
 def run_tests():
@@ -404,7 +414,7 @@ def run_tests():
     runner = unittest.TextTestRunner()
     print("\n\nTesting Predictor")
     from unittest.mock import patch
-    with patch('matplotlib.pyplot') as p:
+    with patch('matplotlib.pyplot.show') as p:
         result = runner.run(l.loadTestsFromTestCase(TestPredictors)).wasSuccessful()
 
     if not result:

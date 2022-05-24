@@ -3,12 +3,10 @@
 from typing import Callable
 from .prediction import Prediction, UnweightedSamplesPrediction, PredictionResults
 from .predictor import Predictor
-from numpy import diag, array, transpose
+from numpy import diag, array, transpose, isnan
 from copy import deepcopy
-from math import isnan
 from filterpy import kalman
-from prog_algs.uncertain_data import MultivariateNormalDist, UncertainData
-from prog_models.utils.containers import DictLikeMatrixWrapper
+from prog_algs.uncertain_data import MultivariateNormalDist, UncertainData, ScalarData
 
 
 class LazyUTPrediction(Prediction):
@@ -65,6 +63,8 @@ class UnscentedTransformPredictor(Predictor):
     ------------------------------
     alpha, beta, kappa: float
         UKF Scaling parameters. See: https://en.wikipedia.org/wiki/Kalman_filter#Unscented_Kalman_filter
+    Q: np.array
+        Process noise covariance matrix [nStates x nStates]
     t0 : float
         Initial time at which prediction begins, e.g., 0
     dt : float
@@ -105,9 +105,7 @@ class UnscentedTransformPredictor(Predictor):
 
         if 'Q' not in self.parameters:
             # Default 
-            self.parameters['Q'] = diag([1.0e-7 for i in range(num_states)])
-        if 'R' not in self.parameters:
-            self.parameters['R'] = diag([1.0e-7 for i in range(num_measurements)])
+            self.parameters['Q'] = diag([1.0e-1 for i in range(num_states)])
         
         def measure(x):
             x = model.StateContainer({key: value for (key, value) in zip(self.__state_keys, x)})
@@ -123,7 +121,6 @@ class UnscentedTransformPredictor(Predictor):
         self.sigma_points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measure, state_transition, self.sigma_points)
         self.filter.Q = self.parameters['Q']
-        self.filter.R = self.parameters['R']
 
     def predict(self, state, future_loading_eqn : Callable, **kwargs) -> PredictionResults:
         """

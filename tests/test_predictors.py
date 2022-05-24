@@ -400,7 +400,6 @@ class TestPredictors(unittest.TestCase):
         x0 = s.initialize()
         x0 = MultivariateNormalDist(x0.keys(), x0.values(), np.diag([1e-8 * xi for xi in x0.values()]))
         result = p.predict(x0, future_loading, horizon = 50, dt = 0.1)
-        print(result)
 
     def test_utp_surrogate(self):
         self._test_surrogate_pred(UnscentedTransformPredictor, Q = np.diag([1e-3, 1e-3, 1e-7, 1e-7]))

@@ -49,6 +49,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         super().__init__(model, x0, measurement_eqn = measurement_eqn, **kwargs)
         
         if measurement_eqn:
+            warn("Warning: measurement_eqn depreciated as of v1.3.1, will be removed in v1.4. Use Model subclassing instead. See examples.measurement_eqn_example")
             # update output_container
             from prog_models.utils.containers import DictLikeMatrixWrapper
             z0 = measurement_eqn(x0)
@@ -72,7 +73,7 @@ class ParticleFilter(state_estimator.StateEstimator):
             sample_gen = x0.sample(self.parameters['num_particles'])
             samples = [array(sample_gen.key(k)) for k in x0.keys()]
         elif paramters_x0_exist and (parameters_x0_dict or parameters_x0_num):
-            warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
+            warn("Warning: x0_uncertainty depreciated as of v1.3, will be removed in v1.4. Use UncertainData type if estimating filtering with uncertain data.")
             x = array(list(x0.values()))
             if parameters_x0_dict:
                 sd = array([self.parameters['x0_uncertainty'][key] for key in x0.keys()])
@@ -104,11 +105,11 @@ class ParticleFilter(state_estimator.StateEstimator):
         next_state = self.model.next_state
         apply_process_noise = self.model.apply_process_noise
         output = self._measure
-        apply_measurement_noise = self.model.apply_measurement_noise
+        # apply_measurement_noise = self.model.apply_measurement_noise
         noise_params = self.model.parameters['measurement_noise']
         num_particles = self.parameters['num_particles']
         # Check which output keys are present (i.e., output of measurement function)
-        measurement_keys = output({key: particles[key][0] for key in particles.keys()}).keys()
+        measurement_keys = output(self.model.StateContainer({key: particles[key][0] for key in particles.keys()})).keys()
         zPredicted = {key: empty(num_particles) for key in measurement_keys}
 
         if self.model.is_vectorized:
@@ -120,7 +121,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         else:
             # Propogate and calculate weights
             for i in range(num_particles):
-                x = {key: particles[key][i] for key in particles.keys()}
+                x = self.model.StateContainer({key: particles[key][i] for key in particles.keys()})
                 x = next_state(x, u, dt) 
                 x = apply_process_noise(x, dt)
                 for key in particles.keys():
@@ -172,4 +173,4 @@ class ParticleFilter(state_estimator.StateEstimator):
         -------
         state = observer.x
         """
-        return UnweightedSamples(self.particles)
+        return UnweightedSamples(self.particles, _type = self.model.StateContainer)

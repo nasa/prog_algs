@@ -160,4 +160,4 @@ class KalmanFilter(state_estimator.StateEstimator):
         -------
         state = observer.x
         """
-        return MultivariateNormalDist(self.model.states, self.filter.x.ravel(), self.filter.P)
+        return MultivariateNormalDist(self.model.states, self.filter.x.ravel(), self.filter.P, _type = self.model.StateContainer)

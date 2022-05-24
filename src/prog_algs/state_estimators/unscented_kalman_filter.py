@@ -52,15 +52,16 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
 
         if measurement_eqn is None: 
             def measure(x):
-                x = {key: value for (key, value) in zip(x0.keys(), x)}
+                x = model.StateContainer({key: value for (key, value) in zip(x0.keys(), x)})
                 R_err = model.parameters['measurement_noise'].copy()
                 model.parameters['measurement_noise'] = dict.fromkeys(R_err, 0)
                 z = model.output(x)
                 model.parameters['measurement_noise'] = R_err
                 return array(list(z.values())).ravel()
         else:
+            warn("Warning: measurement_eqn depreciated as of v1.3.1, will be removed in v1.4. Use Model subclassing instead. See examples.measurement_eqn_example")
             def measure(x):
-                x = {key: value for (key, value) in zip(x0.keys(), x)}
+                x = model.StateContainer({key: value for (key, value) in zip(x0.keys(), x)})
                 z = measurement_eqn(x)
                 return array(list(z.values())).ravel()
 
@@ -68,11 +69,9 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
             self.parameters['Q'] = diag([1.0e-3 for i in x0.keys()])
 
         def state_transition(x, dt):
-            x = {key: value for (key, value) in zip(x0.keys(), x)}
+            x = model.StateContainer({key: value for (key, value) in zip(x0.keys(), x)})
             Q_err = model.parameters['process_noise'].copy()
             model.parameters['process_noise'] = dict.fromkeys(Q_err, 0)
-            z = model.output(x)
-            model.parameters['process_noise'] = Q_err
             x = model.next_state(x, self.__input, dt)
             return array(list(x.values())).ravel()
 
@@ -82,7 +81,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measure, state_transition, points)
         
         if isinstance(x0, dict) or isinstance(x0, model.StateContainer):
-            warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
+            warn("Warning: x0_uncertainty depreciated as of v1.3, will be removed in v1.4. Use UncertainData type if estimating filtering with uncertain data.")
             self.filter.x = array(list(x0.values()))
             self.filter.P = self.parameters['Q'] / 10
         elif isinstance(x0, UncertainData):
@@ -93,9 +92,9 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
             raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
 
         if 'R' not in self.parameters:
-                # Size of what's being measured (not output) 
-                # This is determined by running the measure function on the first state
-                self.parameters['R'] = diag([1.0e-3 for i in range(len(measure(self.filter.x)))])
+            # Size of what's being measured (not output) 
+            # This is determined by running the measure function on the first state
+            self.parameters['R'] = diag([1.0e-3 for i in range(len(measure(self.filter.x)))])
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
 
@@ -131,4 +130,4 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         -------
         state = observer.x
         """
-        return MultivariateNormalDist(self.x0.keys(), self.filter.x, self.filter.P)
+        return MultivariateNormalDist(self.x0.keys(), self.filter.x, self.filter.P, _type = self.model.StateContainer)

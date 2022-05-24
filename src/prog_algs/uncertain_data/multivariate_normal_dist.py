@@ -14,13 +14,17 @@ class MultivariateNormalDist(UncertainData):
             mean (array[float]): Mean values for state in the same order as labels
             covar (array[array[float]]): Covariance matrix for state
     """
-    def __init__(self, labels, mean: array, covar : array):
+    def __init__(self, labels, mean: array, covar : array, _type = dict):
         self.__labels = list(labels)
         self.__mean = array(list(mean))
         self.__covar = array(list(covar))
+        super().__init__(_type)
+
+    def __reduce__(self):
+        return (MultivariateNormalDist, (self.__labels, self.__mean, self.__covar))
 
     def __eq__(self, other : "MultivariateNormalDist") -> bool:
-        return self.keys() == other.keys() and self.mean == other.mean and (self.cov == other.cov).all()
+        return isinstance(other, MultivariateNormalDist) and self.keys() == other.keys() and self.mean == other.mean and (self.cov == other.cov).all()
 
     def __add__(self, other : int) -> "UncertainData":
         if other == 0:
@@ -58,7 +62,7 @@ class MultivariateNormalDist(UncertainData):
     
         samples = multivariate_normal(self.__mean, self.__covar, num_samples)
         samples = [{key: value for (key, value) in zip(self.__labels, x)} for x in samples]
-        return UnweightedSamples(samples)
+        return UnweightedSamples(samples, _type = self._type)
 
     def keys(self) -> list:
         return self.__labels
@@ -70,7 +74,7 @@ class MultivariateNormalDist(UncertainData):
 
     @property
     def mean(self) -> dict:
-        return {key: value for (key, value) in zip(self.__labels, self.__mean)}
+        return self._type({key: value for (key, value) in zip(self.__labels, self.__mean)})
 
     def __str__(self) -> str:
         return 'MultivariateNormalDist(mean: {}, covar: {})'.format(self.__mean, self.__covar)     

@@ -3,11 +3,10 @@
 from typing import Callable
 from .prediction import Prediction, UnweightedSamplesPrediction, PredictionResults
 from .predictor import Predictor
-from numpy import diag, array, transpose
+from numpy import diag, array, transpose, isnan
 from copy import deepcopy
-from math import isnan
 from filterpy import kalman
-from prog_algs.uncertain_data import MultivariateNormalDist
+from prog_algs.uncertain_data import MultivariateNormalDist, UncertainData, ScalarData
 
 
 class LazyUTPrediction(Prediction):
@@ -64,6 +63,8 @@ class UnscentedTransformPredictor(Predictor):
     ------------------------------
     alpha, beta, kappa: float
         UKF Scaling parameters. See: https://en.wikipedia.org/wiki/Kalman_filter#Unscented_Kalman_filter
+    Q: np.array
+        Process noise covariance matrix [nStates x nStates]
     t0 : float
         Initial time at which prediction begins, e.g., 0
     dt : float
@@ -105,16 +106,14 @@ class UnscentedTransformPredictor(Predictor):
         if 'Q' not in self.parameters:
             # Default 
             self.parameters['Q'] = diag([1.0e-1 for i in range(num_states)])
-        if 'R' not in self.parameters:
-            self.parameters['R'] = diag([1.0e-1 for i in range(num_measurements)])
         
         def measure(x):
-            x = {key: value for (key, value) in zip(self.__state_keys, x)}
+            x = model.StateContainer({key: value for (key, value) in zip(self.__state_keys, x)})
             z = model.output(x)
-            return {array(list(z.values()))}
+            return model.OutputContainer({array(list(z.values()))})
 
         def state_transition(x, dt):
-            x = {key: value for (key, value) in zip(self.__state_keys, x)}
+            x = model.StateContainer({key: value for (key, value) in zip(self.__state_keys, x)})
             x = model.next_state(x, self.__input, dt)
             x = model.apply_limits(x)
             return array(list(x.values()))
@@ -122,7 +121,6 @@ class UnscentedTransformPredictor(Predictor):
         self.sigma_points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measure, state_transition, self.sigma_points)
         self.filter.Q = self.parameters['Q']
-        self.filter.R = self.parameters['R']
 
     def predict(self, state, future_loading_eqn : Callable, **kwargs) -> PredictionResults:
         """
@@ -161,6 +159,13 @@ class UnscentedTransformPredictor(Predictor):
             Estimated time where a predicted event will occur for each sample. Note: Mean and Covariance Matrix will both 
             be nan if every sigma point doesnt reach threshold within horizon
         """
+        if isinstance(state, dict) or isinstance(state, self.model.StateContainer) or isinstance(state, ScalarData):
+            raise TypeError("state must be a distribution (e.g., MultivariateNormalDist, UnweightedSamples), not scalar")
+        elif isinstance(state, UncertainData):
+            state._type = self.model.StateContainer
+        else:
+            raise TypeError("state must be UncertainData, dict, or StateContainer")
+
         params = deepcopy(self.parameters) # copy parameters
         params.update(kwargs) # update for specific run
         events_to_predict = params['events']
@@ -172,6 +177,7 @@ class UnscentedTransformPredictor(Predictor):
         sigma_points = self.sigma_points
         n_points = sigma_points.num_sigmas()
         threshold_met = model.threshold_met
+        StateContainer = model.StateContainer
 
         # Update State 
         self.__state_keys = state_keys = state.mean.keys()  # Used to maintain ordering as we strip keys and return
@@ -194,18 +200,16 @@ class UnscentedTransformPredictor(Predictor):
         def update_all():
             times.append(t)
             inputs.append(deepcopy(self.__input))  # Avoid optimization where u is not copied
-            x_dict = MultivariateNormalDist(self.__state_keys, filt.x, filt.P)
+            x_dict = MultivariateNormalDist(self.__state_keys, filt.x, filt.P, _type = self.model.StateContainer)
             states.append(x_dict)  # Avoid optimization where x is not copied
 
-        # Optimization
-        state_keys = self.__state_keys
-
         # Simulation
+        self.__input = future_loading_eqn(t, state.mean)
         update_all()  # First State
         while t < params['horizon']:
             # Iterate through time
             t += dt
-            mean_state = {key: x for (key, x) in zip(state_keys, filt.x)}
+            mean_state = StateContainer({key: x for (key, x) in zip(state_keys, filt.x)})
             self.__input = future_loading_eqn(t, mean_state)
             filt.predict(dt=dt)
 
@@ -221,7 +225,7 @@ class UnscentedTransformPredictor(Predictor):
             points = sigma_points.sigma_points(filt.x, filt.P)
             all_failed = True
             for i, point in zip(range(n_points), points):
-                x = {key: x for (key, x) in zip(state_keys, point)}
+                x = StateContainer({key: x for (key, x) in zip(state_keys, point)})
                 t_met = threshold_met(x)
 
                 # Check Thresholds
@@ -230,7 +234,7 @@ class UnscentedTransformPredictor(Predictor):
                         if isnan(ToE[key][i]):
                             # First time event has been reached
                             ToE[key][i] = t
-                            last_state[key][i] = deepcopy(x)
+                            last_state[key][i] = x.copy()
                     else:
                         all_failed = False  # This event for this sigma point hasn't been met yet
             if all_failed:
@@ -248,7 +252,7 @@ class UnscentedTransformPredictor(Predictor):
             last_state_pts = array([[last_state_i[state_key] for state_key in state_keys] for last_state_i in last_state[event_key]])
             # last_state_pts = transpose(last_state_pts)
             last_state_mean, last_state_cov = kalman.unscented_transform(last_state_pts, sigma_points.Wm, sigma_points.Wc)
-            final_state[event_key] = MultivariateNormalDist(state_keys, last_state_mean, last_state_cov)
+            final_state[event_key] = MultivariateNormalDist(state_keys, last_state_mean, last_state_cov, _type = self.model.StateContainer)
 
         # At this point only time of event, inputs, and state are calculated 
         inputs_prediction = UnweightedSamplesPrediction(times, [inputs])

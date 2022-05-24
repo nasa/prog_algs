@@ -11,6 +11,9 @@ from prog_models.utils.containers import DictLikeMatrixWrapper
 
 
 class UncertainData(ABC):
+    def __init__(self, _type = dict):
+        self._type = _type
+
     """
     Abstract base class for data with uncertainty. Any new uncertainty type must implement this class
     """

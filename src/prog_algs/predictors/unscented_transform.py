@@ -8,6 +8,7 @@ from copy import deepcopy
 from math import isnan
 from filterpy import kalman
 from prog_algs.uncertain_data import MultivariateNormalDist, UncertainData
+from prog_models.utils.containers import DictLikeMatrixWrapper
 
 
 class LazyUTPrediction(Prediction):
@@ -104,17 +105,17 @@ class UnscentedTransformPredictor(Predictor):
 
         if 'Q' not in self.parameters:
             # Default 
-            self.parameters['Q'] = diag([1.0e-1 for i in range(num_states)])
+            self.parameters['Q'] = diag([1.0e-7 for i in range(num_states)])
         if 'R' not in self.parameters:
-            self.parameters['R'] = diag([1.0e-1 for i in range(num_measurements)])
+            self.parameters['R'] = diag([1.0e-7 for i in range(num_measurements)])
         
         def measure(x):
-            x = {key: value for (key, value) in zip(self.__state_keys, x)}
+            x = model.StateContainer({key: value for (key, value) in zip(self.__state_keys, x)})
             z = model.output(x)
-            return {array(list(z.values()))}
+            return model.OutputContainer({array(list(z.values()))})
 
         def state_transition(x, dt):
-            x = {key: value for (key, value) in zip(self.__state_keys, x)}
+            x = model.StateContainer({key: value for (key, value) in zip(self.__state_keys, x)})
             x = model.next_state(x, self.__input, dt)
             x = model.apply_limits(x)
             return array(list(x.values()))
@@ -161,9 +162,8 @@ class UnscentedTransformPredictor(Predictor):
             Estimated time where a predicted event will occur for each sample. Note: Mean and Covariance Matrix will both 
             be nan if every sigma point doesnt reach threshold within horizon
         """
-        if isinstance(state, dict) or isinstance(state, self.model.StateContainer):
-            from prog_algs.uncertain_data import ScalarData
-            state = ScalarData(state, _type = self.model.StateContainer)
+        if isinstance(state, dict) or isinstance(state, self.model.StateContainer) or isinstance(state, ScalarData):
+            raise TypeError("state must be a distribution (e.g., MultivariateNormalDist, UnweightedSamples), not scalar")
         elif isinstance(state, UncertainData):
             state._type = self.model.StateContainer
         else:
@@ -180,6 +180,7 @@ class UnscentedTransformPredictor(Predictor):
         sigma_points = self.sigma_points
         n_points = sigma_points.num_sigmas()
         threshold_met = model.threshold_met
+        StateContainer = model.StateContainer
 
         # Update State 
         self.__state_keys = state_keys = state.mean.keys()  # Used to maintain ordering as we strip keys and return
@@ -205,16 +206,13 @@ class UnscentedTransformPredictor(Predictor):
             x_dict = MultivariateNormalDist(self.__state_keys, filt.x, filt.P, _type = self.model.StateContainer)
             states.append(x_dict)  # Avoid optimization where x is not copied
 
-        # Optimization
-        state_keys = self.__state_keys
-
         # Simulation
         self.__input = future_loading_eqn(t, state.mean)
         update_all()  # First State
         while t < params['horizon']:
             # Iterate through time
             t += dt
-            mean_state = {key: x for (key, x) in zip(state_keys, filt.x)}
+            mean_state = StateContainer({key: x for (key, x) in zip(state_keys, filt.x)})
             self.__input = future_loading_eqn(t, mean_state)
             filt.predict(dt=dt)
 
@@ -230,7 +228,7 @@ class UnscentedTransformPredictor(Predictor):
             points = sigma_points.sigma_points(filt.x, filt.P)
             all_failed = True
             for i, point in zip(range(n_points), points):
-                x = {key: x for (key, x) in zip(state_keys, point)}
+                x = StateContainer({key: x for (key, x) in zip(state_keys, point)})
                 t_met = threshold_met(x)
 
                 # Check Thresholds

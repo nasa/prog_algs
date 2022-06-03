@@ -1,11 +1,13 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from warnings import warn
-from typing import Callable
-from . import state_estimator
 from filterpy import kalman
 from numpy import diag, array
-from ..uncertain_data import MultivariateNormalDist, UncertainData
+from typing import Callable
+
+from prog_models.utils.containers import DictLikeMatrixWrapper
+
+from . import state_estimator
+from ..uncertain_data import MultivariateNormalDist, ScalarData
 
 class UnscentedKalmanFilter(state_estimator.StateEstimator):
     """
@@ -44,26 +46,20 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
     } 
 
     def __init__(self, model, x0, measurement_eqn : Callable = None, **kwargs):
+        if isinstance(x0, (dict, DictLikeMatrixWrapper)):
+            x0 = ScalarData(x0)
         super().__init__(model, x0, measurement_eqn, **kwargs)
 
-        self.__input = None
-        self.x0 = x0
-        # Saving for reduce pickling
+        self.__input = None        
+        self.x0 = x0  # Saving for reduce pickling
 
-        if measurement_eqn is None: 
-            def measure(x):
-                x = model.StateContainer({key: value for (key, value) in zip(x0.keys(), x)})
-                R_err = model.parameters['measurement_noise'].copy()
-                model.parameters['measurement_noise'] = dict.fromkeys(R_err, 0)
-                z = model.output(x)
-                model.parameters['measurement_noise'] = R_err
-                return array(list(z.values())).ravel()
-        else:
-            warn("Warning: measurement_eqn depreciated as of v1.3.1, will be removed in v1.4. Use Model subclassing instead. See examples.measurement_eqn_example")
-            def measure(x):
-                x = model.StateContainer({key: value for (key, value) in zip(x0.keys(), x)})
-                z = measurement_eqn(x)
-                return array(list(z.values())).ravel()
+        def measure(x):
+            x = model.StateContainer({key: value for (key, value) in zip(x0.keys(), x)})
+            R_err = model.parameters['measurement_noise'].copy()
+            model.parameters['measurement_noise'] = dict.fromkeys(R_err, 0)
+            z = model.output(x)
+            model.parameters['measurement_noise'] = R_err
+            return array(list(z.values())).ravel()
 
         if 'Q' not in self.parameters:
             self.parameters['Q'] = diag([1.0e-3 for i in x0.keys()])
@@ -79,22 +75,18 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         num_measurements = model.n_outputs
         points = kalman.MerweScaledSigmaPoints(num_states, alpha=self.parameters['alpha'], beta=self.parameters['beta'], kappa=self.parameters['kappa'])
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measure, state_transition, points)
-        
-        if isinstance(x0, dict) or isinstance(x0, model.StateContainer):
-            warn("Warning: x0_uncertainty depreciated as of v1.3, will be removed in v1.4. Use UncertainData type if estimating filtering with uncertain data.")
-            self.filter.x = array(list(x0.values()))
+           
+        x_mean = x0.mean
+        self.filter.x = array(list(x_mean.values()))
+        self.filter.P = x0.cov
+        if isinstance(x0, ScalarData):
+            # Make sure covariance isn't 0
             self.filter.P = self.parameters['Q'] / 10
-        elif isinstance(x0, UncertainData):
-            x_mean = x0.mean
-            self.filter.x = array(list(x_mean.values()))
-            self.filter.P = x0.cov
-        else:
-            raise TypeError("TypeError: x0 initial state must be of type {{dict, UncertainData}}")
 
         if 'R' not in self.parameters:
             # Size of what's being measured (not output) 
             # This is determined by running the measure function on the first state
-            self.parameters['R'] = diag([1.0e-3 for i in range(len(measure(self.filter.x)))])
+            self.parameters['R'] = diag([1.0e-3 for _ in model.outputs])
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
 

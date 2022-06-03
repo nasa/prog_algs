@@ -1,12 +1,13 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from abc import ABC, abstractmethod, abstractproperty
+from copy import deepcopy
 from typing import Callable
+
+from prog_models.utils.containers import DictLikeMatrixWrapper
 
 from ..uncertain_data import UncertainData
 from ..exceptions import ProgAlgTypeError
-from copy import deepcopy
-from warnings import warn
 
 class StateEstimator(ABC):
     """
@@ -40,19 +41,17 @@ class StateEstimator(ABC):
             raise ProgAlgTypeError("model must have `outputs` property")
         if not hasattr(model, 'states'):
             raise ProgAlgTypeError("model must have `states` property")
-        self.model = model
-
         if measurement_eqn is not None:
-            warn('Measurement_eqn was deprecated in v1.3 in favor of model subclassing. I will remove this in v1.4. See measurement_equation example for more information', DeprecationWarning)
+            raise Exception("measurement_eqn feature was removed in v1.4. Use Model subclassing instead. See examples.measurement_eqn_example")
+        if not isinstance(x0, UncertainData):
+            raise ProgAlgTypeError("ProgAlgTypeError: x0 must be of type UncertainData.")
+
+        self.model = model
 
         # Check x0
         for key in model.states:
             if key not in x0:
                 raise ProgAlgTypeError("x0 missing state `{}`".format(key))
-        
-        # Check measurement equation
-        if measurement_eqn and not callable(measurement_eqn):
-            raise ProgAlgTypeError("measurement_eqn must be callable")
         
         # Process kwargs (configuration)
         self.parameters = deepcopy(self.default_parameters)

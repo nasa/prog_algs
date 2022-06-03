@@ -171,5 +171,5 @@ class UnweightedSamples(UncertainData, UserList):
         return {key: sum([x is not None and x < bounds[key][1] and x > bounds[key][0] for x in self.key(key)])/n_elements for key in keys}
 
     def raw_samples(self):
-        warn("raw_samples is deprecated and will be removed in the future.")
+        warn("raw_samples is deprecated and will be removed in v1.5. Instead use .data property")
         return self.data

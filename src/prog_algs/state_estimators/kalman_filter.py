@@ -82,12 +82,12 @@ class KalmanFilter(state_estimator.StateEstimator):
 
         self.filter = kalman.KalmanFilter(num_states, num_measurements, num_inputs)
 
-        if isinstance(x0, dict) or isinstance(x0, model.StateContainer):
+        x_mean = x0.mean
+        if isinstance(x0, ScalarData):
             warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
-            self.filter.x = np.array([[x0[key]] for key in model.states]) # x0.keys()
+            self.filter.x = np.array([[x_mean[key]] for key in model.states]) # x0.keys()
             self.filter.P = self.parameters['Q'] / 10
         elif isinstance(x0, UncertainData):
-            x_mean = x0.mean
             self.filter.x = np.array([[x_mean[key]] for key in model.states])
 
             # Reorder covariance to be in same order as model.states

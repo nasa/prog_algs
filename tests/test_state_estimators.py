@@ -401,10 +401,6 @@ class TestStateEstimators(unittest.TestCase):
         self.assertSetEqual(set(mean1.keys()), set(mean2.keys()))
         for k in mean1.keys():
             self.assertEqual(mean1[k], mean2[k])
-        self.assertTrue(
-            equal_cov(
-                (list(x_scalar.keys()), x_scalar.cov), 
-                (list(filt_scalar.x.keys()), filt_scalar.x.cov)))
 
         # Test KalmanFilter MultivariateNormalDist
         x_mvnd = MultivariateNormalDist(['x', 'v'], np.array([2, 10]), np.array([[1, 0], [0, 1]]))

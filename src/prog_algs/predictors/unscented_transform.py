@@ -96,7 +96,6 @@ class UnscentedTransformPredictor(Predictor):
     def __init__(self, model, **kwargs):
         super().__init__(model, **kwargs)
 
-        self.model = model
         self.__input = None  # Input at an individual step. Note, this needs to be a member to pass between state_transition and predict
 
         # setup UKF

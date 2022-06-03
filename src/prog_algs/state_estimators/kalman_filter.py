@@ -1,13 +1,16 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from copy import deepcopy
-from typing import Callable
-import numpy as np
-from warnings import warn
 from filterpy import kalman
+import numpy as np
+from typing import Callable
+from warnings import warn
+
 from prog_models import LinearModel
+from prog_models.utils.containers import DictLikeMatrixWrapper
+
 from . import state_estimator
-from ..uncertain_data import MultivariateNormalDist, UncertainData
+from ..uncertain_data import MultivariateNormalDist, UncertainData, ScalarData
 
 class KalmanFilter(state_estimator.StateEstimator):
     """
@@ -51,6 +54,9 @@ class KalmanFilter(state_estimator.StateEstimator):
         if not isinstance(model, LinearModel):
             raise Exception('Kalman Filter only supports Linear Models (i.e., models derived from prog_models.LinearModel)')
 
+        if isinstance(x0, (dict, DictLikeMatrixWrapper)):
+            x0 = ScalarData(x0)
+
         super().__init__(model, x0, None, **kwargs)
 
         self.x0 = x0
@@ -76,7 +82,6 @@ class KalmanFilter(state_estimator.StateEstimator):
 
         self.filter = kalman.KalmanFilter(num_states, num_measurements, num_inputs)
 
-        self.__state_keys = list(x0.keys())
         if isinstance(x0, dict) or isinstance(x0, model.StateContainer):
             warn("Warning: Use UncertainData type if estimating filtering with uncertain data.")
             self.filter.x = np.array([[x0[key]] for key in model.states]) # x0.keys()

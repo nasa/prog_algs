@@ -124,10 +124,6 @@ class TestStateEstimators(unittest.TestCase):
         self.assertSetEqual(set(mean1.keys()), set(mean2.keys()))
         for k in mean1.keys():
             self.assertEqual(mean1[k], mean2[k])
-        self.assertTrue(
-            equal_cov(
-                (list(x_scalar.keys()), x_scalar.cov), 
-                (list(filt_scalar.x.keys()), filt_scalar.x.cov)))
 
         # Test UnscentedKalmanFilter MultivariateNormalDist
         x_mvnd = MultivariateNormalDist(['x', 'v'], np.array([2, 10]), np.array([[1, 0], [0, 1]]))
@@ -273,21 +269,15 @@ class TestStateEstimators(unittest.TestCase):
                 self.assertAlmostEqual(filt_us.x.cov[i][j], x_us.cov[i][j], delta=0.1)
 
         # Test x0 if-else Control
-        # Case 0: Both isinstance(x0, UncertainData) and x0_uncertainty parameter provided; expect x0_uncertainty to be skipped
+        # Case 0: Both isinstance(x0, UncertainData) and x0_uncertainty parameter provided; expect an exception
         x_scalar = ScalarData({'x': 1.75, 'v': 38.5}) # Testing with ScalarData
-        filt_scalar = ParticleFilter(m, x_scalar, num_particles = 20, x0_uncertainty = 0.5) # Sample count does not affect ScalarData testing
-        mean1 = filt_scalar.x.mean
-        mean2 = x_scalar.mean
-        self.assertSetEqual(set(mean1.keys()), set(mean2.keys()))
-        for k in mean1.keys():
-            self.assertEqual(mean1[k], mean2[k])
-        self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
-        # Case 1: Only x0_uncertainty provided; expect a warning issued
-        with self.assertWarns(Warning):
+        with self.assertRaises(Exception):
+            filt_scalar = ParticleFilter(m, x_scalar, num_particles = 20, x0_uncertainty = 0.5) # Sample count does not affect ScalarData testing
+        
+        # Case 1: Only x0_uncertainty provided; expect an exception
+        with self.assertRaises(Exception):
             filt_scalar = ParticleFilter(m, {'x': 1.75, 'v': 38.5}, x0_uncertainty = 0.5)
-        # Case 2: Raise ProgAlgTypeError if x0 not UncertainData or x0_uncertainty not of type {{dict, Number}}.
-        with self.assertRaises(ProgAlgTypeError):
-            filt_scalar = ParticleFilter(m, {'x': 1.75, 'v': 38.5}, num_particles = 20, x0_uncertainty = [])
+
 
     def test_measurement_eq_UKF(self):
         m = MockProgModel2()
@@ -304,14 +294,8 @@ class TestStateEstimators(unittest.TestCase):
             z = m.output(x)
             del z['o2']
             return z
-        filt = UnscentedKalmanFilter(m, x0, measurement_eqn=measurement_eqn)
-        filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0})
-
-        # New Measurement eqn method
-        class MyModel(MockProgModel2):
-            outputs = ['o1']
-        filt = UnscentedKalmanFilter(MyModel(), x0)
-        filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0})
+        with self.assertRaises(Exception):
+            filt = UnscentedKalmanFilter(m, x0, measurement_eqn=measurement_eqn)
 
     def test_measurement_eq_PF(self):
         m = MockProgModel2()
@@ -328,14 +312,8 @@ class TestStateEstimators(unittest.TestCase):
             z = m.output(x)
             del z['o2']
             return z
-        filt = ParticleFilter(m, x0, measurement_eqn=measurement_eqn)
-        filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0}) 
-
-        # New Measurement eqn method
-        class MyModel(MockProgModel2):
-            outputs = ['o1']
-        filt = ParticleFilter(MyModel(), x0)
-        filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0})
+        with self.assertRaises(Exception):
+            filt = ParticleFilter(m, x0, measurement_eqn=measurement_eqn)
         
     def test_PF_incorrect_input(self):
         self.__incorrect_input_tests(ParticleFilter)

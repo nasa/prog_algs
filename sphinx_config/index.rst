@@ -18,6 +18,7 @@ If you are new to this package, see `getting started <getting_started.html>`__.
    predictors
    uncertain_data
    prediction
+   metrics
    ProgModels <https://nasa.github.io/prog_models>
    ProgServer <https://nasa.github.io/prog_server>
    dev_guide <https://nasa.github.io/prog_models/dev_guide.html>

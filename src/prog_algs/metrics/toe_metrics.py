@@ -20,6 +20,19 @@ def prob_success(toe : UncertainData, time : float, **kwargs) -> float:
 
     Returns:
         float: Probability of success
+
+    Example:
+        ::
+
+            # ToE estimate distribution is returned from a predictor's predict method
+            result = predictor.predict(...)
+            toe = result.time_of_event 
+            
+            from prog_algs.metrics import prob_success
+            now = 10 # Current time
+            p_success = prob_success(toe, now)
+            p_success = prob_success(toe, now, n_samples = 100) # Can also specify number of samples
+            p_success = prob_success(toe, now, keys = ['event1']) # Can specify specific keys to consider
     """
     params = {
         'n_samples': 10000,  # Default 

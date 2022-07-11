@@ -234,10 +234,10 @@ class TestStateEstimators(unittest.TestCase):
         self.__incorrect_input_tests(UnscentedKalmanFilter)
 
     def test_PF(self):
-        m = ThrownObject(process_noise={'x': 1, 'v': 3}, measurement_noise=1, num_particles = 1000)
+        m = ThrownObject(process_noise={'x': 0.25, 'v': 1}, measurement_noise=1.5)
         x_guess = {'x': 1.75, 'v': 38.5} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
 
-        filt = ParticleFilter(m, x_guess)
+        filt = ParticleFilter(m, x_guess, num_particles = 1000)
         self.__test_state_est(filt, m)
 
         # Test ParticleFilter ScalarData

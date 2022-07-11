@@ -6,6 +6,8 @@ from collections.abc import Iterable
 from numpy import array, cov, random
 from warnings import warn
 
+from prog_models.utils.containers import DictLikeMatrixWrapper
+
 
 class UnweightedSamples(UncertainData, UserList):
     """
@@ -19,7 +21,7 @@ class UnweightedSamples(UncertainData, UserList):
     """
     def __init__(self, samples : list = [], _type = dict):
         super().__init__(_type)
-        if isinstance(samples, dict):
+        if isinstance(samples, dict) or isinstance(samples, DictLikeMatrixWrapper):
             # Is in form of {key: [value, ...], ...}
             # Convert to array of samples
             if len(samples.keys()) == 0:

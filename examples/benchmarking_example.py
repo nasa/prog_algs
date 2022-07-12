@@ -21,6 +21,7 @@ from prog_algs import *
 
 def run_example():
     # Step 1: Setup Model and Future Loading
+    batt = Battery()
     def future_loading(t, x={}):
         # Variable (piece-wise) future loading scheme 
         if (t < 600):
@@ -33,9 +34,7 @@ def run_example():
             i = 2
         else:
             i = 3
-        return {'i': i}
-
-    batt = Battery()   
+        return batt.InputContainer({'i': i})
 
     # Step 2: Setup Predictor 
     pred = predictors.MonteCarlo(batt, dt= 0.05)

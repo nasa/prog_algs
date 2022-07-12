@@ -22,6 +22,12 @@ from prog_algs import *
 
 def run_example():
     # Step 1: Setup model & future loading
+    # Measurement noise
+    R_vars = {
+        't': 2, 
+        'v': 0.02
+    }
+    batt = Battery(measurement_noise = R_vars)
     def future_loading(t, x = None):
         # Variable (piece-wise) future loading scheme 
         if (t < 600):
@@ -34,14 +40,8 @@ def run_example():
             i = 2
         else:
             i = 3
-        return {'i': i}
-    # Measurement noise
-    R_vars = {
-        't': 2, 
-        'v': 0.02
-    }
-    batt = Battery(measurement_noise = R_vars)
-    initial_state = batt.parameters['x0']
+        return batt.InputContainer({'i': i})
+    initial_state = batt.initialize()
 
     # Step 2: Demonstrating state estimator
     print("\nPerforming State Estimation Step")
@@ -57,9 +57,10 @@ def run_example():
     fig = filt.x.plot_scatter(label='prior')
 
     # Step 2c: Perform state estimation step
-    example_measurements = {'t': 32.2, 'v': 3.915}
+    example_measurements = batt.OutputContainer({'t': 32.2, 'v': 3.915})
     t = 0.1
-    filt.estimate(t, future_loading(t), example_measurements)
+    u = future_loading(t)
+    filt.estimate(t, u, example_measurements)
 
     # Step 2d: Print & Plot Resulting Posterior State
     print("\nPosterior State:", filt.x.mean)

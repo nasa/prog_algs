@@ -101,6 +101,12 @@ class ParticleFilter(state_estimator.StateEstimator):
         dt = t - self.t
         self.t = t
 
+        # Check Types
+        if isinstance(u, dict):
+            u = self.model.InputContainer(u)
+        if isinstance(z, dict):
+            z = self.model.OutputContainer(z)
+
         # Optimization
         particles = self.particles
         next_state = self.model.next_state

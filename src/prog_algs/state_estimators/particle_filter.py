@@ -163,7 +163,7 @@ class ParticleFilter(state_estimator.StateEstimator):
                    for state in self.particles.keys()]
 
         # Particles as a dictionary
-        self.particles = dict(zip(self.particles.keys(), samples))
+        self.particles = self.model.StateContainer(array(samples))
 
     @property
     def x(self) -> UnweightedSamples:

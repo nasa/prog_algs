@@ -26,6 +26,7 @@ def run_example():
         outputs = ['v']
 
     # Step 2: Setup model & future loading
+    batt = MyBattery()
     def future_loading(t, x={}):
         # Variable (piece-wise) future loading scheme 
         if (t < 600):
@@ -38,9 +39,8 @@ def run_example():
             i = 2
         else:
             i = 3
-        return {'i': i}
+        return batt.InputContainer({'i': i})
 
-    batt = MyBattery()
     x0 = batt.parameters['x0']
 
     # Step 3: Use the updated model

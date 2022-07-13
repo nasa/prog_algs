@@ -11,9 +11,6 @@ import matplotlib.pyplot as plt
 
 def run_example():
     ## Setup
-    def future_loading(t, x=None):
-        load = 1
-        return {"i": load}
     # Save battery model
     # Time increment
     dt = 1
@@ -36,6 +33,9 @@ def run_example():
     battery = BatteryElectroChemEOD(process_noise= Q_vars,
                                     measurement_noise = R_vars, 
                                     dt = dt)
+    def future_loading(t, x=None):
+        load = 1
+        return battery.InputContainer({"i": load})
 
     # Simulate data until EOD
     start_u = future_loading(0)

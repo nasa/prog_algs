@@ -82,7 +82,8 @@ class ParticleFilter(state_estimator.StateEstimator):
             samples = [random.normal(x[i], sd[i], self.parameters['num_particles']) for i in range(len(x))]
         else:
             raise ProgAlgTypeError("ProgAlgTypeError: x0 must be of type UncertainData or x0_uncertainty must be of type [dict, Number].")
-        self.particles = dict(zip(x0.keys(), samples))
+        
+        self.particles = model.StateContainer(array(samples))
 
 
         if 'R' in self.parameters:
@@ -99,6 +100,12 @@ class ParticleFilter(state_estimator.StateEstimator):
         assert t > self.t, "New time must be greater than previous"
         dt = t - self.t
         self.t = t
+
+        # Check Types
+        if isinstance(u, dict):
+            u = self.model.InputContainer(u)
+        if isinstance(z, dict):
+            z = self.model.OutputContainer(z)
 
         # Optimization
         particles = self.particles
@@ -162,7 +169,7 @@ class ParticleFilter(state_estimator.StateEstimator):
                    for state in self.particles.keys()]
 
         # Particles as a dictionary
-        self.particles = dict(zip(self.particles.keys(), samples))
+        self.particles = self.model.StateContainer(array(samples))
 
     @property
     def x(self) -> UnweightedSamples:

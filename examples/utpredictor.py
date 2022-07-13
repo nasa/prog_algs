@@ -11,6 +11,7 @@ from prog_algs import *
 
 def run_example():
     ## Setup
+    batt = BatteryCircuit()
     def future_loading(t, x = None):
         # Variable (piece-wise) future loading scheme 
         if (t < 600):
@@ -23,9 +24,7 @@ def run_example():
             i = 2
         else:
             i = 3
-        return {'i': i}
-
-    batt = BatteryCircuit()
+        return batt.InputContainer({'i': i})
 
     ## State Estimation - perform a single ukf state estimate step
     filt = state_estimators.UnscentedKalmanFilter(batt, batt.parameters['x0'])

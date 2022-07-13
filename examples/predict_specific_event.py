@@ -9,11 +9,10 @@ from prog_algs import *
 
 def run_example():
     ## Setup
-    def future_loading(t, x = None):
-        return {}
-
     m = ThrownObject()
-    initial_state = m.initialize({}, {})
+    initial_state = m.initialize()
+    def future_loading(t, x = None):
+        return m.InputContainer({})
 
     ## State Estimation - perform a single ukf state estimate step
     filt = state_estimators.UnscentedKalmanFilter(m, initial_state)

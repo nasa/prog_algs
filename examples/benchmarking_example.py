@@ -21,6 +21,7 @@ from prog_algs import *
 
 def run_example():
     # Step 1: Setup Model and Future Loading
+    batt = Battery()
     def future_loading(t, x={}):
         # Variable (piece-wise) future loading scheme 
         if (t < 600):
@@ -33,9 +34,7 @@ def run_example():
             i = 2
         else:
             i = 3
-        return {'i': i}
-
-    batt = Battery()   
+        return batt.InputContainer({'i': i})
 
     # Step 2: Setup Predictor 
     pred = predictors.MonteCarlo(batt, dt= 0.05)
@@ -44,8 +43,10 @@ def run_example():
     x0 = batt.initialize()
     state_estimator = state_estimators.ParticleFilter(batt, x0)
     # Send in some data to estimate state
-    state_estimator.estimate(0.1, future_loading(0.1), {'t': 32.2, 'v': 3.915})
-    state_estimator.estimate(0.2, future_loading(0.2), {'t': 32.3, 'v': 3.91})
+    z1 = batt.OutputContainer({'t': 32.2, 'v': 3.915})
+    z2 = batt.OutputContainer({'t': 32.3, 'v': 3.91})
+    state_estimator.estimate(0.1, future_loading(0.1), z1)
+    state_estimator.estimate(0.2, future_loading(0.2), z2)
 
     # Step 4: Benchmark Predictions
     # Here we're comparing the results given different numbers of samples

@@ -102,7 +102,8 @@ def run_example():
 
     # Step 2: Instantiate the Kalman Filter State Estimator
     # Define the initial state to be slightly off of actual
-    x_guess = {'x': 1.75, 'v': 35} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
+    x_guess = m.StateContainer({'x': 1.75, 'v': 35}) # Guess of initial state
+    # Note: actual is {'x': 1.83, 'v': 40}
     kf = KalmanFilter(m, x_guess)
 
     # Step 3: Run the Kalman Filter State Estimator

@@ -190,7 +190,7 @@ class UnscentedTransformPredictor(Predictor):
         t = params['t0']
         save_pt_index = 0
         ToE = {key: [float('nan') for i in range(n_points)] for key in events_to_predict}  # Keep track of final ToE values
-        last_state = {key: [float('nan') for i in range(n_points)] for key in events_to_predict}  # Keep track of final state values
+        last_state = {key: [None for i in range(n_points)] for key in events_to_predict}  # Keep track of final state values
 
         times = []
         inputs = []
@@ -251,7 +251,7 @@ class UnscentedTransformPredictor(Predictor):
         # Transform final state into {event_name: MultivariateNormalDist}
         final_state = {}
         for event_key in last_state.keys():
-            if any([isnan(last_state_i) for last_state_i in last_state[event_key]]):
+            if any([last_state_i is None for last_state_i in last_state[event_key]]):
                 # If any sigma point has not met the event threshold
                 final_state[event_key] = None
                 continue

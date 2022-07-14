@@ -155,9 +155,11 @@ class UnscentedTransformPredictor(Predictor):
         event_states: [[dict]]
             Estimated event state (e.g., SOH), between 1-0 where 0 is event occurance, for each sample and time in times
             where event_states[sample_id][index] corresponds to time times[sample_id][index]
-        toe: UncertainData
+        time_of_event: UncertainData
             Estimated time where a predicted event will occur for each sample. Note: Mean and Covariance Matrix will both 
             be nan if every sigma point doesnt reach threshold within horizon
+            Also, includes member final_state (time_of_event.final_state) which is the state at the last time step. 
+            time_of_event.final_state is a dict of the form {'state_name': state_value}, is equal to None if event does not occur within horizon
         """
         if isinstance(state, dict) or isinstance(state, self.model.StateContainer) or isinstance(state, ScalarData):
             raise TypeError("state must be a distribution (e.g., MultivariateNormalDist, UnweightedSamples), not scalar")
@@ -188,7 +190,7 @@ class UnscentedTransformPredictor(Predictor):
         t = params['t0']
         save_pt_index = 0
         ToE = {key: [float('nan') for i in range(n_points)] for key in events_to_predict}  # Keep track of final ToE values
-        last_state = {key: [float('nan') for i in range(n_points)] for key in events_to_predict}  # Keep track of final state values
+        last_state = {key: [None for i in range(n_points)] for key in events_to_predict}  # Keep track of final state values
 
         times = []
         inputs = []
@@ -249,6 +251,10 @@ class UnscentedTransformPredictor(Predictor):
         # Transform final state into {event_name: MultivariateNormalDist}
         final_state = {}
         for event_key in last_state.keys():
+            if any([last_state_i is None for last_state_i in last_state[event_key]]):
+                # If any sigma point has not met the event threshold
+                final_state[event_key] = None
+                continue
             last_state_pts = array([[last_state_i[state_key] for state_key in state_keys] for last_state_i in last_state[event_key]])
             # last_state_pts = transpose(last_state_pts)
             last_state_mean, last_state_cov = kalman.unscented_transform(last_state_pts, sigma_points.Wm, sigma_points.Wc)

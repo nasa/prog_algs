@@ -171,7 +171,7 @@ class UnscentedTransformPredictor(Predictor):
         params = deepcopy(self.parameters) # copy parameters
         params.update(kwargs) # update for specific run
 
-        if len(kwargs['events']) == 0 and 'horizon' not in kwargs:
+        if len(params['events']) == 0 and 'horizon' not in params:
             raise ValueError("If specifying no event (i.e., simulate to time), must specify horizon")
 
         # Optimizations 

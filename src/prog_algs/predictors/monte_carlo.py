@@ -52,7 +52,7 @@ class MonteCarlo(Predictor):
         params['print'] = False
         params['progress'] = False
 
-        if len(kwargs['events']) == 0 and 'horizon' not in kwargs:
+        if len(params['events']) == 0 and 'horizon' not in params:
             raise ValueError("If specifying no event (i.e., simulate to time), must specify horizon")
 
         # Sample from state if n_samples specified or state is not UnweightedSamples

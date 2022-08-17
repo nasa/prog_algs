@@ -13,12 +13,12 @@ class Predictor(ABC):
     """
     Interface class for predictors
 
-    Abstract base class for creating predictors that perform prediction. Predictor subclasses must implement this interface. Equivilant to "Observers" in NASA's Matlab Prognostics Algorithm Library
+    Abstract base class for creating predictors that perform prediction. Predictor subclasses must implement this interface. Equivilant to "Predictors" in NASA's Matlab Prognostics Algorithm Library
 
     Parameters
     ----------
     model : PrognosticsModel
-        See: Prognostics Model Package\n
+        See: :py:mod:`prog_models` package\n
         A prognostics model to be used in prediction
     kwargs : optional, keyword arguments
     """
@@ -62,18 +62,14 @@ class Predictor(ABC):
             * save_freq (float): Frequency at which results are saved (s)
             * save_pts (list[float]): Any additional savepoints (s) e.g., [10.1, 22.5]
 
-        Return PredictionResults namedtuple
+        Return
         ----------
-        times : List[float]
-            Times for each savepoint such that inputs.snapshot(i), states.snapshot(i), outputs.snapshot(i), and event_states.snapshot(i) are all at times[i]            
-        inputs : Prediction
-            Inputs at each savepoint such that inputs.snapshot(i) is the input distribution (type UncertainData) at times[i]
-        states : Prediction
-            States at each savepoint such that states.snapshot(i) is the state distribution (type UncertainData) at times[i]
-        outputs : Prediction
-            Outputs at each savepoint such that outputs.snapshot(i) is the output distribution (type UncertainData) at times[i]
-        event_states : Prediction
-            Event states at each savepoint such that event_states.snapshot(i) is the event state distribution (type UncertainData) at times[i]
-        time_of_event : UncertainData
-            Distribution of predicted Time of Event (ToE) for each predicted event, represented by some subclass of UncertaintData (e.g., MultivariateNormalDist)
+        result esults from prediction, including: NameTuple
+            * times (List[float]): Times for each savepoint such that inputs.snapshot(i), states.snapshot(i), outputs.snapshot(i), and event_states.snapshot(i) are all at times[i]            
+            * inputs (Prediction): Inputs at each savepoint such that inputs.snapshot(i) is the input distribution (type UncertainData) at times[i]
+            * states (Prediction): States at each savepoint such that states.snapshot(i) is the state distribution (type UncertainData) at times[i]
+            * outputs (Prediction): Outputs at each savepoint such that outputs.snapshot(i) is the output distribution (type UncertainData) at times[i]
+            * event_states (Prediction): Event states at each savepoint such that event_states.snapshot(i) is the event state distribution (type UncertainData) at times[i]
+            * time_of_event (UncertainData): Distribution of predicted Time of Event (ToE) for each predicted event, represented by some subclass of UncertaintData (e.g., MultivariateNormalDist)
         """
+        pass

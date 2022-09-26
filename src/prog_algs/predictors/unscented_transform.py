@@ -108,12 +108,12 @@ class UnscentedTransformPredictor(Predictor):
             self.parameters['Q'] = diag([1.0e-1 for i in range(num_states)])
         
         def measure(x):
-            x = model.StateContainer({key: value for (key, value) in zip(self.__state_keys, x)})
+            x = model.StateContainer(x)
             z = model.output(x)
-            return model.OutputContainer({array(list(z.values()))})
+            return model.OutputContainer(z)
 
         def state_transition(x, dt):
-            x = model.StateContainer({key: value for (key, value) in zip(self.__state_keys, x)})
+            x = model.StateContainer(x)
             x = model.next_state(x, self.__input, dt)
             x = model.apply_limits(x)
             return array(list(x.values()))
@@ -230,7 +230,8 @@ class UnscentedTransformPredictor(Predictor):
             points = sigma_points.sigma_points(filt.x, filt.P)
             all_failed = True
             for i, point in zip(range(n_points), points):
-                x = StateContainer({key: x for (key, x) in zip(state_keys, point)})
+                # x = StateContainer({key: x for (key, x) in zip(state_keys, point)})
+                x = StateContainer(point)
                 t_met = threshold_met(x)
 
                 # Check Thresholds

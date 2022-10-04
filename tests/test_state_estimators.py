@@ -234,7 +234,7 @@ class TestStateEstimators(unittest.TestCase):
         self.__incorrect_input_tests(UnscentedKalmanFilter)
 
     def test_PF(self):
-        m = ThrownObject(process_noise={'x': 0.25, 'v': 0.25}, measurement_noise=1)
+        m = ThrownObject(process_noise={'x': 0.75, 'v': 0.75}, measurement_noise=1)
         x_guess = {'x': 1.75, 'v': 38.5} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
 
         filt = ParticleFilter(m, x_guess, num_particles = 1000)
@@ -282,12 +282,6 @@ class TestStateEstimators(unittest.TestCase):
         for k in mean1.keys():
             self.assertEqual(mean1[k], mean2[k])
         self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
-        # Case 1: Only x0_uncertainty provided; expect a warning issued
-        with self.assertWarns(Warning):
-            filt_scalar = ParticleFilter(m, {'x': 1.75, 'v': 38.5}, x0_uncertainty = 0.5)
-        # Case 2: Raise ProgAlgTypeError if x0 not UncertainData or x0_uncertainty not of type {{dict, Number}}.
-        with self.assertRaises(ProgAlgTypeError):
-            filt_scalar = ParticleFilter(m, {'x': 1.75, 'v': 38.5}, num_particles = 20, x0_uncertainty = [])
         
     def test_PF_incorrect_input(self):
         self.__incorrect_input_tests(ParticleFilter)

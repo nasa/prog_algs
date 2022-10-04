@@ -29,6 +29,8 @@ def prob_success(toe : UncertainData, time : float, **kwargs) -> float:
     if isinstance(toe, UncertainData):
         # Default to all keys
         keys = params.setdefault('keys', toe.keys())
+        if isinstance(keys, str):
+            keys = [keys]
 
         if isinstance(toe, UnweightedSamples):
             samples = toe

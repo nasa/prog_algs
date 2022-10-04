@@ -165,6 +165,8 @@ class UnweightedSamples(UncertainData, UserList):
     def percentage_in_bounds(self, bounds, keys : list = None) -> dict:
         if not keys:
             keys = self.keys()
+        if isinstance(keys, str):
+            keys = [keys]
         if isinstance(bounds, list):
             bounds = {key: bounds for key in self.keys()}
         if not isinstance(bounds, dict) or all([isinstance(b, list) and len(b) == 2 for b in bounds]):

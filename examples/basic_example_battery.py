@@ -1,7 +1,7 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
 """
-This example performs a state estimation and prediction with uncertainty given a Prognostics Model.
+This example extends the "basic example" to perform a state estimation and prediction with uncertainty given a more complicated. Models, state estimators, and predictors can be switched out. See documentation nasa.github.io/progpy for description of options
  
 Method: An instance of the BatteryCircuit model in prog_models is created, and the prediction process is achieved in three steps:
     1) State estimation of the current state is performed using a chosen state_estimator, and samples are drawn from this estimate
@@ -16,9 +16,15 @@ Results:
 
 from prog_models.models import BatteryCircuit as Battery
 # VVV Uncomment this to use Electro Chemistry Model VVV
-from prog_models.models import BatteryElectroChemEOD as Battery
+# from prog_models.models import BatteryElectroChemEOD as Battery
 
-from prog_algs import *
+from prog_algs.state_estimators import ParticleFilter as StateEstimator
+# VVV Uncomment this to use UKF State Estimator VVV
+# from prog_algs.state_estimators import UnscentedKalmanFilter as StateEstimator
+
+from prog_algs.predictors import MonteCarlo as Predictor
+# VVV Uncomment this to use UnscentedTransform Predictor VVV
+# from prog_algs.predictors import UnscentedTransformPredictor as Predictor
 
 def run_example():
     # Step 1: Setup model & future loading
@@ -47,10 +53,8 @@ def run_example():
     print("\nPerforming State Estimation Step")
 
     # Step 2a: Setup
-    filt = state_estimators.ParticleFilter(batt, initial_state)
-    # VVV Uncomment this to use UKF State Estimator VVV
-    # filt = state_estimators.UnscentedKalmanFilter(batt, initial_state)
-
+    filt = StateEstimator(batt, initial_state)
+    
     # Step 2b: Print & Plot Prior State
     print("Prior State:", filt.x.mean)
     print('\tSOC: ', batt.event_state(filt.x.mean)['EOD'])
@@ -74,23 +78,35 @@ def run_example():
     print("\n\nPerforming Prediction Step")
 
     # Step 3a: Setup Predictor
-    mc = predictors.MonteCarlo(batt)
+    mc = Predictor(batt)
 
     # Step 3b: Perform a prediction
     NUM_SAMPLES = 5
     STEP_SIZE = 0.1
-    mc_results = mc.predict(filt.x, future_loading, n_samples = NUM_SAMPLES, dt=STEP_SIZE)
+    SAVE_FREQ = 100  # How often to save results
+    mc_results = mc.predict(filt.x, future_loading, n_samples = NUM_SAMPLES, dt=STEP_SIZE, save_freq = SAVE_FREQ)
     print('ToE', mc_results.time_of_event.mean)
 
     # Step 3c: Analyze the results
 
     # Note: The results of a sample-based prediction can be accessed by sample, e.g.,
-    states_sample_1 = mc_results.states[1]
+    from prog_algs.predictors import UnweightedSamplesPrediction
+    if isinstance(mc_results, UnweightedSamplesPrediction):
+        states_sample_1 = mc_results.states[1]
     # now states_sample_1[n] corresponds to times[n] for the first sample
 
     # You can also access a state distribution at a specific time using the .snapshot function
     states_time_1 = mc_results.states.snapshot(1)
     # now you have all the samples corresponding to times[1]
+
+    # Print Results
+    print('Results: ')
+    for i, time in enumerate(mc_results.times):
+        print('\nt = {}'.format(time))
+        print('\tu = {}'.format(mc_results.inputs.snapshot(i).mean))
+        print('\tx = {}'.format(mc_results.states.snapshot(i).mean))
+        print('\tz = {}'.format(mc_results.outputs.snapshot(i).mean))
+        print('\tevent state = {}'.format(mc_results.event_states.snapshot(i).mean))
 
     # You can also access the final state (of type UncertainData), like so:
     final_state = mc_results.time_of_event.final_state

@@ -105,7 +105,7 @@ class UnscentedTransformPredictor(Predictor):
 
         if 'Q' not in self.parameters:
             # Default 
-            self.parameters['Q'] = diag([1.0e-1 for i in range(num_states)])
+            self.parameters['Q'] = diag([1.0e-8 for _ in range(num_states)])
         
         def measure(x):
             x = model.StateContainer(x)

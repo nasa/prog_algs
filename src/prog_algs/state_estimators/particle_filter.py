@@ -85,7 +85,6 @@ class ParticleFilter(state_estimator.StateEstimator):
         
         self.particles = model.StateContainer(array(samples))
 
-
         if 'R' in self.parameters:
             # For backwards compatibility
             warn("'R' is deprecated. Use 'measurement_noise' instead.", DeprecationWarning)

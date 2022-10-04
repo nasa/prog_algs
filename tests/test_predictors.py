@@ -83,9 +83,9 @@ class TestPredictors(unittest.TestCase):
             return {}
 
         mc_results = pred.predict(samples, future_loading, dt=0.01, events=['falling'], save_freq=1)
-        self.assertAlmostEqual(mc_results.time_of_event.mean['falling'], 4.15, 0)
+        self.assertAlmostEqual(mc_results.time_of_event.mean['falling'], 3.8, 0)
         self.assertTrue('impact' not in mc_results.time_of_event.mean)
-        self.assertAlmostEqual(mc_results.times[-1], 4, 1)  # Saving every second, last time should be around the nearest 1s before falling event
+        self.assertAlmostEqual(mc_results.times[-1], 3, 1)  # Saving every second, last time should be around the nearest 1s before falling event
 
     def test_UKP_Battery(self):
         def future_loading(t, x = None):

@@ -273,9 +273,9 @@ class TestStateEstimators(unittest.TestCase):
                 self.assertAlmostEqual(filt_us.x.cov[i][j], x_us.cov[i][j], delta=0.1)
 
         # Test x0 if-else Control
-        # Case 0: Both isinstance(x0, UncertainData) and x0_uncertainty parameter provided; expect x0_uncertainty to be skipped
+        # Case 0: isinstance(x0, UncertainData) 
         x_scalar = ScalarData({'x': 1.75, 'v': 38.5}) # Testing with ScalarData
-        filt_scalar = ParticleFilter(m, x_scalar, num_particles = 20, x0_uncertainty = 0.5) # Sample count does not affect ScalarData testing
+        filt_scalar = ParticleFilter(m, x_scalar, num_particles = 20) # Sample count does not affect ScalarData testing
         mean1 = filt_scalar.x.mean
         mean2 = x_scalar.mean
         self.assertSetEqual(set(mean1.keys()), set(mean2.keys()))

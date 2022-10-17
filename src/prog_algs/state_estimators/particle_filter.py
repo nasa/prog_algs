@@ -45,23 +45,10 @@ class ParticleFilter(state_estimator.StateEstimator):
             'resample_fcn': residual_resample,
         }
 
-    def __init__(self, model, x0, measurement_eqn : Callable = None, **kwargs):
-        super().__init__(model, x0, measurement_eqn = measurement_eqn, **kwargs)
+    def __init__(self, model, x0, **kwargs):
+        super().__init__(model, x0, **kwargs)
         
-        if measurement_eqn:
-            warn("Warning: measurement_eqn depreciated as of v1.3.1, will be removed in v1.4. Use Model subclassing instead. See examples.measurement_eqn_example")
-            # update output_container
-            z0 = measurement_eqn(x0)
-            class MeasureContainer(DictLikeMatrixWrapper):
-                def __init__(self, z):
-                    super().__init__(list(z0.keys()), z)
-
-            def __measure(x):
-                return MeasureContainer(measurement_eqn(x))
-                
-            self._measure = __measure
-        else:
-            self._measure = model.output
+        self._measure = model.output
 
         # Build array inplace
         if isinstance(x0, DictLikeMatrixWrapper) or isinstance(x0, dict):

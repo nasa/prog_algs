@@ -15,11 +15,11 @@ class TemplateStateEstimator(state_estimators.StateEstimator):
         't0' : 0.0  # Initial timestamp
     } 
 
-    def __init__(self, model, x0, measurement_eqn=None, **kwargs):
+    def __init__(self, model, x0, **kwargs):
         """
         Constructor (optional)
         """
-        super().__init__(model, x0, measurement_eqn, **kwargs)
+        super().__init__(model, x0, **kwargs)
         # ADD PARAMETER CHECKS HERE
         # e.g., self.parameters['some_value'] < 0
 

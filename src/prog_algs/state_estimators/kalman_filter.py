@@ -46,12 +46,12 @@ class KalmanFilter(state_estimator.StateEstimator):
         'dt': 1
     } 
     
-    def __init__(self, model, x0, measurement_eqn : Callable = None, **kwargs):
+    def __init__(self, model, x0, **kwargs):
         # Note: Measurement equation kept in constructor to keep it consistent with other state estimators. This way measurement equation can be provided as an ordered argument, and will just be ignored here
         if not isinstance(model, LinearModel):
             raise Exception('Kalman Filter only supports Linear Models (i.e., models derived from prog_models.LinearModel)')
 
-        super().__init__(model, x0, None, **kwargs)
+        super().__init__(model, x0, **kwargs)
 
         self.x0 = x0
 

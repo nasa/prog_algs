@@ -30,7 +30,7 @@ class StateEstimator(ABC):
         't0': 0
     }
 
-    def __init__(self, model, x0, measurement_eqn : Callable = None, **kwargs):
+    def __init__(self, model, x0, **kwargs):
         # Check model
         if not hasattr(model, 'output'):
             raise ProgAlgTypeError("model must have `output` method")
@@ -42,17 +42,10 @@ class StateEstimator(ABC):
             raise ProgAlgTypeError("model must have `states` property")
         self.model = model
 
-        if measurement_eqn is not None:
-            warn('Measurement_eqn was deprecated in v1.3 in favor of model subclassing. I will remove this in v1.4. See measurement_equation example for more information', DeprecationWarning)
-
         # Check x0
         for key in model.states:
             if key not in x0:
                 raise ProgAlgTypeError("x0 missing state `{}`".format(key))
-        
-        # Check measurement equation
-        if measurement_eqn and not callable(measurement_eqn):
-            raise ProgAlgTypeError("measurement_eqn must be callable")
         
         # Process kwargs (configuration)
         self.parameters = deepcopy(self.default_parameters)

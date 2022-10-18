@@ -43,27 +43,20 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         'dt': 1
     } 
 
-    def __init__(self, model, x0, measurement_eqn : Callable = None, **kwargs):
-        super().__init__(model, x0, measurement_eqn, **kwargs)
+    def __init__(self, model, x0, **kwargs):
+        super().__init__(model, x0, **kwargs)
 
         self.__input = None
         self.x0 = x0
         # Saving for reduce pickling
 
-        if measurement_eqn is None: 
-            def measure(x):
-                x = model.StateContainer({key: value for (key, value) in zip(x0.keys(), x)})
-                R_err = model.parameters['measurement_noise'].copy()
-                model.parameters['measurement_noise'] = dict.fromkeys(R_err, 0)
-                z = model.output(x)
-                model.parameters['measurement_noise'] = R_err
-                return array(list(z.values())).ravel()
-        else:
-            warn("Warning: measurement_eqn depreciated as of v1.3.1, will be removed in v1.4. Use Model subclassing instead. See examples.measurement_eqn_example")
-            def measure(x):
-                x = model.StateContainer({key: value for (key, value) in zip(x0.keys(), x)})
-                z = measurement_eqn(x)
-                return array(list(z.values())).ravel()
+        def measure(x):
+            x = model.StateContainer({key: value for (key, value) in zip(x0.keys(), x)})
+            R_err = model.parameters['measurement_noise'].copy()
+            model.parameters['measurement_noise'] = dict.fromkeys(R_err, 0)
+            z = model.output(x)
+            model.parameters['measurement_noise'] = R_err
+            return array(list(z.values())).ravel()
 
         if 'Q' not in self.parameters:
             self.parameters['Q'] = diag([1.0e-3 for i in x0.keys()])

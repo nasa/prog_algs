@@ -2,6 +2,7 @@
 
 from typing import Union
 from numpy import array
+
 from . import UncertainData, UnweightedSamples
 
 

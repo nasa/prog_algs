@@ -1,11 +1,12 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from typing import Callable
-from .prediction import Prediction, UnweightedSamplesPrediction, PredictionResults
-from .predictor import Predictor
-from numpy import diag, array, transpose, isnan
 from copy import deepcopy
 from filterpy import kalman
+from numpy import diag, array, transpose, isnan
+from typing import Callable
+
+from .prediction import Prediction, UnweightedSamplesPrediction, PredictionResults
+from .predictor import Predictor
 from prog_algs.uncertain_data import MultivariateNormalDist, UncertainData, ScalarData
 
 

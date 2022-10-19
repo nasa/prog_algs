@@ -15,7 +15,6 @@ Results:
 """
 
 from prog_models.models import ThrownObject
-
 from prog_algs import *
 
 def run_example():

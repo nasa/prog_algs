@@ -3,9 +3,9 @@
 """
 This file includes functions for calculating metrics specific to Time of Event (ToE) from a single event or multiple events given the same time of prediction
 """
-
 from typing import Iterable
 from numpy import isscalar
+
 from ..uncertain_data import UncertainData, UnweightedSamples
 
 def prob_success(toe : UncertainData, time : float, **kwargs) -> float:

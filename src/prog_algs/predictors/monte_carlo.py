@@ -1,11 +1,12 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from .prediction import UnweightedSamplesPrediction, PredictionResults
-from .predictor import Predictor
 from copy import deepcopy
 from typing import Callable
 from prog_models.sim_result import SimResult, LazySimResult
 from prog_algs.uncertain_data import UnweightedSamples, UncertainData
+
+from .prediction import UnweightedSamplesPrediction, PredictionResults
+from .predictor import Predictor
 
 
 class MonteCarlo(Predictor):

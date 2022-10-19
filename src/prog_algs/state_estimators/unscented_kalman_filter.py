@@ -1,9 +1,10 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from warnings import warn
-from . import state_estimator
 from filterpy import kalman
 from numpy import diag, array
+from warnings import warn
+
+from . import state_estimator
 from ..uncertain_data import MultivariateNormalDist, UncertainData
 
 class UnscentedKalmanFilter(state_estimator.StateEstimator):

@@ -54,7 +54,7 @@ class ToEPredictionProfile(UserDict):
             beta (float):
                 portion of prediction that must be within those bounds
             kwargs (optional, keyword arguments):
-                configuration arguments. Accepted arge include: \n
+                configuration arguments. Accepted args include: \n
                  * keys (list[string]): list of keys to use. If not provided, all keys are used.
                  * print (bool) : If True, print the results. Default is False.
 
@@ -67,7 +67,9 @@ class ToEPredictionProfile(UserDict):
     def prognostic_horizon(self, criteria_eqn, ground_truth, **kwargs) -> Dict[str, float]:
         """
         Compute prognostic horizon metric, defined as the difference between a time ti, when the predictions meet specified performance criteria, and the time corresponding to the true Time of Event (ToE), for each event.
+
         PH = ToE - ti
+
         Args:
             toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions
             criteria_eqn (Callable function): A function (toe: UncertainData, ground_truth: dict[str, float]) -> dict[str, bool] calculating whether a prediction in ToEPredictionProfile meets some criteria. \n
@@ -91,10 +93,11 @@ class ToEPredictionProfile(UserDict):
         Compute cumulative relative accuracy for a given profile, defined as the normalized sum of relative prediction accuracies at specific time instances.
         
         CRA = Σ(RA)/N for each event
+
         Where Σ is summation of all relative accuracies for a given profile and N is the total count of profiles (Journal Prognostics Health Management, Saxena et al.)
+
         Args:
             ground_truth (dict): Dictionary containing ground truth; specified as key, value pairs for event and its value. E.g, {'event1': 47.3, 'event2': 52.1, 'event3': 46.1}
-            kwargs (optional): configuration arguments. Accepted args include:
 
         Returns:
             dict: Dictionary containing cumulative relative accuracy (value) for each event (key). e.g., {'event1': 12.3, 'event2': 15.1}
@@ -108,9 +111,12 @@ class ToEPredictionProfile(UserDict):
         Calculates monotonicity for each prediction key using its associated mean value in UncertainData.
         
         monotonoicity = |Σsign(i+1 - i) / N-1|
+
         Where N is number of measurements and sign indicates sign of calculation.
+
         Coble, J., et. al. (2021). Identifying Optimal Prognostic Parameters from Data: A Genetic Algorithms Approach. Annual Conference of the PHM Society.
         http://www.papers.phmsociety.org/index.php/phmconf/article/view/1404
+
         Baptistia, M., et. al. (2022). Relation between prognostics predictor evaluation metrics and local interpretability SHAP values. Aritifical Intelligence, Volume 306.
         https://www.sciencedirect.com/science/article/pii/S0004370222000078
 
@@ -123,18 +129,28 @@ class ToEPredictionProfile(UserDict):
         return monotonicity(self, **kwargs)
     
     def plot(self, ground_truth : dict = None , alpha : float = None, show : bool = True) -> dict: # use ground truth, alpha if given,
-        """Produce an alpha-beta plot depicting the TtE distribution by time of prediction.
+        """Produce an alpha-beta plot depicting the TtE distribution by time of prediction for each event.
 
         Args:
-            ground_truth : dict = None
+            ground_truth : dict
                 Optional dictionary argument containing event and its respective ground truth value; none by default and plotted if specified
             alpha : float
                 Optional alpha value; none by default and plotted if specified
-            show : bool = True
-                Optional bool value; specify whether to display generated plots or not
+            show : bool
+                Optional bool value; specify whether to display generated plots. Default is true
+        
         Returns:
-            dict
-                Collection of generated matplotlib figures for each event in profile
+            dict[str, Figure]
+                Collection of generated matplotlib figures for each event in profile\n
+                e.g., {'event1': Fig, 'event2': Fig}
+        
+        Example:
+            ::
+
+                gt = {'event1': 3442, 'event2': 175} # Ground Truth
+                figs = profile.plot(gt) # Figure with ground truth line
+                figs = profile.plot(gt, alpha = 0.2) # Figure with ground truth line and 20% alpha bounds
+                figs = profile.plot(gt, alpha = 0.2, show=False) # Dont display figure
         """
         result_figs = {}
         for t,v in self.items():

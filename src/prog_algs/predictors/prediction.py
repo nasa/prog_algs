@@ -73,9 +73,13 @@ class Prediction():
         Calculates monotonicity for each event key using its associated mean value in UncertainData.
         
         monotonoicity = |Σsign(i+1 - i) / N-1|
+
         Where N is number of measurements and sign indicates sign of calculation.
-        Coble, J., et. al. (2021). Identifying Optimal Prognostic Parameters from Data: A Genetic Algorithms Approach. Annual Conference of the PHM Society.
+        
+        Coble, J., et. al. (2021). Identifying Optimal Prognostic Parameters from D
+        ata: A Genetic Algorithms Approach. Annual Conference of the PHM Society.
         http://www.papers.phmsociety.org/index.php/phmconf/article/view/1404
+        
         Baptistia, M., et. al. (2022). Relation between prognostics predictor evaluation metrics and local interpretability SHAP values. Aritifical Intelligence, Volume 306.
         https://www.sciencedirect.com/science/article/pii/S0004370222000078
 

@@ -68,11 +68,13 @@ class UncertainData(ABC):
         """The relative accuracy of the mean of the distribution. 
         
         RA = 1 - |r-p|/r 
+
         Where r is ground truth and p is mean of predicted distribution
+        
         Prognostics: The Science of Making Predictions (Goebel et al, 239)
 
         Returns:
-            dict(str:float): Relative accuracy for each event where value is relative accuracy between [0,1]
+            dict[str, float]: Relative accuracy for each event where value is relative accuracy between [0,1]
         """
         # if this check isn't here, goes to divide by zero check and raises AttributeError instead of TypeError. Keep? There are unittests checking for type
         if not (isinstance(ground_truth, dict) or isinstance(ground_truth, DictLikeMatrixWrapper)):
@@ -92,17 +94,21 @@ class UncertainData(ABC):
     def __contains__(self, key):
         return key in self.keys()
 
-    def percentage_in_bounds(self, bounds : tuple, keys : list = None) -> float:
+    def percentage_in_bounds(self, bounds : tuple, keys : list = None, n_samples = 1000) -> dict:
         """Calculate percentage of dist is within specified bounds
 
         Args:
-            bounds ((float, float)): Lower and upper bounds
-            keys (list of strings, optional): Keys to analyze. Defaults to all keys.
+            bounds (tuple[float, float] or dict): Lower and upper bounds. \n
+                if tuple: (lower, upper)\n
+                if dict: {key: (lower, upper), ...}
+            keys (list of strings, optional): UncertainData keys to consider when calculating. Defaults to all keys.
+            n_samples (int, optional): Number of samples to use when calculating
 
         Returns:
-            float: Percentage within bounds (where 0.5 = 50%)
+            dict: Percentage within bounds for each key in keys (where 0.5 = 50%).\n
+                e.g., {'key1': 1, 'key2': 0.75}
         """
-        return self.sample(1000).percentage_in_bounds(bounds)
+        return self.sample(n_samples).percentage_in_bounds(bounds, keys=keys)
 
     def metrics(self, **kwargs) -> dict:
         """Calculate Metrics for this dist
@@ -132,10 +138,14 @@ class UncertainData(ABC):
             Figure
 
         Example:
-            states = UnweightedSamples([1, 2, 3, 4, 5])\n
-            states.plot_scatter() # With 100 samples\n
-            states.plot_scatter(num_samples=5) # Specifying the number of samples to plot\n
-            states.plot_scatter(keys=['state1', 'state2']) # only plot those keys
+            ::
+
+                m = [5, 7, 3]
+                c = [[0.3, 0.5, 0.1], [0.6, 0.7, 1e-9], [1e-9, 1e-10, 1]]
+                d = MultivariateNormalDist(['a', 'b', 'c'], m, c)
+                d.plot_scatter() # With 100 samples
+                states.plot_scatter(num_samples=5) # Specifying the number of samples to plot
+                states.plot_scatter(keys=['a', 'b']) # only plot those keys
         """
         if keys is None:
             keys = self.keys()
@@ -150,6 +160,16 @@ class UncertainData(ABC):
             fig (MatPlotLib Figure, optional): Existing histogram figure to be overritten. Defaults to create new figure.
             num_samples (int, optional): Number of samples to plot. Defaults to 100
             keys (List(String), optional): Keys to be plotted. Defaults to None.
+
+        Example:
+            ::
+                
+                m = [5, 7, 3]
+                c = [[0.3, 0.5, 0.1], [0.6, 0.7, 1e-9], [1e-9, 1e-10, 1]]
+                d = MultivariateNormalDist(['a', 'b', 'c'], m, c)
+                d.plot_hist() # With 100 samples
+                states.plot_hist(num_samples=20) # Specifying the number of samples to plot
+                states.plot_hist(keys=['a', 'b']) # only plot those keys
         """
         if keys is None:
             keys = self.keys()

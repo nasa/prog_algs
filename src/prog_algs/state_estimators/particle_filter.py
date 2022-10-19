@@ -3,7 +3,6 @@
 from filterpy.monte_carlo import residual_resample
 from numpy import array, empty, take, exp, max, take
 from scipy.stats import norm
-from typing import Callable
 from warnings import warn
 
 from prog_models.utils.containers import DictLikeMatrixWrapper

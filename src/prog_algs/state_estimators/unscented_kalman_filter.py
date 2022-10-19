@@ -1,7 +1,6 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from warnings import warn
-from typing import Callable
 from . import state_estimator
 from filterpy import kalman
 from numpy import diag, array
@@ -74,7 +73,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measure, state_transition, points)
         
         if isinstance(x0, dict) or isinstance(x0, model.StateContainer):
-            warn("Warning: x0_uncertainty depreciated as of v1.3, will be removed in v1.4. Use UncertainData type if estimating filtering with uncertain data.")
+            warn("Use UncertainData type if estimating filtering with uncertain data.")
             self.filter.x = array(list(x0.values()))
             self.filter.P = self.parameters['Q'] / 10
         elif isinstance(x0, UncertainData):

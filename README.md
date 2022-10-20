@@ -42,7 +42,7 @@ C. Teubert, M. Corbetta, C. Kulkarni, Prognostics Algorithm Python Package, v1.4
 
 Alternatively, if using both prog_models and prog_algs, you can cite the combined package as
 
-C. Teubert, C. Kulkarni, M. Corbetta, K. Jarvis, M. Daigle, ProgPy Prognostics Python Packages, v1.4, October 2022. URL https://github.com/nasa/prog_models.
+C. Teubert, C. Kulkarni, M. Corbetta, K. Jarvis, M. Daigle, ProgPy Prognostics Python Packages, v1.4, October 2022. URL https://nasa.github.io/progpy.
 
 ## Acknowledgements
 The structure and algorithms of this package are strongly inspired by the [MATLAB Prognostics Algorithm Library](https://github.com/nasa/PrognosticsAlgorithmLibrary) and the [MATLAB Prognostics Metrics Library](https://github.com/nasa/PrognosticsMetricsLibrary). We would like to recognize Matthew Daigle, Shankar Sankararaman and the rest of the team that contributed to the Prognostics Model Library for the contributions their work on the MATLAB library made to the design of prog_algs

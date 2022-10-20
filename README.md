@@ -12,7 +12,7 @@ This is designed to be used with the [Prognostics Models Package](https://github
 `pip3 install prog_algs`
 
 ## Documentation
-See documentation [here](https://nasa.github.io/prog_algs/)
+See documentation [here](https://nasa.github.io/progpy/prog_algs_guide.html)
 
 ## Repository Directory Structure 
 

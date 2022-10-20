@@ -83,12 +83,11 @@ class MonteCarlo(Predictor):
             if 'save_freq' in params and not isinstance(params['save_freq'], tuple):
                 params['save_freq'] = (t0, params['save_freq'])
             
+            params['x'] = x
             if len(params['events']) == 0:  # Predict to time
                 (times, inputs, states, outputs, event_states) = simulate_to_threshold(future_loading_eqn,       
                     first_output, 
                     threshold_keys = [],
-                    t0 = t0, 
-                    x = x, 
                     **params
                 )
             else:
@@ -105,8 +104,6 @@ class MonteCarlo(Predictor):
                     (t, u, xi, z, es) = simulate_to_threshold(future_loading_eqn,       
                         first_output, 
                         threshold_keys = events_remaining,
-                        t0 = t0, 
-                        x = x, 
                         **params
                     )
 
@@ -135,10 +132,10 @@ class MonteCarlo(Predictor):
                     events_remaining.remove(event)  # No longer an event to predect to
 
                     # Remove last state (event)
-                    t0 = times.pop()
+                    params['t0'] = times.pop()
                     inputs.pop()
-                    x = states.pop()
-                    last_state[event] = x.copy()
+                    params['x'] = states.pop()
+                    last_state[event] = params['x'].copy()
                     outputs.pop()
                     event_states.pop()
             

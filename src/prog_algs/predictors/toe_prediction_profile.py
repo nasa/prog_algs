@@ -122,6 +122,7 @@ class ToEPredictionProfile(UserDict):
 
         Args:
             toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions
+        
         Returns:
             dict (str, dict): Dictionary where keys represent a profile and dict is a subdictionary representing an event and its respective monotonicitiy value between [0, 1].
         """

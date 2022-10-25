@@ -72,7 +72,7 @@ class Prediction():
         Given a single prediction, for each event: go through all predicted states and compare those to the next one.
         Calculates monotonicity for each event key using its associated mean value in UncertainData.
         
-        monotonoicity = |Σsign(i+1 - i) / N-1|
+        :math:`monotonoicity = \| \Sigma \dfrac{sign(i+1 - i)}{N-1}\|`
 
         Where N is number of measurements and sign indicates sign of calculation.
         

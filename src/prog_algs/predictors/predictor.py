@@ -64,7 +64,7 @@ class Predictor(ABC):
 
         Return
         ----------
-        result esults from prediction, including: NameTuple
+        results from prediction as NameTuple, including: 
             * times (List[float]): Times for each savepoint such that inputs.snapshot(i), states.snapshot(i), outputs.snapshot(i), and event_states.snapshot(i) are all at times[i]            
             * inputs (Prediction): Inputs at each savepoint such that inputs.snapshot(i) is the input distribution (type UncertainData) at times[i]
             * states (Prediction): States at each savepoint such that states.snapshot(i) is the state distribution (type UncertainData) at times[i]

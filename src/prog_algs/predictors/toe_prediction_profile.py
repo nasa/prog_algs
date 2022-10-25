@@ -68,7 +68,7 @@ class ToEPredictionProfile(UserDict):
         """
         Compute prognostic horizon metric, defined as the difference between a time ti, when the predictions meet specified performance criteria, and the time corresponding to the true Time of Event (ToE), for each event.
 
-        PH = ToE - ti
+        :math:`PH = ToE - ti`
 
         Args:
             toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions
@@ -92,9 +92,9 @@ class ToEPredictionProfile(UserDict):
         """
         Compute cumulative relative accuracy for a given profile, defined as the normalized sum of relative prediction accuracies at specific time instances.
         
-        CRA = Σ(RA)/N for each event
+        :math:`CRA = \Sigma( \dfrac{RA}{N} )` for each event
 
-        Where Σ is summation of all relative accuracies for a given profile and N is the total count of profiles (Journal Prognostics Health Management, Saxena et al.)
+        Where :math:`\Sigma` is summation of all relative accuracies for a given profile and N is the total count of profiles (Journal Prognostics Health Management, Saxena et al.)
 
         Args:
             ground_truth (dict): Dictionary containing ground truth; specified as key, value pairs for event and its value. E.g, {'event1': 47.3, 'event2': 52.1, 'event3': 46.1}
@@ -110,7 +110,7 @@ class ToEPredictionProfile(UserDict):
         Given a prediction profile, for each prediction: go through all predicted states and compare those to the next one.
         Calculates monotonicity for each prediction key using its associated mean value in UncertainData.
         
-        monotonoicity = |Σsign(i+1 - i) / N-1|
+        :math:`monotonoicity = \|\Sigma \dfrac{sign(i+1 - i)}{N-1}\|`
 
         Where N is number of measurements and sign indicates sign of calculation.
 

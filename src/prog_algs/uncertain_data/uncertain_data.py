@@ -65,16 +65,17 @@ class UncertainData(ABC):
         """
 
     def relative_accuracy(self, ground_truth : dict) -> dict:
-        """The relative accuracy of the mean of the distribution. 
+        """The relative accuracy is how close the mean of the distribution is to the ground truth, on relative terms
         
-        RA = 1 - |r-p|/r 
+        :math:`RA = 1 - \dfrac{\| r-p \|}{r}`
 
-        Where r is ground truth and p is mean of predicted distribution
-        
-        Prognostics: The Science of Making Predictions (Goebel et al, 239)
+        Where r is ground truth and p is mean of predicted distribution [0]_
 
         Returns:
             dict[str, float]: Relative accuracy for each event where value is relative accuracy between [0,1]
+
+        References:
+            .. [0] Prognostics: The Science of Making Predictions (Goebel et al, 239)
         """
         # if this check isn't here, goes to divide by zero check and raises AttributeError instead of TypeError. Keep? There are unittests checking for type
         if not (isinstance(ground_truth, dict) or isinstance(ground_truth, DictLikeMatrixWrapper)):

@@ -32,7 +32,7 @@ def run_example():
     # Step 2a: Setup
     filt = state_estimators.ParticleFilter(m, initial_state)
     # VVV Uncomment this to use UKF State Estimator VVV
-    # filt = state_estimators.UnscentedKalmanFilter(batt, initial_state)
+    # filt = state_estimators.UnscentedKalmanFilter(m, initial_state)
 
     # Step 2b: Print & Plot Prior State
     print("Prior State:", filt.x.mean)

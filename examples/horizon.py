@@ -15,8 +15,6 @@ Results:
 from pprint import pprint
 
 from prog_models.models.thrown_object import ThrownObject
-# VVV Uncomment this to use Electro Chemistry Model VVV
-# from prog_models.models import BatteryElectroChem as Battery
 
 from prog_algs import *
 

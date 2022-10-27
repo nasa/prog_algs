@@ -12,11 +12,9 @@ Results:
     ii) Time event is predicted to occur (with uncertainty)
 """
 
-from pprint import pprint
-
 from prog_models.models.thrown_object import ThrownObject
-
 from prog_algs import *
+from pprint import pprint
 
 def run_example():
     # Step 1: Setup model & future loading

@@ -73,17 +73,19 @@ class MonteCarlo(Predictor):
         event_states_all = []
 
         # Perform prediction
+        t0 = params.get('t0', 0)
         for x in state:
             first_output = self.model.output(x)
             
             time_of_event = {}
             last_state = {}
 
-            t0 = params.get('t0', 0)
-            if 'save_freq' in params and not isinstance(params['save_freq'], tuple):
-                params['save_freq'] = (t0, params['save_freq'])
-            
+            params['t0'] = t0
             params['x'] = x
+
+            if 'save_freq' in params and not isinstance(params['save_freq'], tuple):
+                params['save_freq'] = (params['t0'], params['save_freq'])
+            
             if len(params['events']) == 0:  # Predict to time
                 (times, inputs, states, outputs, event_states) = simulate_to_threshold(future_loading_eqn,       
                     first_output, 

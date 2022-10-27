@@ -11,12 +11,13 @@ from prog_models.utils.containers import DictLikeMatrixWrapper
 
 
 class UncertainData(ABC):
-    def __init__(self, _type = dict):
-        self._type = _type
-
     """
     Abstract base class for data with uncertainty. Any new uncertainty type must implement this class
     """
+
+    def __init__(self, _type = dict):
+        self._type = _type
+    
     @abstractmethod
     def sample(self, nSamples : int = 1):
         """Generate samples from data
@@ -28,7 +29,9 @@ class UncertainData(ABC):
             samples (UnweightedSamples): Array of nSamples samples
 
         Example:
-            samples = data.samples(100)
+            ::
+            
+                samples = data.samples(100)
         """
 
     @property
@@ -37,10 +40,12 @@ class UncertainData(ABC):
         """The median of the UncertainData distribution or samples 
 
         Returns:
-            Dict[str, float]: Median value. e.g., {'key1': 23.2, ...}
+            dict[str, float]: Median value. e.g., {'key1': 23.2, ...}
 
         Example:
-            median_value = data.median
+            ::
+            
+                median_value = data.median
         """
 
     @property
@@ -49,10 +54,12 @@ class UncertainData(ABC):
         """The mean of the UncertainData distribution or samples 
 
         Returns:
-            Dict[str, float]: Mean value. e.g., {'key1': 23.2, ...}
+            dict[str, float]: Mean value. e.g., {'key1': 23.2, ...}
 
         Example:
-            mean_value = data.mean
+            ::
+                
+                mean_value = data.mean
         """
 
     @property
@@ -61,7 +68,12 @@ class UncertainData(ABC):
         """The covariance matrix of the UncertiantyData distribution or samples in order of keys (i.e., cov[1][1] is the standard deviation for key keys()[1])
 
         Returns:
-            array[array[float]]: Covariance matrix
+            np.array[np.array[float]]: Covariance matrix
+
+        Example:
+            ::
+
+                covariance_matrix = data.cov
         """
 
     def relative_accuracy(self, ground_truth : dict) -> dict:
@@ -73,6 +85,11 @@ class UncertainData(ABC):
 
         Returns:
             dict[str, float]: Relative accuracy for each event where value is relative accuracy between [0,1]
+
+        Example:
+            ::
+
+                ra = data.relative_accuracy({'key1': 22, 'key2': 57})
 
         References:
             .. [0] Prognostics: The Science of Making Predictions (Goebel et al, 239)
@@ -89,7 +106,12 @@ class UncertainData(ABC):
         """Get the keys for the property represented
 
         Returns:
-            [string]: keys
+            list[str]: keys
+
+        Example:
+            ::
+                
+                keys = data.keys()
         """
 
     def __contains__(self, key):
@@ -102,12 +124,18 @@ class UncertainData(ABC):
             bounds (tuple[float, float] or dict): Lower and upper bounds. \n
                 if tuple: (lower, upper)\n
                 if dict: {key: (lower, upper), ...}
-            keys (list of strings, optional): UncertainData keys to consider when calculating. Defaults to all keys.
+            keys (list[str], optional): UncertainData keys to consider when calculating. Defaults to all keys.
             n_samples (int, optional): Number of samples to use when calculating
 
         Returns:
-            dict: Percentage within bounds for each key in keys (where 0.5 = 50%).\n
-                e.g., {'key1': 1, 'key2': 0.75}
+            dict: Percentage within bounds for each key in keys (where 0.5 = 50%). e.g., {'key1': 1, 'key2': 0.75}
+
+        Example:
+            ::
+            
+                data.percentage_in_bounds((1025, 1075))
+                data.percentage_in_bounds({'key1': (1025, 1075), 'key2': (2520, 2675)})
+                data.percentage_in_bounds((1025, 1075), keys=['key1', 'key3'])
         """
         return self.sample(n_samples).percentage_in_bounds(bounds, keys=keys)
 
@@ -117,10 +145,17 @@ class UncertainData(ABC):
         Keyword Args:
             ground_truth (int or dict, optional): Ground truth value. Defaults to None.
             n_samples (int, optional): Number of samples to use for calculating metrics (if not UnweightedSamples)
-            keys (List[str], optional): Keys to calculate metrics for. Defaults to all keys.
+            keys (list[str], optional): Keys to calculate metrics for. Defaults to all keys.
 
         Returns:
             dict: Dictionary of metrics
+
+        Example:
+            ::
+
+                print(data.metrics())
+                m = data.metrics(ground_truth={'key1': 200, 'key2': 350})
+                m = data.metrics(keys=['key1', 'key3'])
         """
         from ..metrics import calc_metrics
         return calc_metrics(self, **kwargs)
@@ -131,7 +166,7 @@ class UncertainData(ABC):
 
         Args:
             fig (Figure, optional): Existing figure previously used to plot states. If passed a figure argument additional data will be added to the plot. Defaults to creating new figure
-            keys (list of strings, optional): Keys to plot. Defaults to all keys.
+            keys (list[str], optional): Keys to plot. Defaults to all keys.
             num_samples (int, optional): Number of samples to plot. Defaults to 100
             **kwargs (optional): Additional keyword arguments passed to scatter function.
 
@@ -160,7 +195,7 @@ class UncertainData(ABC):
         Args:
             fig (MatPlotLib Figure, optional): Existing histogram figure to be overritten. Defaults to create new figure.
             num_samples (int, optional): Number of samples to plot. Defaults to 100
-            keys (List(String), optional): Keys to be plotted. Defaults to None.
+            keys (list(String), optional): Keys to be plotted. Defaults to None.
 
         Example:
             ::
@@ -190,6 +225,11 @@ class UncertainData(ABC):
         Returns:
             defaultdict
                 Dictionary of lists used to print metrics.
+        
+        Example:
+            ::
+
+                data.describe()
         """
         recursive_metrics_table = print_table_recursive(self.metrics(), title, print)
         return recursive_metrics_table

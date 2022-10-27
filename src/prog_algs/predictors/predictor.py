@@ -54,22 +54,28 @@ class Predictor(ABC):
             Distribution representing current state of the system
         future_loading_eqn : function (t, x) -> z
             Function to generate an estimate of loading at future time t, and state x
-        options : optional, keyword arguments
-            The following configuration parameters are supported: \n
-            * dt (float): Simulation step size (s), e.g., 0.1
-            * events (list[string]): Events to predict (subset of model.events) e.g., ['event1', 'event2']
-            * horizon (float): Prediction horizon (s)
-            * save_freq (float): Frequency at which results are saved (s)
-            * save_pts (list[float]): Any additional savepoints (s) e.g., [10.1, 22.5]
+
+        Keyword Arguments
+        -------------------
+        dt : float
+            Simulation step size (s), e.g., 0.1
+        events : list[str]
+            Events to predict (subset of model.events) e.g., ['event1', 'event2']
+        horizon : float
+            Prediction horizon (s)
+        save_freq : float
+            Frequency at which results are saved (s)
+        save_pts : list[float]
+            Any additional savepoints (s) e.g., [10.1, 22.5]
 
         Return
         ----------
-        results from prediction as NameTuple, including: 
-            * times (List[float]): Times for each savepoint such that inputs.snapshot(i), states.snapshot(i), outputs.snapshot(i), and event_states.snapshot(i) are all at times[i]            
-            * inputs (Prediction): Inputs at each savepoint such that inputs.snapshot(i) is the input distribution (type UncertainData) at times[i]
-            * states (Prediction): States at each savepoint such that states.snapshot(i) is the state distribution (type UncertainData) at times[i]
-            * outputs (Prediction): Outputs at each savepoint such that outputs.snapshot(i) is the output distribution (type UncertainData) at times[i]
-            * event_states (Prediction): Event states at each savepoint such that event_states.snapshot(i) is the event state distribution (type UncertainData) at times[i]
-            * time_of_event (UncertainData): Distribution of predicted Time of Event (ToE) for each predicted event, represented by some subclass of UncertaintData (e.g., MultivariateNormalDist)
+        NamedTuple
+            * times (list[float]): Times for each savepoint such that inputs.snapshot(i), states.snapshot(i), outputs.snapshot(i), and event_states.snapshot(i) are all at times[i]            
+            * inputs (:py:class:`Prediction`): Inputs at each savepoint such that inputs.snapshot(i) is the input distribution (type UncertainData) at times[i]
+            * states (:py:class:`Prediction`): States at each savepoint such that states.snapshot(i) is the state distribution (type UncertainData) at times[i]
+            * outputs (:py:class:`Prediction`): Outputs at each savepoint such that outputs.snapshot(i) is the output distribution (type UncertainData) at times[i]
+            * event_states (:py:class:`Prediction`): Event states at each savepoint such that event_states.snapshot(i) is the event state distribution (type UncertainData) at times[i]
+            * time_of_event (:py:class:`prog_algs.uncertain_data.UncertainData`): Distribution of predicted Time of Event (ToE) for each predicted event, represented by some subclass of UncertaintData (e.g., :py:class:`MultivariateNormalDist`)
         """
         pass

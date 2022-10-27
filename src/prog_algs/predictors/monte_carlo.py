@@ -23,7 +23,7 @@ class MonteCarlo(Predictor):
         Initial time at which prediction begins, e.g., 0
     dt : float
         Simulation step size (s), e.g., 0.1
-    events : List[string]
+    events : list[str]
         Events to predict (subset of model.events) e.g., ['event1', 'event2']
     horizon : float
         Prediction horizon (s)
@@ -31,7 +31,7 @@ class MonteCarlo(Predictor):
         Number of samples to use. If not specified, a default value is used. If state is type UnweightedSamples and n_samples is not provided, the provided unweighted samples will be used directly.
     save_freq : float
         Frequency at which results are saved (s)
-    save_pts : List[float]
+    save_pts : list[float]
         Any additional savepoints (s) e.g., [10.1, 22.5]
     """
 

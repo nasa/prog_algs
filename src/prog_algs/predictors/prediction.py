@@ -1,7 +1,7 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
 from collections import UserList, defaultdict, namedtuple
-from typing import Dict
+from typing import Dict, List
 from numpy import sign
 from warnings import warn
 
@@ -49,7 +49,7 @@ class Prediction():
         return self.data[time_index]
 
     @property
-    def mean(self) -> list:
+    def mean(self) -> List[dict]:
         """Estimate of the mean value of the prediction at each time
 
         Returns:
@@ -74,19 +74,15 @@ class Prediction():
         
         :math:`monotonoicity = \| \Sigma \dfrac{sign(i+1 - i)}{N-1}\|`
 
-        Where N is number of measurements and sign indicates sign of calculation.
-        
-        Coble, J., et. al. (2021). Identifying Optimal Prognostic Parameters from D
-        ata: A Genetic Algorithms Approach. Annual Conference of the PHM Society.
-        http://www.papers.phmsociety.org/index.php/phmconf/article/view/1404
-        
-        Baptistia, M., et. al. (2022). Relation between prognostics predictor evaluation metrics and local interpretability SHAP values. Aritifical Intelligence, Volume 306.
-        https://www.sciencedirect.com/science/article/pii/S0004370222000078
+        Where N is number of measurements and sign indicates sign of calculation [0]_ [1]_.
 
-        Args:
-            None
         Returns:
             dict (str, float): Value between [0, 1] indicating monotonicity of a given event for the Prediction.
+
+        References:
+            .. [0] Coble, J., et. al. (2021). Identifying Optimal Prognostic Parameters from Data: A Genetic Algorithms Approach. Annual Conference of the PHM Society. http://www.papers.phmsociety.org/index.php/phmconf/article/view/1404
+            .. [1] Baptistia, M., et. al. (2022). Relation between prognostics predictor evaluation metrics and local interpretability SHAP values. Aritifical Intelligence, Volume 306. https://www.sciencedirect.com/science/article/pii/S0004370222000078
+
         """
         # Collect and organize mean values for each event
         by_event = defaultdict(list)
@@ -108,9 +104,9 @@ class UnweightedSamplesPrediction(Prediction, UserList):
     Immutable data class for the result of a prediction, where the predictions are stored as UnweightedSamples. Is returned from the predict method of a sample based prediction class (e.g., MonteCarlo). Objects of this class can be iterated and accessed like a list (e.g., prediction[0]), where prediction[n] represents a profile for sample n.
 
     Args:
-        times : array(float)
-            Times for each data point where times[n] corresponds to data[n]
-        data : array(dict)
+        times (list[float]):
+            Times for each data point where times[n] corresponds to data[:][n]
+        data (list[SimResult]):
             Data points where data[n] is a SimResult for sample n
     """
 

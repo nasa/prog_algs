@@ -16,23 +16,27 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
     The supported configuration parameters (keyword arguments) for UKF construction are described below:
 
     Args:
-        model : ProgModel
+        model (PrognosticsModel):
             A prognostics model to be used in state estimation
             See: Prognostics Model Package
-        x0 : UncertainData, model.StateContainer, or dict
+        x0 (UncertainData, model.StateContainer, or dict):
             Initial (starting) state, with keys defined by model.states \n
             e.g., x = ScalarData({'abc': 332.1, 'def': 221.003}) given states = ['abc', 'def']
 
-    Keyword Args
-        alpha, beta, kappa: float
-            UKF Scaling parameters
-        t0 : float
+    Keyword Args:
+        alpha (float, optional):
+            UKF Scaling parameter
+        beta (float, optional):
+            UKF Scaling parameter
+        kappa (float, optional):
+            UKF Scaling parameter
+        t0 (float, optional):
             Starting time (s)
-        dt : float 
+        dt (float, optional):
             time step (s)
-        Q : List[List[float]]
+        Q (list[list[float]], optional):
             Process Noise Matrix 
-        R : List[List[float]]
+        R (list[list[float]], optional):
             Measurement Noise Matrix 
     """
     default_parameters = {

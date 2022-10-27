@@ -1,12 +1,13 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
 """
-This example extends the "basic example" to perform a state estimation and prediction with uncertainty given a more complicated. Models, state estimators, and predictors can be switched out. See documentation nasa.github.io/progpy for description of options
+This example extends the "basic example" to perform a state estimation and prediction with uncertainty given a more complicated model. Models, state estimators, and predictors can be switched out. See documentation nasa.github.io/progpy for description of options
  
 Method: An instance of the BatteryCircuit model in prog_models is created, and the prediction process is achieved in three steps:
     1) State estimation of the current state is performed using a chosen state_estimator, and samples are drawn from this estimate
     2) Prediction of future states (with uncertainty) and the times at which the event threshold will be reached
     3) Metrics tools are used to further investigate the results of prediction
+
 Results: 
     i) Predicted future values (inputs, states, outputs, event_states) with uncertainty from prediction
     ii) Time event is predicted to occur (with uncertainty)

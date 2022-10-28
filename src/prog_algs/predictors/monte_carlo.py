@@ -1,11 +1,12 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from .prediction import UnweightedSamplesPrediction, PredictionResults
-from .predictor import Predictor
 from copy import deepcopy
 from typing import Callable
 from prog_models.sim_result import SimResult, LazySimResult
 from prog_algs.uncertain_data import UnweightedSamples, UncertainData
+
+from .prediction import UnweightedSamplesPrediction, PredictionResults
+from .predictor import Predictor
 
 
 class MonteCarlo(Predictor):
@@ -22,7 +23,7 @@ class MonteCarlo(Predictor):
         Initial time at which prediction begins, e.g., 0
     dt : float
         Simulation step size (s), e.g., 0.1
-    events : List[string]
+    events : list[str]
         Events to predict (subset of model.events) e.g., ['event1', 'event2']
     horizon : float
         Prediction horizon (s)
@@ -30,7 +31,7 @@ class MonteCarlo(Predictor):
         Number of samples to use. If not specified, a default value is used. If state is type UnweightedSamples and n_samples is not provided, the provided unweighted samples will be used directly.
     save_freq : float
         Frequency at which results are saved (s)
-    save_pts : List[float]
+    save_pts : list[float]
         Any additional savepoints (s) e.g., [10.1, 22.5]
     """
 
@@ -49,11 +50,16 @@ class MonteCarlo(Predictor):
 
         params = deepcopy(self.parameters) # copy parameters
         params.update(kwargs) # update for specific run
+        params['print'] = False
+        params['progress'] = False
+
+        if len(params['events']) == 0 and 'horizon' not in params:
+            raise ValueError("If specifying no event (i.e., simulate to time), must specify horizon")
 
         # Sample from state if n_samples specified or state is not UnweightedSamples
-        state = state.sample(params['n_samples'])
+        if not isinstance(state, UnweightedSamples) or len(state) != params['n_samples']:
+            state = state.sample(params['n_samples'])
 
-        ouput_eqn = self.model.output
         es_eqn = self.model.event_state
         tm_eqn = self.model.threshold_met
         simulate_to_threshold = self.model.simulate_to_threshold
@@ -67,95 +73,97 @@ class MonteCarlo(Predictor):
         event_states_all = []
 
         # Perform prediction
+        t0 = params.get('t0', 0)
         for x in state:
-            events_remaining = params['events'].copy()
-            first_output = ouput_eqn(x)
+            first_output = self.model.output(x)
             
             time_of_event = {}
             last_state = {}
-            times = []
-            inputs = SimResult()
-            states = SimResult()
-            outputs = LazySimResult(fcn = ouput_eqn)
-            event_states = LazySimResult(fcn = es_eqn)
 
-            t0 = params.get('t0', 0)
+            params['t0'] = t0
+            params['x'] = x
+
             if 'save_freq' in params and not isinstance(params['save_freq'], tuple):
-                params['save_freq'] = (t0, params['save_freq'])
+                params['save_freq'] = (params['t0'], params['save_freq'])
             
-
-            # Non-vectorized prediction
-            while len(events_remaining) > 0:  # Still events to predict
-                (t, u, xi, z, es) = simulate_to_threshold(future_loading_eqn, first_output, 
-                    **{**params, 'threshold_keys': events_remaining, 'print': False, 'progress': False, 't0': t0, 'x': x}  # Merge then separate
+            if len(params['events']) == 0:  # Predict to time
+                (times, inputs, states, outputs, event_states) = simulate_to_threshold(future_loading_eqn,       
+                    first_output, 
+                    threshold_keys = [],
+                    **params
                 )
-                if len(times) != 0:
-                    # is not the first iteration, therefore the first saved state is when the last event 
-                    t.pop(0)
-                    u.pop(0)
-                    xi.pop(0)
-                    z.pop(0)
-                    es.pop(0)
+            else:
+                events_remaining = params['events'].copy()
 
-                # Add results
-                times.extend(t)
-                inputs.extend(u)
-                states.extend(xi)
-                outputs.extend(z)
-                event_states.extend(es)
+                times = []
+                inputs = SimResult(_copy = False)
+                states = SimResult(_copy = False)
+                outputs = LazySimResult(fcn = self.model.output, _copy = False)
+                event_states = LazySimResult(fcn = es_eqn, _copy = False)
 
-                # Get which event occurs
-                t_met = tm_eqn(states[-1])
-                t_met = {key: t_met[key] for key in events_remaining}  # Only look at remaining keys
-                try:
-                    event = list(t_met.keys())[list(t_met.values()).index(True)]
-                except ValueError:
-                    # no event has occured
-                    for event in events_remaining:
-                        time_of_event[event] = None
-                        last_state[event] = None
-                    break
+                # Non-vectorized prediction
+                while len(events_remaining) > 0:  # Still events to predict
+                    (t, u, xi, z, es) = simulate_to_threshold(future_loading_eqn,       
+                        first_output, 
+                        threshold_keys = events_remaining,
+                        **params
+                    )
 
-                # An event has occured
-                time_of_event[event] = times[-1]
-                events_remaining.remove(event)  # No longer an event to predect to
+                    # Add results
+                    times.extend(t)
+                    inputs.extend(u)
+                    states.extend(xi)
+                    outputs.extend(z, _copy = False)
+                    event_states.extend(es, _copy = False)
 
-                # Remove last state (event)
-                t0 = times.pop()
-                inputs.pop()
-                x = states.pop()
-                last_state[event] = x.copy()
-                outputs.pop()
-                event_states.pop()
+                    # Get which event occurs
+                    t_met = tm_eqn(states[-1])
+                    t_met = {key: t_met[key] for key in events_remaining}  # Only look at remaining keys
+
+                    try:
+                        event = list(t_met.keys())[list(t_met.values()).index(True)]
+                    except ValueError:
+                        # no event has occured - hit horizon
+                        for event in events_remaining:
+                            time_of_event[event] = None
+                            last_state[event] = None
+                        break
+
+                    # An event has occured
+                    time_of_event[event] = times[-1]
+                    events_remaining.remove(event)  # No longer an event to predect to
+
+                    # Remove last state (event)
+                    params['t0'] = times.pop()
+                    inputs.pop()
+                    params['x'] = states.pop()
+                    last_state[event] = params['x'].copy()
+                    outputs.pop()
+                    event_states.pop()
             
             # Add to "all" structures
-            times_all.append(times)
+            if len(times) > len(times_all): # Keep longest
+                times_all = times
             inputs_all.append(inputs)
             states_all.append(states)
             outputs_all.append(outputs)
             event_states_all.append(event_states)
             time_of_event_all.append(time_of_event)
             last_states.append(last_state)
-        
-        # Return longest time array
-        times_length = [len(t) for t in times_all]
-        times_max_len = max(times_length)
-        times = times_all[times_length.index(times_max_len)] 
-        
-        inputs_all = UnweightedSamplesPrediction(times, inputs_all)
-        states_all = UnweightedSamplesPrediction(times, states_all)
-        outputs_all = UnweightedSamplesPrediction(times, outputs_all)
-        event_states_all = UnweightedSamplesPrediction(times, event_states_all)
+              
+        inputs_all = UnweightedSamplesPrediction(times_all, inputs_all)
+        states_all = UnweightedSamplesPrediction(times_all, states_all)
+        outputs_all = UnweightedSamplesPrediction(times_all, outputs_all)
+        event_states_all = UnweightedSamplesPrediction(times_all, event_states_all)
         time_of_event = UnweightedSamples(time_of_event_all)
 
         # Transform final states:
-        last_states = {
+        time_of_event.final_state = {
             key: UnweightedSamples([sample[key] for sample in last_states], _type = self.model.StateContainer) for key in time_of_event.keys()
         }
-        time_of_event.final_state = last_states
 
         return PredictionResults(
-            times, 
+            times_all, 
             inputs_all, 
             states_all, 
             outputs_all, 

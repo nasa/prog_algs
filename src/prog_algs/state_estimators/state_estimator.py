@@ -1,12 +1,11 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from abc import ABC, abstractmethod, abstractproperty
-from typing import Callable
+from copy import deepcopy
 
 from ..uncertain_data import UncertainData
 from ..exceptions import ProgAlgTypeError
-from copy import deepcopy
-from warnings import warn
+
 
 class StateEstimator(ABC):
     """
@@ -15,22 +14,21 @@ class StateEstimator(ABC):
     Abstract base class for creating state estimators that perform state estimation. Subclasses must implement this interface. Equivilant to "Observers" in NASA's Matlab Prognostics Algorithm Library
 
     Args:
-        model : ProgModel
+        model (PrognosticsModel):
             A prognostics model to be used in state estimation
             See: Prognostics Model Package
-        x0 : UncertainData, model.StateContainer, or dict
+        x0 (UncertainData, model.StateContainer, or dict):
             Initial (starting) state, with keys defined by model.states \n
             e.g., x = ScalarData({'abc': 332.1, 'def': 221.003}) given states = ['abc', 'def']
-        options : optional, kwargs
-            configuration options\n
-            Dictionary of any additional configuration values. See state-estimator specific documentation
+    
+    See state-estimator specific documentation for speicfic keyword arguments.
     """
 
     default_parameters = {
         't0': 0
     }
 
-    def __init__(self, model, x0, measurement_eqn : Callable = None, **kwargs):
+    def __init__(self, model, x0, **kwargs):
         # Check model
         if not hasattr(model, 'output'):
             raise ProgAlgTypeError("model must have `output` method")
@@ -42,17 +40,10 @@ class StateEstimator(ABC):
             raise ProgAlgTypeError("model must have `states` property")
         self.model = model
 
-        if measurement_eqn is not None:
-            warn('Measurement_eqn was deprecated in v1.3 in favor of model subclassing. I will remove this in v1.4. See measurement_equation example for more information', DeprecationWarning)
-
         # Check x0
         for key in model.states:
             if key not in x0:
                 raise ProgAlgTypeError("x0 missing state `{}`".format(key))
-        
-        # Check measurement equation
-        if measurement_eqn and not callable(measurement_eqn):
-            raise ProgAlgTypeError("measurement_eqn must be callable")
         
         # Process kwargs (configuration)
         self.parameters = deepcopy(self.default_parameters)
@@ -70,12 +61,12 @@ class StateEstimator(ABC):
         t : float
             Current timestamp in seconds (≥ 0.0)
             e.g., t = 3.4
-        u : dict
+        u : InputContainer
             Measured inputs, with keys defined by model.inputs.
-            e.g., u = {'i':3.2} given inputs = ['i']
-        z : dict
+            e.g., u = m.InputContainer({'i':3.2}) given inputs = ['i']
+        z : OutputContainer
             Measured outputs, with keys defined by model.outputs.
-            e.g., z = {'t':12.4, 'v':3.3} given inputs = ['t', 'v']
+            e.g., z = m.OutputContainer({'t':12.4, 'v':3.3}) given outputs = ['t', 'v']
 
         Note
         ----

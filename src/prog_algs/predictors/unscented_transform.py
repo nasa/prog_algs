@@ -1,11 +1,12 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from typing import Callable
-from .prediction import Prediction, UnweightedSamplesPrediction, PredictionResults
-from .predictor import Predictor
-from numpy import diag, array, transpose, isnan
 from copy import deepcopy
 from filterpy import kalman
+from numpy import diag, array, transpose, isnan
+from typing import Callable
+
+from .prediction import Prediction, UnweightedSamplesPrediction, PredictionResults
+from .predictor import Predictor
 from prog_algs.uncertain_data import MultivariateNormalDist, UncertainData, ScalarData
 
 
@@ -69,13 +70,13 @@ class UnscentedTransformPredictor(Predictor):
         Initial time at which prediction begins, e.g., 0
     dt : float
         Simulation step size (s), e.g., 0.1
-    events : List[string]
+    events : list[str]
         Events to predict (subset of model.events) e.g., ['event1', 'event2']
     horizon : float
         Prediction horizon (s)
     save_freq : float
         Frequency at which results are saved (s)
-    save_pts : List[float]
+    save_pts : list[float]
         Any additional savepoints (s) e.g., [10.1, 22.5]
 
     Note
@@ -105,15 +106,15 @@ class UnscentedTransformPredictor(Predictor):
 
         if 'Q' not in self.parameters:
             # Default 
-            self.parameters['Q'] = diag([1.0e-1 for i in range(num_states)])
+            self.parameters['Q'] = diag([1.0e-8 for _ in range(num_states)])
         
         def measure(x):
-            x = model.StateContainer({key: value for (key, value) in zip(self.__state_keys, x)})
+            x = model.StateContainer(x)
             z = model.output(x)
-            return model.OutputContainer({array(list(z.values()))})
+            return model.OutputContainer(z)
 
         def state_transition(x, dt):
-            x = model.StateContainer({key: value for (key, value) in zip(self.__state_keys, x)})
+            x = model.StateContainer(x)
             x = model.next_state(x, self.__input, dt)
             x = model.apply_limits(x)
             return array(list(x.values()))
@@ -155,9 +156,11 @@ class UnscentedTransformPredictor(Predictor):
         event_states: [[dict]]
             Estimated event state (e.g., SOH), between 1-0 where 0 is event occurance, for each sample and time in times
             where event_states[sample_id][index] corresponds to time times[sample_id][index]
-        toe: UncertainData
+        time_of_event: UncertainData
             Estimated time where a predicted event will occur for each sample. Note: Mean and Covariance Matrix will both 
             be nan if every sigma point doesnt reach threshold within horizon
+            Also, includes member final_state (time_of_event.final_state) which is the state at the last time step. 
+            time_of_event.final_state is a dict of the form {'state_name': state_value}, is equal to None if event does not occur within horizon
         """
         if isinstance(state, dict) or isinstance(state, self.model.StateContainer) or isinstance(state, ScalarData):
             raise TypeError("state must be a distribution (e.g., MultivariateNormalDist, UnweightedSamples), not scalar")
@@ -168,9 +171,12 @@ class UnscentedTransformPredictor(Predictor):
 
         params = deepcopy(self.parameters) # copy parameters
         params.update(kwargs) # update for specific run
-        events_to_predict = params['events']
+
+        if len(params['events']) == 0 and 'horizon' not in params:
+            raise ValueError("If specifying no event (i.e., simulate to time), must specify horizon")
 
         # Optimizations 
+        events_to_predict = params['events']
         dt = params['dt']
         model = self.model
         filt = self.filter
@@ -188,7 +194,7 @@ class UnscentedTransformPredictor(Predictor):
         t = params['t0']
         save_pt_index = 0
         ToE = {key: [float('nan') for i in range(n_points)] for key in events_to_predict}  # Keep track of final ToE values
-        last_state = {key: [float('nan') for i in range(n_points)] for key in events_to_predict}  # Keep track of final state values
+        last_state = {key: [None for i in range(n_points)] for key in events_to_predict}  # Keep track of final state values
 
         times = []
         inputs = []
@@ -225,7 +231,8 @@ class UnscentedTransformPredictor(Predictor):
             points = sigma_points.sigma_points(filt.x, filt.P)
             all_failed = True
             for i, point in zip(range(n_points), points):
-                x = StateContainer({key: x for (key, x) in zip(state_keys, point)})
+                # x = StateContainer({key: x for (key, x) in zip(state_keys, point)})
+                x = StateContainer(point)
                 t_met = threshold_met(x)
 
                 # Check Thresholds
@@ -249,6 +256,10 @@ class UnscentedTransformPredictor(Predictor):
         # Transform final state into {event_name: MultivariateNormalDist}
         final_state = {}
         for event_key in last_state.keys():
+            if any([last_state_i is None for last_state_i in last_state[event_key]]):
+                # If any sigma point has not met the event threshold
+                final_state[event_key] = None
+                continue
             last_state_pts = array([[last_state_i[state_key] for state_key in state_keys] for last_state_i in last_state[event_key]])
             # last_state_pts = transpose(last_state_pts)
             last_state_mean, last_state_cov = kalman.unscented_transform(last_state_pts, sigma_points.Wm, sigma_points.Wc)

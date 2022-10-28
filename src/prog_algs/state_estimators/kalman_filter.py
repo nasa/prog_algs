@@ -1,11 +1,12 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from copy import deepcopy
-from typing import Callable
+from filterpy import kalman
 import numpy as np
 from warnings import warn
-from filterpy import kalman
+
 from prog_models import LinearModel
+
 from . import state_estimator
 from ..uncertain_data import MultivariateNormalDist, UncertainData
 
@@ -18,27 +19,24 @@ class KalmanFilter(state_estimator.StateEstimator):
     The supported configuration parameters (keyword arguments) for UKF construction are described below:
 
     Args:
-        model : ProgModel
+        model (PrognosticsModel):
             A prognostics model to be used in state estimation
             See: Prognostics Model Package
-        x0 : UncertainData, model.StateContainer, or dict
+        x0 (UncertainData, model.StateContainer, or dict):
             Initial (starting) state, with keys defined by model.states \n
             e.g., x = ScalarData({'abc': 332.1, 'def': 221.003}) given states = ['abc', 'def']
 
     Keyword Args:
-        alpha: float
+        alpha (float, optional):
             KF Scaling parameter. An alpha > 1 turns this into a fading memory filter.
-        t0 : float
+        t0 (float, optional):
             Starting time (s)
-        dt : float 
+        dt (float, optional):
             time step (s)
-        Q : List[List[float]]
-            Process Noise Matrix 
-        R : List[List[float]]
-            Measurement Noise Matrix
-
-    Note:
-        The Kalman Filter does not support a custom measurement function
+        Q (list[list[float]], optional):
+            Kalman Process Noise Matrix 
+        R (list[list[float]], optional):
+            Kalman Measurement Noise Matrix
     """
     default_parameters = {
         'alpha': 1, 
@@ -46,12 +44,12 @@ class KalmanFilter(state_estimator.StateEstimator):
         'dt': 1
     } 
     
-    def __init__(self, model, x0, measurement_eqn : Callable = None, **kwargs):
+    def __init__(self, model, x0, **kwargs):
         # Note: Measurement equation kept in constructor to keep it consistent with other state estimators. This way measurement equation can be provided as an ordered argument, and will just be ignored here
         if not isinstance(model, LinearModel):
             raise Exception('Kalman Filter only supports Linear Models (i.e., models derived from prog_models.LinearModel)')
 
-        super().__init__(model, x0, None, **kwargs)
+        super().__init__(model, x0, **kwargs)
 
         self.x0 = x0
 

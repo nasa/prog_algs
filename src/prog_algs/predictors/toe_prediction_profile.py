@@ -45,7 +45,7 @@ class ToEPredictionProfile(UserDict):
         """Calculate Alpha lambda metric for the prediction profile
 
         Args:
-            ground_truth (Dict[str, float]):
+            ground_truth (dict[str, float]):
                 Ground Truth time of event for each event (e.g., {'event1': 748, 'event2', 2233, ...})
             lambda_value (float):
                 Prediction time at or after which metric is evaluated. Evaluation occurs at this time (if a prediction exists) or the next prediction following.
@@ -53,13 +53,15 @@ class ToEPredictionProfile(UserDict):
                 percentage bounds around time to event (where 0.2 allows 20% error TtE)
             beta (float):
                 portion of prediction that must be within those bounds
-            kwargs (optional, keyword arguments):
-                configuration arguments. Accepted args include: \n
-                 * keys (list[string]): list of keys to use. If not provided, all keys are used.
-                 * print (bool) : If True, print the results. Default is False.
+
+        Keyword Args:
+            keys (list[str], optional): 
+                list of keys to use. If not provided, all keys are used.
+            print (bool, optional)
+                If True, print the results to the screen. Default is False.
 
         Returns:
-            Dict[str, bool]: If alpha lambda was met for each key (e.g., {'event1': True, 'event2', False, ...})
+            dict[str, bool]: If alpha lambda was met for each key (e.g., {'event1': True, 'event2', False, ...})
         """
         from ..metrics import alpha_lambda
         return alpha_lambda(self, ground_truth, lambda_value, alpha, beta, **kwargs)
@@ -68,7 +70,7 @@ class ToEPredictionProfile(UserDict):
         """
         Compute prognostic horizon metric, defined as the difference between a time ti, when the predictions meet specified performance criteria, and the time corresponding to the true Time of Event (ToE), for each event.
 
-        PH = ToE - ti
+        :math:`PH = ToE - ti`
 
         Args:
             toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions
@@ -79,8 +81,10 @@ class ToEPredictionProfile(UserDict):
                 | Returns: Map of event names to boolean representing if the event has been met. 
                 |   e.g., {'event1': True, 'event2': False}
             ground_truth (dict): Dictionary containing ground truth; specified as key, value pairs for event and its value. E.g, {'event1': 47.3, 'event2': 52.1, 'event3': 46.1}
-            kwargs (optional): configuration arguments. Accepted args include:
-                * print (bool): Boolean specifying whether the prognostic horizon metric should be printed.
+        
+        Keyword Args:
+            print (bool): 
+                Boolean specifying whether the prognostic horizon metric should be printed.
 
         Returns:
             dict: Dictionary containing prognostic horizon calculations (value) for each event (key). e.g., {'event1': 12.3, 'event2': 15.1}
@@ -88,43 +92,44 @@ class ToEPredictionProfile(UserDict):
         from ..metrics import prognostic_horizon
         return prognostic_horizon(self, criteria_eqn, ground_truth, **kwargs)
 
-
     def cumulative_relative_accuracy(self, ground_truth, **kwargs) -> Dict[str, float]:
-        """
+        r"""
         Compute cumulative relative accuracy for a given profile, defined as the normalized sum of relative prediction accuracies at specific time instances.
         
-        CRA = Σ(RA)/N for each event
+        :math:`CRA = \Sigma \left( \dfrac{RA}{N} \right)` for each event
 
-        Where Σ is summation of all relative accuracies for a given profile and N is the total count of profiles (Journal Prognostics Health Management, Saxena et al.)
+        Where :math:`\Sigma` is summation of all relative accuracies for a given profile and N is the total count of profiles [0]_
 
         Args:
             ground_truth (dict): Dictionary containing ground truth; specified as key, value pairs for event and its value. E.g, {'event1': 47.3, 'event2': 52.1, 'event3': 46.1}
 
         Returns:
             dict: Dictionary containing cumulative relative accuracy (value) for each event (key). e.g., {'event1': 12.3, 'event2': 15.1}
+
+        References:
+            .. [0] Journal Prognostics Health Management, Saxena et al.
         """
         from ..metrics import cumulative_relative_accuracy
         return cumulative_relative_accuracy(self, ground_truth, **kwargs)
 
     def monotonicity(self, **kwargs) -> Dict[str, float]:
-        """Calculate monotonicty for a prediction profile. 
+        r"""Calculate monotonicty for a prediction profile. 
         Given a prediction profile, for each prediction: go through all predicted states and compare those to the next one.
-        Calculates monotonicity for each prediction key using its associated mean value in UncertainData.
+        Calculates monotonicity for each prediction key using its associated mean value in :py:class:`prog_algs.uncertain_data.UncertainData`.
         
-        monotonoicity = |Σsign(i+1 - i) / N-1|
+        :math:`monotonoicity = \|\Sigma \left( \dfrac{sign(i+1 - i)}{N-1} \right) \|`
 
-        Where N is number of measurements and sign indicates sign of calculation.
-
-        Coble, J., et. al. (2021). Identifying Optimal Prognostic Parameters from Data: A Genetic Algorithms Approach. Annual Conference of the PHM Society.
-        http://www.papers.phmsociety.org/index.php/phmconf/article/view/1404
-
-        Baptistia, M., et. al. (2022). Relation between prognostics predictor evaluation metrics and local interpretability SHAP values. Aritifical Intelligence, Volume 306.
-        https://www.sciencedirect.com/science/article/pii/S0004370222000078
+        Where N is number of measurements and sign indicates sign of calculation. [0]_ [1]_
 
         Args:
             toe_profile (ToEPredictionProfile): A profile of predictions, the combination of multiple predictions
+        
         Returns:
             dict (str, dict): Dictionary where keys represent a profile and dict is a subdictionary representing an event and its respective monotonicitiy value between [0, 1].
+
+        References:
+            .. [1] Coble, J., et. al. (2021). Identifying Optimal Prognostic Parameters from Data: A Genetic Algorithms Approach. Annual Conference of the PHM Society. http://www.papers.phmsociety.org/index.php/phmconf/article/view/1404
+            .. [2] Baptistia, M., et. al. (2022). Relation between prognostics predictor evaluation metrics and local interpretability SHAP values. Aritifical Intelligence, Volume 306. https://www.sciencedirect.com/science/article/pii/S0004370222000078
         """
         from ..metrics import monotonicity
         return monotonicity(self, **kwargs)
@@ -133,15 +138,15 @@ class ToEPredictionProfile(UserDict):
         """Produce an alpha-beta plot depicting the TtE distribution by time of prediction for each event.
 
         Args:
-            ground_truth : dict
+            ground_truth (dict):
                 Optional dictionary argument containing event and its respective ground truth value; none by default and plotted if specified
-            alpha : float
+            alpha (float):
                 Optional alpha value; none by default and plotted if specified
-            show : bool
+            show (bool):
                 Optional bool value; specify whether to display generated plots. Default is true
         
         Returns:
-            dict[str, Figure]
+            dict[str, Figure] :
                 Collection of generated matplotlib figures for each event in profile\n
                 e.g., {'event1': Fig, 'event2': Fig}
         

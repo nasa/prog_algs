@@ -10,6 +10,7 @@ from prog_algs.state_estimators import StateEstimator
 from prog_algs.uncertain_data import ScalarData
 import random
 
+
 class BlindlyStumbleEstimator(StateEstimator):
     """
     A new state estimator. This is not a very effective state estimator, but one that technically works. It blindly stumbles towards the correct state by randomly generating a new state each timestep and selecting the state that's most consistant with the measurements.

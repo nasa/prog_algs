@@ -234,10 +234,10 @@ class TestStateEstimators(unittest.TestCase):
         self.__incorrect_input_tests(UnscentedKalmanFilter)
 
     def test_PF(self):
-        m = ThrownObject(process_noise={'x': 1, 'v': 3}, measurement_noise=1, num_particles = 1000)
+        m = ThrownObject(process_noise={'x': 0.75, 'v': 0.75}, measurement_noise=1)
         x_guess = {'x': 1.75, 'v': 38.5} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
 
-        filt = ParticleFilter(m, x_guess)
+        filt = ParticleFilter(m, x_guess, num_particles = 1000)
         self.__test_state_est(filt, m)
 
         # Test ParticleFilter ScalarData
@@ -273,69 +273,15 @@ class TestStateEstimators(unittest.TestCase):
                 self.assertAlmostEqual(filt_us.x.cov[i][j], x_us.cov[i][j], delta=0.1)
 
         # Test x0 if-else Control
-        # Case 0: Both isinstance(x0, UncertainData) and x0_uncertainty parameter provided; expect x0_uncertainty to be skipped
+        # Case 0: isinstance(x0, UncertainData) 
         x_scalar = ScalarData({'x': 1.75, 'v': 38.5}) # Testing with ScalarData
-        filt_scalar = ParticleFilter(m, x_scalar, num_particles = 20, x0_uncertainty = 0.5) # Sample count does not affect ScalarData testing
+        filt_scalar = ParticleFilter(m, x_scalar, num_particles = 20) # Sample count does not affect ScalarData testing
         mean1 = filt_scalar.x.mean
         mean2 = x_scalar.mean
         self.assertSetEqual(set(mean1.keys()), set(mean2.keys()))
         for k in mean1.keys():
             self.assertEqual(mean1[k], mean2[k])
         self.assertTrue((filt_scalar.x.cov == x_scalar.cov).all())
-        # Case 1: Only x0_uncertainty provided; expect a warning issued
-        with self.assertWarns(Warning):
-            filt_scalar = ParticleFilter(m, {'x': 1.75, 'v': 38.5}, x0_uncertainty = 0.5)
-        # Case 2: Raise ProgAlgTypeError if x0 not UncertainData or x0_uncertainty not of type {{dict, Number}}.
-        with self.assertRaises(ProgAlgTypeError):
-            filt_scalar = ParticleFilter(m, {'x': 1.75, 'v': 38.5}, num_particles = 20, x0_uncertainty = [])
-
-    def test_measurement_eq_UKF(self):
-        m = MockProgModel2()
-        x0 = m.initialize()
-
-        # Setup
-        filt = UnscentedKalmanFilter(m, x0)
-        
-        # Try using
-        filt.estimate(0.2, {'i1': 1, 'i2': 2}, {'o1': -2.0, 'o2': 7})
-
-        # Add Measurement eqn
-        def measurement_eqn(x):
-            z = m.output(x)
-            del z['o2']
-            return z
-        filt = UnscentedKalmanFilter(m, x0, measurement_eqn=measurement_eqn)
-        filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0})
-
-        # New Measurement eqn method
-        class MyModel(MockProgModel2):
-            outputs = ['o1']
-        filt = UnscentedKalmanFilter(MyModel(), x0)
-        filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0})
-
-    def test_measurement_eq_PF(self):
-        m = MockProgModel2()
-        x0 = m.initialize()
-
-        # Setup
-        filt = ParticleFilter(m, x0)
-        
-        # This one should work
-        filt.estimate(0.2, {'i1': 1, 'i2': 2}, {'o1': -2.0, 'o2': 7})
-
-        # Add Measurement eqn
-        def measurement_eqn(x):
-            z = m.output(x)
-            del z['o2']
-            return z
-        filt = ParticleFilter(m, x0, measurement_eqn=measurement_eqn)
-        filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0}) 
-
-        # New Measurement eqn method
-        class MyModel(MockProgModel2):
-            outputs = ['o1']
-        filt = ParticleFilter(MyModel(), x0)
-        filt.estimate(0.1, {'i1': 1, 'i2': 2}, {'o1': -2.0})
         
     def test_PF_incorrect_input(self):
         self.__incorrect_input_tests(ParticleFilter)

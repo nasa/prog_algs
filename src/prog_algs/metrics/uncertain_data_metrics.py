@@ -7,6 +7,7 @@ from typing import Iterable, Union
 from numpy import isscalar, mean, std, array
 from scipy import stats
 from warnings import warn
+
 from ..uncertain_data import UncertainData, UnweightedSamples
 
 def calc_metrics(data : UncertainData, ground_truth : Union[float, dict] = None, **kwargs) -> dict:
@@ -30,6 +31,8 @@ def calc_metrics(data : UncertainData, ground_truth : Union[float, dict] = None,
     if isinstance(data, UncertainData):
         # Default to all keys
         keys = params.setdefault('keys', data.keys())
+        if isinstance(keys, str):
+            keys = [keys]
         
         if ground_truth and isscalar(ground_truth):
             # If ground truth is scalar, create dict (expected below)

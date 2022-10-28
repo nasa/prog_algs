@@ -1,10 +1,13 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 
-from . import UncertainData
 from collections import UserList
 from collections.abc import Iterable
 from numpy import array, cov, random
 from warnings import warn
+
+from prog_models.utils.containers import DictLikeMatrixWrapper
+
+from . import UncertainData
 
 
 class UnweightedSamples(UncertainData, UserList):
@@ -19,7 +22,7 @@ class UnweightedSamples(UncertainData, UserList):
     """
     def __init__(self, samples : list = [], _type = dict):
         super().__init__(_type)
-        if isinstance(samples, dict):
+        if isinstance(samples, dict) or isinstance(samples, DictLikeMatrixWrapper):
             # Is in form of {key: [value, ...], ...}
             # Convert to array of samples
             if len(samples.keys()) == 0:
@@ -163,6 +166,8 @@ class UnweightedSamples(UncertainData, UserList):
     def percentage_in_bounds(self, bounds, keys : list = None) -> dict:
         if not keys:
             keys = self.keys()
+        if isinstance(keys, str):
+            keys = [keys]
         if isinstance(bounds, list):
             bounds = {key: bounds for key in self.keys()}
         if not isinstance(bounds, dict) or all([isinstance(b, list) and len(b) == 2 for b in bounds]):

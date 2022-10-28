@@ -3,7 +3,6 @@
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 from numpy import array
-
 from typing import List
 
 def plot_hist(samples : array, fig : Figure = None, keys : List[str] = None, **kwargs) -> Figure:

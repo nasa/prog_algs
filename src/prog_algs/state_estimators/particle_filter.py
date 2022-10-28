@@ -1,15 +1,15 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from prog_algs.uncertain_data.uncertain_data import UncertainData
-from typing import Callable
-from . import state_estimator
-from numpy import array, empty, random, take, exp, max, take
 from filterpy.monte_carlo import residual_resample
-from numbers import Number
+from numpy import array, empty, take, exp, max, take
 from scipy.stats import norm
-from ..uncertain_data import UnweightedSamples
-from ..exceptions import ProgAlgTypeError
 from warnings import warn
+
+from prog_models.utils.containers import DictLikeMatrixWrapper
+
+from . import state_estimator
+from ..uncertain_data import UnweightedSamples, ScalarData, UncertainData
+from ..exceptions import ProgAlgTypeError
 
 
 class ParticleFilter(state_estimator.StateEstimator):
@@ -21,69 +21,44 @@ class ParticleFilter(state_estimator.StateEstimator):
     The supported configuration parameters (keyword arguments) for UKF construction are described below:
 
     Args:
-        model : ProgModel
+        model (PrognosticsModel):
             A prognostics model to be used in state estimation
             See: Prognostics Model Package
-        x0 : UncertainData, model.StateContainer, or dict
+        x0 (UncertainData, model.StateContainer, or dict):
             Initial (starting) state, with keys defined by model.states \n
             e.g., x = ScalarData({'abc': 332.1, 'def': 221.003}) given states = ['abc', 'def']
 
     Keyword Args:
-        t0 : float
+        t0 (float, optional):
             Starting time (s)
-        dt : float 
+        dt (float, optional): 
             time step (s)
-        num_particles : int
+        num_particles (int, optional):
             Number of particles in particle filter
-        resample_fcn : function 
+        resample_fcn (function, optional):
             Resampling function ([weights]) -> [indexes] e.g., filterpy.monte_carlo.residual_resample
     """
     default_parameters = {
             't0': -1e-99,  # practically 0, but allowing for a 0 first estimate
             'num_particles': 20, 
             'resample_fcn': residual_resample,
-            'x0_uncertainty': 0.5
         }
 
-    def __init__(self, model, x0, measurement_eqn : Callable = None, **kwargs):
-        super().__init__(model, x0, measurement_eqn = measurement_eqn, **kwargs)
+    def __init__(self, model, x0, **kwargs):
+        super().__init__(model, x0, **kwargs)
         
-        if measurement_eqn:
-            warn("Warning: measurement_eqn depreciated as of v1.3.1, will be removed in v1.4. Use Model subclassing instead. See examples.measurement_eqn_example")
-            # update output_container
-            from prog_models.utils.containers import DictLikeMatrixWrapper
-            z0 = measurement_eqn(x0)
-            class MeasureContainer(DictLikeMatrixWrapper):
-                def __init__(self, z):
-                    super().__init__(list(z0.keys()), z)
+        self._measure = model.output
 
-            def __measure(x):
-                return MeasureContainer(measurement_eqn(x))
-                
-            self._measure = __measure
-        else:
-            self._measure = model.output
-
-        # Caching for optimization
-        paramters_x0_exist = 'x0_uncertainty' in self.parameters
-        if paramters_x0_exist: # Only create these optimizations if x0_uncertainty exists as key in self.parameters
-            parameters_x0_dict, parameters_x0_num = isinstance(self.parameters['x0_uncertainty'], dict), isinstance(self.parameters['x0_uncertainty'], Number)
         # Build array inplace
-        if isinstance(x0, UncertainData):
-            sample_gen = x0.sample(self.parameters['num_particles'])
-            samples = [array(sample_gen.key(k)) for k in x0.keys()]
-        elif paramters_x0_exist and (parameters_x0_dict or parameters_x0_num):
-            warn("Warning: x0_uncertainty depreciated as of v1.3, will be removed in v1.4. Use UncertainData type if estimating filtering with uncertain data.")
-            x = array(list(x0.values()))
-            if parameters_x0_dict:
-                sd = array([self.parameters['x0_uncertainty'][key] for key in x0.keys()])
-            elif parameters_x0_num:
-                sd = array([self.parameters['x0_uncertainty']] * len(x0))
-            samples = [random.normal(x[i], sd[i], self.parameters['num_particles']) for i in range(len(x))]
-        else:
-            raise ProgAlgTypeError("ProgAlgTypeError: x0 must be of type UncertainData or x0_uncertainty must be of type [dict, Number].")
-        self.particles = dict(zip(x0.keys(), samples))
+        if isinstance(x0, DictLikeMatrixWrapper) or isinstance(x0, dict):
+            x0 = ScalarData(x0)
+        elif not isinstance(x0, UncertainData):
+            raise ProgAlgTypeError(f"ProgAlgTypeError: x0 must be of type UncertainData or StateContainer, was {type(x0)}.")
 
+        sample_gen = x0.sample(self.parameters['num_particles'])
+        samples = [array(sample_gen.key(k)) for k in x0.keys()]
+        
+        self.particles = model.StateContainer(array(samples))
 
         if 'R' in self.parameters:
             # For backwards compatibility
@@ -99,6 +74,12 @@ class ParticleFilter(state_estimator.StateEstimator):
         assert t > self.t, "New time must be greater than previous"
         dt = t - self.t
         self.t = t
+
+        # Check Types
+        if isinstance(u, dict):
+            u = self.model.InputContainer(u)
+        if isinstance(z, dict):
+            z = self.model.OutputContainer(z)
 
         # Optimization
         particles = self.particles
@@ -162,7 +143,7 @@ class ParticleFilter(state_estimator.StateEstimator):
                    for state in self.particles.keys()]
 
         # Particles as a dictionary
-        self.particles = dict(zip(self.particles.keys(), samples))
+        self.particles = self.model.StateContainer(array(samples))
 
     @property
     def x(self) -> UnweightedSamples:

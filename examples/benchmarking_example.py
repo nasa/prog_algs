@@ -17,24 +17,33 @@ from prog_models.models import BatteryCircuit as Battery
 # VVV Uncomment this to use Electro Chemistry Model VVV
 # from prog_models.models import BatteryElectroChem as Battery
 
-from prog_algs import *
+from prog_algs import state_estimators, predictors
+from prog_algs.metrics import samples as metrics 
+import time  # For timing prediction
 
 def run_example():
     # Step 1: Setup Model and Future Loading
     batt = Battery()
-    def future_loading(t, x={}):
+    
+    # Creating the input containers outside of the function accelerates prediction
+    loads = [
+        batt.InputContainer({'i': 2}),
+        batt.InputContainer({'i': 1}),
+        batt.InputContainer({'i': 4}),
+        batt.InputContainer({'i': 2}),
+        batt.InputContainer({'i': 3})
+    ]
+    def future_loading(t, x = None):
         # Variable (piece-wise) future loading scheme 
         if (t < 600):
-            i = 2
+            return loads[0]
         elif (t < 900):
-            i = 1
+            return loads[1]
         elif (t < 1800):
-            i = 4
+            return loads[2]
         elif (t < 3000):
-            i = 2
-        else:
-            i = 3
-        return batt.InputContainer({'i': i})
+            return loads[3]
+        return loads[-1]
 
     # Step 2: Setup Predictor 
     pred = predictors.MonteCarlo(batt, dt= 0.05)
@@ -51,8 +60,6 @@ def run_example():
     # Step 4: Benchmark Predictions
     # Here we're comparing the results given different numbers of samples
     print('Benchmarking...')
-    import time  # For timing prediction
-    from prog_algs.metrics import samples as metrics 
 
     # Perform benchmarking for each number of samples
     sample_counts = [1, 2, 5, 10]

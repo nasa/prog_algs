@@ -21,21 +21,21 @@ class ParticleFilter(state_estimator.StateEstimator):
     The supported configuration parameters (keyword arguments) for UKF construction are described below:
 
     Args:
-        model : ProgModel
+        model (PrognosticsModel):
             A prognostics model to be used in state estimation
             See: Prognostics Model Package
-        x0 : UncertainData, model.StateContainer, or dict
+        x0 (UncertainData, model.StateContainer, or dict):
             Initial (starting) state, with keys defined by model.states \n
             e.g., x = ScalarData({'abc': 332.1, 'def': 221.003}) given states = ['abc', 'def']
 
     Keyword Args:
-        t0 : float
+        t0 (float, optional):
             Starting time (s)
-        dt : float 
+        dt (float, optional): 
             time step (s)
-        num_particles : int
+        num_particles (int, optional):
             Number of particles in particle filter
-        resample_fcn : function 
+        resample_fcn (function, optional):
             Resampling function ([weights]) -> [indexes] e.g., filterpy.monte_carlo.residual_resample
     """
     default_parameters = {

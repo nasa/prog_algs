@@ -1,11 +1,12 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from typing import Callable
-from .prediction import Prediction, UnweightedSamplesPrediction, PredictionResults
-from .predictor import Predictor
-from numpy import diag, array, transpose, isnan
 from copy import deepcopy
 from filterpy import kalman
+from numpy import diag, array, transpose, isnan
+from typing import Callable
+
+from .prediction import Prediction, UnweightedSamplesPrediction, PredictionResults
+from .predictor import Predictor
 from prog_algs.uncertain_data import MultivariateNormalDist, UncertainData, ScalarData
 
 
@@ -69,13 +70,13 @@ class UnscentedTransformPredictor(Predictor):
         Initial time at which prediction begins, e.g., 0
     dt : float
         Simulation step size (s), e.g., 0.1
-    events : List[string]
+    events : list[str]
         Events to predict (subset of model.events) e.g., ['event1', 'event2']
     horizon : float
         Prediction horizon (s)
     save_freq : float
         Frequency at which results are saved (s)
-    save_pts : List[float]
+    save_pts : list[float]
         Any additional savepoints (s) e.g., [10.1, 22.5]
 
     Note

@@ -1,11 +1,12 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
-from .prediction import UnweightedSamplesPrediction, PredictionResults
-from .predictor import Predictor
 from copy import deepcopy
 from typing import Callable
 from prog_models.sim_result import SimResult, LazySimResult
 from prog_algs.uncertain_data import UnweightedSamples, UncertainData
+
+from .prediction import UnweightedSamplesPrediction, PredictionResults
+from .predictor import Predictor
 
 
 class MonteCarlo(Predictor):
@@ -22,7 +23,7 @@ class MonteCarlo(Predictor):
         Initial time at which prediction begins, e.g., 0
     dt : float
         Simulation step size (s), e.g., 0.1
-    events : List[string]
+    events : list[str]
         Events to predict (subset of model.events) e.g., ['event1', 'event2']
     horizon : float
         Prediction horizon (s)
@@ -30,7 +31,7 @@ class MonteCarlo(Predictor):
         Number of samples to use. If not specified, a default value is used. If state is type UnweightedSamples and n_samples is not provided, the provided unweighted samples will be used directly.
     save_freq : float
         Frequency at which results are saved (s)
-    save_pts : List[float]
+    save_pts : list[float]
         Any additional savepoints (s) e.g., [10.1, 22.5]
     """
 
@@ -72,22 +73,23 @@ class MonteCarlo(Predictor):
         event_states_all = []
 
         # Perform prediction
+        t0 = params.get('t0', 0)
         for x in state:
             first_output = self.model.output(x)
             
             time_of_event = {}
             last_state = {}
 
-            t0 = params.get('t0', 0)
+            params['t0'] = t0
+            params['x'] = x
+
             if 'save_freq' in params and not isinstance(params['save_freq'], tuple):
-                params['save_freq'] = (t0, params['save_freq'])
+                params['save_freq'] = (params['t0'], params['save_freq'])
             
             if len(params['events']) == 0:  # Predict to time
                 (times, inputs, states, outputs, event_states) = simulate_to_threshold(future_loading_eqn,       
                     first_output, 
                     threshold_keys = [],
-                    t0 = t0, 
-                    x = x, 
                     **params
                 )
             else:
@@ -104,8 +106,6 @@ class MonteCarlo(Predictor):
                     (t, u, xi, z, es) = simulate_to_threshold(future_loading_eqn,       
                         first_output, 
                         threshold_keys = events_remaining,
-                        t0 = t0, 
-                        x = x, 
                         **params
                     )
 
@@ -134,10 +134,10 @@ class MonteCarlo(Predictor):
                     events_remaining.remove(event)  # No longer an event to predect to
 
                     # Remove last state (event)
-                    t0 = times.pop()
+                    params['t0'] = times.pop()
                     inputs.pop()
-                    x = states.pop()
-                    last_state[event] = x.copy()
+                    params['x'] = states.pop()
+                    last_state[event] = params['x'].copy()
                     outputs.pop()
                     event_states.pop()
             

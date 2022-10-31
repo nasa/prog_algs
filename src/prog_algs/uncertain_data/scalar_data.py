@@ -2,6 +2,7 @@
 
 from typing import Union
 from numpy import array
+
 from . import UncertainData, UnweightedSamples
 
 
@@ -10,7 +11,7 @@ class ScalarData(UncertainData):
     Data without uncertainty- single value
 
     Args:
-            state (dict or Container): Single state in the form of dict or model.*Container (InputContainer, OutputContainer, Statecontainer) representing states and respective values.
+        state (dict or Container): Single state in the form of dict or model.*Container (InputContainer, OutputContainer, Statecontainer) representing states and respective values.
     """
     def __init__(self, state, _type = dict): 
         self.__state = state

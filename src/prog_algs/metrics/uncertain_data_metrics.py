@@ -7,6 +7,7 @@ from typing import Iterable, Union
 from numpy import isscalar, mean, std, array
 from scipy import stats
 from warnings import warn
+
 from ..uncertain_data import UncertainData, UnweightedSamples
 
 def calc_metrics(data : UncertainData, ground_truth : Union[float, dict] = None, **kwargs) -> dict:

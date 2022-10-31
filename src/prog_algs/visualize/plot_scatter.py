@@ -3,8 +3,6 @@ from matplotlib.collections import PathCollection
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 from math import sqrt
-
-from numpy import array
 from typing import List
 
 def plot_scatter(samples : List[dict], fig : Figure = None, keys : List[str] = None, legend : str = 'auto', **kwargs) -> Figure:

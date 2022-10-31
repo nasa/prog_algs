@@ -15,12 +15,11 @@ Results:
 """
 
 from prog_models.models import ThrownObject
-
 from prog_algs import *
 
 def run_example():
     # Step 1: Setup model & future loading
-    m = ThrownObject()
+    m = ThrownObject(process_noise = 1)
     def future_loading(t, x = None):
         # No load for a thrown object
         return m.InputContainer({})
@@ -33,7 +32,7 @@ def run_example():
     # Step 2a: Setup
     filt = state_estimators.ParticleFilter(m, initial_state)
     # VVV Uncomment this to use UKF State Estimator VVV
-    # filt = state_estimators.UnscentedKalmanFilter(batt, initial_state)
+    # filt = state_estimators.UnscentedKalmanFilter(m, initial_state)
 
     # Step 2b: Print & Plot Prior State
     print("Prior State:", filt.x.mean)
@@ -64,7 +63,7 @@ def run_example():
     mc = predictors.MonteCarlo(m)
 
     # Step 3b: Perform a prediction
-    NUM_SAMPLES = 10
+    NUM_SAMPLES = 50
     STEP_SIZE = 0.01
     mc_results = mc.predict(filt.x, future_loading, n_samples = NUM_SAMPLES, dt=STEP_SIZE, save_freq=STEP_SIZE)
     print('Predicted time of event (ToE): ', mc_results.time_of_event.mean)

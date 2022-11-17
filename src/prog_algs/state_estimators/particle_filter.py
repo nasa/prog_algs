@@ -70,10 +70,10 @@ class ParticleFilter(state_estimator.StateEstimator):
     def __str__(self):
         return "{} State Estimator".format(self.__class__)
         
-    def estimate(self, t : float, u, z):
+    def estimate(self, t : float, u, z, dt = None):
         assert t > self.t, "New time must be greater than previous"
-        dt = t - self.t
-        self.t = t
+        if dt is None:
+            dt = t - self.t
 
         # Check Types
         if isinstance(u, dict):
@@ -95,7 +95,10 @@ class ParticleFilter(state_estimator.StateEstimator):
 
         if self.model.is_vectorized:
             # Propagate particles state
-            self.particles = apply_process_noise(next_state(particles, u, dt), dt)
+            while self.t < t:
+                dt_i = min(dt, t-self.t)
+                self.particles = apply_process_noise(next_state(particles, u, dt_i), dt_i)
+                self.t += dt_i
 
             # Get particle measurements
             zPredicted = output(self.particles)
@@ -103,8 +106,11 @@ class ParticleFilter(state_estimator.StateEstimator):
             # Propogate and calculate weights
             for i in range(num_particles):
                 x = self.model.StateContainer({key: particles[key][i] for key in particles.keys()})
-                x = next_state(x, u, dt) 
-                x = apply_process_noise(x, dt)
+                while self.t < t:
+                    dt_i = min(dt, t-self.t)
+                    x = next_state(x, u, dt_i) 
+                    x = apply_process_noise(x, dt_i)
+                    self.t += dt_i
                 for key in particles.keys():
                     self.particles[key][i] = x[key]
                 z = output(x)

@@ -4,7 +4,7 @@ import numpy as np
 import random
 
 from prog_models import PrognosticsModel, LinearModel
-from prog_models.models import ThrownObject, BatteryElectroChem
+from prog_models.models import ThrownObject, BatteryElectroChem, PneumaticValveBase
 from prog_algs.state_estimators import ParticleFilter, KalmanFilter, UnscentedKalmanFilter
 from prog_algs.exceptions import ProgAlgTypeError
 from prog_algs.uncertain_data import ScalarData, MultivariateNormalDist, UnweightedSamples
@@ -232,6 +232,55 @@ class TestStateEstimators(unittest.TestCase):
 
     def test_UKF_incorrect_input(self):
         self.__incorrect_input_tests(UnscentedKalmanFilter)
+    
+    def test_PF_step(self):
+        m = PneumaticValveBase()
+
+        # Generate data
+        cycle_time = 20
+        def future_loading(t, x=None):
+            t = t % cycle_time
+            if t < cycle_time/2:
+                return m.InputContainer({
+                    'pL': 3.5e5,
+                    'pR': 2.0e5,
+                    # Open Valve
+                    'uTop': False,
+                    'uBot': True
+                })
+            return m.InputContainer({
+                'pL': 3.5e5,
+                'pR': 2.0e5,
+                # Close Valve
+                'uTop': True,
+                'uBot': False
+            })
+
+        config = {
+                'dt': 0.01,
+                'save_freq': 0.5,
+            }
+        simulated_results = m.simulate_to(3, future_loading, **config)
+
+        # Setup PF
+        x0 = m.initialize(future_loading(0))
+        filt = ParticleFilter(m, x0, num_particles = 100)
+        t=0
+        for u, z in zip(simulated_results.inputs, simulated_results.outputs):
+            filt.estimate(t, u, z)
+            t += 0.5
+
+        # The stepsize (0.5) is way too large for this model. It grows unstable pretty quickly.
+        # The result is nans in the state
+        self.assertTrue(np.isnan(filt.x.mean['k']))
+
+        # Try again, specifying step size
+        filt = ParticleFilter(m, x0, num_particles = 100)
+        t=0
+        for u, z in zip(simulated_results.inputs, simulated_results.outputs):
+            filt.estimate(t, u, z, dt = 0.001)
+            t += 0.5
+        self.assertFalse(np.isnan(filt.x.mean['k']))
 
     def test_PF(self):
         m = ThrownObject(process_noise={'x': 0.75, 'v': 0.75}, measurement_noise=1)

@@ -71,6 +71,31 @@ class ParticleFilter(state_estimator.StateEstimator):
         return "{} State Estimator".format(self.__class__)
         
     def estimate(self, t : float, u, z, dt = None):
+        """
+        Perform one state estimation step (i.e., update the state estimate, filt.x)
+
+        Args
+        ----------
+        t : float
+            Current timestamp in seconds (≥ 0.0)
+            e.g., t = 3.4
+        u : InputContainer
+            Measured inputs, with keys defined by model.inputs.
+            e.g., u = m.InputContainer({'i':3.2}) given inputs = ['i']
+        z : OutputContainer
+            Measured outputs, with keys defined by model.outputs.
+            e.g., z = m.OutputContainer({'t':12.4, 'v':3.3}) given outputs = ['t', 'v']
+            
+        Keyword Args
+        ------------
+        dt : float, optional
+            Timestep for prediction in seconds. By default is the difference between new and last t. Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step
+            e.g., dt = 1e-2
+
+        Note
+        ----
+        This method updates the state estimate stored in filt.x, but doesn't return the updated estimate. Call filt.x to get the updated estimate.
+        """
         assert t > self.t, "New time must be greater than previous"
         if dt is None:
             dt = t - self.t

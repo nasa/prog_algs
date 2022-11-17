@@ -258,9 +258,9 @@ class TestStateEstimators(unittest.TestCase):
 
         config = {
                 'dt': 0.01,
-                'save_freq': 0.5,
+                'save_freq': 1,
             }
-        simulated_results = m.simulate_to(3, future_loading, **config)
+        simulated_results = m.simulate_to(10, future_loading, **config)
 
         # Setup PF
         x0 = m.initialize(future_loading(0))
@@ -268,9 +268,9 @@ class TestStateEstimators(unittest.TestCase):
         t=0
         for u, z in zip(simulated_results.inputs, simulated_results.outputs):
             filt.estimate(t, u, z)
-            t += 0.5
+            t += config['save_freq']
 
-        # The stepsize (0.5) is way too large for this model. It grows unstable pretty quickly.
+        # The stepsize (1) is way too large for this model. It grows unstable pretty quickly.
         # The result is nans in the state
         self.assertTrue(np.isnan(filt.x.mean['k']))
 
@@ -278,8 +278,8 @@ class TestStateEstimators(unittest.TestCase):
         filt = ParticleFilter(m, x0, num_particles = 100)
         t=0
         for u, z in zip(simulated_results.inputs, simulated_results.outputs):
-            filt.estimate(t, u, z, dt = 0.001)
-            t += 0.5
+            filt.estimate(t, u, z, dt = 0.005)
+            t += config['save_freq']
         self.assertFalse(np.isnan(filt.x.mean['k']))
 
     def test_PF(self):

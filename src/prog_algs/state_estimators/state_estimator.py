@@ -56,7 +56,7 @@ class StateEstimator(ABC):
         """
         Perform one state estimation step (i.e., update the state estimate, filt.x)
 
-        Parameters
+        Args
         ----------
         t : float
             Current timestamp in seconds (≥ 0.0)

@@ -70,10 +70,35 @@ class ParticleFilter(state_estimator.StateEstimator):
     def __str__(self):
         return "{} State Estimator".format(self.__class__)
         
-    def estimate(self, t : float, u, z):
+    def estimate(self, t : float, u, z, dt = None):
+        """
+        Perform one state estimation step (i.e., update the state estimate, filt.x)
+
+        Args
+        ----------
+        t : float
+            Current timestamp in seconds (≥ 0.0)
+            e.g., t = 3.4
+        u : InputContainer
+            Measured inputs, with keys defined by model.inputs.
+            e.g., u = m.InputContainer({'i':3.2}) given inputs = ['i']
+        z : OutputContainer
+            Measured outputs, with keys defined by model.outputs.
+            e.g., z = m.OutputContainer({'t':12.4, 'v':3.3}) given outputs = ['t', 'v']
+            
+        Keyword Args
+        ------------
+        dt : float, optional
+            Timestep for prediction in seconds. By default is the difference between new and last t. Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step
+            e.g., dt = 1e-2
+
+        Note
+        ----
+        This method updates the state estimate stored in filt.x, but doesn't return the updated estimate. Call filt.x to get the updated estimate.
+        """
         assert t > self.t, "New time must be greater than previous"
-        dt = t - self.t
-        self.t = t
+        if dt is None:
+            dt = t - self.t
 
         # Check Types
         if isinstance(u, dict):
@@ -95,7 +120,10 @@ class ParticleFilter(state_estimator.StateEstimator):
 
         if self.model.is_vectorized:
             # Propagate particles state
-            self.particles = apply_process_noise(next_state(particles, u, dt), dt)
+            while self.t < t:
+                dt_i = min(dt, t-self.t)
+                self.particles = apply_process_noise(next_state(particles, u, dt_i), dt_i)
+                self.t += dt_i
 
             # Get particle measurements
             zPredicted = output(self.particles)
@@ -103,8 +131,11 @@ class ParticleFilter(state_estimator.StateEstimator):
             # Propogate and calculate weights
             for i in range(num_particles):
                 x = self.model.StateContainer({key: particles[key][i] for key in particles.keys()})
-                x = next_state(x, u, dt) 
-                x = apply_process_noise(x, dt)
+                while self.t < t:
+                    dt_i = min(dt, t-self.t)
+                    x = next_state(x, u, dt_i) 
+                    x = apply_process_noise(x, dt_i)
+                    self.t += dt_i
                 for key in particles.keys():
                     self.particles[key][i] = x[key]
                 z = output(x)

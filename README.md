@@ -29,20 +29,20 @@ Use the following to cite this repository:
 @misc{2022_nasa_prog_algs,
     author    = {Christopher Teubert and Matteo Corbetta and Chetan Kulkarni},
     title     = {Prognostics Algorithm Python Package},
-    month     = Oct,
+    month     = Dec,
     year      = 2022,
-    version   = {1.4.0},
+    version   = {1.4.3},
     url       = {https://github.com/nasa/prog\_algs}
     }
 ```
 
 The corresponding reference should look like this:
 
-C. Teubert, M. Corbetta, C. Kulkarni, Prognostics Algorithm Python Package, v1.4.0, Oct 2022. URL https://github.com/nasa/prog_algs.
+C. Teubert, M. Corbetta, C. Kulkarni, Prognostics Algorithm Python Package, v1.4.3, Dec 2022. URL https://github.com/nasa/prog_algs.
 
 Alternatively, if using both prog_models and prog_algs, you can cite the combined package as
 
-C. Teubert, C. Kulkarni, M. Corbetta, K. Jarvis, M. Daigle, ProgPy Prognostics Python Packages, v1.4, October 2022. URL https://nasa.github.io/progpy.
+C. Teubert, C. Kulkarni, M. Corbetta, K. Jarvis, M. Daigle, ProgPy Prognostics Python Packages, v1.4, December 2022. URL https://nasa.github.io/progpy.
 
 ## Acknowledgements
 The structure and algorithms of this package are strongly inspired by the [MATLAB Prognostics Algorithm Library](https://github.com/nasa/PrognosticsAlgorithmLibrary) and the [MATLAB Prognostics Metrics Library](https://github.com/nasa/PrognosticsMetricsLibrary). We would like to recognize Matthew Daigle, Shankar Sankararaman and the rest of the team that contributed to the Prognostics Model Library for the contributions their work on the MATLAB library made to the design of prog_algs

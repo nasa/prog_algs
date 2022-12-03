@@ -470,6 +470,45 @@ class TestStateEstimators(unittest.TestCase):
             # Missing states
             KalmanFilter(ThrownObject, {})
 
+    def test_PF_monotonicity(self):
+        from prog_algs.state_estimators import ParticleFilter
+        from prog_models.models import ThrownObject
+        m = ThrownObject(process_noise={'x': 1, 'v': 3}, measurement_noise=1, num_particles = 1000)
+        x_guess = {'x': 1.75, 'v': 38.5} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
+        filt = ParticleFilter(m, x_guess)
+
+        # Test ParticleFilter ScalarData
+        from prog_algs.uncertain_data.scalar_data import ScalarData
+        x_scalar = ScalarData({'x': 1.75, 'v': 38.5})
+        filt_scalar = ParticleFilter(m, x_scalar, num_particles = 20) # Sample count does not affect ScalarData testing
+        print(filt_scalar.monotonicity())
+        
+        # # Test ParticleFilter MultivariateNormalDist
+        # from numpy import array
+        # from prog_algs.uncertain_data.multivariate_normal_dist import MultivariateNormalDist
+        # x_mvnd = MultivariateNormalDist(['x', 'v'], array([2, 10]), array([[1, 0], [0, 1]]))
+        # filt_mvnd = ParticleFilter(m, x_mvnd, num_particles = 100000)
+        # for k, v in filt_mvnd.x.mean.items():
+        #     self.assertAlmostEqual(v, x_mvnd.mean[k], delta = 0.01)
+        # for i in range(len(filt_mvnd.x.cov)):
+        #     for j in range(len(filt_mvnd.x.cov[i])):
+        #         self.assertAlmostEqual(filt_mvnd.x.cov[i][j], x_mvnd.cov[i][j], delta=0.1)
+
+        # # Test ParticleFilter UnweightedSamples
+        # from prog_algs.uncertain_data.unweighted_samples import UnweightedSamples
+        # import random
+        # uw_input = []
+        # x_bounds, v_bounds, x0_samples = 5, 5, 10000
+        # for i in range(x0_samples):
+        #     uw_input.append({'x': random.randrange(-x_bounds, x_bounds), 'v': random.randrange(-v_bounds, v_bounds)})
+        # x_us = UnweightedSamples(uw_input)
+        # filt_us = ParticleFilter(m, x_us, num_particles = 100000)
+        # for k, v in filt_us.x.mean.items():
+        #     self.assertAlmostEqual(v, x_us.mean[k], delta=0.02)
+        # for i in range(len(filt_us.x.cov)):
+        #     for j in range(len(filt_us.x.cov[i])):
+        #         self.assertAlmostEqual(filt_us.x.cov[i][j], x_us.cov[i][j], delta=0.1)
+
 # This allows the module to be executed directly    
 def run_tests():
      # This ensures that the directory containing StateEstimatorTemplate is in the python search directory

@@ -70,7 +70,7 @@ class KalmanFilter(state_estimator.StateEstimator):
             # Append wont work if B is empty
             B = deepcopy(model.E)
         else:
-            B = np.append(B, deepcopy(model.E), 0)
+            B = np.append(B, deepcopy(model.E), 1)
 
         self.filter = kalman.KalmanFilter(num_states, num_measurements, num_inputs)
 

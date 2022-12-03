@@ -9,7 +9,6 @@ from prog_algs.state_estimators import ParticleFilter, KalmanFilter, UnscentedKa
 from prog_algs.exceptions import ProgAlgTypeError
 from prog_algs.uncertain_data import ScalarData, MultivariateNormalDist, UnweightedSamples
 
-
 def equal_cov(pair1, pair2):
     """
     Compare 2 covariance matricies, considering the order
@@ -420,6 +419,64 @@ class TestStateEstimators(unittest.TestCase):
         with self.assertRaises(Exception):
             # Missing states
             KalmanFilter(ThrownObject, {})
+
+    def test_KF_descending(self):
+        # Example introduced by @CuiiGen in https://github.com/nasa/prog_algs/issues/220
+        class Descending(LinearModel):
+            inputs = ['u']
+            states = ['x']
+            outputs = ['x']
+            events = ['zero']
+            A = np.array([[0]])
+            B = np.array([[0]])
+            E = np.array([[-1]])
+            C = np.array([[1]])
+            D = np.array([[0]])
+            F = None
+            default_parameters = {
+                'x0': {
+                    'x': 10
+                },
+                'process_noise': 0,
+                'measurement_noise': 5
+            }
+
+            def initialize(self, u=None, z=None):
+                return self.StateContainer(self.default_parameters['x0'])
+
+            def threshold_met(self, x):
+                return {
+                    'zero': x['x'] <= 0
+                }
+
+            def event_state(self, x):
+                return {
+                    'zero': x['x'] > 0
+                }
+
+        m = Descending()
+
+        def future_loading(t, x=None):
+            return m.InputContainer({'u': 1})
+
+        config = {
+            'dt': 0.01,
+            'save_freq': 0.01,
+            'threshold_keys': 'zero'
+        }
+        simulation_result = m.simulate_to_threshold(future_loading, **config)
+
+        states = simulation_result.states
+        outputs = simulation_result.outputs
+        inputs = simulation_result.inputs
+        states.plot()
+        outputs.plot()
+
+        x0 = MultivariateNormalDist(['x'], [0], [[0.01]])
+        kf = KalmanFilter(m, x0)
+        times = simulation_result.times
+        for t, u, z in zip(times, inputs.data, outputs.data):
+            kf.estimate(t, u, z)
 
 # This allows the module to be executed directly    
 def run_tests():

@@ -70,7 +70,7 @@ class KalmanFilter(state_estimator.StateEstimator):
             # Append wont work if B is empty
             B = deepcopy(model.E)
         else:
-            B = np.append(B, deepcopy(model.E), 0)
+            B = np.append(B, deepcopy(model.E), 1)
 
         self.filter = kalman.KalmanFilter(num_states, num_measurements, num_inputs)
 
@@ -115,8 +115,8 @@ class KalmanFilter(state_estimator.StateEstimator):
         assert t > self.t, "New time must be greater than previous"
 
         dt = t - self.t
-        # Create u array, ensuring order of model.inputs
-        inputs = np.array([u[key] for key in self.model.inputs])
+        # Create u array, ensuring order of model.inputs. And reshaping to (n,1), n can be 0.
+        inputs = np.array([u[key] for key in self.model.inputs]).reshape((-1,1))
 
         # Add row of ones (to account for constant E term)
         if np.size(inputs) == 0:

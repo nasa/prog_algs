@@ -1,7 +1,7 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from filterpy.monte_carlo import residual_resample
-from numpy import array, empty, take, exp, max, take
+from numpy import array, empty, take, exp, max, take, float64
 from scipy.stats import norm
 from warnings import warn
 
@@ -56,9 +56,9 @@ class ParticleFilter(state_estimator.StateEstimator):
             raise ProgAlgTypeError(f"ProgAlgTypeError: x0 must be of type UncertainData or StateContainer, was {type(x0)}.")
 
         sample_gen = x0.sample(self.parameters['num_particles'])
-        samples = [array(sample_gen.key(k)) for k in x0.keys()]
+        samples = [array(sample_gen.key(k), dtype=float64) for k in x0.keys()]
         
-        self.particles = model.StateContainer(array(samples))
+        self.particles = model.StateContainer(array(samples, dtype=float64))
 
         if 'R' in self.parameters:
             # For backwards compatibility
@@ -123,8 +123,8 @@ class ParticleFilter(state_estimator.StateEstimator):
             # Propagate particles state
             while self.t < t:
                 dt_i = min(dt, t-self.t)
-                self.particles = apply_process_noise(next_state(particles, u, dt_i), dt_i)
-                self.particles = apply_limits(self.particles)
+                particles = apply_process_noise(next_state(particles, u, dt_i), dt_i)
+                self.particles = apply_limits(particles)
                 self.t += dt_i
 
             # Get particle measurements
@@ -132,18 +132,20 @@ class ParticleFilter(state_estimator.StateEstimator):
         else:
             # Propogate and calculate weights
             for i in range(num_particles):
+                t_i = self.t  # Used to mark time for each particle
                 x = self.model.StateContainer({key: particles[key][i] for key in particles.keys()})
-                while self.t < t:
-                    dt_i = min(dt, t-self.t)
+                while t_i < t:
+                    dt_i = min(dt, t-t_i)
                     x = next_state(x, u, dt_i) 
                     x = apply_process_noise(x, dt_i)
                     x = apply_limits(x)
-                    self.t += dt_i
+                    t_i += dt_i
                 for key in particles.keys():
                     self.particles[key][i] = x[key]
                 z = output(x)
                 for key in measurement_keys:
                     zPredicted[key][i] = z[key]
+            self.t = t
 
         # Calculate pdf values
         pdfs = array([norm(zPredicted[key], noise_params[key]).logpdf(z[key])

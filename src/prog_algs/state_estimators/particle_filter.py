@@ -110,6 +110,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         particles = self.particles
         next_state = self.model.next_state
         apply_process_noise = self.model.apply_process_noise
+        apply_limits = self.model.apply_limits
         output = self._measure
         # apply_measurement_noise = self.model.apply_measurement_noise
         noise_params = self.model.parameters['measurement_noise']
@@ -123,6 +124,7 @@ class ParticleFilter(state_estimator.StateEstimator):
             while self.t < t:
                 dt_i = min(dt, t-self.t)
                 self.particles = apply_process_noise(next_state(particles, u, dt_i), dt_i)
+                self.particles = apply_limits(self.particles)
                 self.t += dt_i
 
             # Get particle measurements
@@ -135,6 +137,7 @@ class ParticleFilter(state_estimator.StateEstimator):
                     dt_i = min(dt, t-self.t)
                     x = next_state(x, u, dt_i) 
                     x = apply_process_noise(x, dt_i)
+                    x = apply_limits(x)
                     self.t += dt_i
                 for key in particles.keys():
                     self.particles[key][i] = x[key]

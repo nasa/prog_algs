@@ -43,7 +43,7 @@ setup(
         'scipy',
         'filterpy',
         'matplotlib',
-        'prog_models>=1.4.0'
+        'prog_models>=1.5.0'
     ],
     license = 'NOSA',
     project_urls={  # Optional

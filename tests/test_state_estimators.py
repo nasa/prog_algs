@@ -231,8 +231,43 @@ class TestStateEstimators(unittest.TestCase):
 
     def test_UKF_incorrect_input(self):
         self.__incorrect_input_tests(UnscentedKalmanFilter)
+
+    def test_PF_limit_check(self):
+        class OneInputOneOutputOneEventLM(LinearModel):
+            inputs = ['u1']
+            states = ['x1']
+            outputs = ['x1+1']
+            events = ['x1 == 10']
+
+            A = np.array([[0]])
+            B = np.array([[1]])
+            C = np.array([[1]])
+            D = np.array([[1]])
+            F = np.array([[-0.1]])
+            G = np.array([[1]])
+
+            default_parameters = {
+                'process_noise': 0.1,
+                'measurement_noise': 0.1,
+                'x0': {
+                    'x1': 0
+                }
+            }
+
+        m = OneInputOneOutputOneEventLM()
+        pf = ParticleFilter(m, {'x1': 10}, num_particles = 5)
+
+        # Without state limits
+        pf.estimate(1, {'u1': 1}, {'x1+1': 12})
+        self.assertAlmostEqual(pf.x.mean['x1'], 11, delta=0.2)
+
+        # With state limits
+        OneInputOneOutputOneEventLM.state_limits = {
+            'x1': (0, 10)
+        }
+        pf.estimate(2, {'u1': 1}, {'x1+1': 13})
+        self.assertLessEqual(pf.x.mean['x1'], 10)  # Limited to 10 now
     
-    @unittest.skip
     def test_PF_step(self):
         m = PneumaticValveBase()
 
@@ -269,18 +304,6 @@ class TestStateEstimators(unittest.TestCase):
         for u, z in zip(simulated_results.inputs, simulated_results.outputs):
             filt.estimate(t, u, z, dt = 3)
             t += config['save_freq']
-
-        # The stepsize is way too large for this model. It grows unstable pretty quickly.
-        # The result is nans in the state
-        self.assertTrue(np.isnan(filt.x.mean['k']))
-
-        # Try again, specifying step size
-        filt = ParticleFilter(m, x0, num_particles = 100)
-        t=0
-        for u, z in zip(simulated_results.inputs, simulated_results.outputs):
-            filt.estimate(t, u, z, dt = 0.001)
-            t += config['save_freq']
-        self.assertFalse(np.isnan(filt.x.mean['k']))
 
     def test_PF(self):
         m = ThrownObject(process_noise={'x': 0.75, 'v': 0.75}, measurement_noise=1)

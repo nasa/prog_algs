@@ -1,6 +1,7 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from filterpy.monte_carlo import residual_resample
+import numpy as np
 from numpy import array, empty, take, exp, max, take, float64
 from scipy.stats import norm
 from warnings import warn
@@ -40,7 +41,7 @@ class ParticleFilter(state_estimator.StateEstimator):
     """
     default_parameters = {
             't0': -1e-99,  # practically 0, but allowing for a 0 first estimate
-            'num_particles': 20, 
+            'num_particles': None, 
             'resample_fcn': residual_resample,
         }
 
@@ -55,7 +56,17 @@ class ParticleFilter(state_estimator.StateEstimator):
         elif not isinstance(x0, UncertainData):
             raise ProgAlgTypeError(f"ProgAlgTypeError: x0 must be of type UncertainData or StateContainer, was {type(x0)}.")
 
-        sample_gen = x0.sample(self.parameters['num_particles'])
+        if self.parameters['num_particles'] is None and isinstance(x0, UnweightedSamples):
+            sample_gen = x0  # Directly use samples passed in
+            self.parameters['num_particles'] = len(x0)
+        else:
+            if self.parameters['num_particles'] is None:
+                # Default to 100 particles
+                self.parameters['num_particles'] = 100
+            else:
+                # Added to avoid float/int issues
+                self.parameters['num_particles'] = int(self.parameters['num_particles'])
+            sample_gen = x0.sample(self.parameters['num_particles'])
         samples = [array(sample_gen.key(k), dtype=float64) for k in x0.keys()]
         
         self.particles = model.StateContainer(array(samples, dtype=float64))
@@ -113,7 +124,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         apply_limits = self.model.apply_limits
         output = self._measure
         # apply_measurement_noise = self.model.apply_measurement_noise
-        noise_params = self.model.parameters['measurement_noise']
+        noise_params = self.parameters['measurement_noise']
         num_particles = self.parameters['num_particles']
         # Check which output keys are present (i.e., output of measurement function)
         measurement_keys = output(self.model.StateContainer({key: particles[key][0] for key in particles.keys()})).keys()

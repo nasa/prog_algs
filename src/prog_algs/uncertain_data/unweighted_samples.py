@@ -90,7 +90,7 @@ class UnweightedSamples(UncertainData, UserList):
 
     def sample(self, num_samples : int = 1, replace = True) -> "UnweightedSamples":
         # Completely random resample
-        indices = random.choice(len(self.data), num_samples, replace = replace)
+        indices = random.choice(len(self.data), int(num_samples), replace = replace)
         return UnweightedSamples([self.data[i] for i in indices], _type = self._type)
 
     def keys(self) -> list:

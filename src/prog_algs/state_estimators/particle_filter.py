@@ -76,7 +76,7 @@ class ParticleFilter(state_estimator.StateEstimator):
             warn("'R' is deprecated. Use 'measurement_noise' instead.", DeprecationWarning)
             self.parameters['measurement_noise'] = self.parameters['R']
         elif 'measurement_noise' not in self.parameters:
-            self.parameters['measurement_noise'] = {key: 0.0 for key in x0.keys()}
+            self.parameters['measurement_noise'] = {key: 0.0 for key in model.outputs}
     
     def __str__(self):
         return "{} State Estimator".format(self.__class__)

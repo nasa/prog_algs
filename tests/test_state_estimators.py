@@ -309,7 +309,7 @@ class TestStateEstimators(unittest.TestCase):
         m = ThrownObject(process_noise={'x': 0.75, 'v': 0.75}, measurement_noise=1)
         x_guess = {'x': 1.75, 'v': 38.5} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
 
-        filt = ParticleFilter(m, x_guess, num_particles = 1000)
+        filt = ParticleFilter(m, x_guess, num_particles = 1000, measurement_noise = {'x': 1})
         self.__test_state_est(filt, m)
 
         # Test ParticleFilter ScalarData

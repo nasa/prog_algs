@@ -20,7 +20,7 @@ class UnweightedSamples(UncertainData, UserList):
             If list, must be of the form of [{key: value, ...}, ...]\n
             If InputContainer, OutputContainer, or StateContainer, must be of the form of *Container({'key': value, ...})
     """
-    def __init__(self, samples : list = [], _type = dict):
+    def __init__(self, samples: list = [], _type=dict):
         super().__init__(_type)
         if isinstance(samples, dict) or isinstance(samples, DictLikeMatrixWrapper):
             # Is in form of {key: [value, ...], ...}
@@ -39,11 +39,11 @@ class UnweightedSamples(UncertainData, UserList):
     def __eq__(self, other):
         return isinstance(other, UnweightedSamples) and self.data == other.data
 
-    def __getitem__(self,n):
+    def __getitem__(self, n):
         datem = self.data[n]
         return self._type(datem) if datem is not None else None
 
-    def __add__(self, other : int) -> "UncertainData":
+    def __add__(self, other: int) -> "UncertainData":
         if other == 0:
             return self
         result = []
@@ -54,17 +54,17 @@ class UnweightedSamples(UncertainData, UserList):
             result.append(new_dict)
         return UnweightedSamples(result)
 
-    def __radd__(self, other : int) -> "UncertainData":
+    def __radd__(self, other: int) -> "UncertainData":
         return self.__add__(other)
 
-    def __iadd__(self, other : int) -> "UncertainData":
+    def __iadd__(self, other: int) -> "UncertainData":
         if other != 0:
             for i in range(len(self.data)):
                 for k,v in self.data[i].items():
                     self.data[i][k] += other
         return self
 
-    def __sub__(self, other : int) -> "UncertainData":
+    def __sub__(self, other: int) -> "UncertainData":
         if other == 0:
             return self
         result = []
@@ -75,10 +75,10 @@ class UnweightedSamples(UncertainData, UserList):
             result.append(new_dict)
         return UnweightedSamples(result)
 
-    def __rsub__(self, other : int) -> "UncertainData":
+    def __rsub__(self, other: int) -> "UncertainData":
         return self.__sub__(other)
 
-    def __isub__(self, other : int) -> "UncertainData":
+    def __isub__(self, other: int) -> "UncertainData":
         if other != 0:
             for i in range(len(self.data)):
                 for k,v in self.data[i].items():
@@ -88,10 +88,10 @@ class UnweightedSamples(UncertainData, UserList):
     def __reduce__(self):
         return (UnweightedSamples, (self.data, ))
 
-    def sample(self, num_samples : int = 1, replace = True) -> "UnweightedSamples":
+    def sample(self, num_samples: int = 1, replace: bool = True) -> "UnweightedSamples":
         # Completely random resample
-        indices = random.choice(len(self.data), int(num_samples), replace = replace)
-        return UnweightedSamples([self.data[i] for i in indices], _type = self._type)
+        indices = random.choice(len(self.data), int(num_samples), replace=replace)
+        return UnweightedSamples([self.data[i] for i in indices], _type=self._type)
 
     def keys(self) -> list:
         if len(self.data) == 0:
@@ -163,7 +163,7 @@ class UnweightedSamples(UncertainData, UserList):
         """
         return len(self)
 
-    def percentage_in_bounds(self, bounds, keys : list = None) -> dict:
+    def percentage_in_bounds(self, bounds, keys: list = None) -> dict:
         if not keys:
             keys = self.keys()
         if isinstance(keys, str):

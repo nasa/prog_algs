@@ -8,7 +8,7 @@ from numpy import isscalar
 
 from ..uncertain_data import UncertainData, UnweightedSamples
 
-def prob_success(toe : UncertainData, time : float, **kwargs) -> float:
+def prob_success(toe: UncertainData, time: float, **kwargs) -> float:
     """Calculate probability of success - i.e., probability that event will not occur within a given time (i.e., success)
 
     Args:

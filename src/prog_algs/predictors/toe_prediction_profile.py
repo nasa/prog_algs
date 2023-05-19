@@ -41,7 +41,7 @@ class ToEPredictionProfile(UserDict):
         """
         return [self[k] for k in self.keys()]
 
-    def alpha_lambda(self, ground_truth : Dict[str, float], lambda_value : float, alpha : float, beta : float, **kwargs) -> Dict[str, bool]:
+    def alpha_lambda(self, ground_truth: Dict[str, float], lambda_value: float, alpha: float, beta: float, **kwargs) -> Dict[str, bool]:
         """Calculate Alpha lambda metric for the prediction profile
 
         Args:
@@ -134,7 +134,7 @@ class ToEPredictionProfile(UserDict):
         from ..metrics import monotonicity
         return monotonicity(self, **kwargs)
     
-    def plot(self, ground_truth : dict = None , alpha : float = None, show : bool = True) -> dict: # use ground truth, alpha if given,
+    def plot(self, ground_truth: dict = None , alpha: float = None, show: bool = True) -> dict: # use ground truth, alpha if given,
         """Produce an alpha-beta plot depicting the TtE distribution by time of prediction for each event.
 
         Args:

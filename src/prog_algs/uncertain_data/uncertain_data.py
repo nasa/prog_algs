@@ -15,11 +15,11 @@ class UncertainData(ABC):
     Abstract base class for data with uncertainty. Any new uncertainty type must implement this class
     """
 
-    def __init__(self, _type = dict):
+    def __init__(self, _type=dict):
         self._type = _type
     
     @abstractmethod
-    def sample(self, nSamples : int = 1):
+    def sample(self, nSamples: int = 1):
         """Generate samples from data
 
         Args:
@@ -76,7 +76,7 @@ class UncertainData(ABC):
                 covariance_matrix = data.cov
         """
 
-    def relative_accuracy(self, ground_truth : dict) -> dict:
+    def relative_accuracy(self, ground_truth: dict) -> dict:
         """The relative accuracy is how close the mean of the distribution is to the ground truth, on relative terms
         
         :math:`RA = 1 - \dfrac{\| r-p \|}{r}`
@@ -117,7 +117,7 @@ class UncertainData(ABC):
     def __contains__(self, key):
         return key in self.keys()
 
-    def percentage_in_bounds(self, bounds : tuple, keys : list = None, n_samples = 1000) -> dict:
+    def percentage_in_bounds(self, bounds: tuple, keys: list = None, n_samples: int = 1000) -> dict:
         """Calculate percentage of dist is within specified bounds
 
         Args:

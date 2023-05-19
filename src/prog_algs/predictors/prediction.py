@@ -25,7 +25,7 @@ class Prediction():
         self.times = times
         self.data = data
 
-    def __eq__(self, other : "Prediction") -> bool:
+    def __eq__(self, other: "Prediction") -> bool:
         """Compare 2 Predictions
 
         Args:
@@ -36,7 +36,7 @@ class Prediction():
         """
         return self.times == other.times and self.data == other.data
 
-    def snapshot(self, time_index : int) -> UncertainData:
+    def snapshot(self, time_index: int) -> UncertainData:
         """Get all samples from a specific timestep
 
         Args:
@@ -63,7 +63,7 @@ class Prediction():
         """
         return [dist.mean for dist in self.data]
 
-    def time(self, index : int):
+    def time(self, index: int):
         warn("Deprecated. Please use prediction.times[index] instead.")
         return self.times[index]
 
@@ -110,7 +110,7 @@ class UnweightedSamplesPrediction(Prediction, UserList):
             Data points where data[n] is a SimResult for sample n
     """
 
-    def __init__(self, times : list, data : list):
+    def __init__(self, times: list, data: list):
         super(UnweightedSamplesPrediction, self).__init__(times, data)
         self.__transformed = False  # If transform has been calculated
 
@@ -133,11 +133,11 @@ class UnweightedSamplesPrediction(Prediction, UserList):
             self.__calculate_tranform()
         return [dist.mean for dist in self.__transform]
 
-    def sample(self, sample_id : int):
+    def sample(self, sample_id: int):
         warn("Deprecated. Please use prediction[sample_id] instead.")
         return self[sample_id]
 
-    def snapshot(self, time_index : int) -> UnweightedSamples:
+    def snapshot(self, time_index: int) -> UnweightedSamples:
         """Get all samples from a specific timestep
 
         Args:

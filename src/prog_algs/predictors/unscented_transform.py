@@ -123,7 +123,7 @@ class UnscentedTransformPredictor(Predictor):
         self.filter = kalman.UnscentedKalmanFilter(num_states, num_measurements, self.parameters['dt'], measure, state_transition, self.sigma_points)
         self.filter.Q = self.parameters['Q']
 
-    def predict(self, state, future_loading_eqn : Callable, **kwargs) -> PredictionResults:
+    def predict(self, state, future_loading_eqn: Callable, **kwargs) -> PredictionResults:
         """
         Perform a single prediction
 

@@ -24,40 +24,40 @@ class MultivariateNormalDist(UncertainData):
     def __reduce__(self):
         return (MultivariateNormalDist, (self.__labels, self.__mean, self.__covar))
 
-    def __eq__(self, other : "MultivariateNormalDist") -> bool:
+    def __eq__(self, other: "MultivariateNormalDist") -> bool:
         return isinstance(other, MultivariateNormalDist) and self.keys() == other.keys() and self.mean == other.mean and (self.cov == other.cov).all()
 
-    def __add__(self, other : int) -> "UncertainData":
+    def __add__(self, other: int) -> "UncertainData":
         if other == 0:
             return self
         return MultivariateNormalDist(self.__labels, array([i+other for i in self.__mean]), self.__covar)
 
-    def __radd__(self, other : int) -> "UncertainData":
+    def __radd__(self, other: int) -> "UncertainData":
         return self.__add__(other)
 
-    def __iadd__(self, other : int) -> "UncertainData":
+    def __iadd__(self, other: int) -> "UncertainData":
         if not isinstance(other, (int, float)):
             raise TypeError(f" unsupported operand type(s) for +: '{type(other)}' and '{type(self.__mean[0])}'")
         if other != 0:
             self.__mean = array([i+other for i in self.__mean])
         return self
 
-    def __sub__(self, other : int) -> "UncertainData":
+    def __sub__(self, other: int) -> "UncertainData":
         if other == 0:
             return self
         return MultivariateNormalDist(self.__labels, array([i-other for i in self.__mean]), self.__covar)
 
-    def __rsub__(self, other : int) -> "UncertainData":
+    def __rsub__(self, other: int) -> "UncertainData":
         return self.__sub__(other)
 
-    def __isub__(self, other : int) -> "UncertainData":
+    def __isub__(self, other: int) -> "UncertainData":
         if not isinstance(other, (int, float)):
             raise TypeError(f" unsupported operand type(s) for -: '{type(other)}' and '{type(self.__mean[0])}'")
         if other != 0:
             self.__mean = array([i-other for i in self.__mean])
         return self
 
-    def sample(self, num_samples : int = 1) -> UnweightedSamples:
+    def sample(self, num_samples: int = 1) -> UnweightedSamples:
         if len(self.__mean) != len(self.__labels):
             raise Exception("labels must be provided for each value")
     

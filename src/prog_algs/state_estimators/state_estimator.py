@@ -52,7 +52,7 @@ class StateEstimator(ABC):
         self.t = self.parameters['t0']  # Initial Time
 
     @abstractmethod
-    def estimate(self, t : float, u, z, **kwargs) -> None:
+    def estimate(self, t: float, u, z, **kwargs) -> None:
         """
         Perform one state estimation step (i.e., update the state estimate, filt.x)
 

@@ -9,7 +9,7 @@ from typing import Callable, Dict
 
 from ..predictors import ToEPredictionProfile
 
-def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda_value : float, alpha : float, beta : float, **kwargs) -> dict: 
+def alpha_lambda(toe_profile: ToEPredictionProfile, ground_truth: dict, lambda_value: float, alpha: float, beta: float, **kwargs) -> dict: 
     """
     Compute alpha lambda metric, a common metric in prognostics. Alpha-Lambda is met if alpha % of the Time to Event (TtE) distribution is within beta % of the ground truth at prediction time lambda.
 
@@ -45,7 +45,7 @@ def alpha_lambda(toe_profile : ToEPredictionProfile, ground_truth : dict, lambda
                     print('\tBounds: [{} - {}]({}%)'.format(bounds[key][0], bounds[key][1], pib[key]))
             return result
 
-def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callable, ground_truth : dict, **kwargs) -> dict:
+def prognostic_horizon(toe_profile: ToEPredictionProfile, criteria_eqn: Callable, ground_truth: dict, **kwargs) -> dict:
     """
     Compute prognostic horizon metric, defined as the difference between a time ti, when the predictions meet specified performance criteria, and the time corresponding to the true Time of Event (ToE), for each event.
     PH = ToE - ti
@@ -69,7 +69,7 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callab
     }
     params.update(kwargs)
 
-    ph_result = {k:None for k in ground_truth.keys()} # False means not yet met; will be either a numerical value or None if met
+    ph_result = {k:None for k in ground_truth.keys()}  # False means not yet met; will be either a numerical value or None if met
     for (t_prediction, toe) in toe_profile.items():
         # Convert to TtE for toe and ground_truth
         tte = toe - t_prediction
@@ -81,14 +81,14 @@ def prognostic_horizon(toe_profile : ToEPredictionProfile, criteria_eqn : Callab
             if v and (ph_result[k] == None):
                 ph_calc = ground_truth[k] - t_prediction
                 if ph_calc > 0:
-                    ph_result[k] = ph_calc # PH = EOL - ti # ground truth is a dictionary {'EOD': 3005.2} should be ph_result[k] = g_truth[key] - t_prediction
+                    ph_result[k] = ph_calc  # PH = EOL - ti # ground truth is a dictionary {'EOD': 3005.2} should be ph_result[k] = g_truth[key] - t_prediction
                 if (all(v != None for v in ph_result.values())):
                     # Return PH once all criteria are met
                     return ph_result
     # Return PH when criteria not met for at least one event key
     return ph_result
 
-def cumulative_relative_accuracy(toe_profile : ToEPredictionProfile, ground_truth : dict, **kwargs) -> Dict[str, float]:
+def cumulative_relative_accuracy(toe_profile: ToEPredictionProfile, ground_truth: dict, **kwargs) -> Dict[str, float]:
     """
     Compute cumulative relative accuracy for a given profile, defined as the normalized sum of relative prediction accuracies at specific time instances.
     
@@ -108,7 +108,7 @@ def cumulative_relative_accuracy(toe_profile : ToEPredictionProfile, ground_trut
             ra_sums[event] += value
     return {event:ra_sum/len(toe_profile) for event, ra_sum in ra_sums.items()}
 
-def monotonicity(toe_profile : ToEPredictionProfile, **kwargs) -> Dict[str, float]:
+def monotonicity(toe_profile: ToEPredictionProfile, **kwargs) -> Dict[str, float]:
         """Calculate monotonicty for a prediction profile. 
         Given a prediction profile, for each prediction: go through all predicted events and compare those to the next one.
         Calculates monotonicity for each prediction key using its associated mean value in UncertainData.

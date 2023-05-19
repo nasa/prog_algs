@@ -10,7 +10,7 @@ from warnings import warn
 
 from ..uncertain_data import UncertainData, UnweightedSamples
 
-def calc_metrics(data : UncertainData, ground_truth : Union[float, dict] = None, **kwargs) -> dict:
+def calc_metrics(data: UncertainData, ground_truth: Union[float, dict] = None, **kwargs) -> dict:
     """Calculate all time of event metrics
 
     Args:

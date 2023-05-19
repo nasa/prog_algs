@@ -1,16 +1,17 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 # This ensures that the directory containing examples is in the python search directories 
 
-import sys
-from os.path import dirname, join
-sys.path.append(join(dirname(__file__), ".."))
-
-import unittest
-from io import StringIO 
-from examples import *
-from unittest.mock import patch
-import pkgutil
 from importlib import import_module
+from io import StringIO 
+from matplotlib import pyplot as plt
+from os.path import dirname, join
+import pkgutil
+import sys
+import unittest
+from unittest.mock import patch
+
+sys.path.append(join(dirname(__file__), ".."))  # puts examples in path
+from examples import *
 
 skipped_examples = ['playback']
 
@@ -49,7 +50,10 @@ def main():
     l = unittest.TestLoader()
     runner = unittest.TextTestRunner()
     print("\n\nTesting Examples")
-    result = runner.run(l.loadTestsFromTestCase(TestExamples)).wasSuccessful()
+    with patch('matplotlib.pyplot.show'):
+        result = runner.run(l.loadTestsFromTestCase(TestExamples)).wasSuccessful()
+
+    plt.close('all')
 
     if not result:
         raise Exception("Failed test")

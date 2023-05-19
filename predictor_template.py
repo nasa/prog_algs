@@ -13,7 +13,7 @@ class TemplatePredictor(Predictor):
     """
 
     # REPLACE THE FOLLOWING LIST WITH CONFIGURED PARAMETERS
-    default_parameters = { # Default Parameters, used as config for UKF
+    default_parameters = {  # Default Parameters, used as config for UKF
         'Example Parameter': 0.0
     } 
 
@@ -76,10 +76,10 @@ class TemplatePredictor(Predictor):
         # time_of_event.final_state = {'event1': ScalarData({'state1': 10, 'state2': 20}), 'event2': ScalarData({'state1': 12, 'state2': 18})}
 
         return PredictionResults(
-            times, 
-            inputs, 
-            states, 
-            outputs, 
-            event_states, 
+            times,
+            inputs,
+            states,
+            outputs,
+            event_states,
             time_of_event
         )

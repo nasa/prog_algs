@@ -37,7 +37,7 @@ setup(
     keywords = ['prognostics', 'diagnostics', 'fault detection', 'fdir', 'prognostics and health management', 'PHM', 'health management', 'ivhm'],
     package_dir = {"":"src"},
     packages = find_packages(where = 'src'),
-    python_requires='>=3.7, <3.11',
+    python_requires='>=3.7, <3.12',
     install_requires = [
         'numpy',
         'scipy',

@@ -83,22 +83,29 @@ class TestStateEstimators(unittest.TestCase):
         se = TemplateStateEstimator(self._m_mock, {'a': 0.0, 'b': 0.0, 'c': 0.0, 't':0.0})
 
     def __test_state_est(self, filt, m):
-        x_guess = m.StateContainer(filt.x.mean)  # Might be new
         x = m.initialize()
 
         self.assertTrue(all(key in filt.x.mean for key in m.states))
 
         # run for a while
-        dt = 0.01
+        dt = 0.2
         u = m.InputContainer({})
-        for i in range(1250):
+        last_time = 0
+        for i in range(500):
             # Get simulated output (would be measured in a real application)
             x = m.next_state(x, u, dt)
-            x_guess = m.next_state(x_guess, u, dt)
             z = m.output(x)
 
-            # Estimate New State
-            filt.estimate((i+1)*dt, u, z)
+            # Estimate New State every few steps
+            if i % 8 == 0:
+                # This is to test dt
+                # Without dt, this would fail
+                last_time = (i+1)*dt
+                filt.estimate((i+1)*dt, u, z, dt=dt)
+
+        if last_time != (i+1)*dt:
+            # Final estimate
+            filt.estimate((i+1)*dt, u, z, dt=dt)
 
         # Check results - make sure it converged
         x_est = filt.x.mean

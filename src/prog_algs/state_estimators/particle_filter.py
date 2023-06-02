@@ -33,7 +33,8 @@ class ParticleFilter(state_estimator.StateEstimator):
         t0 (float, optional):
             Starting time (s)
         dt (float, optional): 
-            time step (s)
+            Maximum timestep for prediction in seconds. By default is the difference between new and last t. Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step. Default is the parameters['dt]
+            e.g., dt = 1e-2
         num_particles (int, optional):
             Number of particles in particle filter
         resample_fcn (function, optional):
@@ -100,7 +101,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         Keyword Args
         ------------
         dt : float, optional
-            Timestep for prediction in seconds. By default is the difference between new and last t. Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step
+            Maximum timestep for prediction in seconds. By default is the difference between new and last t. Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step. Default is the parameters['dt]
             e.g., dt = 1e-2
 
         Note
@@ -109,7 +110,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         """
         assert t > self.t, "New time must be greater than previous"
         if dt is None:
-            dt = t - self.t
+            dt = min(t - self.t, self.parameters['dt'])
 
         # Check Types
         if isinstance(u, dict):

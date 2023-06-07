@@ -6,7 +6,6 @@ import random
 from prog_models import PrognosticsModel, LinearModel
 from prog_models.models import ThrownObject, BatteryElectroChem, PneumaticValveBase
 from prog_algs.state_estimators import ParticleFilter, KalmanFilter, UnscentedKalmanFilter
-from prog_algs.exceptions import ProgAlgTypeError
 from prog_algs.uncertain_data import ScalarData, MultivariateNormalDist, UnweightedSamples
 
 def equal_cov(pair1, pair2):
@@ -192,7 +191,8 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'c': 2}
-        with self.assertRaises(ProgAlgTypeError):
+        # Missing Key 'b'
+        with self.assertRaises(KeyError):
             filter(m, x0)
 
         class IncompleteModel:
@@ -203,7 +203,7 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'b': 2}
-        with self.assertRaises(ProgAlgTypeError):
+        with self.assertRaises(NotImplementedError):
             filter(m, x0)
 
         class IncompleteModel:
@@ -214,7 +214,7 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'b': 2}
-        with self.assertRaises(ProgAlgTypeError):
+        with self.assertRaises(NotImplementedError):
             filter(m, x0)
 
         class IncompleteModel:
@@ -224,7 +224,7 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'b': 2}
-        with self.assertRaises(ProgAlgTypeError):
+        with self.assertRaises(NotImplementedError):
             filter(m, x0)
         class IncompleteModel:
             outputs = []
@@ -233,7 +233,7 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'b': 2}
-        with self.assertRaises(ProgAlgTypeError):
+        with self.assertRaises(NotImplementedError):
             filter(m, x0)
 
     def test_UKF_incorrect_input(self):

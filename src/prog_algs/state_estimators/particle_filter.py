@@ -10,7 +10,6 @@ from prog_models.utils.containers import DictLikeMatrixWrapper
 
 from . import state_estimator
 from ..uncertain_data import UnweightedSamples, ScalarData, UncertainData
-from ..exceptions import ProgAlgTypeError
 
 
 class ParticleFilter(state_estimator.StateEstimator):
@@ -55,7 +54,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         if isinstance(x0, DictLikeMatrixWrapper) or isinstance(x0, dict):
             x0 = ScalarData(x0)
         elif not isinstance(x0, UncertainData):
-            raise ProgAlgTypeError(f"ProgAlgTypeError: x0 must be of type UncertainData or StateContainer, was {type(x0)}.")
+            raise TypeError(f"x0 must be of type UncertainData or StateContainer, was {type(x0)}.")
 
         if self.parameters['num_particles'] is None and isinstance(x0, UnweightedSamples):
             sample_gen = x0  # Directly use samples passed in

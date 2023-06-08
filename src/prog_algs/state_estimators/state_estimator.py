@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod, abstractproperty
 from copy import deepcopy
 
 from ..uncertain_data import UncertainData
-from ..exceptions import ProgAlgTypeError
 
 
 class StateEstimator(ABC):
@@ -39,19 +38,19 @@ class StateEstimator(ABC):
     def __init__(self, model, x0, **kwargs):
         # Check model
         if not hasattr(model, 'output'):
-            raise ProgAlgTypeError("model must have `output` method")
+            raise NotImplementedError("model must have `output` method")
         if not hasattr(model, 'next_state'):
-            raise ProgAlgTypeError("model must have `next_state` method")
+            raise NotImplementedError("model must have `next_state` method")
         if not hasattr(model, 'outputs'):
-            raise ProgAlgTypeError("model must have `outputs` property")
+            raise NotImplementedError("model must have `outputs` property")
         if not hasattr(model, 'states'):
-            raise ProgAlgTypeError("model must have `states` property")
+            raise NotImplementedError("model must have `states` property")
         self.model = model
 
         # Check x0
         for key in model.states:
             if key not in x0:
-                raise ProgAlgTypeError("x0 missing state `{}`".format(key))
+                raise KeyError("x0 missing state `{}`".format(key))
         
         # Process kwargs (configuration)
         self.parameters = deepcopy(StateEstimator.default_parameters)
@@ -64,9 +63,9 @@ class StateEstimator(ABC):
             self.parameters['dt'] = float(self.parameters['dt'])
 
         if not isinstance(self.parameters['t0'], float):
-            raise ProgAlgTypeError(f"t0 must be float, was {type(self.parameters['t0'])}")
+            raise TypeError(f"t0 must be float, was {type(self.parameters['t0'])}")
         if not isinstance(self.parameters['dt'], float):
-            raise ProgAlgTypeError(f"dt must be float, was {type(self.parameters['dt'])}")
+            raise TypeError(f"dt must be float, was {type(self.parameters['dt'])}")
         if self.parameters['dt'] <= 0:
             raise ValueError(f"dt must be positive, was {self.parameters['dt']}")
 

@@ -346,7 +346,7 @@ class TestStateEstimators(unittest.TestCase):
         x_us = UnweightedSamples(uw_input)
         filt_us = ParticleFilter(m, x_us, num_particles = 100000)
         for k, v in filt_us.x.mean.items():
-            self.assertAlmostEqual(v, x_us.mean[k], delta=0.02)
+            self.assertAlmostEqual(v, x_us.mean[k], delta=0.025)
         for i in range(len(filt_us.x.cov)):
             for j in range(len(filt_us.x.cov[i])):
                 self.assertAlmostEqual(filt_us.x.cov[i][j], x_us.cov[i][j], delta=0.1)

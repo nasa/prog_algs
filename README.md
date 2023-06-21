@@ -17,7 +17,6 @@ See documentation [here](https://nasa.github.io/progpy/prog_algs_guide.html)
 ## Repository Directory Structure 
 
 `src/prog_algs/` - The prognostics algorithm python package<br />
-`docs/` - Project documentation (see also [github.io](https://nasa.github.io/prog_algs/))<br />
 `examples/` - Example Python scripts using prog_algs<br />
 `tests/` - Tests for prog_models<br />
 `README.md` - The readme (this file)<br />

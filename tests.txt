@@ -1,0 +1,2 @@
+ipython>=8.10.0
+ipykernel>=6.21.2

@@ -2,7 +2,6 @@
 
 from setuptools import setup, find_packages
 import pathlib
-import pkg_resources
 
 here = pathlib.Path(__file__).parent.resolve()
 

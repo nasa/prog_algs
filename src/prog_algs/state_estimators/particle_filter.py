@@ -32,7 +32,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         t0 (float, optional):
             Starting time (s)
         dt (float, optional): 
-            Maximum timestep for prediction in seconds. By default is the difference between new and last t. Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step. Default is the parameters['dt]
+            Maximum timestep for prediction in seconds. By default, the timestep dt is the difference between the last and current call of .estimate(). Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step. Default is the parameters['dt']
             e.g., dt = 1e-2
         num_particles (int, optional):
             Number of particles in particle filter
@@ -100,7 +100,7 @@ class ParticleFilter(state_estimator.StateEstimator):
         Keyword Args
         ------------
         dt : float, optional
-            Maximum timestep for prediction in seconds. By default is the difference between new and last t. Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step. Default is the parameters['dt]
+            Maximum timestep for prediction in seconds. By default, the timestep dt is the difference between the last and current call of .estimate(). Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step. Default is the parameters['dt']
             e.g., dt = 1e-2
 
         Note
@@ -141,7 +141,7 @@ class ParticleFilter(state_estimator.StateEstimator):
             # Get particle measurements
             zPredicted = output(self.particles)
         else:
-            # Propogate and calculate weights
+            # Propagate and calculate weights
             for i in range(num_particles):
                 t_i = self.t  # Used to mark time for each particle
                 x = self.model.StateContainer({key: particles[key][i] for key in particles.keys()})

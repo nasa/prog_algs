@@ -10,7 +10,7 @@ class StateEstimator(ABC):
     """
     Interface class for state estimators
 
-    Abstract base class for creating state estimators that perform state estimation. Subclasses must implement this interface. Equivilant to "Observers" in NASA's Matlab Prognostics Algorithm Library
+    Abstract base class for creating state estimators that perform state estimation. Subclasses must implement this interface. Equivalent to "Observers" in NASA's Matlab Prognostics Algorithm Library
 
     Args:
         model (PrognosticsModel):
@@ -20,14 +20,14 @@ class StateEstimator(ABC):
             Initial (starting) state, with keys defined by model.states \n
             e.g., x = ScalarData({'abc': 332.1, 'def': 221.003}) given states = ['abc', 'def']
 
-    Keywork Args:
+    Keyword Args:
         t0 (float):
             Initial time at which prediction begins, e.g., 0
         dt (float):
-            Maximum timestep for prediction in seconds. By default is the difference between new and last t. Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step. Default is the parameters['dt]
+            Maximum timestep for prediction in seconds. By default, the timestep dt is the difference between the last and current call of .estimate(). Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step. Default is the parameters['dt']
             e.g., dt = 1e-2
         **kwargs: 
-            See state-estimator specific documentation for speicfic keyword arguments.
+            See state-estimator specific documentation for specific keyword arguments.
     """
 
     default_parameters = {
@@ -91,10 +91,10 @@ class StateEstimator(ABC):
         Keyword Args
         -------------
             dt : float, optional
-                Maximum timestep for prediction in seconds. By default is the difference between new and last t. Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step. Default is the parameters['dt]
+                Maximum timestep for prediction in seconds. By default, the timestep dt is the difference between the last and current call of .estimate(). Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step. Default is the parameters['dt']
                 e.g., dt = 1e-2
             **kwargs: 
-                See state-estimator specific documentation for speicfic keyword arguments.
+                See state-estimator specific documentation for specific keyword arguments.
 
         Note
         ----

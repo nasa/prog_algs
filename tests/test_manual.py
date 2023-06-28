@@ -1,7 +1,9 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
+from matplotlib import pyplot as plt
 import sys
 import unittest
+from unittest.mock import patch
 
 """
 This file includes tests that are too long to be run as part of the automated tests. Instead, these tests are run manually as part of the release process.
@@ -25,7 +27,10 @@ def main():
     l = unittest.TestLoader()
     runner = unittest.TextTestRunner()
     print("\n\nTesting Manual")
-    result = runner.run(l.loadTestsFromTestCase(TestManual)).wasSuccessful()
+    
+    with patch('matplotlib.pyplot.show'):
+        result = runner.run(l.loadTestsFromTestCase(TestManual)).wasSuccessful()
+    plt.close('all')
 
     if not result:
         raise Exception("Failed test")

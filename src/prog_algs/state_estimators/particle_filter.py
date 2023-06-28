@@ -1,7 +1,8 @@
 # Copyright © 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 from filterpy.monte_carlo import residual_resample
-from numpy import array, empty, take, exp, max, take
+import numpy as np
+from numpy import array, empty, take, exp, max, take, float64
 from scipy.stats import norm
 from warnings import warn
 
@@ -9,7 +10,6 @@ from prog_models.utils.containers import DictLikeMatrixWrapper
 
 from . import state_estimator
 from ..uncertain_data import UnweightedSamples, ScalarData, UncertainData
-from ..exceptions import ProgAlgTypeError
 
 
 class ParticleFilter(state_estimator.StateEstimator):
@@ -32,7 +32,8 @@ class ParticleFilter(state_estimator.StateEstimator):
         t0 (float, optional):
             Starting time (s)
         dt (float, optional): 
-            time step (s)
+            Maximum timestep for prediction in seconds. By default, the timestep dt is the difference between the last and current call of .estimate(). Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step. Default is the parameters['dt']
+            e.g., dt = 1e-2
         num_particles (int, optional):
             Number of particles in particle filter
         resample_fcn (function, optional):
@@ -40,7 +41,7 @@ class ParticleFilter(state_estimator.StateEstimator):
     """
     default_parameters = {
             't0': -1e-99,  # practically 0, but allowing for a 0 first estimate
-            'num_particles': 20, 
+            'num_particles': None, 
             'resample_fcn': residual_resample,
         }
 
@@ -53,27 +54,62 @@ class ParticleFilter(state_estimator.StateEstimator):
         if isinstance(x0, DictLikeMatrixWrapper) or isinstance(x0, dict):
             x0 = ScalarData(x0)
         elif not isinstance(x0, UncertainData):
-            raise ProgAlgTypeError(f"ProgAlgTypeError: x0 must be of type UncertainData or StateContainer, was {type(x0)}.")
+            raise TypeError(f"x0 must be of type UncertainData or StateContainer, was {type(x0)}.")
 
-        sample_gen = x0.sample(self.parameters['num_particles'])
-        samples = [array(sample_gen.key(k)) for k in x0.keys()]
+        if self.parameters['num_particles'] is None and isinstance(x0, UnweightedSamples):
+            sample_gen = x0  # Directly use samples passed in
+            self.parameters['num_particles'] = len(x0)
+        else:
+            if self.parameters['num_particles'] is None:
+                # Default to 100 particles
+                self.parameters['num_particles'] = 100
+            else:
+                # Added to avoid float/int issues
+                self.parameters['num_particles'] = int(self.parameters['num_particles'])
+            sample_gen = x0.sample(self.parameters['num_particles'])
+        samples = [array(sample_gen.key(k), dtype=float64) for k in x0.keys()]
         
-        self.particles = model.StateContainer(array(samples))
+        self.particles = model.StateContainer(array(samples, dtype=float64))
 
         if 'R' in self.parameters:
             # For backwards compatibility
             warn("'R' is deprecated. Use 'measurement_noise' instead.", DeprecationWarning)
             self.parameters['measurement_noise'] = self.parameters['R']
         elif 'measurement_noise' not in self.parameters:
-            self.parameters['measurement_noise'] = {key: 0.0 for key in x0.keys()}
+            self.parameters['measurement_noise'] = {key: 0.0 for key in model.outputs}
     
     def __str__(self):
         return "{} State Estimator".format(self.__class__)
         
-    def estimate(self, t : float, u, z):
+    def estimate(self, t : float, u, z, dt = None):
+        """
+        Perform one state estimation step (i.e., update the state estimate, filt.x)
+
+        Args
+        ----------
+        t : float
+            Current timestamp in seconds (≥ 0.0)
+            e.g., t = 3.4
+        u : InputContainer
+            Measured inputs, with keys defined by model.inputs.
+            e.g., u = m.InputContainer({'i':3.2}) given inputs = ['i']
+        z : OutputContainer
+            Measured outputs, with keys defined by model.outputs.
+            e.g., z = m.OutputContainer({'t':12.4, 'v':3.3}) given outputs = ['t', 'v']
+            
+        Keyword Args
+        ------------
+        dt : float, optional
+            Maximum timestep for prediction in seconds. By default, the timestep dt is the difference between the last and current call of .estimate(). Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step. Default is the parameters['dt']
+            e.g., dt = 1e-2
+
+        Note
+        ----
+        This method updates the state estimate stored in filt.x, but doesn't return the updated estimate. Call filt.x to get the updated estimate.
+        """
         assert t > self.t, "New time must be greater than previous"
-        dt = t - self.t
-        self.t = t
+        if dt is None:
+            dt = min(t - self.t, self.parameters['dt'])
 
         # Check Types
         if isinstance(u, dict):
@@ -85,9 +121,10 @@ class ParticleFilter(state_estimator.StateEstimator):
         particles = self.particles
         next_state = self.model.next_state
         apply_process_noise = self.model.apply_process_noise
+        apply_limits = self.model.apply_limits
         output = self._measure
         # apply_measurement_noise = self.model.apply_measurement_noise
-        noise_params = self.model.parameters['measurement_noise']
+        noise_params = self.parameters['measurement_noise']
         num_particles = self.parameters['num_particles']
         # Check which output keys are present (i.e., output of measurement function)
         measurement_keys = output(self.model.StateContainer({key: particles[key][0] for key in particles.keys()})).keys()
@@ -95,21 +132,31 @@ class ParticleFilter(state_estimator.StateEstimator):
 
         if self.model.is_vectorized:
             # Propagate particles state
-            self.particles = apply_process_noise(next_state(particles, u, dt), dt)
+            while self.t < t:
+                dt_i = min(dt, t-self.t)
+                particles = apply_process_noise(next_state(particles, u, dt_i), dt_i)
+                self.particles = apply_limits(particles)
+                self.t += dt_i
 
             # Get particle measurements
             zPredicted = output(self.particles)
         else:
-            # Propogate and calculate weights
+            # Propagate and calculate weights
             for i in range(num_particles):
+                t_i = self.t  # Used to mark time for each particle
                 x = self.model.StateContainer({key: particles[key][i] for key in particles.keys()})
-                x = next_state(x, u, dt) 
-                x = apply_process_noise(x, dt)
+                while t_i < t:
+                    dt_i = min(dt, t-t_i)
+                    x = next_state(x, u, dt_i) 
+                    x = apply_process_noise(x, dt_i)
+                    x = apply_limits(x)
+                    t_i += dt_i
                 for key in particles.keys():
                     self.particles[key][i] = x[key]
                 z = output(x)
                 for key in measurement_keys:
                     zPredicted[key][i] = z[key]
+            self.t = t
 
         # Calculate pdf values
         pdfs = array([norm(zPredicted[key], noise_params[key]).logpdf(z[key])

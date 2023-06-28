@@ -4,8 +4,8 @@ from filterpy import kalman
 from numpy import diag, array
 from warnings import warn
 
-from . import state_estimator
-from ..uncertain_data import MultivariateNormalDist, UncertainData
+from prog_algs.state_estimators import state_estimator
+from prog_algs.uncertain_data import MultivariateNormalDist, UncertainData
 
 class UnscentedKalmanFilter(state_estimator.StateEstimator):
     """
@@ -33,7 +33,8 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         t0 (float, optional):
             Starting time (s)
         dt (float, optional):
-            time step (s)
+            Maximum timestep for prediction in seconds. By default, the timestep dt is the difference between the last and current call of .estimate(). Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step. Default is the parameters['dt']
+            e.g., dt = 1e-2
         Q (list[list[float]], optional):
             Process Noise Matrix 
         R (list[list[float]], optional):
@@ -43,8 +44,6 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         'alpha': 1, 
         'beta': 0, 
         'kappa': -1,
-        't0': -1e-10,
-        'dt': 1
     } 
 
     def __init__(self, model, x0, **kwargs):
@@ -63,7 +62,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
             return array(list(z.values())).ravel()
 
         if 'Q' not in self.parameters:
-            self.parameters['Q'] = diag([1.0e-3 for i in x0.keys()])
+            self.parameters['Q'] = diag([1.0e-3 for _ in x0.keys()])
 
         def state_transition(x, dt):
             x = model.StateContainer({key: value for (key, value) in zip(x0.keys(), x)})
@@ -95,7 +94,7 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         self.filter.Q = self.parameters['Q']
         self.filter.R = self.parameters['R']
 
-    def estimate(self, t : float, u, z):
+    def estimate(self, t: float, u, z, **kwargs):
         """
         Perform one state estimation step (i.e., update the state estimate)
 
@@ -110,12 +109,20 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         z : dict
             Measured outputs, with keys defined by model.outputs.
             e.g., z = {'t':12.4, 'v':3.3} given inputs = ['t', 'v']
+
+        Keyword Args
+        ------------
+        dt : float, optional
+            Maximum timestep for prediction in seconds. By default, the timestep dt is the difference between the last and current call of .estimate(). Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step. Default is the parameters['dt']
+            e.g., dt = 1e-2
         """
         assert t > self.t, "New time must be greater than previous"
-        dt = t - self.t
+        dt = kwargs.get('dt', self.parameters['dt'])
+        dt = min(t - self.t, dt)
         self.__input = u
-        self.t = t
-        self.filter.predict(dt=dt)
+        while self.t < t:
+            self.filter.predict(dt=dt)
+            self.t += dt
         self.filter.update(array(list(z.values())))
     
     @property
@@ -127,4 +134,4 @@ class UnscentedKalmanFilter(state_estimator.StateEstimator):
         -------
         state = observer.x
         """
-        return MultivariateNormalDist(self.x0.keys(), self.filter.x, self.filter.P, _type = self.model.StateContainer)
+        return MultivariateNormalDist(self.x0.keys(), self.filter.x, self.filter.P, _type=self.model.StateContainer)

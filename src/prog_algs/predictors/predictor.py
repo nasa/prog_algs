@@ -5,7 +5,6 @@ from copy import deepcopy
 from typing import Callable
 
 from prog_algs.predictors.prediction import PredictionResults
-from ..exceptions import ProgAlgTypeError
 from ..uncertain_data import UncertainData
 
 
@@ -26,17 +25,17 @@ class Predictor(ABC):
 
     def __init__(self, model, **kwargs):
         if not hasattr(model, 'output'):
-            raise ProgAlgTypeError("model must have `output` method")
+            raise NotImplementedError("model must have `output` method")
         if not hasattr(model, 'next_state'):
-            raise ProgAlgTypeError("model must have `next_state` method")
+            raise NotImplementedError("model must have `next_state` method")
         if not hasattr(model, 'inputs'):
-            raise ProgAlgTypeError("model must have `inputs` property")
+            raise NotImplementedError("model must have `inputs` property")
         if not hasattr(model, 'outputs'):
-            raise ProgAlgTypeError("model must have `outputs` property")
+            raise NotImplementedError("model must have `outputs` property")
         if not hasattr(model, 'states'):
-            raise ProgAlgTypeError("model must have `states` property")
+            raise NotImplementedError("model must have `states` property")
         if not hasattr(model, 'simulate_to_threshold'):
-            raise ProgAlgTypeError("model must have `simulate_to_threshold` property")
+            raise NotImplementedError("model must have `simulate_to_threshold` property")
         self.model = model
 
         self.parameters = deepcopy(self.default_parameters)
@@ -44,7 +43,7 @@ class Predictor(ABC):
         self.parameters.update(kwargs)
 
     @abstractmethod
-    def predict(self, state : UncertainData, future_loading_eqn : Callable, **kwargs) -> PredictionResults:
+    def predict(self, state: UncertainData, future_loading_eqn: Callable, **kwargs) -> PredictionResults:
         """
         Perform a single prediction
 
@@ -55,27 +54,14 @@ class Predictor(ABC):
         future_loading_eqn : function (t, x) -> z
             Function to generate an estimate of loading at future time t, and state x
 
-        Keyword Arguments
-        -------------------
-        dt : float
-            Simulation step size (s), e.g., 0.1
-        events : list[str]
-            Events to predict (subset of model.events) e.g., ['event1', 'event2']
-        horizon : float
-            Prediction horizon (s)
-        save_freq : float
-            Frequency at which results are saved (s)
-        save_pts : list[float]
-            Any additional savepoints (s) e.g., [10.1, 22.5]
-
         Return
         ----------
-        NamedTuple
-            * times (list[float]): Times for each savepoint such that inputs.snapshot(i), states.snapshot(i), outputs.snapshot(i), and event_states.snapshot(i) are all at times[i]            
-            * inputs (:py:class:`Prediction`): Inputs at each savepoint such that inputs.snapshot(i) is the input distribution (type UncertainData) at times[i]
-            * states (:py:class:`Prediction`): States at each savepoint such that states.snapshot(i) is the state distribution (type UncertainData) at times[i]
-            * outputs (:py:class:`Prediction`): Outputs at each savepoint such that outputs.snapshot(i) is the output distribution (type UncertainData) at times[i]
-            * event_states (:py:class:`Prediction`): Event states at each savepoint such that event_states.snapshot(i) is the event state distribution (type UncertainData) at times[i]
-            * time_of_event (:py:class:`prog_algs.uncertain_data.UncertainData`): Distribution of predicted Time of Event (ToE) for each predicted event, represented by some subclass of UncertaintData (e.g., :py:class:`MultivariateNormalDist`)
+        result from prediction, including: NameTuple
+            * times (List[float]): Times for each savepoint such that inputs.snapshot(i), states.snapshot(i), outputs.snapshot(i), and event_states.snapshot(i) are all at times[i]            
+            * inputs (Prediction): Inputs at each savepoint such that inputs.snapshot(i) is the input distribution (type UncertainData) at times[i]
+            * states (Prediction): States at each savepoint such that states.snapshot(i) is the state distribution (type UncertainData) at times[i]
+            * outputs (Prediction): Outputs at each savepoint such that outputs.snapshot(i) is the output distribution (type UncertainData) at times[i]
+            * event_states (Prediction): Event states at each savepoint such that event_states.snapshot(i) is the event state distribution (type UncertainData) at times[i]
+            * time_of_event (UncertainData): Distribution of predicted Time of Event (ToE) for each predicted event, represented by some subclass of UncertaintData (e.g., MultivariateNormalDist)
         """
         pass

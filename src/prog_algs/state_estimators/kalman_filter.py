@@ -32,7 +32,8 @@ class KalmanFilter(state_estimator.StateEstimator):
         t0 (float, optional):
             Starting time (s)
         dt (float, optional):
-            time step (s)
+            Maximum timestep for prediction in seconds. By default, the timestep dt is the difference between the last and current call of .estimate(). Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step. Default is the parameters['dt']
+            e.g., dt = 1e-2
         Q (list[list[float]], optional):
             Kalman Process Noise Matrix 
         R (list[list[float]], optional):
@@ -96,7 +97,7 @@ class KalmanFilter(state_estimator.StateEstimator):
         self.filter.F = F
         self.filter.B = B
 
-    def estimate(self, t : float, u, z):
+    def estimate(self, t: float, u, z, **kwargs):
         """
         Perform one state estimation step (i.e., update the state estimate)
 
@@ -111,10 +112,16 @@ class KalmanFilter(state_estimator.StateEstimator):
         z : dict
             Measured outputs, with keys defined by model.outputs.
             e.g., z = {'t':12.4, 'v':3.3} given inputs = ['t', 'v']
+
+        Keyword Arguments
+        -----------------
+        dt : float, optional
+            Maximum timestep for prediction in seconds. By default, the timestep dt is the difference between the last and current call of .estimate(). Some models are unstable at larger dt. Setting a smaller dt will force the model to take smaller steps; resulting in multiple prediction steps for each estimate step. Default is the parameters['dt']
+            e.g., dt = 1e-2
         """
         assert t > self.t, "New time must be greater than previous"
-
-        dt = t - self.t
+        dt = kwargs.get('dt', self.parameters['dt'])
+        dt = min(t - self.t, dt)  # Ensure dt is not larger than the maximum time step
         # Create u array, ensuring order of model.inputs. And reshaping to (n,1), n can be 0.
         inputs = np.array([u[key] for key in self.model.inputs]).reshape((-1,1))
 
@@ -123,8 +130,6 @@ class KalmanFilter(state_estimator.StateEstimator):
             inputs = np.array([[1]])
         else:
             inputs = np.append(inputs, [[1]], 0)
-
-        self.t = t
 
         # Update equations
         # prog_models is dx = Ax + Bu + E
@@ -135,7 +140,9 @@ class KalmanFilter(state_estimator.StateEstimator):
         F = np.multiply(self.filter.F, dt) + np.diag([1]* self.model.n_states)
 
         # Predict
-        self.filter.predict(u = inputs, B = B, F = F)
+        while self.t < t :
+            self.filter.predict(u = inputs, B = B, F = F)
+            self.t += dt
 
         # Create z array, ensuring order of model.outputs
         outputs = np.array([z[key] for key in self.model.outputs])

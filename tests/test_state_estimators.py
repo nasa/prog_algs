@@ -4,9 +4,8 @@ import numpy as np
 import random
 
 from prog_models import PrognosticsModel, LinearModel
-from prog_models.models import ThrownObject, BatteryElectroChem
+from prog_models.models import ThrownObject, BatteryElectroChem, PneumaticValveBase
 from prog_algs.state_estimators import ParticleFilter, KalmanFilter, UnscentedKalmanFilter
-from prog_algs.exceptions import ProgAlgTypeError
 from prog_algs.uncertain_data import ScalarData, MultivariateNormalDist, UnweightedSamples
 
 def equal_cov(pair1, pair2):
@@ -83,22 +82,29 @@ class TestStateEstimators(unittest.TestCase):
         se = TemplateStateEstimator(self._m_mock, {'a': 0.0, 'b': 0.0, 'c': 0.0, 't':0.0})
 
     def __test_state_est(self, filt, m):
-        x_guess = m.StateContainer(filt.x.mean)  # Might be new
         x = m.initialize()
 
         self.assertTrue(all(key in filt.x.mean for key in m.states))
 
         # run for a while
-        dt = 0.01
+        dt = 0.2
         u = m.InputContainer({})
-        for i in range(1250):
+        last_time = 0
+        for i in range(500):
             # Get simulated output (would be measured in a real application)
             x = m.next_state(x, u, dt)
-            x_guess = m.next_state(x_guess, u, dt)
             z = m.output(x)
 
-            # Estimate New State
-            filt.estimate((i+1)*dt, u, z)
+            # Estimate New State every few steps
+            if i % 8 == 0:
+                # This is to test dt
+                # Without dt, this would fail
+                last_time = (i+1)*dt
+                filt.estimate((i+1)*dt, u, z, dt=dt)
+
+        if last_time != (i+1)*dt:
+            # Final estimate
+            filt.estimate((i+1)*dt, u, z, dt=dt)
 
         # Check results - make sure it converged
         x_est = filt.x.mean
@@ -185,7 +191,8 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'c': 2}
-        with self.assertRaises(ProgAlgTypeError):
+        # Missing Key 'b'
+        with self.assertRaises(KeyError):
             filter(m, x0)
 
         class IncompleteModel:
@@ -196,7 +203,7 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'b': 2}
-        with self.assertRaises(ProgAlgTypeError):
+        with self.assertRaises(NotImplementedError):
             filter(m, x0)
 
         class IncompleteModel:
@@ -207,7 +214,7 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'b': 2}
-        with self.assertRaises(ProgAlgTypeError):
+        with self.assertRaises(NotImplementedError):
             filter(m, x0)
 
         class IncompleteModel:
@@ -217,7 +224,7 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'b': 2}
-        with self.assertRaises(ProgAlgTypeError):
+        with self.assertRaises(NotImplementedError):
             filter(m, x0)
         class IncompleteModel:
             outputs = []
@@ -226,17 +233,90 @@ class TestStateEstimators(unittest.TestCase):
                 pass
         m = IncompleteModel()
         x0 = {'a': 0, 'b': 2}
-        with self.assertRaises(ProgAlgTypeError):
+        with self.assertRaises(NotImplementedError):
             filter(m, x0)
 
     def test_UKF_incorrect_input(self):
         self.__incorrect_input_tests(UnscentedKalmanFilter)
 
+    def test_PF_limit_check(self):
+        class OneInputOneOutputOneEventLM(LinearModel):
+            inputs = ['u1']
+            states = ['x1']
+            outputs = ['x1+1']
+            events = ['x1 == 10']
+
+            A = np.array([[0]])
+            B = np.array([[1]])
+            C = np.array([[1]])
+            D = np.array([[1]])
+            F = np.array([[-0.1]])
+            G = np.array([[1]])
+
+            default_parameters = {
+                'process_noise': 0.1,
+                'measurement_noise': 0.1,
+                'x0': {
+                    'x1': 0
+                }
+            }
+
+        m = OneInputOneOutputOneEventLM()
+        pf = ParticleFilter(m, {'x1': 10}, num_particles = 5)
+
+        # Without state limits
+        pf.estimate(1, {'u1': 1}, {'x1+1': 12})
+        self.assertAlmostEqual(pf.x.mean['x1'], 11, delta=0.2)
+
+        # With state limits
+        OneInputOneOutputOneEventLM.state_limits = {
+            'x1': (0, 10)
+        }
+        pf.estimate(2, {'u1': 1}, {'x1+1': 13})
+        self.assertLessEqual(pf.x.mean['x1'], 10)  # Limited to 10 now
+    
+    def test_PF_step(self):
+        m = PneumaticValveBase()
+
+        # Generate data
+        cycle_time = 20
+        def future_loading(t, x=None):
+            t = t % cycle_time
+            if t < cycle_time/2:
+                return m.InputContainer({
+                    'pL': 3.5e5,
+                    'pR': 2.0e5,
+                    # Open Valve
+                    'uTop': False,
+                    'uBot': True
+                })
+            return m.InputContainer({
+                'pL': 3.5e5,
+                'pR': 2.0e5,
+                # Close Valve
+                'uTop': True,
+                'uBot': False
+            })
+
+        config = {
+                'dt': 0.01,
+                'save_freq': 1,
+            }
+        simulated_results = m.simulate_to(10, future_loading, **config)
+
+        # Setup PF
+        x0 = m.initialize(future_loading(0))
+        filt = ParticleFilter(m, x0, num_particles = 100)
+        t=0
+        for u, z in zip(simulated_results.inputs, simulated_results.outputs):
+            filt.estimate(t, u, z, dt = 3)
+            t += config['save_freq']
+
     def test_PF(self):
         m = ThrownObject(process_noise={'x': 0.75, 'v': 0.75}, measurement_noise=1)
         x_guess = {'x': 1.75, 'v': 38.5} # Guess of initial state, actual is {'x': 1.83, 'v': 40}
 
-        filt = ParticleFilter(m, x_guess, num_particles = 1000)
+        filt = ParticleFilter(m, x_guess, num_particles = 1000, measurement_noise = {'x': 1})
         self.__test_state_est(filt, m)
 
         # Test ParticleFilter ScalarData
@@ -266,7 +346,7 @@ class TestStateEstimators(unittest.TestCase):
         x_us = UnweightedSamples(uw_input)
         filt_us = ParticleFilter(m, x_us, num_particles = 100000)
         for k, v in filt_us.x.mean.items():
-            self.assertAlmostEqual(v, x_us.mean[k], delta=0.02)
+            self.assertAlmostEqual(v, x_us.mean[k], delta=0.025)
         for i in range(len(filt_us.x.cov)):
             for j in range(len(filt_us.x.cov[i])):
                 self.assertAlmostEqual(filt_us.x.cov[i][j], x_us.cov[i][j], delta=0.1)

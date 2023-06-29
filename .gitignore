@@ -102,3 +102,5 @@ cython_debug/
 .DS_Store
 data_test.pkl
 predictor_test.pkl
+
+.VSCodeCounter/

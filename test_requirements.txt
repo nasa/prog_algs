@@ -1,4 +1,0 @@
-ipython>=8.10.0
-ipykernel>=6.21.2
-testbook>=0.4.2
-.

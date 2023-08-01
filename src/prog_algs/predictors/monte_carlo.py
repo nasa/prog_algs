@@ -98,7 +98,7 @@ class MonteCarlo(Predictor):
                 # Since horizon is relative to t0 (the simulation starting point),
                 # we must subtract the difference in current t0 from the initial (i.e., prediction t0)
                 # each subsequent simulation
-                params['horizon'] = HORIZON - (params['t0'] - t0)
+                # params['horizon'] = HORIZON - (params['t0'] - t0)
 
                 # Simulate
                 events_remaining = params['events'].copy()
@@ -111,6 +111,7 @@ class MonteCarlo(Predictor):
 
                 # Non-vectorized prediction
                 while len(events_remaining) > 0:  # Still events to predict
+                    params['horizon'] = HORIZON - (params['t0'] - t0)
                     (t, u, xi, z, es) = simulate_to_threshold(future_loading_eqn,       
                         first_output, 
                         threshold_keys = events_remaining,

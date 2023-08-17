@@ -1,11 +1,9 @@
 from io import StringIO
 import sys
 import unittest
-import numpy as np
 
 from prog_models.models.thrown_object import ThrownObject
 from prog_algs import *
-from pprint import pprint
 
 class TestHorizon(unittest.TestCase):
     def setUp(self):
@@ -63,7 +61,7 @@ class TestHorizon(unittest.TestCase):
 # This allows the module to be executed directly
 def run_tests():
     unittest.main()
-    
+
 def main():
     load_test = unittest.TestLoader()
     runner = unittest.TextTestRunner()

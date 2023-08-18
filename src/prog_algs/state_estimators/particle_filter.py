@@ -81,7 +81,7 @@ class ParticleFilter(state_estimator.StateEstimator):
     def __str__(self):
         return "{} State Estimator".format(self.__class__)
         
-    def estimate(self, t : float, u, z, dt = None):
+    def estimate(self, t: float, u, z, dt = None):
         """
         Perform one state estimation step (i.e., update the state estimate, filt.x)
 

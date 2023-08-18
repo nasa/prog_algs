@@ -7,6 +7,7 @@ from .test_examples import main as examples_main
 from .test_metrics import run_tests as metrics_main
 from .test_visualize import run_tests as visualize_main
 from .test_tutorials import run_tests as tutorials_main
+from .test_horizon import run_tests as horizon_main
 
 import unittest
 import sys
@@ -66,6 +67,11 @@ if __name__ == '__main__':
 
     try:
         tutorials_main()
+    except Exception:
+        was_successful = False
+
+    try:
+        horizon_main_main()
     except Exception:
         was_successful = False
 

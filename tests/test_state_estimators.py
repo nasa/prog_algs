@@ -4,7 +4,7 @@ import numpy as np
 import random
 
 from prog_models import PrognosticsModel, LinearModel
-from prog_models.models import ThrownObject, BatteryElectroChem, PneumaticValveBase
+from prog_models.models import ThrownObject, BatteryElectroChem, PneumaticValveBase, BatteryElectroChemEOD
 from prog_algs.state_estimators import ParticleFilter, KalmanFilter, UnscentedKalmanFilter
 from prog_algs.uncertain_data import ScalarData, MultivariateNormalDist, UnweightedSamples
 
@@ -557,6 +557,21 @@ class TestStateEstimators(unittest.TestCase):
         times = simulation_result.times
         for t, u, z in zip(times, inputs.data, outputs.data):
             kf.estimate(t, u, z)
+    
+    def test_PF_particle_ordering(self):
+        """
+        This is testing for a bug found by @mstraut where particle filter was mixing up the keys if users:
+          1. Do not call m.initialize(), and instead
+          2. provide a state as a dictionary instead of a state container, and
+          3. order the states in a different order than m.states
+        """
+        m = BatteryElectroChemEOD()
+        x0 = m.parameters['x0']  # state as a dictionary with the wrong order
+        filt = ParticleFilter(m, x0, num_particles=2)
+        for key in m.states:
+            self.assertEqual(filt.particles[key][0], x0[key])
+            self.assertEqual(filt.particles[key][1], x0[key])
+
 
 # This allows the module to be executed directly    
 def run_tests():
